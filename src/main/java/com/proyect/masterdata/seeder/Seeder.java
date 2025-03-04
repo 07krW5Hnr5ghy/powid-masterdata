@@ -6,22 +6,13 @@ import com.proyect.masterdata.dto.LocationDTO;
 import com.proyect.masterdata.dto.request.*;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.*;
-import com.proyect.masterdata.utils.DirectoryManager;
 import lombok.RequiredArgsConstructor;
-import org.bouncycastle.cert.ocsp.Req;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StreamUtils;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Component
@@ -46,8 +37,6 @@ public class Seeder implements CommandLineRunner {
         private final IColor iColor;
         private final ISize iSize;
         private final ISizeType iSizeType;
-        private final ISupplier iSupplier;
-        private final ISupplierProduct iSupplierProduct;
         private final IClosingChannel iClosingChannel;
         private final IEntryChannel iEntryChannel;
         private final IStoreType iStoreType;
@@ -67,16 +56,12 @@ public class Seeder implements CommandLineRunner {
         private final IManagementType iManagementType;
         private final IOrderPaymentMethod iOrderPaymentMethod;
         private final IOrdering iOrdering;
-        private final IOrderStock iOrderStock;
         private final IUnitType iUnitType;
         private final IUnit iUnit;
         private final ICourier iCourier;
         private final ICancellationReason iCancellationReason;
         private final ICancelledOrder iCancelledOrder;
-        private final IStockReturn iStockReturn;
         private final IPurchaseType iPurchaseType;
-        private final IStockReplenishment iStockReplenishment;
-        private final IStockTransfer iStockTransfer;
         private final IOrderItem iOrderItem;
         private final IPaymentGateway iPaymentGateway;
         private final IMembershipState iMembershipState;
@@ -88,10 +73,7 @@ public class Seeder implements CommandLineRunner {
         private final IStore iStore;
         private final IPurchaseDocument iPurchaseDocument;
         private final ICountry iCountry;
-        private final ISupplierType iSupplierType;
         private final ICustomerType iCustomerType;
-        private final IOrderReturnType iOrderReturnType;
-        private final IOrderReturn iOrderReturn;
         private final ResourceLoader resourceLoader;
         private final IAuditEvent iAuditEvent;
         private final ICustomer iCustomer;
@@ -130,6 +112,7 @@ public class Seeder implements CommandLineRunner {
                         District district = districtRepository.save(District.builder()
                                         .name("SISTEMA")
                                         .status(true)
+                                        .province(province)
                                         .registrationDate(OffsetDateTime.now())
                                         .updateDate(OffsetDateTime.now())
                                 .build());
@@ -502,9 +485,6 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("UPDATE_STOCK_REPLENISHMENT_ITEM",adminUser.getUsername());
                         iAuditEvent.save("UPDATE_STORE",adminUser.getUsername());
                         iAuditEvent.save("UPDATE_USER",adminUser.getUsername());
-                        // supplier types
-                        iSupplierType.save("INTERNO",adminUser.getUsername());
-                        iSupplierType.save("DISTRIBUIDOR",adminUser.getUsername());
 
                         // access
                         iAccess.save("ACCESS_POST",adminUser.getUsername());
@@ -1390,10 +1370,6 @@ public class Seeder implements CommandLineRunner {
                         iPurchaseType.save("devolucion",adminUser.getUsername());
                         iPurchaseType.save("restockaje",adminUser.getUsername());
 
-                        // order return type
-                        iOrderReturnType.save("rechazo",adminUser.getUsername());
-                        iOrderReturnType.save("cambio",adminUser.getUsername());
-
                         // cancellation reason
                         iCancellationReason.save("No hay stock",adminUser.getUsername());
                         iCancellationReason.save("Demora en entrega",adminUser.getUsername());
@@ -1489,7 +1465,8 @@ public class Seeder implements CommandLineRunner {
                                 .company("SIN EMPRESA")
                                 .build();
 
-                        iCourier.save(requestCourier,adminUser.getUsername());
+                        iCourier.save(requestCourier,"JROMERO");
+
                         iSize.save("STD","ROPA","JROMERO");
                         iSize.save("PSZ","ROPA","JROMERO");
                         RequestStoreSave requestStore1 = RequestStoreSave.builder()
@@ -1549,6 +1526,7 @@ public class Seeder implements CommandLineRunner {
                         //iModel.save(new RequestModel("Air Force 1","ADIDAS","AR001Z",adminUser.getUsername()));
                         //iModel.save(new RequestModel("Air Force 1","ADIDAS","AR001Z",adminUser.getUsername()));
                         //iModel.save(new RequestModel("Air Force 1","ADIDAS","AR001Z",adminUser.getUsername()));
+
 
 
                 }catch (RuntimeException e){

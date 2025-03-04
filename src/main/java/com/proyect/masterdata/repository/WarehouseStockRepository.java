@@ -10,10 +10,10 @@ import java.util.UUID;
 
 @Repository
 public interface WarehouseStockRepository extends JpaRepository<WarehouseStock, UUID> {
-    WarehouseStock findByWarehouseIdAndSupplierProductId(UUID warehouseId, UUID supplierProductId);
-    List<WarehouseStock> findAllByWarehouseIdAndSupplierProductId(UUID warehouseId, UUID supplierProductId);
-    List<WarehouseStock> findAllBySupplierProductId(UUID supplierProductId);
+    WarehouseStock findByWarehouseIdAndProductId(UUID warehouseId, UUID productId);
+    List<WarehouseStock> findAllByWarehouseIdAndProductId(UUID warehouseId, UUID productId);
+    List<WarehouseStock> findAllByProductId(UUID productId);
     List<WarehouseStock> findAllByClientId(UUID clientId);
     List<WarehouseStock> findAllByClientIdAndWarehouseId(UUID clientId,UUID warehouseId);
-    List<WarehouseStock> findByClientIdAndWarehouseIdAndSupplierProduct_Supplier_Id(UUID clientId,UUID warehouseId,UUID supplierId);
+    List<WarehouseStock> findByClientIdAndWarehouseIdAndProductId(UUID clientId,UUID warehouseId,UUID productId);
 }

@@ -164,7 +164,7 @@ public class ProductImpl implements IProduct {
     @Override
     @Transactional
     public CompletableFuture<ResponseSuccess> saveAsync(RequestProductSave requestProductSave,MultipartFile[] productPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        Path folder = Paths.get(urlPathServer);
+        Path folder = Paths.get(urlPathServer+"/uploads/products");
         return CompletableFuture.supplyAsync(()->{
             User user;
             Product product;
@@ -266,7 +266,7 @@ public class ProductImpl implements IProduct {
                     }
                     // /home/powid-masterdata/src/main/resources/uploads/products/
 
-                    File convFile = new File(urlPathServer+multipartFile.getOriginalFilename());
+                    File convFile = new File(urlPathServer+"/uploads/products/"+multipartFile.getOriginalFilename());
                     convFile.createNewFile();
                     FileOutputStream fos = new FileOutputStream(convFile);
                     fos.write(multipartFile.getBytes());
@@ -728,7 +728,7 @@ public class ProductImpl implements IProduct {
 
     @Override
     public CompletableFuture<ResponseSuccess> update(RequestProductUpdate requestProductUpdate, List<MultipartFile> pictures) throws BadRequestExceptions, InternalErrorExceptions {
-        Path folder = Paths.get(urlPathServer);
+        Path folder = Paths.get(urlPathServer+"/uploads/products/");
 
         return CompletableFuture.supplyAsync(()->{
             User user;
@@ -770,7 +770,7 @@ public class ProductImpl implements IProduct {
                     if(multipartFile.isEmpty()){
                         break;
                     }
-                    File convFile = new File(urlPathServer+multipartFile.getOriginalFilename());
+                    File convFile = new File(urlPathServer+"/uploads/products/"+multipartFile.getOriginalFilename());
                     convFile.createNewFile();
                     FileOutputStream fos = new FileOutputStream(convFile);
                     fos.write(multipartFile.getBytes());

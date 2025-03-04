@@ -35,9 +35,8 @@ public class PurchaseItemController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_ITEM_GET')")
     public ResponseEntity<Page<PurchaseItemDTO>> list(
             @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "purchases",required = false) List<String> purchases,
-            @RequestParam(value = "warehouses", required = false) List<String> warehouses,
-            @RequestParam(value = "supplierProductIds",required = false) List<UUID> supplierProductIds,
+            @RequestParam(value = "purchaseNumber",required = false) Long purchaseNumber,
+            @RequestParam(value = "warehouse", required = false) String warehouse,
             @RequestParam(value = "model",required = false) String model,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
@@ -45,9 +44,8 @@ public class PurchaseItemController {
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<PurchaseItemDTO>> result = iPurchaseItem.list(
                 user,
-                purchases,
-                warehouses,
-                supplierProductIds,
+                purchaseNumber,
+                warehouse,
                 model,
                 sort,
                 sortColumn,

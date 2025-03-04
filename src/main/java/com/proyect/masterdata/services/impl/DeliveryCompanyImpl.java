@@ -57,6 +57,7 @@ public class DeliveryCompanyImpl implements IDeliveryCompany {
                                 .user(user)
                                 .userId(user.getId())
                                 .client(user.getClient())
+                                .status(true) // para la generacion de los datos en seed se agrego este estado a true
                                 .clientId(user.getClientId())
                                 .registrationDate(OffsetDateTime.now())
                                 .updateDate(OffsetDateTime.now())

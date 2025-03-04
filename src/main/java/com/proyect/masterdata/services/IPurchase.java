@@ -35,5 +35,5 @@ public interface IPurchase {
             Integer pageSize) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<PurchaseDTO>> listPurchase(String user) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<PurchaseDTO>> listFilter(String user) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<List<CheckStockDTO>> checkStock(UUID supplierProductId, String user) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<List<CheckStockDTO>> checkStock(UUID productId, String user) throws BadRequestExceptions,InternalErrorExceptions;
 }

@@ -33,8 +33,8 @@ public class DeliveryManifestItem {
     @Column(name = "order_item_id")
     private UUID orderItemId;
 
-    @Column(name = "supplier_product_id")
-    private UUID supplierProductId;
+    @Column(name = "product_id")
+    private UUID productId;
 
     @Column(name = "user_id")
     private UUID userId;
@@ -51,8 +51,8 @@ public class DeliveryManifestItem {
     private OrderItem orderItem;
 
     @ManyToOne()
-    @JoinColumn(name = "supplier_product_id",columnDefinition = "supplierProductId",insertable = false,updatable = false)
-    private SupplierProduct supplierProduct;
+    @JoinColumn(name = "product_id",columnDefinition = "productId",insertable = false,updatable = false)
+    private Product product;
 
     @ManyToOne()
     @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)

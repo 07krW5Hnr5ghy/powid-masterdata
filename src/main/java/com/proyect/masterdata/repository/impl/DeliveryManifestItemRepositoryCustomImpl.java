@@ -33,7 +33,6 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
             String color,
             String size,
             String model,
-            String supplier,
             String brand,
             String deliveryStatus,
             String courier,
@@ -49,18 +48,16 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<DeliveryManifestItem> criteriaQuery = criteriaBuilder.createQuery(DeliveryManifestItem.class);
         Root<DeliveryManifestItem> itemRoot = criteriaQuery.from(DeliveryManifestItem.class);
-        Join<DeliveryManifestItem, SupplierProduct> deliveryManifestItemSupplierProductJoin = itemRoot.join("supplierProduct");
+        Join<DeliveryManifestItem, Product> deliveryManifestItemProductJoin = itemRoot.join("product");
         Join<DeliveryManifestItem, DeliveryManifest> deliveryManifestItemDeliveryManifestJoin = itemRoot.join("deliveryManifest");
         Join<DeliveryManifestItem, User> deliveryManifestItemUserJoin = itemRoot.join("user");
         Join<DeliveryManifestItem,DeliveryStatus> deliveryManifestItemDeliveryStatusJoin = itemRoot.join("deliveryStatus");
         Join<DeliveryManifestItem,OrderItem> deliveryManifestItemOrderItemJoin = itemRoot.join("orderItem");
-        Join<SupplierProduct, Product> supplierProductProductJoin = deliveryManifestItemSupplierProductJoin.join("product");
-        Join<Product,Color> productColorJoin = supplierProductProductJoin.join("color");
-        Join<Product,Size> productSizeJoin = supplierProductProductJoin.join("size");
-        Join<Product,Model> productModelJoin = supplierProductProductJoin.join("model");
+        Join<Product,Color> productColorJoin = deliveryManifestItemProductJoin.join("color");
+        Join<Product,Size> productSizeJoin = deliveryManifestItemProductJoin.join("size");
+        Join<Product,Model> productModelJoin = deliveryManifestItemProductJoin.join("model");
         Join<Model,Brand> modelBrandJoin = productModelJoin.join("brand");
         Join<OrderItem,Ordering> orderItemOrderingJoin = deliveryManifestItemOrderItemJoin.join("orderNumber");
-        Join<SupplierProduct,Supplier> supplierProductSupplierJoin = deliveryManifestItemSupplierProductJoin.join("supplier");
         Join<DeliveryManifest,Courier> deliveryManifestCourierJoin = deliveryManifestItemDeliveryManifestJoin.join("courier");
         Join<DeliveryManifest,Warehouse> deliveryManifestWarehouseJoin = deliveryManifestItemDeliveryManifestJoin.join("warehouse");
         criteriaQuery.select(itemRoot);
@@ -73,7 +70,6 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
               color,
               size,
               model,
-              supplier,
               brand,
               deliveryStatus,
               courier,
@@ -90,7 +86,6 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
               productColorJoin,
               productSizeJoin,
               productModelJoin,
-              supplierProductSupplierJoin,
               modelBrandJoin,
               deliveryManifestItemDeliveryStatusJoin,
               deliveryManifestCourierJoin,
@@ -125,7 +120,6 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
                 color,
                 size,
                 model,
-                supplier,
                 brand,
                 deliveryStatus,
                 courier,
@@ -146,7 +140,6 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
             String color,
             String size,
             String model,
-            String supplier,
             String brand,
             String deliveryStatus,
             String courier,
@@ -163,7 +156,6 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
             Join<Product,Color> productColorJoin,
             Join<Product,Size> productSizeJoin,
             Join<Product,Model> productModelJoin,
-            Join<SupplierProduct,Supplier> supplierProductSupplierJoin,
             Join<Model,Brand> modelBrandJoin,
             Join<DeliveryManifestItem,DeliveryStatus> deliveryManifestItemDeliveryStatusJoin,
             Join<DeliveryManifest,Courier> deliveryManifestCourierJoin,
@@ -193,9 +185,6 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
         }
         if(model!=null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(productModelJoin.get("name")),"%"+model.toUpperCase()+"%"));
-        }
-        if(supplier!=null){
-            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(supplierProductSupplierJoin.get("businessName")),"%"+supplier.toUpperCase()+"%"));
         }
         if(brand!=null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(modelBrandJoin.get("name")),"%"+brand.toUpperCase()+"%"));
@@ -307,7 +296,6 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
             String color,
             String size,
             String model,
-            String supplier,
             String brand,
             String deliveryStatus,
             String courier,
@@ -320,18 +308,16 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<DeliveryManifestItem> itemRoot = criteriaQuery.from(DeliveryManifestItem.class);
-        Join<DeliveryManifestItem, SupplierProduct> deliveryManifestItemSupplierProductJoin = itemRoot.join("supplierProduct");
+        Join<DeliveryManifestItem, Product> deliveryManifestItemProductJoin = itemRoot.join("product");
         Join<DeliveryManifestItem, DeliveryManifest> deliveryManifestItemDeliveryManifestJoin = itemRoot.join("deliveryManifest");
         Join<DeliveryManifestItem, User> deliveryManifestItemUserJoin = itemRoot.join("user");
         Join<DeliveryManifestItem,DeliveryStatus> deliveryManifestItemDeliveryStatusJoin = itemRoot.join("deliveryStatus");
         Join<DeliveryManifestItem,OrderItem> deliveryManifestItemOrderItemJoin = itemRoot.join("orderItem");
-        Join<SupplierProduct, Product> supplierProductProductJoin = deliveryManifestItemSupplierProductJoin.join("product");
-        Join<Product,Color> productColorJoin = supplierProductProductJoin.join("color");
-        Join<Product,Size> productSizeJoin = supplierProductProductJoin.join("size");
-        Join<Product,Model> productModelJoin = supplierProductProductJoin.join("model");
+        Join<Product,Color> productColorJoin = deliveryManifestItemProductJoin.join("color");
+        Join<Product,Size> productSizeJoin = deliveryManifestItemProductJoin.join("size");
+        Join<Product,Model> productModelJoin = deliveryManifestItemProductJoin.join("model");
         Join<Model,Brand> modelBrandJoin = productModelJoin.join("brand");
         Join<OrderItem,Ordering> orderItemOrderingJoin = deliveryManifestItemOrderItemJoin.join("orderNumber");
-        Join<SupplierProduct,Supplier> supplierProductSupplierJoin = deliveryManifestItemSupplierProductJoin.join("supplier");
         Join<DeliveryManifest,Courier> deliveryManifestCourierJoin = deliveryManifestItemDeliveryManifestJoin.join("courier");
         Join<DeliveryManifest,Warehouse> deliveryManifestWarehouseJoin = deliveryManifestItemDeliveryManifestJoin.join("warehouse");
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
@@ -344,7 +330,6 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
                 color,
                 size,
                 model,
-                supplier,
                 brand,
                 deliveryStatus,
                 courier,
@@ -361,7 +346,6 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
                 productColorJoin,
                 productSizeJoin,
                 productModelJoin,
-                supplierProductSupplierJoin,
                 modelBrandJoin,
                 deliveryManifestItemDeliveryStatusJoin,
                 deliveryManifestCourierJoin,

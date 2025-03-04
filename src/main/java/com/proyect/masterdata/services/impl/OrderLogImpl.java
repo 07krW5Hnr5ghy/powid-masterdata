@@ -21,7 +21,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Log4j2
 public class OrderLogImpl implements IOrderLog {
-    private OrderLogRepository orderLogRepository;
+    private final OrderLogRepository orderLogRepository;
     @Override
     public OrderLog save(User user, Ordering order,String detail) throws InternalErrorExceptions, BadRequestExceptions {
         try{

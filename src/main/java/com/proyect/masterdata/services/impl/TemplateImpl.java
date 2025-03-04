@@ -29,14 +29,10 @@ import java.util.concurrent.CompletableFuture;
 @Log4j2
 public class TemplateImpl implements ITemplate {
     private final UserRepository userRepository;
-    private final SupplierProductRepository supplierProductRepository;
     private final WarehouseRepository warehouseRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final OrderingRepository orderingRepository;
     private final OrderItemRepository orderItemRepository;
-    private final OrderStockRepository orderStockRepository;
-    private final OrderStockItemRepository orderStockItemRepository;
-    private final OrderReturnTypeRepository orderReturnTypeRepository;
     private final BrandRepository brandRepository;
     private final ModelRepository modelRepository;
     private final ColorRepository colorRepository;
@@ -44,7 +40,6 @@ public class TemplateImpl implements ITemplate {
     private final UnitTypeRepository unitTypeRepository;
     private final SizeRepository sizeRepository;
     private final UnitRepository unitRepository;
-    private final SupplierRepository supplierRepository;
     private final ProductRepository productRepository;
     private final IExcel iExcel;
     private final IUtil iUtil;
@@ -52,8 +47,6 @@ public class TemplateImpl implements ITemplate {
     public CompletableFuture<ByteArrayInputStream> purchase(String supplierRuc, String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            Supplier supplier;
-            List<SupplierProduct> supplierProductList;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
             }catch (RuntimeException e){
@@ -63,18 +56,6 @@ public class TemplateImpl implements ITemplate {
 
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
-            }else{
-                supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(supplierRuc,user.getClientId());
-            }
-
-            if(supplier == null){
-                throw new BadRequestExceptions(Constants.ErrorSupplier);
-            }else{
-                supplierProductList = supplierProductRepository.findAllByClientIdAndSupplierIdAndStatusTrue(user.getClientId(),supplier.getId());
-            }
-
-            if(supplierProductList.isEmpty()){
-                throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
             }
 
             try{
@@ -98,12 +79,12 @@ public class TemplateImpl implements ITemplate {
                 supplierHeaderCell.setCellValue("PROVEEDOR");
                 supplierHeaderCell.setCellStyle(headerStyle2);
                 Cell supplierCell = supplierRow.createCell(1);
-                supplierCell.setCellValue(supplier.getBusinessName());
+                //supplierCell.setCellValue(supplier.getBusinessName());
                 Cell supplierHeaderCell2 = supplierRow.createCell(2);
                 supplierHeaderCell2.setCellValue("RUC");
                 supplierHeaderCell2.setCellStyle(headerStyle2);
                 Cell supplierCell2 = supplierRow.createCell(3);
-                supplierCell2.setCellValue(supplier.getRuc());
+                //supplierCell2.setCellValue(supplier.getRuc());
 
                 Row headerRow = sheet.createRow(1);
 
@@ -139,18 +120,18 @@ public class TemplateImpl implements ITemplate {
                 cell.setCellValue("OBSERVACIONES");
                 cell.setCellStyle(headerStyle);
                 int currentRow = 2;
-                for(SupplierProduct supplierProduct:supplierProductList){
-                    String finalSku = iUtil.buildProductSku(supplierProduct.getProduct());
-                    Row row = sheet.createRow(currentRow);
-                    row.createCell(0).setCellValue(supplierProduct.getProduct().getModel().getName());
-                    row.createCell(1).setCellValue(finalSku);
-                    row.createCell(2).setCellValue(supplierProduct.getProduct().getColor().getName());
-                    row.createCell(3).setCellValue(supplierProduct.getProduct().getSize().getSizeType().getName());
-                    row.createCell(4).setCellValue(supplierProduct.getProduct().getSize().getName());
-                    row.createCell(6).setCellValue(0);
-                    row.createCell(7).setCellValue("NO APLICA");
-                    currentRow++;
-                }
+//                for(SupplierProduct supplierProduct:supplierProductList){
+//                    String finalSku = iUtil.buildProductSku(supplierProduct.getProduct());
+//                    Row row = sheet.createRow(currentRow);
+//                    row.createCell(0).setCellValue(supplierProduct.getProduct().getModel().getName());
+//                    row.createCell(1).setCellValue(finalSku);
+//                    row.createCell(2).setCellValue(supplierProduct.getProduct().getColor().getName());
+//                    row.createCell(3).setCellValue(supplierProduct.getProduct().getSize().getSizeType().getName());
+//                    row.createCell(4).setCellValue(supplierProduct.getProduct().getSize().getName());
+//                    row.createCell(6).setCellValue(0);
+//                    row.createCell(7).setCellValue("NO APLICA");
+//                    currentRow++;
+//                }
 
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 workbook.write(out);
@@ -250,7 +231,7 @@ public class TemplateImpl implements ITemplate {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Warehouse warehouse;
-            Supplier supplier;
+//            Supplier supplier;
             List<WarehouseStock> warehouseStockList;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
@@ -262,15 +243,15 @@ public class TemplateImpl implements ITemplate {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
                 warehouse = warehouseRepository.findByClientIdAndNameAndStatusTrue(user.getClientId(), warehouseName.toUpperCase());
-                supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(supplierRuc,user.getClientId());
+//                supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(supplierRuc,user.getClientId());
             }
-            if(supplier==null){
-                throw new BadRequestExceptions(Constants.ErrorSupplier);
-            }
+//            if(supplier==null){
+//                throw new BadRequestExceptions(Constants.ErrorSupplier);
+//            }
             if(warehouse==null){
                 throw new BadRequestExceptions(Constants.ErrorWarehouse);
             }else{
-                warehouseStockList = warehouseStockRepository.findByClientIdAndWarehouseIdAndSupplierProduct_Supplier_Id(user.getClientId(),warehouse.getId(),supplier.getId());
+                //warehouseStockList = warehouseStockRepository.findByClientIdAndWarehouseIdAndSupplierProduct_Supplier_Id(user.getClientId(),warehouse.getId(),supplier.getId());
             }
             try{
                 XSSFWorkbook workbook = new XSSFWorkbook();
@@ -289,12 +270,12 @@ public class TemplateImpl implements ITemplate {
                 supplierHeaderCell.setCellValue("PROVEEDOR");
                 supplierHeaderCell.setCellStyle(headerStyle2);
                 Cell supplierCell = supplierRow.createCell(1);
-                supplierCell.setCellValue(supplier.getBusinessName());
+                //supplierCell.setCellValue(supplier.getBusinessName());
                 Cell supplierHeaderCell2 = supplierRow.createCell(2);
                 supplierHeaderCell2.setCellValue("RUC");
                 supplierHeaderCell2.setCellStyle(headerStyle2);
                 Cell supplierCell2 = supplierRow.createCell(3);
-                supplierCell2.setCellValue(supplier.getRuc());
+                //supplierCell2.setCellValue(supplier.getRuc());
                 Cell supplierHeaderCell3 = supplierRow.createCell(4);
                 supplierHeaderCell3.setCellValue("ALMACEN");
                 supplierHeaderCell3.setCellStyle(headerStyle2);
@@ -341,25 +322,25 @@ public class TemplateImpl implements ITemplate {
                 XSSFSheet hiddenSheet1 = workbook.createSheet("Hidden1");
                 workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet1), true);
 
-                List<WarehouseStock> filteredWarehouseStockList = warehouseStockList.stream()
-                        .filter(data -> data.getQuantity() > 0)
-                        .toList();
+//                List<WarehouseStock> filteredWarehouseStockList = warehouseStockList.stream()
+//                        .filter(data -> data.getQuantity() > 0)
+//                        .toList();
 
                 int currentRow = 2;
-                for(WarehouseStock warehouseStock:filteredWarehouseStockList){
-                    String finalSku = iUtil.buildProductSku(warehouseStock.getSupplierProduct().getProduct());
-                    Row row = sheet.createRow(currentRow);
+//                for(WarehouseStock warehouseStock:filteredWarehouseStockList){
+//                    String finalSku = iUtil.buildProductSku(warehouseStock.getSupplierProduct().getProduct());
+//                    Row row = sheet.createRow(currentRow);
 //                    row.createCell(0).setCellValue(warehouseStock.getSupplierProduct().getSerial());
-                    row.createCell(1).setCellValue(finalSku);
-                    row.createCell(2).setCellValue(warehouseStock.getSupplierProduct().getProduct().getModel().getName());
-                    row.createCell(3).setCellValue(warehouseStock.getSupplierProduct().getProduct().getColor().getName());
-                    row.createCell(4).setCellValue(warehouseStock.getSupplierProduct().getProduct().getSize().getName());
-                    row.createCell(5).setCellValue(warehouseStock.getSupplierProduct().getSupplier().getBusinessName());
-                    row.createCell(6).setCellValue(warehouseStock.getQuantity());
-                    row.createCell(7).setCellValue(0);
-                    row.createCell(8).setCellValue("NO APLICA");
-                    currentRow++;
-                }
+//                    row.createCell(1).setCellValue(finalSku);
+//                    row.createCell(2).setCellValue(warehouseStock.getSupplierProduct().getProduct().getModel().getName());
+//                    row.createCell(3).setCellValue(warehouseStock.getSupplierProduct().getProduct().getColor().getName());
+//                    row.createCell(4).setCellValue(warehouseStock.getSupplierProduct().getProduct().getSize().getName());
+//                    row.createCell(5).setCellValue(warehouseStock.getSupplierProduct().getSupplier().getBusinessName());
+//                    row.createCell(6).setCellValue(warehouseStock.getQuantity());
+//                    row.createCell(7).setCellValue(0);
+//                    row.createCell(8).setCellValue("NO APLICA");
+//                    currentRow++;
+//                }
 
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 workbook.write(out);
@@ -378,7 +359,7 @@ public class TemplateImpl implements ITemplate {
             User user;
             Ordering ordering;
             List<OrderItem> orderItems;
-            List<SupplierProduct> supplierProductList = new ArrayList<>();
+            //List<SupplierProduct> supplierProductList = new ArrayList<>();
             try {
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
             }catch (RuntimeException e){
@@ -396,10 +377,10 @@ public class TemplateImpl implements ITemplate {
                 orderItems = orderItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(user.getClientId(),ordering.getId());
             }
             try {
-                orderItems.forEach(orderItem -> {
-                    List<SupplierProduct> supplierProductInnerList = supplierProductRepository.findAllByClientIdAndProductIdAndStatusTrue(user.getClientId(), orderItem.getProductId());
-                    supplierProductList.addAll(supplierProductInnerList);
-                });
+//                orderItems.forEach(orderItem -> {
+//                    List<SupplierProduct> supplierProductInnerList = supplierProductRepository.findAllByClientIdAndProductIdAndStatusTrue(user.getClientId(), orderItem.getProductId());
+//                    supplierProductList.addAll(supplierProductInnerList);
+//                });
                 XSSFWorkbook workbook = new XSSFWorkbook();
                 XSSFSheet sheet = workbook.createSheet("reposicion_inventario");
 
@@ -480,8 +461,8 @@ public class TemplateImpl implements ITemplate {
             try {
                 int records = 0;
                 for(OrderItem orderItem:orderItemList){
-                    List<SupplierProduct> supplierProductList = supplierProductRepository.findAllByClientIdAndProductIdAndStatusTrue(user.getClientId(), orderItem.getProductId());
-                    records += supplierProductList.size();
+                    //List<SupplierProduct> supplierProductList = supplierProductRepository.findAllByClientIdAndProductIdAndStatusTrue(user.getClientId(), orderItem.getProductId());
+                    //records += supplierProductList.size();
                     String finalSku = iUtil.buildProductSku(orderItem.getProduct());
 //                    orderStockMap.put(finalSku,supplierProductList.stream().map(SupplierProduct::getSerial).toList());
                 }
@@ -584,9 +565,9 @@ public class TemplateImpl implements ITemplate {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Ordering ordering;
-            OrderStock orderStock;
+            //OrderStock orderStock;
             Map<String,List<String>> orderStockMap = new HashMap<>();
-            List<OrderStockItem> orderStockItemList;
+            //List<OrderStockItem> orderStockItemList;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
             }catch (RuntimeException e){
@@ -601,23 +582,23 @@ public class TemplateImpl implements ITemplate {
             if(ordering==null){
                 throw new BadRequestExceptions(Constants.ErrorOrdering);
             }else{
-                orderStock = orderStockRepository.findByOrderIdAndClientId(ordering.getId(),user.getClientId());
+                //orderStock = orderStockRepository.findByOrderIdAndClientId(ordering.getId(),user.getClientId());
             }
-            if(orderStock==null){
-                throw new BadRequestExceptions(Constants.ErrorOrderStock);
-            }else{
-                orderStockItemList = orderStockItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(user.getClientId(),ordering.getId());
-            }
+//            if(orderStock==null){
+//                throw new BadRequestExceptions(Constants.ErrorOrderStock);
+//            }else{
+//                orderStockItemList = orderStockItemRepository.findAllByClientIdAndOrderIdAndStatusTrue(user.getClientId(),ordering.getId());
+//            }
 
             try {
                 int records = 0;
-                for(OrderStockItem orderStockItem : orderStockItemList){
-                    List<SupplierProduct> supplierProductList = supplierProductRepository.findAllByClientIdAndProductIdAndStatusTrue(user.getClientId(), orderStockItem.getOrderItem().getProductId());
-                    records +=  supplierProductList.size();
-                    String finalSku = iUtil.buildProductSku(orderStockItem.getSupplierProduct().getProduct());
+//                for(OrderStockItem orderStockItem : orderStockItemList){
+//                    List<SupplierProduct> supplierProductList = supplierProductRepository.findAllByClientIdAndProductIdAndStatusTrue(user.getClientId(), orderStockItem.getOrderItem().getProductId());
+//                    records +=  supplierProductList.size();
+//                    String finalSku = iUtil.buildProductSku(orderStockItem.getSupplierProduct().getProduct());
 //                    orderStockMap.put(finalSku,supplierProductList.stream().map(SupplierProduct::getSerial).toList());
-                }
-                List<OrderReturnType> orderReturnTypeList = orderReturnTypeRepository.findAllByStatusTrue();
+//                }
+//                List<OrderReturnType> orderReturnTypeList = orderReturnTypeRepository.findAllByStatusTrue();
 
                 XSSFWorkbook workbook = new XSSFWorkbook();
                 XSSFSheet sheet = workbook.createSheet("devolucion_pedido");
@@ -703,12 +684,12 @@ public class TemplateImpl implements ITemplate {
                     sheet.addValidationData(subcategoryValidation);
                 }
 
-                String[] orderReturnTypes = orderReturnTypeList.stream().map(OrderReturnType::getName).toList().toArray(new String[0]);
+//                String[] orderReturnTypes = orderReturnTypeList.stream().map(OrderReturnType::getName).toList().toArray(new String[0]);
                 DataValidationHelper validationHelperOrderType = sheet.getDataValidationHelper();
-                DataValidationConstraint constraint = validationHelperOrderType.createExplicitListConstraint(orderReturnTypes);
+//                DataValidationConstraint constraint = validationHelperOrderType.createExplicitListConstraint(orderReturnTypes);
                 CellRangeAddressList addressList = new CellRangeAddressList(1,records,3,3);
-                DataValidation dataValidation = validationHelperOrderType.createValidation(constraint,addressList);
-                sheet.addValidationData(dataValidation);
+//                DataValidation dataValidation = validationHelperOrderType.createValidation(constraint,addressList);
+//                sheet.addValidationData(dataValidation);
 
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 workbook.write(out);
@@ -1065,7 +1046,7 @@ public class TemplateImpl implements ITemplate {
         return CompletableFuture.supplyAsync(()->{
             User user;
             List<Product> products;
-            List<Supplier> suppliers;
+            //List<Supplier> suppliers;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
             }catch (RuntimeException e){
@@ -1076,14 +1057,14 @@ public class TemplateImpl implements ITemplate {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
                 products = productRepository.findAllByClientIdAndStatusTrue(user.getClientId());
-                suppliers = supplierRepository.findAllByClientIdAndStatusTrue(user.getClientId());
+                //suppliers = supplierRepository.findAllByClientIdAndStatusTrue(user.getClientId());
             }
             if(products.isEmpty()){
                 throw new BadRequestExceptions(Constants.ErrorProduct);
             }
-            if(suppliers.isEmpty()){
-                throw new BadRequestExceptions(Constants.ErrorSupplier);
-            }
+//            if(suppliers.isEmpty()){
+//                throw new BadRequestExceptions(Constants.ErrorSupplier);
+//            }
 
             try{
                 XSSFWorkbook workbook = new XSSFWorkbook();
@@ -1140,16 +1121,16 @@ public class TemplateImpl implements ITemplate {
                 DataValidation dataValidation = validationHelper.createValidation(constraint,addressList);
                 sheet.addValidationData(dataValidation);
                 // suppliers
-                String[] supplierList = suppliers.stream().map(Supplier::getBusinessName).toList().toArray(new String[0]);
+                //String[] supplierList = suppliers.stream().map(Supplier::getBusinessName).toList().toArray(new String[0]);
                 int rownum2 = 1;
                 Row row2;
                 Cell hiddenCell2;
                 row2 = hiddenSheet1.createRow(rownum2++);
                 int colnum2 = 0;
-                for (String key : supplierList) {
-                    hiddenCell2 = row2.createCell(colnum2++);
-                    hiddenCell2.setCellValue(key);
-                }
+//                for (String key : supplierList) {
+//                    hiddenCell2 = row2.createCell(colnum2++);
+//                    hiddenCell2.setCellValue(key);
+//                }
                 Name namedRange2 = workbook.createName();
                 namedRange2.setNameName("Suppliers");
                 String reference2 = "Hidden1!$A$2:" + iExcel.getExcelColumnReference('A',productList.length-1) + "$2";
