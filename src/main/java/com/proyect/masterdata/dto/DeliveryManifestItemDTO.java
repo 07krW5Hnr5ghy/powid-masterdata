@@ -15,7 +15,6 @@ public class DeliveryManifestItemDTO {
     private UUID id;
     private Integer quantity;
     private String skuProduct;
-    private String skuInventory;
     private Long orderNumber;
     private Long manifestNumber;
     private String district;

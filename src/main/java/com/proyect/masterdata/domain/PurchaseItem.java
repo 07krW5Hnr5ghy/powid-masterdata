@@ -50,8 +50,8 @@ public class PurchaseItem {
     @Column(name = "status")
     private Boolean status;
 
-    @Column(name = "supplier_product_id")
-    private UUID supplierProductId;
+    @Column(name = "product_id")
+    private UUID productId;
 
     @Column(name = "client_id")
     private UUID clientId;
@@ -67,8 +67,8 @@ public class PurchaseItem {
     private Client client;
 
     @ManyToOne
-    @JoinColumn(name = "supplier_product_id", columnDefinition = "supplierProductId", insertable = false, updatable = false)
-    private SupplierProduct supplierProduct;
+    @JoinColumn(name = "product_id", columnDefinition = "productId", insertable = false, updatable = false)
+    private Product product;
 
     @ManyToOne
     @JoinColumn(name = "purchase_id",columnDefinition = "purchaseId",insertable = false,updatable = false)

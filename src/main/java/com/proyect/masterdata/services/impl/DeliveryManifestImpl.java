@@ -124,7 +124,6 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 List<DeliveryManifestItemDTO> deliveryManifestItemList = deliveryManifestItemRepository.findAllById(deliveryManifest.getId())
                         .stream().map(deliveryManifestItem -> DeliveryManifestItemDTO.builder()
                                 .quantity(deliveryManifestItem.getQuantity())
-                                .skuInventory(iUtil.buildInventorySku(deliveryManifestItem.getSupplierProduct()))
                                 .skuProduct(iUtil.buildProductSku(deliveryManifestItem.getOrderItem().getProduct()))
                                 .orderNumber(deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber())
                                 .district(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getDistrict().getName())
@@ -242,8 +241,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 .district(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getDistrict().getName())
                                 .orderNumber(deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber())
                                 .quantity(deliveryManifestItem.getQuantity())
-                                .skuInventory(iUtil.buildInventorySku(deliveryManifestItem.getSupplierProduct()))
-                                .skuProduct(iUtil.buildProductSku(deliveryManifestItem.getSupplierProduct().getProduct()))
+                                .skuProduct(iUtil.buildProductSku(deliveryManifestItem.getProduct()))
                                 .management(deliveryManifestItem.getOrderItem().getOrdering().getManagementType().getName())
                                 .build()).toList();
                 return DeliveryManifestDTO.builder()

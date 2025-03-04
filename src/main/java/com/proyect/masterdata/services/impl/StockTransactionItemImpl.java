@@ -30,23 +30,23 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
 
     private final UserRepository userRepository;
     private final StockTransactionItemRepository stockTransactionItemRepository;
-    private final SupplierProductRepository supplierProductRepository;
     private final StockTransactionItemRepositoryCustom stockTransactionItemRepositoryCustom;
     private final StockTransactionRepository stockTransactionRepository;
     private final IAudit iAudit;
     private final WarehouseRepository warehouseRepository;
     private final StockTransactionTypeRepository stockTransactionTypeRepository;
     private final IUtil iUtil;
+    private final ProductRepository productRepository;
     @Override
     public ResponseSuccess save(StockTransaction stockTransaction,RequestStockTransactionItem requestStockTransactionItem, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
-        SupplierProduct supplierProduct;
+        Product product;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestStockTransactionItem.getSupplierProductId());
+            product = productRepository.findByIdAndStatusTrue(requestStockTransactionItem.getProductId());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -56,16 +56,14 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
 
-        if(supplierProduct == null){
-            throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
+        if(product == null){
+            throw new BadRequestExceptions(Constants.ErrorProduct);
         }
 
         try {
             StockTransactionItem newStockTransactionItem = stockTransactionItemRepository.save(StockTransactionItem.builder()
                             .stockTransaction(stockTransaction)
                             .stockTransactionId(stockTransaction.getId())
-                            .supplierProduct(supplierProduct)
-                            .supplierProductId(supplierProduct.getId())
                             .registrationDate(OffsetDateTime.now())
                             .client(user.getClient())
                             .clientId(user.getClientId())
@@ -75,7 +73,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
             iAudit.save(
                     "ADD_STOCK_TRANSACTION_ITEM",
                     "PRODUCTO DE INVENTARIO "+
-                            iUtil.buildInventorySku(newStockTransactionItem.getSupplierProduct())+
+                            iUtil.buildProductSku(newStockTransactionItem.getProduct())+
                             " PARA TRANSACCION DE STOCK "+
                             newStockTransactionItem.getStockTransaction().getSerial()+
                             " CREADO.",
@@ -95,11 +93,11 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
     public CompletableFuture<ResponseSuccess> saveAsync(StockTransaction stockTransaction, RequestStockTransactionItem requestStockTransactionItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            SupplierProduct supplierProduct;
+            Product product;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                supplierProduct = supplierProductRepository.findByIdAndStatusTrue(requestStockTransactionItem.getSupplierProductId());
+                product = productRepository.findByIdAndStatusTrue(requestStockTransactionItem.getProductId());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -109,7 +107,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
-            if(supplierProduct == null){
+            if(product == null){
                 throw new BadRequestExceptions(Constants.ErrorSupplierProduct);
             }
 
@@ -117,8 +115,8 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                 StockTransactionItem newStockTransactionItem = stockTransactionItemRepository.save(StockTransactionItem.builder()
                         .stockTransaction(stockTransaction)
                         .stockTransactionId(stockTransaction.getId())
-                        .supplierProduct(supplierProduct)
-                        .supplierProductId(supplierProduct.getId())
+                        .product(product)
+                        .productId(product.getId())
                         .registrationDate(OffsetDateTime.now())
                         .client(user.getClient())
                         .clientId(user.getClientId())
@@ -128,7 +126,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                 iAudit.save(
                         "ADD_STOCK_TRANSACTION_ITEM",
                         "PRODUCTO DE INVENTARIO "+
-                                iUtil.buildInventorySku(newStockTransactionItem.getSupplierProduct())+
+                                iUtil.buildProductSku(newStockTransactionItem.getProduct())+
                                 " PARA TRANSACCION DE STOCK "+
                                 newStockTransactionItem.getStockTransaction().getSerial()+
                                 " CREADO.",
@@ -213,7 +211,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                     .map(stockTransactionItem -> StockTransactionItemDTO.builder()
                             .quantity(stockTransactionItem.getQuantity())
                             .warehouse(stockTransactionItem.getStockTransaction().getWarehouse().getName())
-                            .supplierProduct(iUtil.buildInventorySku(stockTransactionItem.getSupplierProduct()))
+                            .supplierProduct(iUtil.buildProductSku(stockTransactionItem.getProduct()))
                             .serial(stockTransactionItem.getStockTransaction().getSerial())
                             .transactionType(stockTransactionItem.getStockTransaction().getStockTransactionType().getName())
                             .registrationDate(stockTransactionItem.getRegistrationDate())
@@ -250,7 +248,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                     .map(stockTransactionItem -> StockTransactionItemDTO.builder()
                             .quantity(stockTransactionItem.getQuantity())
                             .warehouse(stockTransactionItem.getStockTransaction().getWarehouse().getName())
-                            .supplierProduct(iUtil.buildInventorySku(stockTransactionItem.getSupplierProduct()))
+                            .supplierProduct(iUtil.buildProductSku(stockTransactionItem.getProduct()))
                             .serial(stockTransactionItem.getStockTransaction().getSerial())
                             .transactionType(stockTransactionItem.getStockTransaction().getStockTransactionType().getName())
                             .registrationDate(stockTransactionItem.getRegistrationDate())

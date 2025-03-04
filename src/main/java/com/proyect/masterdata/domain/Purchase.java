@@ -57,9 +57,6 @@ public class Purchase {
     @Column(name = "purchase_document_id")
     private UUID purchaseDocumentId;
 
-    @Column(name = "supplier_id")
-    private UUID supplierId;
-
     @Column(name = "user_id")
     private UUID userId;
 
@@ -77,10 +74,6 @@ public class Purchase {
     @ManyToOne
     @JoinColumn(name = "purchase_document_id",columnDefinition = "purchaseDocumentId",insertable = false,updatable = false)
     private PurchaseDocument purchaseDocument;
-
-    @ManyToOne
-    @JoinColumn(name = "supplier_id",columnDefinition = "supplierId", insertable = false, updatable = false)
-    private Supplier supplier;
 
     @ManyToOne
     @JoinColumn(name = "purchase_type_id",columnDefinition = "purchaseTypeId",insertable = false,updatable = false)
