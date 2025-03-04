@@ -61,10 +61,6 @@ public class Seeder implements CommandLineRunner {
         private final ICourier iCourier;
         private final ICancellationReason iCancellationReason;
         private final ICancelledOrder iCancelledOrder;
-<<<<<<< HEAD
-=======
-        private final IPurchaseType iPurchaseType;
->>>>>>> 0ceaf282c4cc63fc1280064498b8b7e9b3e0ca9a
         private final IOrderItem iOrderItem;
         private final IPaymentGateway iPaymentGateway;
         private final IMembershipState iMembershipState;
@@ -1365,15 +1361,6 @@ public class Seeder implements CommandLineRunner {
                         iOrderPaymentMethod.save("canje",adminUser.getUsername());
                         iOrderPaymentMethod.save("interbank",adminUser.getUsername());
                         iOrderPaymentMethod.save("banco de la nacion",adminUser.getUsername());
-
-<<<<<<< HEAD
-=======
-                        // purchase type
-                        iPurchaseType.save("compra",adminUser.getUsername());
-                        iPurchaseType.save("devolucion",adminUser.getUsername());
-                        iPurchaseType.save("restockaje",adminUser.getUsername());
-
->>>>>>> 0ceaf282c4cc63fc1280064498b8b7e9b3e0ca9a
                         // cancellation reason
                         iCancellationReason.save("No hay stock",adminUser.getUsername());
                         iCancellationReason.save("Demora en entrega",adminUser.getUsername());

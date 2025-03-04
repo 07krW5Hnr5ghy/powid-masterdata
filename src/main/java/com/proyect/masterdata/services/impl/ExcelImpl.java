@@ -28,17 +28,9 @@ import static org.apache.poi.ss.usermodel.CellType.STRING;
 @Log4j2
 public class ExcelImpl implements IExcel {
     private final UserRepository userRepository;
-<<<<<<< HEAD
     private final SupplyOrderRepository supplyOrderRepository;
     private final WarehouseRepository warehouseRepository;
     private final SupplyOrderItemRepository supplyOrderItemRepository;
-=======
-    private final PurchaseDocumentRepository purchaseDocumentRepository;
-    private final PurchaseRepository purchaseRepository;
-    private final PurchaseTypeRepository purchaseTypeRepository;
-    private final WarehouseRepository warehouseRepository;
-    private final PurchaseItemRepository purchaseItemRepository;
->>>>>>> 0ceaf282c4cc63fc1280064498b8b7e9b3e0ca9a
     private final IStockTransaction iStockTransaction;
     private final IWarehouseStock iWarehouseStock;
     private final IGeneralStock iGeneralStock;
@@ -61,13 +53,7 @@ public class ExcelImpl implements IExcel {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Warehouse warehouse;
-<<<<<<< HEAD
             SupplyOrder supplyOrder;
-=======
-            Purchase purchase;
-            PurchaseType purchaseType = null;
-            PurchaseDocument purchaseDocument;
->>>>>>> 0ceaf282c4cc63fc1280064498b8b7e9b3e0ca9a
             try {
                 user = userRepository.findByUsernameAndStatusTrue(requestSupplyOrderExcel.getTokenUser().toUpperCase());
                 warehouse = warehouseRepository.findByNameAndStatusTrue(requestSupplyOrderExcel.getWarehouse().toUpperCase());
@@ -101,11 +87,8 @@ public class ExcelImpl implements IExcel {
                 List<RequestStockTransactionItem> stockTransactionItemList = new ArrayList<>();
                 List<RequestSupplyOrderItem> requestSupplyOrderItemList = new ArrayList<>();
                 for(Row row:sheet){
-<<<<<<< HEAD
                     RequestSupplyOrderItem requestSupplyOrderItem = RequestSupplyOrderItem.builder().build();
-=======
-                    RequestPurchaseItem requestPurchaseItem = RequestPurchaseItem.builder().build();
->>>>>>> 0ceaf282c4cc63fc1280064498b8b7e9b3e0ca9a
+
                     int ii = 0;
                     for(Cell cell:row){
                         if(i>=2 && (cell.getCellType() == STRING) && (ii == 4)){
@@ -166,7 +149,6 @@ public class ExcelImpl implements IExcel {
                         throw new BadRequestExceptions(Constants.ErrorPurchaseDuplicateItem);
                     }
                 }
-<<<<<<< HEAD
 //                SupplyOrder newSupplyOrder = supplyOrderRepository.save(SupplyOrder.builder()
 //                        .ref(requestSupplyOrderExcel.getSerial().toUpperCase())
 //                        .status(true)
@@ -186,27 +168,6 @@ public class ExcelImpl implements IExcel {
                 int j = 0;
                 for(Row row: sheet){
                     SupplyOrderItem supplyOrderItem = SupplyOrderItem.builder().build();
-=======
-                Purchase newPurchase = purchaseRepository.save(com.proyect.masterdata.domain.Purchase.builder()
-                        .ref(requestPurchaseExcel.getSerial().toUpperCase())
-                        .status(true)
-                        .registrationDate(OffsetDateTime.now())
-                        .updateDate(OffsetDateTime.now())
-                        .purchaseDocument(purchaseDocument)
-                        .purchaseDocumentId(purchaseDocument.getId())
-                        .warehouse(warehouse)
-                        .warehouseId(warehouse.getId())
-                        .purchaseType(purchaseType)
-                        .purchaseTypeId(purchaseType.getId())
-                        .client(user.getClient())
-                        .clientId(user.getClientId())
-                        .user(user)
-                        .userId(user.getId())
-                        .build());
-                int j = 0;
-                for(Row row: sheet){
-                    PurchaseItem purchaseItem = PurchaseItem.builder().build();
->>>>>>> 0ceaf282c4cc63fc1280064498b8b7e9b3e0ca9a
                     RequestStockTransactionItem requestStockTransactionItem = RequestStockTransactionItem.builder().build();
                     int ji = 0;
                     for(Cell cell:row){

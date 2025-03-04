@@ -1,12 +1,7 @@
 package com.proyect.masterdata.controller;
 
-<<<<<<< HEAD:src/main/java/com/proyect/masterdata/controller/SupplyOrderItemController.java
 import com.proyect.masterdata.dto.SupplyOrderItemDTO;
 import com.proyect.masterdata.dto.request.RequestSupplyOrderItem;
-=======
-import com.proyect.masterdata.dto.PurchaseItemDTO;
-import com.proyect.masterdata.dto.request.RequestPurchaseItem;
->>>>>>> 0ceaf282c4cc63fc1280064498b8b7e9b3e0ca9a:src/main/java/com/proyect/masterdata/controller/PurchaseItemController.java
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.ISupplyOrderItem;
@@ -25,7 +20,6 @@ import java.util.concurrent.ExecutionException;
 @CrossOrigin({ "*" })
 @RequestMapping("supplyOrder-item")
 @AllArgsConstructor
-<<<<<<< HEAD:src/main/java/com/proyect/masterdata/controller/SupplyOrderItemController.java
 public class SupplyOrderItemController {
     private final ISupplyOrderItem iSupplyOrderItem;
     @PostMapping()
@@ -35,17 +29,6 @@ public class SupplyOrderItemController {
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, InterruptedException, ExecutionException {
         CompletableFuture<ResponseSuccess> result = iSupplyOrderItem.saveAsync(purchaseId, requestSupplyOrderItem,tokenUser);
-=======
-public class PurchaseItemController {
-    private final IPurchaseItem iPurchaseItem;
-    @PostMapping()
-    public ResponseEntity<ResponseSuccess> save(
-            @RequestParam("purchaseId") UUID purchaseId,
-            @RequestBody() RequestPurchaseItem requestPurchaseItem,
-            @RequestParam("tokenUser") String tokenUser
-    ) throws BadRequestExceptions, InterruptedException, ExecutionException {
-        CompletableFuture<ResponseSuccess> result = iPurchaseItem.saveAsync(purchaseId,requestPurchaseItem,tokenUser);
->>>>>>> 0ceaf282c4cc63fc1280064498b8b7e9b3e0ca9a:src/main/java/com/proyect/masterdata/controller/PurchaseItemController.java
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
     @GetMapping("pagination")

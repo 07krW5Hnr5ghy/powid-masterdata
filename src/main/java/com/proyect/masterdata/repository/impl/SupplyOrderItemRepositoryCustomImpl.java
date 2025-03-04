@@ -38,18 +38,10 @@ public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepos
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<SupplyOrderItem> criteriaQuery = criteriaBuilder.createQuery(SupplyOrderItem.class);
-
-<<<<<<< HEAD:src/main/java/com/proyect/masterdata/repository/impl/SupplyOrderItemRepositoryCustomImpl.java
         Root<SupplyOrderItem> itemRoot = criteriaQuery.from(SupplyOrderItem.class);
         Join<SupplyOrderItem, SupplyOrder> purchasePurchaseItemJoin = itemRoot.join("supplyOrder");
         Join<SupplyOrderItem, Product> purchaseItemProductJoin = purchasePurchaseItemJoin.join("product");
         Join<SupplyOrder, Warehouse> purchaseWarehouseJoin = purchasePurchaseItemJoin.join("warehouse");
-=======
-        Root<PurchaseItem> itemRoot = criteriaQuery.from(PurchaseItem.class);
-        Join<PurchaseItem, Purchase> purchasePurchaseItemJoin = itemRoot.join("purchase");
-        Join<PurchaseItem, Product> purchaseItemProductJoin = purchasePurchaseItemJoin.join("product");
-        Join<Purchase, Warehouse> purchaseWarehouseJoin = purchasePurchaseItemJoin.join("warehouse");
->>>>>>> 0ceaf282c4cc63fc1280064498b8b7e9b3e0ca9a:src/main/java/com/proyect/masterdata/repository/impl/PurchaseItemRepositoryCustomImpl.java
         Join<Product, Model> productModelJoin = purchaseItemProductJoin.join("model");
 
         criteriaQuery.select(itemRoot);
@@ -101,17 +93,10 @@ public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepos
             String warehouse,
             String model,
             CriteriaBuilder criteriaBuilder,
-<<<<<<< HEAD:src/main/java/com/proyect/masterdata/repository/impl/SupplyOrderItemRepositoryCustomImpl.java
             Root<SupplyOrderItem> itemRoot,
             Join<SupplyOrderItem, SupplyOrder> purchaseItemPurchaseJoin,
             Join<Product,Model> productModelJoin,
             Join<SupplyOrder,Warehouse> purchaseWarehouseJoin) {
-=======
-            Root<PurchaseItem> itemRoot,
-            Join<PurchaseItem, Purchase> purchaseItemPurchaseJoin,
-            Join<Product,Model> productModelJoin,
-            Join<Purchase,Warehouse> purchaseWarehouseJoin) {
->>>>>>> 0ceaf282c4cc63fc1280064498b8b7e9b3e0ca9a:src/main/java/com/proyect/masterdata/repository/impl/PurchaseItemRepositoryCustomImpl.java
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -179,17 +164,10 @@ public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepos
             String model) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-<<<<<<< HEAD:src/main/java/com/proyect/masterdata/repository/impl/SupplyOrderItemRepositoryCustomImpl.java
         Root<SupplyOrderItem> itemRoot = criteriaQuery.from(SupplyOrderItem.class);
         Join<SupplyOrderItem, SupplyOrder> purchasePurchaseItemJoin = itemRoot.join("supplyOrder");
         Join<SupplyOrderItem, Product> purchaseItemProductJoin = purchasePurchaseItemJoin.join("product");
         Join<SupplyOrder, Warehouse> purchaseWarehouseJoin = purchasePurchaseItemJoin.join("warehouse");
-=======
-        Root<PurchaseItem> itemRoot = criteriaQuery.from(PurchaseItem.class);
-        Join<PurchaseItem, Purchase> purchasePurchaseItemJoin = itemRoot.join("purchase");
-        Join<PurchaseItem, Product> purchaseItemProductJoin = purchasePurchaseItemJoin.join("product");
-        Join<Purchase, Warehouse> purchaseWarehouseJoin = purchasePurchaseItemJoin.join("warehouse");
->>>>>>> 0ceaf282c4cc63fc1280064498b8b7e9b3e0ca9a:src/main/java/com/proyect/masterdata/repository/impl/PurchaseItemRepositoryCustomImpl.java
         Join<Product, Model> productModelJoin = purchaseItemProductJoin.join("model");
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
