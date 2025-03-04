@@ -1,6 +1,6 @@
 package com.proyect.masterdata.services;
 
-import com.proyect.masterdata.dto.request.RequestPurchaseExcel;
+import com.proyect.masterdata.dto.request.RequestSupplyOrderExcel;
 import com.proyect.masterdata.dto.request.RequestStockReturnExcel;
 import com.proyect.masterdata.dto.request.RequestStockTransferExcel;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -12,7 +12,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public interface IExcel {
-    CompletableFuture<ResponseSuccess> purchase(RequestPurchaseExcel requestPurchaseExcel, MultipartFile multipartFile) throws BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> purchase(RequestSupplyOrderExcel requestSupplyOrderExcel, MultipartFile multipartFile) throws BadRequestExceptions;
     CompletableFuture<ResponseSuccess> stockTransfer(RequestStockTransferExcel requestStockTransferExcel,MultipartFile multipartFile) throws BadRequestExceptions;
     CompletableFuture<ResponseSuccess> stockReturn(RequestStockReturnExcel requestStockReturnExcel,MultipartFile multipartFile) throws BadRequestExceptions;
     CompletableFuture<ResponseSuccess> stockReplenishment(

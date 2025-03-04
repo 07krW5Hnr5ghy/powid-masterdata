@@ -22,7 +22,7 @@ import java.util.concurrent.ExecutionException;
 public class TemplateController {
     private final ITemplate iTemplate;
 
-    @GetMapping("purchase")
+    @GetMapping("supplyOrder")
     private ResponseEntity<byte[]> purchase(
             @RequestParam("ruc") String ruc,
             @RequestParam("user") String user

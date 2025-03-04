@@ -1880,16 +1880,16 @@ http://localhost:8080/masterdata/province/department?department=amazonas
 
 http://localhost:8080/masterdata/province?name=chachapoyas&department=amazonas&user=admin1
 
-### GET /purchase protected
+### GET /supplyOrder protected
 
-- Description : list all active purchases
+- Description : list all active supplyOrders
 
 - Request : none
 
 - Parameters : 
 
-1. serial : filter purchases by serial
-2. user : filter purchases by the client of the user (required)
+1. serial : filter supplyOrders by serial
+2. user : filter supplyOrders by the client of the user (required)
 3. sort : sort the values the only valid values are ASC and DESC, default is ASC
 4. sortColumn : select the value that sorts the list in this case name or user
 5. pageNumber : the page number to select of the list the first is page zero (0) (required)
@@ -1925,19 +1925,19 @@ http://localhost:8080/masterdata/province?name=chachapoyas&department=amazonas&u
 
 - Example : 
 
-http://localhost:8080/masterdata/purchase?user=gjimenez&pageNumber=0&pageSize=2&serial=AA00001
+http://localhost:8080/masterdata/supplyOrder?user=gjimenez&pageNumber=0&pageSize=2&serial=AA00001
 
-### GET /purchase-orderItem protected
+### GET /supplyOrder-orderItem protected
 
-- Description : list all active purchase items
+- Description : list all active supplyOrder items
 
 - Request : none
 
 - Parameters :
 
-1. serial : filter purchase items by serial
-2. user : filter purchase items by the client of the user (required)
-3. supplierProductSerial : filter purchase items by supplier product serial
+1. serial : filter supplyOrder items by serial
+2. user : filter supplyOrder items by the client of the user (required)
+3. supplierProductSerial : filter supplyOrder items by supplier product serial
 4. sort : sort the values the only valid values are ASC and DESC, default is ASC
 5. sortColumn : select the value that sorts the list in this case name or user
 6. pageNumber : the page number to select of the list the first is page zero (0) (required)
@@ -1976,12 +1976,12 @@ http://localhost:8080/masterdata/purchase?user=gjimenez&pageNumber=0&pageSize=2&
 
 - Example :
 
-http://localhost:8080/masterdata/purchase-orderItem?user=gjimenez&pageNumber=0&pageSize=2
+http://localhost:8080/masterdata/supplyOrder-orderItem?user=gjimenez&pageNumber=0&pageSize=2
 
 
-### POST /purchaseItem protected
+### POST /supplyOrderItem protected
 
-- Description : add one purchaseItem to the database
+- Description : add one supplyOrderItem to the database
 
 - Request : 
 
@@ -1995,8 +1995,8 @@ http://localhost:8080/masterdata/purchase-orderItem?user=gjimenez&pageNumber=0&p
 
 - Parameters : 
 
-1. serial : serial of the purchaseItem ordering
-2. tokenUser : username of the user who creates the purchaseItem
+1. serial : serial of the supplyOrderItem ordering
+2. tokenUser : username of the user who creates the supplyOrderItem
 
 - Response : 
 
@@ -2008,7 +2008,7 @@ http://localhost:8080/masterdata/purchase-orderItem?user=gjimenez&pageNumber=0&p
 
 - Example :
 
-http://localhost:8080/masterdata/purchase-orderItem?serial=AA00001&tokenUser=gjimenez
+http://localhost:8080/masterdata/supplyOrder-orderItem?serial=AA00001&tokenUser=gjimenez
 
 [
     {
@@ -2019,17 +2019,17 @@ http://localhost:8080/masterdata/purchase-orderItem?serial=AA00001&tokenUser=gji
     ... more items
 ]
 
-### GET /purchase-orderItem protected
+### GET /supplyOrder-orderItem protected
 
-- Description : list all purchase items
+- Description : list all supplyOrder items
 
 - Request : none
 
 - Parameters : 
 
-1. purchaseSerial : filter purchase items by purchase serial
-2. user : filter purchase items by the client of the user (required)
-3. supplierProductSerial : filter purchase items by supplier product serial
+1. purchaseSerial : filter supplyOrder items by supplyOrder serial
+2. user : filter supplyOrder items by the client of the user (required)
+3. supplierProductSerial : filter supplyOrder items by supplier product serial
 4. sort : sort the values the only valid values are ASC and DESC, default is ASC
 5. sortColumn : select the value that sorts the list in this case name or user
 6. pageNumber : the page number to select of the list the first is page zero (0) (required)
@@ -2069,20 +2069,20 @@ http://localhost:8080/masterdata/purchase-orderItem?serial=AA00001&tokenUser=gji
 
 - Example : 
 
-http://localhost:8080/masterdata/purchase-orderItem?user=gjimenez&pageNumber=0&pageSize=2&purchaseSerial=AA00001&supplierProductSerial=A00001A
+http://localhost:8080/masterdata/supplyOrder-orderItem?user=gjimenez&pageNumber=0&pageSize=2&purchaseSerial=AA00001&supplierProductSerial=A00001A
 
-### GET /purchase protected
+### GET /supplyOrder protected
 
-- Description : list all active purchases
+- Description : list all active supplyOrders
 
 - Request : none
 
 - Parameters :
 
-1. purchaseSerial : filter purchases by purchase serial
-2. warehouse : filter purchases by warehouse
-3. user : filter purchases by the client of the user (required)
-4. purchaseType : filter purchases by purchase type
+1. purchaseSerial : filter supplyOrders by supplyOrder serial
+2. warehouse : filter supplyOrders by warehouse
+3. user : filter supplyOrders by the client of the user (required)
+4. supplyOrderType : filter supplyOrders by supplyOrder type
 5. sort : sort the values the only valid values are ASC and DESC, default is ASC
 6. sortColumn : select the value that sorts the list in this case name or user
 7. pageNumber : the page number to select of the list the first is page zero (0) (required)
@@ -2095,7 +2095,7 @@ http://localhost:8080/masterdata/purchase-orderItem?user=gjimenez&pageNumber=0&p
         {
             "purchaseSerial": "AA00001",
             "warehouse": "LUMINOUS",
-            "purchaseType": "EMBARQUE",
+            "supplyOrderType": "EMBARQUE",
             "registrationDate": "2024-02-14T01:12:22.576+00:00"
         }
     ],
@@ -2120,24 +2120,24 @@ http://localhost:8080/masterdata/purchase-orderItem?user=gjimenez&pageNumber=0&p
 
 - Example :
 
-http://localhost:8080/masterdata/purchase?user=gjimenez&pageNumber=0&pageSize=2&warehouse=luminous&purchaseType=embarque
+http://localhost:8080/masterdata/supplyOrder?user=gjimenez&pageNumber=0&pageSize=2&warehouse=luminous&supplyOrderType=embarque
 
-### POST /purchase protected
+### POST /supplyOrder protected
 
-- Description : add one purchase to the database
+- Description : add one supplyOrder to the database
 
 - Request : 
 
 {
-    "purchaseSerial":"serial of the purchase of the purchase goods",
-    "warehouse":"name of the purchase warehouse",
-    "purchaseType":"name of the purchase type",
+    "purchaseSerial":"serial of the supplyOrder of the supplyOrder goods",
+    "warehouse":"name of the supplyOrder warehouse",
+    "supplyOrderType":"name of the supplyOrder type",
     "requestPurchaseList": [
         {
             "quantity": number of units,
             "observations": observation of the state of the goods,
             "supplierProductSerial": serial of the provider product,
-            "purchaseSerial": serial of the purchaseItem ordering of the goods
+            "purchaseSerial": serial of the supplyOrderItem ordering of the goods
         }
         ... more items
     ]
@@ -2145,7 +2145,7 @@ http://localhost:8080/masterdata/purchase?user=gjimenez&pageNumber=0&pageSize=2&
 
 - Parameters : 
 
-1. tokenUser : username of who register the purchase
+1. tokenUser : username of who register the supplyOrder
 
 - Response : 
 
@@ -2157,7 +2157,7 @@ http://localhost:8080/masterdata/purchase?user=gjimenez&pageNumber=0&pageSize=2&
 
 - Example :
 
-http://localhost:8080/masterdata/purchase-orderItem?serial=SA00001&warehouse=luminous&tokenUser=gjimenez
+http://localhost:8080/masterdata/supplyOrder-orderItem?serial=SA00001&warehouse=luminous&tokenUser=gjimenez
 
 [
     {
@@ -2169,9 +2169,9 @@ http://localhost:8080/masterdata/purchase-orderItem?serial=SA00001&warehouse=lum
     ... more items
 ]
 
-### GET /purchase-type protected
+### GET /supplyOrder-type protected
 
-- Description : list active purchase types
+- Description : list active supplyOrder types
 
 - Request : none
 
@@ -2180,23 +2180,23 @@ http://localhost:8080/masterdata/purchase-orderItem?serial=SA00001&warehouse=lum
 - Response :
 
 [
-    "name of the purchase type"
+    "name of the supplyOrder type"
 ]
 
 - Example :
 
-http://localhost:8080/masterdata/purchase-type
+http://localhost:8080/masterdata/supplyOrder-type
 
-### POST /purchase-type protected
+### POST /supplyOrder-type protected
 
-- Description : add one purchase type to the database
+- Description : add one supplyOrder type to the database
 
 - Request : none
 
 - Parameters :
 
-1. name : name of the purchase type
-2. tokenUser : username of the user who creates the purchase type
+1. name : name of the supplyOrder type
+2. tokenUser : username of the user who creates the supplyOrder type
 
 - Response :
 
@@ -2208,7 +2208,7 @@ http://localhost:8080/masterdata/purchase-type
 
 - Example :
 
-http://localhost:8080/masterdata/purchase-type?name=embarque&tokenUser=admin1
+http://localhost:8080/masterdata/supplyOrder-type?name=embarque&tokenUser=admin1
 
 ### GET /size-type protected
 
@@ -2501,7 +2501,7 @@ http://localhost:8080/masterdata/stock-replenishment-item?user=gjimenez&pageNumb
 - Parameter :
 
 1. user : name of the user who is listing the stock return (required)
-2. purchaseSerial : serial purchaseItem of the return stock
+2. purchaseSerial : serial supplyOrderItem of the return stock
 3. sort : sort the values the only valid values are ASC and DESC, default is ASC
 4. sortColumn : select the value that sorts the list in this case name or user
 5. pageNumber : the page number to select of the list the first is page zero (0) (required)
@@ -2555,7 +2555,7 @@ http://localhost:8080/masterdata/stock-return?user=gjimenez&pageNumber=0&pageSiz
 
 - Parameters :
 
-1. purchaseSerial : serial of the purchaseItem of the returned stock
+1. purchaseSerial : serial of the supplyOrderItem of the returned stock
 2. tokenUser : username of the user who register the return
 
 - Response :
@@ -2587,7 +2587,7 @@ http://localhost:8080/masterdata/stock-return?purchaseSerial=AA00001&tokenUser=g
 - Parameter :
 
 1. user : name of the user who is listing the stock return (required)
-2. purchaseSerial : serial purchaseItem of the return stock
+2. purchaseSerial : serial supplyOrderItem of the return stock
 3. supplierProductSerial : serial of the supplier product
 4. sort : sort the values the only valid values are ASC and DESC, default is ASC
 5. sortColumn : select the value that sorts the list in this case name or user
@@ -2858,7 +2858,7 @@ http://localhost:8080/masterdata/stock-transfer?user=gjimenez&pageNumber=0&pageS
 
 - Parameters :
 
-1. purchaseSerial : serial of the purchaseItem of the returned stock
+1. purchaseSerial : serial of the supplyOrderItem of the returned stock
 2. tokenUser : username of the user who register the return
 
 - Response :
@@ -3376,7 +3376,7 @@ http://localhost:8080/masterdata/supplier-product?user=gjimenez&pageNumber=0&pag
     "serial": serial number of the supplier product,
     "productSku": sku of the product,
     "supplierRuc": ruc of the supplier,
-    "purchasePrice": price of purchaseItem per unit
+    "purchasePrice": price of supplyOrderItem per unit
 }
 
 - Parameters : 
@@ -3413,7 +3413,7 @@ http://localhost:8080/masterdata/supplier-product?tokenUser=gjimenez
         "serial": serial number of the supplier product,
         "productSku": sku of the product,
         "supplierRuc": ruc of the supplier,
-        "purchasePrice": price of purchaseItem per unit
+        "purchasePrice": price of supplyOrderItem per unit
     },
     ... more suppliers
 ]

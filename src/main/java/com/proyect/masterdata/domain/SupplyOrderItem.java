@@ -25,8 +25,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tablePurchaseItem, schema = Constants.schemaStock)
-public class PurchaseItem {
+@Table(name = Constants.tableSupplyOrderItem, schema = Constants.schemaStock)
+public class SupplyOrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -72,7 +72,7 @@ public class PurchaseItem {
 
     @ManyToOne
     @JoinColumn(name = "purchase_id",columnDefinition = "purchaseId",insertable = false,updatable = false)
-    private Purchase purchase;
+    private SupplyOrder supplyOrder;
 
     @ManyToOne()
     @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)

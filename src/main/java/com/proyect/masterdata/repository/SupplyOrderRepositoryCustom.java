@@ -1,21 +1,20 @@
 package com.proyect.masterdata.repository;
 
-import com.proyect.masterdata.domain.PurchaseItem;
+import com.proyect.masterdata.domain.SupplyOrder;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface PurchaseItemRepositoryCustom {
-    Page<PurchaseItem> searchForPurchaseItem(
+public interface SupplyOrderRepositoryCustom {
+    Page<SupplyOrder> searchForSupplyOrder(
             UUID clientId,
-            Long purchaseNumber,
+            String ref,
             String warehouse,
-            String model,
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize);
+            Integer pageSize,
+            Boolean status);
 }

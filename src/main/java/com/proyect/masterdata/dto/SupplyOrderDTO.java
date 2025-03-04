@@ -6,16 +6,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
-import java.util.Date;
-import java.util.UUID;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class OrderReturnDTO {
-    private UUID orderId;
+public class SupplyOrderDTO {
+    private String ref;
+    private Long purchaseNumber;
+    private String purchaseDocument;
     private String warehouse;
+    private String purchaseType;
     private OffsetDateTime registrationDate;
-    private OffsetDateTime updateDate;
+    private OffsetDateTime deliveryDate;
+    private String purchasePaymentType;
 }
