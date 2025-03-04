@@ -122,10 +122,10 @@ public class PurchaseItemImpl implements IPurchaseItem {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
-            if(product == null){
+            if(product == null) {
                 throw new BadRequestExceptions(Constants.ErrorProduct);
             }
-
+            
             if(purchase==null){
                 throw new BadRequestExceptions(Constants.ErrorPurchase);
             }else{
