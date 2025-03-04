@@ -28,7 +28,7 @@ public class SubCategoryProductController {
     private final ISubCategoryProduct iSubCategoryProduct;
     @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:CATEGORY_POST')")
-    public ResponseEntity<ResponseSuccess> save(RequestSubCategoryProduct requestSubCategoryProduct) throws BadRequestExceptions, ExecutionException, InterruptedException {
+    public ResponseEntity<ResponseSuccess> save(@RequestBody RequestSubCategoryProduct requestSubCategoryProduct) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseSuccess> result = iSubCategoryProduct.saveAsync(requestSubCategoryProduct);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
