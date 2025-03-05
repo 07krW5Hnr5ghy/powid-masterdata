@@ -28,13 +28,22 @@ public class WarehouseOutputController {
         CompletableFuture<ResponseSuccess> result = iWarehouseOutput.save(requestWarehouseOutput);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-    @PutMapping()
+    @DeleteMapping()
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:WAREHOUSE_POST')")
     public ResponseEntity<ResponseDelete> close(
             @RequestParam("username") String username,
             @RequestParam("warehouseOutputId") UUID warehouseOutputId
             ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseDelete> result = iWarehouseOutput.close(username,warehouseOutputId);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+    @PutMapping()
+    //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:WAREHOUSE_POST')")
+    public ResponseEntity<ResponseSuccess> reactivate(
+            @RequestParam("username") String username,
+            @RequestParam("warehouseOutputId") UUID warehouseOutputId
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iWarehouseOutput.reactivate(username,warehouseOutputId);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 }

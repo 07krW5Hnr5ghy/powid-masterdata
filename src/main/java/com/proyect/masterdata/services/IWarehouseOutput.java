@@ -12,4 +12,5 @@ import java.util.concurrent.CompletableFuture;
 public interface IWarehouseOutput {
     CompletableFuture<ResponseSuccess> save(RequestWarehouseOutput requestWarehouseOutput) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<ResponseDelete> close(String username, UUID warehouseOutputId) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> reactivate(String username, UUID warehouseOutputId) throws BadRequestExceptions,InternalErrorExceptions;
 }

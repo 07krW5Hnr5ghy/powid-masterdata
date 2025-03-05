@@ -125,4 +125,35 @@ public class WarehouseOutputImpl implements IWarehouseOutput {
             }
         });
     }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> reactivate(String username, UUID warehouseOutputId) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            WarehouseOutput warehouseOutput;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                warehouseOutput = warehouseOutputRepository.findById(warehouseOutputId).orElse(null);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+            if(warehouseOutput==null){
+                throw new BadRequestExceptions(Constants.ErrorWarehouseOutput);
+            }
+            try {
+                warehouseOutput.setStatus(true);
+                warehouseOutput.setUpdateDate(OffsetDateTime.now());
+                warehouseOutput.setUser(user);
+                warehouseOutput.setUserId(user.getId());
+                warehouseOutputRepository.save(warehouseOutput);
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            }catch (RuntimeException e){
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
 }
