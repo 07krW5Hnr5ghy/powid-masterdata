@@ -118,6 +118,9 @@ public class WarehouseOutputItemImpl implements IWarehouseOutputItem {
             if(requestWarehouseOutputItem.getQuantity()<1){
                 throw new BadRequestExceptions(Constants.ErrorWarehouseOutputItemZero);
             }
+            if(!warehouseOutput.getStatus()){
+                throw new BadRequestExceptions(Constants.ErrorWarehouseOutputInactive);
+            }
             try{
                 WarehouseOutputItem newWarehouseOutputItem = warehouseOutputItemRepository.save(WarehouseOutputItem.builder()
                         .warehouseOutput(warehouseOutput)

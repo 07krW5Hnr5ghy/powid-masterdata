@@ -6,6 +6,7 @@ import com.proyect.masterdata.domain.Warehouse;
 import com.proyect.masterdata.domain.WarehouseOutput;
 import com.proyect.masterdata.dto.request.RequestWarehouseOutput;
 import com.proyect.masterdata.dto.request.RequestWarehouseOutputItem;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -22,6 +23,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -91,6 +93,36 @@ public class WarehouseOutputImpl implements IWarehouseOutput {
                 throw new BadRequestExceptions(Constants.InternalErrorExceptions);
             }
 
+        });
+    }
+    @Override
+    public CompletableFuture<ResponseDelete> close(String username, UUID warehouseOutputId) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            WarehouseOutput warehouseOutput;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                warehouseOutput = warehouseOutputRepository.findById(warehouseOutputId).orElse(null);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+            if(warehouseOutput==null){
+                throw new BadRequestExceptions(Constants.ErrorWarehouseOutput);
+            }
+            try {
+                warehouseOutput.setStatus(false);
+                warehouseOutput.setUpdateDate(OffsetDateTime.now());
+                warehouseOutput.setUser(user);
+                warehouseOutput.setUserId(user.getId());
+                warehouseOutputRepository.save(warehouseOutput);
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
+            }catch (RuntimeException e){
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
         });
     }
 }
