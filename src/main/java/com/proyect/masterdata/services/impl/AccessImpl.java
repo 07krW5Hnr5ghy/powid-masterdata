@@ -213,6 +213,7 @@ public class AccessImpl implements IAccess {
             }
             return accessList.stream().map(access -> AccessDTO.builder()
                     .name(access.getName())
+                    .id(access.getId())
                     .registrationDate(access.getRegistrationDate())
                     .updateDate(access.getUpdateDate())
                     .build()).toList();
@@ -238,6 +239,7 @@ public class AccessImpl implements IAccess {
 
             List<AccessDTO> accessDTOs = accessPage.getContent().stream().map(access -> AccessDTO.builder()
                     .name(access.getName())
+                    .id(access.getId())
                     .registrationDate(access.getRegistrationDate())
                     .updateDate(access.getUpdateDate())
                     .build()).toList();
@@ -266,6 +268,7 @@ public class AccessImpl implements IAccess {
             }
 
             List<AccessDTO> accessDTOs = accessPage.getContent().stream().map(access -> AccessDTO.builder()
+                    .id(access.getId())
                     .name(access.getName())
                     .registrationDate(access.getRegistrationDate())
                     .updateDate(access.getUpdateDate())

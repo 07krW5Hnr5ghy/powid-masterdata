@@ -111,6 +111,8 @@ public class Constants {
     public static final String tableOrderContacted = "order_contacted";
     public static final String tableSupplyOrder = "supply_order";
     public static final String tableSupplyOrderItem = "supply_order_item";
+    public static final String tableWarehouseOutput = "warehouse_output";
+    public static final String tableWarehouseOutputItem = "warehouse_output_item";
     // messages
     public static final String register = "registro exitoso";
     public static final String update = "edicion exitosa";
@@ -322,4 +324,10 @@ public class Constants {
     public static final String ErrorOrderContacted = "Registro de pedido contactado no ha sido registrado";
     public static final String ErrorOrderContactedExists = "Registro de pedido contactado ya fue registrado";
     public static final String ErrorPurchaseDeliveryDate = "Fecha de entrega invalida";
+    public static final String ErrorWarehouseOutputItem = "Item de salida de almacen no esta registrado o esta desactivado";
+    public static final String ErrorWarehouseOutputItemExists = "Item de salida de almacen ya fue registrado";
+    public static final String ErrorWarehouseOutputItemZero = "cantidad de unidades invalidas para item de salida de almacen";
+    public static final String ErrorWarehouseOutput = "Salida de almacen no esta registrada";
+    public static final String ErrorWarehouseOutputExist = "Salida de almacen ya fue registrada";
+    public static final String ErrorWarehouseOutputInactive = "Salida de almacen inactiva";
 }

@@ -24,6 +24,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -221,7 +222,7 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
                         String::toUpperCase
                 ).toList()).stream().toList();
             }else{
-                categoryProductIds = null;
+                categoryProductIds = new ArrayList<>();
             }
             try{
                 subCategoryProductPage = subCategoryProductRepositoryCustom.searchForSubCategoryProduct(
@@ -274,7 +275,7 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
                         String::toUpperCase
                 ).toList()).stream().toList();
             }else{
-                categoryProductIds = null;
+                categoryProductIds = new ArrayList<>();
             }
             try{
                 subCategoryProductPage = subCategoryProductRepositoryCustom.searchForSubCategoryProduct(

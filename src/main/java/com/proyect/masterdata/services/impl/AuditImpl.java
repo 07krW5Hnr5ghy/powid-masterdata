@@ -122,6 +122,7 @@ public class AuditImpl implements IAudit {
                     .eventName(audit.getAuditEvent().getName())
                     .registrationDate(audit.getRegistrationDate())
                     .detail(audit.getDetail())
+                    .id(audit.getId())
                     .build()).toList();
             return new PageImpl<>(auditDTOS,auditPage.getPageable(),auditPage.getTotalElements());
         });

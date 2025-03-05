@@ -315,6 +315,8 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ACTIVATE_USER",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_USER_ROLE",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_WAREHOUSE",adminUser.getUsername());
+                        iAuditEvent.save("ACTIVATE_WAREHOUSE_OUTPUT",adminUser.getUsername());
+                        iAuditEvent.save("ACTIVATE_WAREHOUSE_OUTPUT_ITEM",adminUser.getUsername());
                         iAuditEvent.save("ADD_ACCESS",adminUser.getUsername());
                         iAuditEvent.save("ADD_BRAND",adminUser.getUsername());
                         iAuditEvent.save("ADD_CANCELLATION_REASON",adminUser.getUsername());
@@ -402,6 +404,8 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ADD_USER",adminUser.getUsername());
                         iAuditEvent.save("ADD_USER_ROLE",adminUser.getUsername());
                         iAuditEvent.save("ADD_WAREHOUSE",adminUser.getUsername());
+                        iAuditEvent.save("ADD_WAREHOUSE_OUTPUT",adminUser.getUsername());
+                        iAuditEvent.save("ADD_WAREHOUSE_OUTPUT_ITEM",adminUser.getUsername());
                         iAuditEvent.save("ADD_WAREHOUSE_STOCK",adminUser.getUsername());
                         iAuditEvent.save("DELETE_ACCESS",adminUser.getUsername());
                         iAuditEvent.save("DELETE_BRAND",adminUser.getUsername());
@@ -461,6 +465,8 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("DELETE_USER",adminUser.getUsername());
                         iAuditEvent.save("DELETE_USER_ROLE",adminUser.getUsername());
                         iAuditEvent.save("DELETE_WAREHOUSE",adminUser.getUsername());
+                        iAuditEvent.save("DELETE_WAREHOUSE_OUTPUT",adminUser.getUsername());
+                        iAuditEvent.save("DELETE_WAREHOUSE_OUTPUT_ITEM",adminUser.getUsername());
                         iAuditEvent.save("DELETE_WAREHOUSE_STOCK",adminUser.getUsername());
                         iAuditEvent.save("LOG_IN",adminUser.getUsername());
                         iAuditEvent.save("LOG_OUT",adminUser.getUsername());
@@ -482,6 +488,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("UPDATE_STOCK_REPLENISHMENT_ITEM",adminUser.getUsername());
                         iAuditEvent.save("UPDATE_STORE",adminUser.getUsername());
                         iAuditEvent.save("UPDATE_USER",adminUser.getUsername());
+                        iAuditEvent.save("UPDATE_WAREHOUSE_OUTPUT_ITEM",adminUser.getUsername());
 
                         // access
                         iAccess.save("ACCESS_POST",adminUser.getUsername());
@@ -650,6 +657,9 @@ public class Seeder implements CommandLineRunner {
                         iAccess.save("WAREHOUSE_GET",adminUser.getUsername());
                         iAccess.save("WAREHOUSE_POST",adminUser.getUsername());
                         iAccess.save("WAREHOUSE_STOCK_GET",adminUser.getUsername());
+                        iAccess.save("WAREHOUSE_OUTPUT_GET",adminUser.getUsername());
+                        iAccess.save("WAREHOUSE_OUTPUT_POST",adminUser.getUsername());
+                        iAccess.save("WAREHOUSE_OUTPUT_DELETE",adminUser.getUsername());
                         // roles
                         iRole.save("NEGOCIO",adminUser.getUsername());
                         iRole.save("VENTAS",adminUser.getUsername());
@@ -747,6 +757,9 @@ public class Seeder implements CommandLineRunner {
                         iRoleAccess.save("STOCK","UNIT_TYPE_GET",adminUser.getUsername());
                         iRoleAccess.save("STOCK","WAREHOUSE_GET",adminUser.getUsername());
                         iRoleAccess.save("STOCK","WAREHOUSE_POST",adminUser.getUsername());
+                        iRoleAccess.save("STOCK","WAREHOUSE_OUTPUT_GET",adminUser.getUsername());
+                        iRoleAccess.save("STOCK","WAREHOUSE_OUTPUT_POST",adminUser.getUsername());
+                        iRoleAccess.save("STOCK","WAREHOUSE_OUTPUT_DELETE",adminUser.getUsername());
                         iRoleAccess.save("COURIER","COURIER_PUT",adminUser.getUsername());
                         iRoleAccess.save("NEGOCIO","BRAND_GET",adminUser.getUsername());
                         iRoleAccess.save("NEGOCIO","CLIENT_GET",adminUser.getUsername());

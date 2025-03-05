@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.UUID;
 
 @Builder
 @AllArgsConstructor
@@ -18,4 +19,5 @@ public class AuditDTO {
     private String detail;
     private OffsetDateTime registrationDate;
     private String clientName;
+    private UUID id;
 }
