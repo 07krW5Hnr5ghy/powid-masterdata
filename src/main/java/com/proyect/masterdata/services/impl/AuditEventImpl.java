@@ -172,6 +172,7 @@ public class AuditEventImpl implements IAuditEvent {
             }
             List<AuditEventDTO> auditEventDTOS = auditEventPage.getContent().stream().map(auditEvent -> AuditEventDTO.builder()
                     .name(auditEvent.getName())
+                    .id(auditEvent.getId())
                     .registrationDate(auditEvent.getRegistrationDate())
                     .updateDate(auditEvent.getUpdateDate())
                     .build()).toList();
@@ -194,6 +195,7 @@ public class AuditEventImpl implements IAuditEvent {
             }
             List<AuditEventDTO> auditEventDTOS = auditEventPage.getContent().stream().map(auditEvent -> AuditEventDTO.builder()
                     .name(auditEvent.getName())
+                    .id(auditEvent.getId())
                     .registrationDate(auditEvent.getRegistrationDate())
                     .updateDate(auditEvent.getUpdateDate())
                     .build()).toList();

@@ -327,4 +327,6 @@ public class Constants {
     public static final String ErrorWarehouseOutputItem = "Item de salida de almacen no esta registrado o esta desactivado";
     public static final String ErrorWarehouseOutputItemExists = "Item de salida de almacen ya fue registrado";
     public static final String ErrorWarehouseOutputItemZero = "cantidad de unidades invalidas para item de salida de almacen";
+    public static final String ErrorWarehouseOutput = "Salida de almacen no esta registrada";
+    public static final String ErrorWarehouseOutputExist = "Salida de almacen ya fue registrada";
 }
