@@ -83,7 +83,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
                     .quantity(supplyOrderItem.getQuantity())
                     .productId(supplyOrderItem.getProductId())
                     .build()).toList();
-            StockTransaction newStockTransaction = iStockTransaction.save("S"+ requestSupplyOrder.getRef().toUpperCase(), warehouse,requestStockTransactionItemList,"COMPRA",user);
+            StockTransaction newStockTransaction = iStockTransaction.save("S"+ requestSupplyOrder.getRef().toUpperCase(), warehouse,requestStockTransactionItemList,"ENTRADA",user);
             Long orderNumber = supplyOrderRepository.countByClientId(user.getClientId())+1L;
             SupplyOrder newSupplyOrder = supplyOrderRepository.save(SupplyOrder.builder()
                             .ref(requestSupplyOrder.getRef().toUpperCase())
@@ -149,7 +149,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
                         .quantity(supplyOrderItem.getQuantity())
                         .productId(supplyOrderItem.getProductId())
                         .build()).toList();
-                StockTransaction newStockTransaction = iStockTransaction.save("S"+ requestSupplyOrder.getRef().toUpperCase(), warehouse,requestStockTransactionItemList,"COMPRA",user);
+                StockTransaction newStockTransaction = iStockTransaction.save("S"+ requestSupplyOrder.getRef().toUpperCase(), warehouse,requestStockTransactionItemList,"ENTRADA",user);
                 Long orderNumber = supplyOrderRepository.countByClientId(user.getClientId())+1L;
                 SupplyOrder newSupplyOrder = supplyOrderRepository.save(SupplyOrder.builder()
                         .ref(requestSupplyOrder.getRef().toUpperCase())
@@ -165,10 +165,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
                         .deliveryDate(OffsetDateTime.now())
                         .build());
                 for(RequestSupplyOrderItem requestSupplyOrderItem : requestSupplyOrder.getRequestSupplyOrderItemList()){
-                    Product product = productRepository.findByIdAndStatusTrue(requestSupplyOrderItem.getProductId());
                     iSupplyOrderItem.save(newSupplyOrder,warehouse.getName(), requestSupplyOrderItem,user.getUsername());
-                    iWarehouseStock.in(warehouse,product, requestSupplyOrderItem.getQuantity(),user);
-                    iGeneralStock.in(product, requestSupplyOrderItem.getQuantity(),user.getUsername());
                 }
                 iAudit.save("ADD_PURCHASE","COMPRA " + newSupplyOrder.getRef() +" CREADA.", newSupplyOrder.getRef(),user.getUsername());
                 return ResponseSuccess.builder()

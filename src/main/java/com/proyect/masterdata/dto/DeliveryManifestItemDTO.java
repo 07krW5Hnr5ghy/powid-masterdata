@@ -22,4 +22,6 @@ public class DeliveryManifestItemDTO {
     private String phone;
     private String management;
     private Boolean delivered;
+    private String paymentMethod;
+    private String paymentState;
 }

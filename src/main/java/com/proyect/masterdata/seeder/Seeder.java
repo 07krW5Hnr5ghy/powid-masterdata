@@ -1403,12 +1403,10 @@ public class Seeder implements CommandLineRunner {
                         iDeliveryPoint.save("provincia",adminUser.getUsername());
                         iDeliveryPoint.save("recojo en tienda",adminUser.getUsername());
                         // stock transaction types mocks
-                        iStockTransactionType.save("compra", adminUser.getUsername());
-                        iStockTransactionType.save("pedido", adminUser.getUsername());
-                        iStockTransactionType.save("transferencia-entrada", adminUser.getUsername());
-                        iStockTransactionType.save("transferencia-salida", adminUser.getUsername());
-                        iStockTransactionType.save("devolucion-comprador",adminUser.getUsername());
-                        iStockTransactionType.save("devolucion-proveedor",adminUser.getUsername());
+                        iStockTransactionType.save("ingreso", adminUser.getUsername());
+                        iStockTransactionType.save("salida", adminUser.getUsername());
+                        iStockTransactionType.save("guia-courier", adminUser.getUsername());
+                        iStockTransactionType.save("guia-courier-devolucion", adminUser.getUsername());
 
                         User business1 = userRepository.save(User.builder()
                                 .username("JCOILA")
