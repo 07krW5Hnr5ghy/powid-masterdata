@@ -12,3 +12,5 @@ mvn test
 # Empaqueta el proyecto y genera el JAR
 mvn package
 
+
+docker-compose up --build -d
