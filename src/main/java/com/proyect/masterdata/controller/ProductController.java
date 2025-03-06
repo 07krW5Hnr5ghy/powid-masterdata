@@ -1,9 +1,11 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.request.RequestProductUpdate;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -67,64 +69,46 @@ public class ProductController {
     public ResponseEntity<Page<ProductDTO>> list(
             @RequestParam(value = "user") String user,
             @RequestParam(value = "sku", required = false) String sku,
+            @RequestParam(value = "product",required = false) String product,
             @RequestParam(value = "model", required = false) String model,
-            @RequestParam(value = "brands", required = false) List<String> brands,
-            @RequestParam(value = "sizes", required = false) List<String> sizes,
-            @RequestParam(value = "categoryProducts", required = false) List<String> categoryProducts,
-            @RequestParam(value = "colors", required = false) List<String> colors,
-            @RequestParam(value = "units", required = false) List<String> units,
+            @RequestParam(value = "brand", required = false) String brand,
+            @RequestParam(value = "sizes", required = false) String size,
+            @RequestParam(value = "categoryProduct", required = false) String categoryProduct,
+            @RequestParam(value = "subCategoryProduct", required = false) String subCategoryProduct,
+            @RequestParam(value = "color", required = false) String color,
+            @RequestParam(value = "unit", required = false) String unit,
             @RequestParam(value = "pictureFlag",required = false) Boolean pictureFlag,
+            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
+            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateStartDate,
+            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateEndDate,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,
-            @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+            @RequestParam(value = "pageSize") Integer pageSize,
+            @RequestParam(value = "status",required = false) Boolean status
+            ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<ProductDTO>> result = iProduct.list(
                 user,
                 sku,
+                product,
                 model,
-                brands,
-                sizes,
-                categoryProducts,
-                colors,
-                units,
+                brand,
+                size,
+                categoryProduct,
+                subCategoryProduct,
+                color,
+                unit,
                 pictureFlag,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
                 sort,
                 sortColumn,
                 pageNumber,
-                pageSize);
-        return new ResponseEntity<>(result.get(), HttpStatus.OK);
-    }
-
-    @GetMapping(value = "pagination/list-false")
-    //@PreAuthorize("hasAnyAuthority('ROLE:MARKETING','ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:PRODUCT_GET')")
-    public ResponseEntity<Page<ProductDTO>> listFalse(
-            @RequestParam(value = "user") String user,
-            @RequestParam(value = "sku", required = false) String sku,
-            @RequestParam(value = "model", required = false) String model,
-            @RequestParam(value = "brands", required = false) List<String> brands,
-            @RequestParam(value = "sizes", required = false) List<String> sizes,
-            @RequestParam(value = "categoryProducts", required = false) List<String> categoryProducts,
-            @RequestParam(value = "colors", required = false) List<String> colors,
-            @RequestParam(value = "units", required = false) List<String> units,
-            @RequestParam(value = "pictureFlag",required = false) Boolean pictureFlag,
-            @RequestParam(value = "sort", required = false) String sort,
-            @RequestParam(value = "sortColumn", required = false) String sortColumn,
-            @RequestParam(value = "pageNumber") Integer pageNumber,
-            @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<ProductDTO>> result = iProduct.listFalse(
-                user,
-                sku,
-                model,
-                brands,
-                sizes,
-                categoryProducts,
-                colors,
-                units,
-                pictureFlag,
-                sort,
-                sortColumn,
-                pageNumber,
-                pageSize);
+                pageSize,
+                status);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

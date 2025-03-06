@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -25,32 +26,25 @@ public interface IProduct {
         CompletableFuture<ResponseSuccess> activate(UUID productId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<Page<ProductDTO>> list(
                 String tokenUser,
-                String sku,
+                String productSku,
+                String product,
                 String model,
-                List<String> brands,
-                List<String> sizes,
-                List<String> categoryProducts,
-                List<String> colors,
-                List<String> units,
+                String brand,
+                String size,
+                String categoryProduct,
+                String subCategoryProduct,
+                String color,
+                String unit,
                 Boolean pictureFlag,
+                OffsetDateTime registrationStartDate,
+                OffsetDateTime registrationEndDate,
+                OffsetDateTime updateStartDate,
+                OffsetDateTime updateEndDate,
                 String sort,
                 String sortColumn,
                 Integer pageNumber,
-                Integer pageSize) throws BadRequestExceptions;
-        CompletableFuture<Page<ProductDTO>> listFalse(
-                String tokenUser,
-                String sku,
-                String model,
-                List<String> brands,
-                List<String> sizes,
-                List<String> categoryProducts,
-                List<String> colors,
-                List<String> units,
-                Boolean pictureFlag,
-                String sort,
-                String sortColumn,
-                Integer pageNumber,
-                Integer pageSize) throws BadRequestExceptions;
+                Integer pageSize,
+                Boolean status) throws BadRequestExceptions;
         CompletableFuture<List<ProductDTO>> listProducts(String user) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<ProductDTO>> listProductsFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<ProductDTO>> listFilter(String user) throws BadRequestExceptions,InternalErrorExceptions;
