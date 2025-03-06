@@ -22,4 +22,5 @@ public class DeliveryManifestDTO {
     private String courier;
     private Boolean open;
     private String warehouse;
+    private String pickupAddress;
 }

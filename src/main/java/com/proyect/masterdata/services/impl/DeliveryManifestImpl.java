@@ -151,6 +151,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         .open(deliveryManifest.getOpen())
                         .deliveryManifestItemDTOS(deliveryManifestItemList)
                         .warehouse(deliveryManifest.getWarehouse().getName())
+                        .pickupAddress(deliveryManifest.getWarehouse().getAddress())
                         .build();
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -298,6 +299,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         .registrationDate(deliveryManifest.getRegistrationDate())
                         .updateDate(deliveryManifest.getUpdateDate())
                         .deliveryManifestItemDTOS(deliveryManifestItemDTOS)
+                        .pickupAddress(deliveryManifest.getWarehouse().getAddress())
                         .build();
             }).toList();
             return new PageImpl<>(deliveryManifestDTOS,deliveryManifestPage.getPageable(),deliveryManifestPage.getTotalElements());
