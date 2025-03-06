@@ -165,10 +165,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
                         .deliveryDate(OffsetDateTime.now())
                         .build());
                 for(RequestSupplyOrderItem requestSupplyOrderItem : requestSupplyOrder.getRequestSupplyOrderItemList()){
-                    Product product = productRepository.findByIdAndStatusTrue(requestSupplyOrderItem.getProductId());
                     iSupplyOrderItem.save(newSupplyOrder,warehouse.getName(), requestSupplyOrderItem,user.getUsername());
-                    iWarehouseStock.in(warehouse,product, requestSupplyOrderItem.getQuantity(),user);
-                    iGeneralStock.in(product, requestSupplyOrderItem.getQuantity(),user.getUsername());
                 }
                 iAudit.save("ADD_PURCHASE","COMPRA " + newSupplyOrder.getRef() +" CREADA.", newSupplyOrder.getRef(),user.getUsername());
                 return ResponseSuccess.builder()
