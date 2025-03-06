@@ -667,7 +667,7 @@ public class OrderingImpl implements IOrdering {
                             }
                             String finalSku = iUtil.buildProductSku(orderItem.getProduct());
                             return OrderItemDTO.builder()
-                                    .orderId(orderItem.getOrderId())
+                                    .orderId(orderItem.getId())
                                     .model(orderItem.getProduct().getModel().getName())
                                     .discountAmount(orderItem.getDiscountAmount())
                                     .sku(finalSku)
@@ -791,7 +791,7 @@ public class OrderingImpl implements IOrdering {
                             }
                             String finalSku = iUtil.buildProductSku(orderItem.getProduct());
                             return OrderItemDTO.builder()
-                                    .orderId(orderItem.getOrderId())
+                                    .orderId(orderItem.getId())
                                     .discountAmount(orderItem.getDiscountAmount())
                                     .sku(finalSku)
                                     .unit(orderItem.getProduct().getUnit().getName())
@@ -1226,7 +1226,7 @@ public class OrderingImpl implements IOrdering {
                             }
                             String finalSku = iUtil.buildProductSku(orderItem.getProduct());
                             return OrderItemDTO.builder()
-                                    .orderId(orderItem.getOrderId())
+                                    .orderId(orderItem.getId())
                                     .model(orderItem.getProduct().getModel().getName())
                                     .discountAmount(orderItem.getDiscountAmount())
                                     .sku(finalSku)
