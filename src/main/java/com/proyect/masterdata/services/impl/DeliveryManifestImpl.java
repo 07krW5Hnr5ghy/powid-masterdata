@@ -138,6 +138,9 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 .district(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getDistrict().getName())
                                 .customer(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getName())
                                 .phone(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getPhone())
+                                .paymentMethod(deliveryManifestItem.getOrderItem().getOrdering().getOrderPaymentMethod().getName())
+                                .management(deliveryManifestItem.getOrderItem().getOrdering().getManagementType().getName())
+                                .paymentState(deliveryManifestItem.getOrderItem().getOrdering().getOrderPaymentState().getName())
                                 .build()).toList();
                 return DeliveryManifestDTO.builder()
                         .id(deliveryManifest.getId())
@@ -283,6 +286,8 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 .quantity(deliveryManifestItem.getQuantity())
                                 .skuProduct(iUtil.buildProductSku(deliveryManifestItem.getProduct()))
                                 .management(deliveryManifestItem.getOrderItem().getOrdering().getManagementType().getName())
+                                .paymentMethod(deliveryManifestItem.getOrderItem().getOrdering().getOrderPaymentMethod().getName())
+                                .paymentState(deliveryManifestItem.getOrderItem().getOrdering().getOrderPaymentState().getName())
                                 .build()).toList();
                 return DeliveryManifestDTO.builder()
                         .manifestNumber(deliveryManifest.getManifestNumber())
