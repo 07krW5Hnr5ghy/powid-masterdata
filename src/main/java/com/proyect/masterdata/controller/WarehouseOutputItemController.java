@@ -5,6 +5,7 @@ import com.proyect.masterdata.dto.WarehouseOutputDTO;
 import com.proyect.masterdata.dto.WarehouseOutputItemDTO;
 import com.proyect.masterdata.dto.request.RequestWarehouseOutput;
 import com.proyect.masterdata.dto.request.RequestWarehouseOutputItem;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IWarehouseOutputItem;
@@ -79,5 +80,25 @@ public class WarehouseOutputItemController {
                 pageSize,
                 status);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+    @DeleteMapping()
+    //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:WAREHOUSE_POST')")
+    public ResponseEntity<ResponseDelete> delete(
+            @RequestParam("warehouseOutputId")UUID productId,
+            @RequestParam("warehouseOutputId")UUID warehouseOutputId,
+            @RequestParam("username") String username
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iWarehouseOutputItem.delete(productId,warehouseOutputId,username);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+    @PutMapping()
+    //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:WAREHOUSE_POST')")
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("warehouseOutputId")UUID productId,
+            @RequestParam("warehouseOutputId")UUID warehouseOutputId,
+            @RequestParam("username") String username
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iWarehouseOutputItem.activate(productId,warehouseOutputId,username);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 }

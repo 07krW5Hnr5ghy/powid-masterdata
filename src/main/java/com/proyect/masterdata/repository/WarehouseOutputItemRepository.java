@@ -10,5 +10,7 @@ import java.util.UUID;
 @Repository
 public interface WarehouseOutputItemRepository extends JpaRepository<WarehouseOutputItem, UUID> {
     WarehouseOutputItem findByProductIdAndWarehouseOutputId(UUID productId,UUID warehouseOutputId);
+    WarehouseOutputItem findByProductIdAndWarehouseOutputIdAndStatusTrue(UUID productId,UUID warehouseOutputId);
+    WarehouseOutputItem findByProductIdAndWarehouseOutputIdAndStatusFalse(UUID productId,UUID warehouseOutputId);
     List<WarehouseOutputItem> findByWarehouseOutputId(UUID warehouseOutputId);
 }

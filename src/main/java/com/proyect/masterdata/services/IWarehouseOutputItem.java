@@ -5,6 +5,7 @@ import com.proyect.masterdata.domain.WarehouseOutput;
 import com.proyect.masterdata.domain.WarehouseOutputItem;
 import com.proyect.masterdata.dto.WarehouseOutputItemDTO;
 import com.proyect.masterdata.dto.request.RequestWarehouseOutputItem;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -38,4 +39,6 @@ public interface IWarehouseOutputItem {
             Integer pageSize,
             Boolean status
     );
+    CompletableFuture<ResponseDelete> delete(UUID productId, UUID warehouseOutputId, String user) throws BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> activate(UUID productId, UUID warehouseOutputId, String user) throws BadRequestExceptions;
 }

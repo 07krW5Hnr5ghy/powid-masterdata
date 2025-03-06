@@ -7,6 +7,7 @@ import com.proyect.masterdata.domain.WarehouseOutputItem;
 import com.proyect.masterdata.dto.WarehouseOutputDTO;
 import com.proyect.masterdata.dto.WarehouseOutputItemDTO;
 import com.proyect.masterdata.dto.request.RequestWarehouseOutputItem;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -229,6 +230,120 @@ public class WarehouseOutputItemImpl implements IWarehouseOutputItem {
                         .build()).toList();
 
             return new PageImpl<>(warehouseOutputItemDTOs, warehouseOutputItemPage.getPageable(), warehouseOutputItemPage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseDelete> delete(UUID productId, UUID warehouseOutputId, String username) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Product product;
+            WarehouseOutputItem warehouseOutputItem;
+            WarehouseOutput warehouseOutput;
+            User user;
+            try{
+                product = productRepository.findByIdAndStatusTrue(productId);
+                warehouseOutput = warehouseOutputRepository.findById(warehouseOutputId).orElse(null);
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(product==null){
+                throw new BadRequestExceptions(Constants.ErrorProduct);
+            }
+            if(warehouseOutput==null){
+                throw new BadRequestExceptions(Constants.ErrorWarehouseOutput);
+            }else{
+                warehouseOutputItem = warehouseOutputItemRepository.findByProductIdAndWarehouseOutputIdAndStatusTrue(product.getId(),warehouseOutput.getId());
+            }
+            if(warehouseOutputItem==null){
+                throw new BadRequestExceptions(Constants.ErrorWarehouseOutputItem);
+            }
+            if(!warehouseOutput.getStatus()){
+                throw new BadRequestExceptions(Constants.ErrorWarehouseOutputInactive);
+            }
+            try{
+                warehouseOutputItem.setStatus(false);
+                warehouseOutputItem.setUpdateDate(OffsetDateTime.now());
+                warehouseOutputItem.setUser(user);
+                warehouseOutputItem.setUserId(user.getId());
+                warehouseOutputItemRepository.save(warehouseOutputItem);
+                iWarehouseStock.out(warehouseOutput.getWarehouse(),product,warehouseOutputItem.getQuantity(),user);
+                iAudit.save("ADD_WAREHOUSE_OUTPUT_ITEM",
+                        "ITEM " +
+                                iUtil.buildProductSku(product) +
+                                " DE SALIDA DE ALMACEN "+
+                                warehouseOutput.getOrderNumber()+
+                                " ELIMINADO.",
+                        warehouseOutput.getOrderNumber().toString(),user.getUsername());
+                return ResponseDelete.builder()
+                        .message(Constants.delete)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> activate(UUID productId, UUID warehouseOutputId, String username) throws BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Product product;
+            WarehouseOutputItem warehouseOutputItem;
+            WarehouseOutput warehouseOutput;
+            User user;
+            try{
+                product = productRepository.findByIdAndStatusTrue(productId);
+                warehouseOutput = warehouseOutputRepository.findById(warehouseOutputId).orElse(null);
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(product==null){
+                throw new BadRequestExceptions(Constants.ErrorProduct);
+            }
+            if(warehouseOutput==null){
+                throw new BadRequestExceptions(Constants.ErrorWarehouseOutput);
+            }else{
+                warehouseOutputItem = warehouseOutputItemRepository.findByProductIdAndWarehouseOutputIdAndStatusFalse(product.getId(),warehouseOutput.getId());
+            }
+            if(warehouseOutputItem==null){
+                throw new BadRequestExceptions(Constants.ErrorWarehouseOutputItem);
+            }
+            if(!warehouseOutput.getStatus()){
+                throw new BadRequestExceptions(Constants.ErrorWarehouseOutputInactive);
+            }
+            try{
+                warehouseOutputItem.setStatus(true);
+                warehouseOutputItem.setUpdateDate(OffsetDateTime.now());
+                warehouseOutputItem.setUser(user);
+                warehouseOutputItem.setUserId(user.getId());
+                warehouseOutputItemRepository.save(warehouseOutputItem);
+                iWarehouseStock.in(warehouseOutput.getWarehouse(),product,warehouseOutputItem.getQuantity(),user);
+                iAudit.save("ADD_WAREHOUSE_OUTPUT_ITEM",
+                        "ITEM " +
+                                iUtil.buildProductSku(product) +
+                                " DE SALIDA DE ALMACEN "+
+                                warehouseOutput.getOrderNumber()+
+                                " ACTIVADO.",
+                        warehouseOutput.getOrderNumber().toString(),user.getUsername());
+                return ResponseSuccess.builder()
+                        .message(Constants.update)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
         });
     }
 }
