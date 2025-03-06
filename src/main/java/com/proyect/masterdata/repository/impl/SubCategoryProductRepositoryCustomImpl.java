@@ -27,7 +27,7 @@ public class SubCategoryProductRepositoryCustomImpl implements SubCategoryProduc
             String name,
             String sku,
             String user,
-            List<CategoryProduct> categoryProductIds,
+            String categoryProduct,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -47,7 +47,7 @@ public class SubCategoryProductRepositoryCustomImpl implements SubCategoryProduc
                 name,
                 sku,
                 user,
-                categoryProductIds,
+                categoryProduct,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -78,14 +78,14 @@ public class SubCategoryProductRepositoryCustomImpl implements SubCategoryProduc
         ordeTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Long count = getOrderCount(name,sku, user,categoryProductIds,registrationStartDate, registrationEndDate, updateStartDate, updateEndDate, status);
+        Long count = getOrderCount(name,sku, user,categoryProduct,registrationStartDate, registrationEndDate, updateStartDate, updateEndDate, status);
         return new PageImpl<>(ordeTypedQuery.getResultList(), pageable, count);
     }
     private List<Predicate> predicateConditions(
             String name,
             String sku,
             String user,
-            List<CategoryProduct> categoryProductIds,
+            String categoryProduct,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -97,22 +97,16 @@ public class SubCategoryProductRepositoryCustomImpl implements SubCategoryProduc
     ) {
         List<Predicate> conditions = new ArrayList<>();
 
-        if (name != null) {
-            conditions.add(
-                    criteriaBuilder.and(
-                            criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("name")), name.toUpperCase())));
+        if(name != null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(itemRoot.get("name")),"%"+name.toUpperCase()+"%"));
         }
 
-        if (sku != null) {
-            conditions.add(
-                    criteriaBuilder.and(
-                            criteriaBuilder.equal(
-                                    criteriaBuilder.upper(itemRoot.get("sku")), sku.toUpperCase())));
+        if(sku != null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(itemRoot.get("sku")),"%"+sku.toUpperCase()+"%"));
         }
 
-        if(!categoryProductIds.isEmpty()){
-            conditions.add(criteriaBuilder.and(subCategoryProductCategoryProductJoin.get("categoryProductId").in(categoryProductIds)));
+        if(categoryProduct!=null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(subCategoryProductCategoryProductJoin.get("name")),"%"+categoryProduct.toUpperCase()+"%"));
         }
 
         if (user != null) {
@@ -235,7 +229,7 @@ public class SubCategoryProductRepositoryCustomImpl implements SubCategoryProduc
             String name,
             String sku,
             String user,
-            List<CategoryProduct> categoryProductIds,
+            String categoryProduct,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -251,7 +245,7 @@ public class SubCategoryProductRepositoryCustomImpl implements SubCategoryProduc
                 name,
                 sku,
                 user,
-                categoryProductIds,
+                categoryProduct,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,

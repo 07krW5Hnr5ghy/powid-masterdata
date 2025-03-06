@@ -14,7 +14,7 @@ public interface SubCategoryProductRepositoryCustom {
             String name,
             String sku,
             String user,
-            List<CategoryProduct> categoryProductIds,
+            String categoryProduct,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
