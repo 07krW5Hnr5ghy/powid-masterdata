@@ -12,4 +12,5 @@ public interface SupplyOrderRepository extends JpaRepository<SupplyOrder, UUID> 
     SupplyOrder findByRef(String serial);
     List<SupplyOrder> findAllByClientId(UUID clientId);
     Long countByClientId(UUID clientId);
+    SupplyOrder findByIdAndStatusTrue(UUID supplyOrderId);
 }

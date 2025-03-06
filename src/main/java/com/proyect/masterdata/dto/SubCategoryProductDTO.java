@@ -18,4 +18,5 @@ public class SubCategoryProductDTO {
     private String categoryProduct;
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
+    private Boolean status;
 }

@@ -1,6 +1,6 @@
 package com.proyect.masterdata.repository;
 
-import com.proyect.masterdata.domain.SupplyOrder;
+import com.proyect.masterdata.domain.WarehouseOutputItem;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
@@ -8,12 +8,17 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Repository
-public interface SupplyOrderRepositoryCustom {
-    Page<SupplyOrder> searchForSupplyOrder(
+public interface WarehouseOutputItemRepositoryCustom {
+    Page<WarehouseOutputItem> searchForWarehouseOutputItem(
             UUID clientId,
             Long orderNumber,
             String ref,
             String warehouse,
+            Integer quantity,
+            String model,
+            String product,
+            String color,
+            String size,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -22,5 +27,6 @@ public interface SupplyOrderRepositoryCustom {
             String sortColumn,
             Integer pageNumber,
             Integer pageSize,
-            Boolean status);
+            Boolean status
+    );
 }

@@ -15,7 +15,6 @@ import java.util.UUID;
 public class RequestWarehouseOutput {
     private String warehouse;
     private String ref;
-    private String courier;
     private List<RequestWarehouseOutputItem> requestWarehouseOutputItemList;
     private String username;
 }

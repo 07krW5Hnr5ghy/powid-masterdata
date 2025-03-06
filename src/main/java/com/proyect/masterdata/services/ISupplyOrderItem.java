@@ -10,6 +10,7 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -23,12 +24,22 @@ public interface ISupplyOrderItem {
     CompletableFuture<ResponseSuccess> activate(UUID purchaseId,UUID productId, String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<Page<SupplyOrderItemDTO>> list(
             String user,
-            Long purchaseNumber,
+            Long orderNumber,
+            String ref,
             String warehouse,
+            Integer quantity,
             String model,
+            String product,
+            String color,
+            String size,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
-    CompletableFuture<List<SupplyOrderItemDTO>> listPurchaseItem(String user, UUID id) throws InternalErrorExceptions,BadRequestExceptions;
+            Integer pageSize,
+            Boolean status) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<List<SupplyOrderItemDTO>> listSupplyOrderItem(String user, UUID id) throws InternalErrorExceptions,BadRequestExceptions;
 }

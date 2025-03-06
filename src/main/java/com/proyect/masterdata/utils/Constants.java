@@ -330,4 +330,6 @@ public class Constants {
     public static final String ErrorWarehouseOutput = "Salida de almacen no esta registrada";
     public static final String ErrorWarehouseOutputExist = "Salida de almacen ya fue registrada";
     public static final String ErrorWarehouseOutputInactive = "Salida de almacen inactiva";
+    public static final String ErrorWarehouseOutputItemEqualUpdate = "La nueva cantidad es igual a la anterior cantidad";
+    public static final String ErrorSupplyOrderInactive = "Salida de almacen inactiva";
 }

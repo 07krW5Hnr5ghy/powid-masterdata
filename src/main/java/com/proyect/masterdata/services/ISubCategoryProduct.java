@@ -21,7 +21,7 @@ public interface ISubCategoryProduct {
             String name,
             String user,
             String sku,
-            List<String> categoryProducts,
+            String categoryProduct,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -29,19 +29,7 @@ public interface ISubCategoryProduct {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions;
-    CompletableFuture<Page<SubCategoryProductDTO>> listFalse(
-            String name,
-            String user,
-            String sku,
-            List<String> categoryProducts,
-            OffsetDateTime registrationStartDate,
-            OffsetDateTime registrationEndDate,
-            OffsetDateTime updateStartDate,
-            OffsetDateTime updateEndDate,
-            String sort,
-            String sortColumn,
-            Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions;
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions;
     CompletableFuture<List<SubCategoryProductDTO>> listByCategoryProduct(String user,String name) throws BadRequestExceptions,InternalErrorExceptions;
 }

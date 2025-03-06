@@ -13,15 +13,14 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class SupplyOrderDTO {
+public class WarehouseOutputDTO {
     private UUID id;
     private Long orderNumber;
     private String ref;
     private String warehouse;
     private Boolean status;
-    private List<SupplyOrderItemDTO> supplyOrderItemDTOList;
+    private List<WarehouseOutputItemDTO> warehouseOutputItemDTOList;
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
-    private OffsetDateTime deliveryDate;
     private String user;
 }

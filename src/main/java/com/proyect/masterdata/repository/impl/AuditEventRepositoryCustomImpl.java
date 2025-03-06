@@ -107,11 +107,11 @@ public class AuditEventRepositoryCustomImpl implements AuditEventRepositoryCusto
             );
         }
 
-        if (status) {
+        if(Boolean.TRUE.equals(status)) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.isTrue(itemRoot.get("status"))));
         }
 
-        if (!status) {
+        if(Boolean.FALSE.equals(status)) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.isFalse(itemRoot.get("status"))));
         }
 

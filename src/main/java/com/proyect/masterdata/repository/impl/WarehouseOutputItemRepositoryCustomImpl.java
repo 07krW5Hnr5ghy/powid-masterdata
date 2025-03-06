@@ -1,11 +1,10 @@
 package com.proyect.masterdata.repository.impl;
 
-import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
 import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.repository.WarehouseOutputItemRepositoryCustom;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -14,20 +13,17 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
-import com.proyect.masterdata.repository.SupplyOrderItemRepositoryCustom;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.TypedQuery;
+import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 @Repository
-public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepositoryCustom {
-
+public class WarehouseOutputItemRepositoryCustomImpl implements WarehouseOutputItemRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
-
     @Override
-    public Page<SupplyOrderItem> searchForSupplyOrderItem(
+    public Page<WarehouseOutputItem> searchForWarehouseOutputItem(
             UUID clientId,
             Long orderNumber,
             String ref,
@@ -36,76 +32,73 @@ public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepos
             String model,
             String product,
             String color,
-            String size,
-            OffsetDateTime registrationStartDate,
-            OffsetDateTime registrationEndDate,
-            OffsetDateTime updateStartDate,
-            OffsetDateTime updateEndDate,
-            String sort,
-            String sortColumn,
-            Integer pageNumber,
-            Integer pageSize,
+            String size, 
+            OffsetDateTime registrationStartDate, 
+            OffsetDateTime registrationEndDate, 
+            OffsetDateTime updateStartDate, 
+            OffsetDateTime updateEndDate, 
+            String sort, 
+            String sortColumn, 
+            Integer pageNumber, 
+            Integer pageSize, 
             Boolean status) {
-
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<SupplyOrderItem> criteriaQuery = criteriaBuilder.createQuery(SupplyOrderItem.class);
-        Root<SupplyOrderItem> itemRoot = criteriaQuery.from(SupplyOrderItem.class);
-        Join<SupplyOrderItem, SupplyOrder> supplyOrderItemSupplyOrderJoin = itemRoot.join("supplyOrder");
-        Join<SupplyOrderItem, Product> supplyOrderItemProductJoin = supplyOrderItemSupplyOrderJoin.join("product");
-        Join<SupplyOrder, Warehouse> supplyOrderItemWarehouseJoin = supplyOrderItemSupplyOrderJoin.join("warehouse");
-        Join<Product, Model> productModelJoin = supplyOrderItemSupplyOrderJoin.join("model");
-        Join<Product,Color> productColorJoin = supplyOrderItemSupplyOrderJoin.join("color");
-        Join<Product,Size> productSizeJoin = supplyOrderItemSupplyOrderJoin.join("size");
-
-        criteriaQuery.select(itemRoot);
-
+        CriteriaQuery<WarehouseOutputItem> criteriaQuery = criteriaBuilder.createQuery(WarehouseOutputItem.class);
+        Root<WarehouseOutputItem> itemRoot = criteriaQuery.from(WarehouseOutputItem.class);
+        Join<WarehouseOutputItem,WarehouseOutput> warehouseOutputItemWarehouseOutputJoin = itemRoot.join("warehouseOutput");
+        Join<WarehouseOutput, Courier> warehouseOutputCourierJoin = warehouseOutputItemWarehouseOutputJoin.join("courier");
+        Join<WarehouseOutput, Warehouse> warehouseOutputItemWarehouseJoin = warehouseOutputItemWarehouseOutputJoin.join("warehouse");
+        Join<WarehouseOutputItem, Product> warehouseOutputItemProductJoin = itemRoot.join("product");
+        Join<Product,Model> productModelJoin = warehouseOutputItemProductJoin.join("model");
+        Join<Product,Color> productColorJoin = warehouseOutputItemProductJoin.join("color");
+        Join<Product,Size> productSizeJoin = warehouseOutputItemProductJoin.join("size");
         List<Predicate> conditions = predicate(
                 clientId,
                 orderNumber,
                 ref,
                 warehouse,
                 quantity,
-                model,
+                 model,
                 product,
                 color,
                 size,
-                status,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
                 updateEndDate,
+                status,
                 criteriaBuilder,
                 itemRoot,
-                supplyOrderItemSupplyOrderJoin,
-                supplyOrderItemProductJoin,
-                supplyOrderItemWarehouseJoin,
+                warehouseOutputItemWarehouseOutputJoin,
+                warehouseOutputCourierJoin,
+                warehouseOutputItemWarehouseJoin,
+                warehouseOutputItemProductJoin,
                 productModelJoin,
                 productColorJoin,
-                productSizeJoin);
-
+                productSizeJoin
+        );
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
-            List<Order> purchaseItemList = new ArrayList<>();
+            List<Order> warehouseOutputList = new ArrayList<>();
 
             if (sort.equalsIgnoreCase("ASC")) {
-                purchaseItemList = listASC(sortColumn, criteriaBuilder, itemRoot);
+                warehouseOutputList = listASC(sortColumn, criteriaBuilder, itemRoot);
             }
 
             if (sort.equalsIgnoreCase("DESC")) {
-                purchaseItemList = listDESC(sortColumn, criteriaBuilder, itemRoot);
+                warehouseOutputList = listDESC(sortColumn, criteriaBuilder, itemRoot);
             }
 
-            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(purchaseItemList);
+            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(warehouseOutputList);
         } else {
             criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         }
-
-        TypedQuery<SupplyOrderItem> orderTypedQuery = entityManager.createQuery(criteriaQuery);
+        TypedQuery<WarehouseOutputItem> orderTypedQuery = entityManager.createQuery(criteriaQuery);
         orderTypedQuery.setFirstResult(pageNumber * pageSize);
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Long count = getSupplyOrderItemCount(
+        Long count = getWarehouseOutputItemCount(
                 clientId,
                 orderNumber,
                 ref,
@@ -122,7 +115,6 @@ public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepos
                 status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
-
     private List<Predicate> predicate(
             UUID clientId,
             Long orderNumber,
@@ -133,45 +125,46 @@ public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepos
             String product,
             String color,
             String size,
-            Boolean status,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
             OffsetDateTime updateEndDate,
+            Boolean status,
             CriteriaBuilder criteriaBuilder,
-            Root<SupplyOrderItem> itemRoot,
-            Join<SupplyOrderItem, SupplyOrder> supplyOrderItemSupplyOrderJoin,
-            Join<SupplyOrderItem, Product> supplyOrderItemProductJoin,
-            Join<SupplyOrder, Warehouse> supplyOrderItemWarehouseJoin,
-            Join<Product, Model> productModelJoin,
+            Root<WarehouseOutputItem> itemRoot,
+            Join<WarehouseOutputItem,WarehouseOutput> warehouseOutputItemWarehouseOutputJoin,
+            Join<WarehouseOutput, Courier> warehouseOutputCourierJoin,
+            Join<WarehouseOutput, Warehouse> warehouseOutputWarehouseJoin,
+            Join<WarehouseOutputItem, Product> warehouseOutputItemProductJoin,
+            Join<Product,Model> productModelJoin,
             Join<Product,Color> productColorJoin,
-            Join<Product,Size> productSizeJoin) {
-
+            Join<Product,Size> productSizeJoin
+    ){
         List<Predicate> conditions = new ArrayList<>();
         if (clientId != null) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
         if(orderNumber!=null){
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(supplyOrderItemSupplyOrderJoin.get("orderNumber"), orderNumber)));
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(warehouseOutputItemWarehouseOutputJoin.get("orderNumber"), orderNumber)));
         }
         if(ref != null){
-            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(supplyOrderItemSupplyOrderJoin.get("ref")),"%"+ref.toUpperCase()+"%"));
-        }
-        
-        if(warehouse != null){
-            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(supplyOrderItemWarehouseJoin.get("name")),"%"+warehouse.toUpperCase()+"%"));
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(warehouseOutputItemWarehouseOutputJoin.get("ref")),"%"+ref.toUpperCase()+"%"));
         }
 
+        if(warehouse != null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(warehouseOutputWarehouseJoin.get("name")),"%"+warehouse.toUpperCase()+"%"));
+        }
+        
         if(quantity!=null){
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("quantity"), quantity)));
         }
-
+        
         if(model!=null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(productModelJoin.get("name")),"%"+model.toUpperCase()+"%"));
         }
 
         if(product!=null){
-            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(supplyOrderItemProductJoin.get("name")),"%"+product.toUpperCase()+"%"));
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(warehouseOutputItemProductJoin.get("name")),"%"+product.toUpperCase()+"%"));
         }
 
         if(color!=null){
@@ -225,67 +218,67 @@ public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepos
         return conditions;
     }
 
-    private List<Order> listASC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<SupplyOrderItem> itemRoot) {
+    private List<Order> listASC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<WarehouseOutputItem> itemRoot) {
 
-        List<Order> supplyOrderItemList = new ArrayList<>();
+        List<Order> warehouseOutputItemList = new ArrayList<>();
 
         if (sortColumn.equalsIgnoreCase("orderNumber")) {
-            supplyOrderItemList.add(criteriaBuilder.asc(itemRoot.get("orderNumber")));
+            warehouseOutputItemList.add(criteriaBuilder.asc(itemRoot.get("orderNumber")));
         }
 
         if (sortColumn.equalsIgnoreCase("clientId")) {
-            supplyOrderItemList.add(criteriaBuilder.asc(itemRoot.get("clientId")));
+            warehouseOutputItemList.add(criteriaBuilder.asc(itemRoot.get("clientId")));
         }
 
         if(sortColumn.equalsIgnoreCase("updateDate")){
-            supplyOrderItemList.add(criteriaBuilder.asc(itemRoot.get(
+            warehouseOutputItemList.add(criteriaBuilder.asc(itemRoot.get(
                     "updateDate"
             )));
         }
 
         if(sortColumn.equalsIgnoreCase("registrationDate")){
-            supplyOrderItemList.add(criteriaBuilder.asc(itemRoot.get(
+            warehouseOutputItemList.add(criteriaBuilder.asc(itemRoot.get(
                     "registrationDate"
             )));
         }
 
-        return supplyOrderItemList;
+        return warehouseOutputItemList;
 
     }
 
-    private List<Order> listDESC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<SupplyOrderItem> itemRoot) {
+    private List<Order> listDESC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<WarehouseOutputItem> itemRoot) {
 
-        List<Order> supplyOrderItemList = new ArrayList<>();
+        List<Order> warehouseOutputItemList = new ArrayList<>();
 
         if (sortColumn.equalsIgnoreCase("orderNumber")) {
-            supplyOrderItemList.add(criteriaBuilder.asc(itemRoot.get("orderNumber")));
+            warehouseOutputItemList.add(criteriaBuilder.asc(itemRoot.get("orderNumber")));
         }
 
         if (sortColumn.equalsIgnoreCase("name")) {
-            supplyOrderItemList.add(criteriaBuilder.desc(itemRoot.get("name")));
+            warehouseOutputItemList.add(criteriaBuilder.desc(itemRoot.get("name")));
         }
 
         if (sortColumn.equalsIgnoreCase("clientId")) {
-            supplyOrderItemList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
+            warehouseOutputItemList.add(criteriaBuilder.desc(itemRoot.get("clientId")));
         }
 
         if(sortColumn.equalsIgnoreCase("updateDate")){
-            supplyOrderItemList.add(criteriaBuilder.asc(itemRoot.get(
+            warehouseOutputItemList.add(criteriaBuilder.asc(itemRoot.get(
                     "updateDate"
             )));
         }
 
         if(sortColumn.equalsIgnoreCase("registrationDate")){
-            supplyOrderItemList.add(criteriaBuilder.asc(itemRoot.get(
+            warehouseOutputItemList.add(criteriaBuilder.asc(itemRoot.get(
                     "registrationDate"
             )));
         }
 
-        return supplyOrderItemList;
+        return warehouseOutputItemList;
 
     }
 
-    private Long getSupplyOrderItemCount(
+    private Long getWarehouseOutputItemCount(
             UUID clientId,
             Long orderNumber,
             String ref,
@@ -299,16 +292,18 @@ public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepos
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
             OffsetDateTime updateEndDate,
-            Boolean status) {
+            Boolean status
+    ){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<SupplyOrderItem> itemRoot = criteriaQuery.from(SupplyOrderItem.class);
-        Join<SupplyOrderItem, SupplyOrder> supplyOrderItemSupplyOrderJoin = itemRoot.join("supplyOrder");
-        Join<SupplyOrderItem, Product> supplyOrderItemProductJoin = supplyOrderItemSupplyOrderJoin.join("product");
-        Join<SupplyOrder, Warehouse> supplyOrderItemWarehouseJoin = supplyOrderItemSupplyOrderJoin.join("warehouse");
-        Join<Product, Model> productModelJoin = supplyOrderItemSupplyOrderJoin.join("model");
-        Join<Product,Color> productColorJoin = supplyOrderItemSupplyOrderJoin.join("color");
-        Join<Product,Size> productSizeJoin = supplyOrderItemSupplyOrderJoin.join("size");
+        Root<WarehouseOutputItem> itemRoot = criteriaQuery.from(WarehouseOutputItem.class);
+        Join<WarehouseOutputItem,WarehouseOutput> warehouseOutputItemWarehouseOutputJoin = itemRoot.join("warehouseOutput");
+        Join<WarehouseOutput, Courier> warehouseOutputCourierJoin = warehouseOutputItemWarehouseOutputJoin.join("courier");
+        Join<WarehouseOutput, Warehouse> warehouseOutputItemWarehouseJoin = warehouseOutputItemWarehouseOutputJoin.join("warehouse");
+        Join<WarehouseOutputItem, Product> warehouseOutputItemProductJoin = itemRoot.join("product");
+        Join<Product,Model> productModelJoin = warehouseOutputItemProductJoin.join("model");
+        Join<Product,Color> productColorJoin = warehouseOutputItemProductJoin.join("color");
+        Join<Product,Size> productSizeJoin = warehouseOutputItemProductJoin.join("size");
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
                 clientId,
@@ -320,21 +315,22 @@ public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepos
                 product,
                 color,
                 size,
-                status,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
                 updateEndDate,
+                status,
                 criteriaBuilder,
                 itemRoot,
-                supplyOrderItemSupplyOrderJoin,
-                supplyOrderItemProductJoin,
-                supplyOrderItemWarehouseJoin,
+                warehouseOutputItemWarehouseOutputJoin,
+                warehouseOutputCourierJoin,
+                warehouseOutputItemWarehouseJoin,
+                warehouseOutputItemProductJoin,
                 productModelJoin,
                 productColorJoin,
-                productSizeJoin);
+                productSizeJoin
+        );
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
-
 }

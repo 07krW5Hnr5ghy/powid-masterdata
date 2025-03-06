@@ -212,24 +212,29 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
     }
 
     @Override
-    public CompletableFuture<Page<SubCategoryProductDTO>> list(String name, String user,String sku, List<String> categoryProducts, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<SubCategoryProductDTO>> list(
+            String name,
+            String user,
+            String sku,
+            String categoryProduct,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<SubCategoryProduct> subCategoryProductPage;
-            List<CategoryProduct> categoryProductIds;
 
-            if(categoryProducts != null && !categoryProducts.isEmpty()){
-                categoryProductIds = categoryProductRepository.findByNameIn(categoryProducts.stream().map(
-                        String::toUpperCase
-                ).toList()).stream().toList();
-            }else{
-                categoryProductIds = new ArrayList<>();
-            }
             try{
                 subCategoryProductPage = subCategoryProductRepositoryCustom.searchForSubCategoryProduct(
                         name,
                         sku,
                         user,
-                        categoryProductIds,
+                        categoryProduct,
                         registrationStartDate,
                         registrationEndDate,
                         updateStartDate,
@@ -238,7 +243,7 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
                         sortColumn,
                         pageNumber,
                         pageSize,
-                        true
+                        status
                 );
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -257,66 +262,13 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
                             .sku(subCategoryProduct.getSku())
                             .registrationDate(subCategoryProduct.getRegistrationDate())
                             .updateDate(subCategoryProduct.getUpdateDate())
+                            .status(subCategoryProduct.getStatus())
                             .build()).toList();
 
             return new PageImpl<>(subCategoryProductDTOS, subCategoryProductPage.getPageable(),
                     subCategoryProductPage.getTotalElements());
         });
     }
-
-    @Override
-    public CompletableFuture<Page<SubCategoryProductDTO>> listFalse(String name, String user,String sku, List<String> categoryProducts, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            Page<SubCategoryProduct> subCategoryProductPage;
-            List<CategoryProduct> categoryProductIds;
-
-            if(categoryProducts != null && !categoryProducts.isEmpty()){
-                categoryProductIds = categoryProductRepository.findByNameIn(categoryProducts.stream().map(
-                        String::toUpperCase
-                ).toList()).stream().toList();
-            }else{
-                categoryProductIds = new ArrayList<>();
-            }
-            try{
-                subCategoryProductPage = subCategoryProductRepositoryCustom.searchForSubCategoryProduct(
-                        name,
-                        sku,
-                        user,
-                        categoryProductIds,
-                        registrationStartDate,
-                        registrationEndDate,
-                        updateStartDate,
-                        updateEndDate,
-                        sort,
-                        sortColumn,
-                        pageNumber,
-                        pageSize,
-                        false
-                );
-            }catch (RuntimeException e){
-                log.error(e.getMessage());
-                throw new BadRequestExceptions(Constants.ResultsFound);
-            }
-
-            if(subCategoryProductPage.isEmpty()){
-                return new PageImpl<>(Collections.emptyList());
-            }
-
-            List<SubCategoryProductDTO> subCategoryProductDTOS = subCategoryProductPage.getContent()
-                    .stream().map(subCategoryProduct -> SubCategoryProductDTO.builder()
-                            .categoryProduct(subCategoryProduct.getCategoryProduct().getName())
-                            .name(subCategoryProduct.getName())
-                            .sizeType(subCategoryProduct.getCategoryProduct().getSizeType().getName())
-                            .sku(subCategoryProduct.getSku())
-                            .registrationDate(subCategoryProduct.getRegistrationDate())
-                            .updateDate(subCategoryProduct.getUpdateDate())
-                            .build()).toList();
-
-            return new PageImpl<>(subCategoryProductDTOS, subCategoryProductPage.getPageable(),
-                    subCategoryProductPage.getTotalElements());
-        });
-    }
-
     @Override
     public CompletableFuture<List<SubCategoryProductDTO>> listByCategoryProduct(String username,String name) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
