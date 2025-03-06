@@ -44,11 +44,11 @@ public class DeliveryManifest {
     @Column(name = "client_id")
     private UUID clientId;
 
-    @Column(name = "delivery_manifest_status_id")
-    private UUID deliveryManifestStatusId;
-
     @Column(name = "warehouse_id")
     private UUID warehouseId;
+
+    @Column(name = "open")
+    private Boolean open;
 
     @ManyToOne()
     @JoinColumn(name = "courier_id",columnDefinition = "courierId",insertable = false,updatable = false)
@@ -61,10 +61,6 @@ public class DeliveryManifest {
     @ManyToOne()
     @JoinColumn(name="client_id",columnDefinition = "clientId",insertable = false,updatable = false)
     private Client client;
-
-    @ManyToOne()
-    @JoinColumn(name="delivery_manifest_status_id",columnDefinition = "deliveryManifestStatusId",insertable = false,updatable = false)
-    private DeliveryManifestStatus deliveryManifestStatus;
 
     @ManyToOne()
     @JoinColumn(name="warehouse_id",columnDefinition = "warehouseId",insertable = false,updatable = false)

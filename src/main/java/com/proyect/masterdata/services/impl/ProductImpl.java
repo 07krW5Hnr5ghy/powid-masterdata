@@ -383,84 +383,52 @@ public class ProductImpl implements IProduct {
     @Override
     public CompletableFuture<Page<ProductDTO>> list(
             String tokenUser,
-            String sku,
+            String productSku,
+            String product,
             String model,
-            List<String> brands,
-            List<String> sizes,
-            List<String> categoryProducts,
-            List<String> colors,
-            List<String> units,
+            String brand,
+            String size,
+            String categoryProduct,
+            String subCategoryProduct,
+            String color,
+            String unit,
             Boolean pictureFlag,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) {
+            Integer pageSize,
+            Boolean status) {
         return CompletableFuture.supplyAsync(()->{
             Page<Product> productPage;
-            List<UUID> brandIds;
-            List<UUID> sizeIds;
-            List<UUID> categoryProductIds;
-            List<UUID> colorIds;
-            List<UUID> unitIds;
             UUID clientId;
-
-            if(sizes != null && !sizes.isEmpty()){
-                sizeIds = sizeRepository.findByNameIn(
-                        sizes.stream().map(String::toUpperCase).toList()
-                ).stream().map(Size::getId).toList();
-            }else{
-                sizeIds = new ArrayList<>();
-            }
-
-            if(categoryProducts != null && !categoryProducts.isEmpty()){
-                categoryProductIds = categoryProductRepository.findByNameIn(
-                        categoryProducts.stream().map(String::toUpperCase).toList()
-                ).stream().map(CategoryProduct::getId).toList();
-            }else{
-                categoryProductIds = new ArrayList<>();
-            }
-
-            if(colors != null && !colors.isEmpty()){
-                colorIds = colorRepository.findByNameIn(
-                        colors.stream().map(String::toUpperCase).toList()
-                ).stream().map(Color::getId).toList();
-            }else{
-                colorIds = new ArrayList<>();
-            }
-
-            if(units != null && !units.isEmpty()){
-                unitIds = unitRepository.findByNameIn(
-                        units.stream().map(String::toUpperCase).toList()
-                ).stream().map(Unit::getId).toList();
-            }else {
-                unitIds = new ArrayList<>();
-            }
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
-                if(brands != null && !brands.isEmpty()){
-                    brandIds = brandRepository.findByClientIdAndNameIn(
-                            clientId,
-                            brands.stream().map(String::toUpperCase).toList()
-                    ).stream().map(Brand::getId).toList();
-                }else{
-                    brandIds = new ArrayList<>();
-                }
                 productPage = productRepositoryCustom.searchForProduct(
                         clientId,
-                        sku,
+                        productSku,
+                        product,
                         model,
-                        brandIds,
-                        sizeIds,
-                        categoryProductIds,
-                        colorIds,
-                        unitIds,
+                        brand,
+                        size,
+                        categoryProduct,
+                        subCategoryProduct,
+                        color,
+                        unit,
                         pictureFlag,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
                         sort,
                         sortColumn,
                         pageNumber,
                         pageSize,
-                        true);
+                        status);
 
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
@@ -471,140 +439,27 @@ public class ProductImpl implements IProduct {
                 return new PageImpl<>(Collections.emptyList());
             }
 
-            List<ProductDTO> productDTOs = productPage.getContent().stream().map(product -> {
-                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
-                List<String> productImages = productPictureRepository.findAllByProductId(product.getId()).stream().map(ProductPicture::getProductPictureUrl).toList();
+            List<ProductDTO> productDTOs = productPage.getContent().stream().map(item -> {
+                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(item.getId());
+                List<String> productImages = productPictureRepository.findAllByProductId(item.getId()).stream().map(ProductPicture::getProductPictureUrl).toList();
 
                 return ProductDTO.builder()
-                        .id(product.getId())
-                        .name(product.getName().toUpperCase())
-                        .sku(iUtil.buildProductSku(product))
-                        .brand(product.getModel().getBrand().getName())
-                        .model(product.getModel().getName())
-                        .category(product.getSubCategoryProduct().getCategoryProduct().getName())
-                        .subCategory(product.getSubCategoryProduct().getName())
-                        .color(product.getColor().getName())
-                        .size(product.getSize().getName())
-                        .unit(product.getUnit().getName())
+                        .id(item.getId())
+                        .name(item.getName().toUpperCase())
+                        .sku(iUtil.buildProductSku(item))
+                        .brand(item.getModel().getBrand().getName())
+                        .model(item.getModel().getName())
+                        .category(item.getSubCategoryProduct().getCategoryProduct().getName())
+                        .subCategory(item.getSubCategoryProduct().getName())
+                        .color(item.getColor().getName())
+                        .size(item.getSize().getName())
+                        .unit(item.getUnit().getName())
                         .price(productPrice.getUnitSalePrice())
                         .pictures(productImages)
-                        .registrationDate(product.getRegistrationDate())
-                        .updateDate(product.getUpdateDate())
-                        .pictureFlag(product.getPictureFlag())
-                        .build();
-            }).toList();
-
-            return new PageImpl<>(productDTOs, productPage.getPageable(), productPage.getTotalElements());
-        });
-    }
-
-    @Override
-    public CompletableFuture<Page<ProductDTO>> listFalse(
-            String tokenUser,
-            String sku,
-            String model,
-            List<String> brands,
-            List<String> sizes,
-            List<String> categoryProducts,
-            List<String> colors,
-            List<String> units,
-            Boolean pictureFlag,
-            String sort,
-            String sortColumn,
-            Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            Page<Product> productPage;
-            List<UUID> brandIds;
-            List<UUID> sizeIds;
-            List<UUID> categoryProductIds;
-            List<UUID> colorIds;
-            List<UUID> unitIds;
-            UUID clientId;
-
-            if(sizes != null && !sizes.isEmpty()){
-                sizeIds = sizeRepository.findByNameIn(
-                        sizes.stream().map(String::toUpperCase).toList()
-                ).stream().map(Size::getId).toList();
-            }else{
-                sizeIds = new ArrayList<>();
-            }
-
-            if(categoryProducts != null && !categoryProducts.isEmpty()){
-                categoryProductIds = categoryProductRepository.findByNameIn(
-                        categoryProducts.stream().map(String::toUpperCase).toList()
-                ).stream().map(CategoryProduct::getId).toList();
-            }else{
-                categoryProductIds = new ArrayList<>();
-            }
-
-            if(colors != null && !colors.isEmpty()){
-                colorIds = colorRepository.findByNameIn(
-                        colors.stream().map(String::toUpperCase).toList()
-                ).stream().map(Color::getId).toList();
-            }else{
-                colorIds = new ArrayList<>();
-            }
-
-            if(units != null && !units.isEmpty()){
-                unitIds = unitRepository.findByNameIn(
-                        units.stream().map(String::toUpperCase).toList()
-                ).stream().map(Unit::getId).toList();
-            }else {
-                unitIds = new ArrayList<>();
-            }
-
-            try {
-                clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
-                if(brands != null && !brands.isEmpty()){
-                    brandIds = brandRepository.findByClientIdAndNameIn(
-                            clientId,
-                            brands.stream().map(String::toUpperCase).toList()
-                    ).stream().map(Brand::getId).toList();
-                }else{
-                    brandIds = new ArrayList<>();
-                }
-                productPage = productRepositoryCustom.searchForProduct(
-                        clientId,
-                        sku,
-                        model,
-                        brandIds,
-                        sizeIds,
-                        categoryProductIds,
-                        colorIds,
-                        unitIds,
-                        pictureFlag,
-                        sort,
-                        sortColumn,
-                        pageNumber,
-                        pageSize,
-                        false);
-            } catch (RuntimeException e) {
-                log.error(e.getMessage());
-                throw new BadRequestExceptions(Constants.ResultsFound);
-            }
-
-            if (productPage.isEmpty()) {
-                return new PageImpl<>(Collections.emptyList());
-            }
-
-            List<ProductDTO> productDTOs = productPage.getContent().stream().map(product -> {
-                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(product.getId());
-                return ProductDTO.builder()
-                        .id(product.getId())
-                        .name(product.getName().toUpperCase())
-                        .sku(iUtil.buildProductSku(product))
-                        .brand(product.getModel().getBrand().getName())
-                        .model(product.getModel().getName())
-                        .category(product.getSubCategoryProduct().getCategoryProduct().getName())
-                        .subCategory(product.getSubCategoryProduct().getName())
-                        .color(product.getColor().getName())
-                        .size(product.getSize().getName())
-                        .unit(product.getUnit().getName())
-                        .price(productPrice.getUnitSalePrice())
-                        .pictureFlag(product.getPictureFlag())
-                        .registrationDate(product.getRegistrationDate())
-                        .updateDate(product.getUpdateDate())
+                        .registrationDate(item.getRegistrationDate())
+                        .updateDate(item.getUpdateDate())
+                        .pictureFlag(item.getPictureFlag())
+                        .status(item.getStatus())
                         .build();
             }).toList();
 

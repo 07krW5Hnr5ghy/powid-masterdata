@@ -34,7 +34,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
             String size,
             String model,
             String brand,
-            String deliveryStatus,
+            Boolean delivered,
             String courier,
             String warehouse,
             OffsetDateTime registrationStartDate,
@@ -51,7 +51,6 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
         Join<DeliveryManifestItem, Product> deliveryManifestItemProductJoin = itemRoot.join("product");
         Join<DeliveryManifestItem, DeliveryManifest> deliveryManifestItemDeliveryManifestJoin = itemRoot.join("deliveryManifest");
         Join<DeliveryManifestItem, User> deliveryManifestItemUserJoin = itemRoot.join("user");
-        Join<DeliveryManifestItem,DeliveryStatus> deliveryManifestItemDeliveryStatusJoin = itemRoot.join("deliveryStatus");
         Join<DeliveryManifestItem,OrderItem> deliveryManifestItemOrderItemJoin = itemRoot.join("orderItem");
         Join<Product,Color> productColorJoin = deliveryManifestItemProductJoin.join("color");
         Join<Product,Size> productSizeJoin = deliveryManifestItemProductJoin.join("size");
@@ -71,7 +70,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
               size,
               model,
               brand,
-              deliveryStatus,
+              delivered,
               courier,
               warehouse,
               registrationStartDate,
@@ -87,7 +86,6 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
               productSizeJoin,
               productModelJoin,
               modelBrandJoin,
-              deliveryManifestItemDeliveryStatusJoin,
               deliveryManifestCourierJoin,
               deliveryManifestWarehouseJoin
         );
@@ -121,7 +119,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
                 size,
                 model,
                 brand,
-                deliveryStatus,
+                delivered,
                 courier,
                 warehouse,
                 registrationStartDate,
@@ -141,7 +139,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
             String size,
             String model,
             String brand,
-            String deliveryStatus,
+            Boolean delivered,
             String courier,
             String warehouse,
             OffsetDateTime registrationStartDate,
@@ -157,7 +155,6 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
             Join<Product,Size> productSizeJoin,
             Join<Product,Model> productModelJoin,
             Join<Model,Brand> modelBrandJoin,
-            Join<DeliveryManifestItem,DeliveryStatus> deliveryManifestItemDeliveryStatusJoin,
             Join<DeliveryManifest,Courier> deliveryManifestCourierJoin,
             Join<DeliveryManifest,Warehouse> deliveryManifestWarehouseJoin
     ){
@@ -189,8 +186,11 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
         if(brand!=null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(modelBrandJoin.get("name")),"%"+brand.toUpperCase()+"%"));
         }
-        if(deliveryStatus!=null){
-            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(deliveryManifestItemDeliveryStatusJoin.get("name")),"%"+deliveryStatus.toUpperCase()+"%"));
+        if(Boolean.TRUE.equals(delivered)) {
+            conditions.add(criteriaBuilder.and(criteriaBuilder.isTrue(itemRoot.get("delivered"))));
+        }
+        if(Boolean.FALSE.equals(delivered)){
+            conditions.add(criteriaBuilder.and(criteriaBuilder.isFalse(itemRoot.get("delivered"))));
         }
         if(courier!=null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(deliveryManifestCourierJoin.get("name")),"%"+courier.toUpperCase()+"%"));
@@ -297,7 +297,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
             String size,
             String model,
             String brand,
-            String deliveryStatus,
+            Boolean delivered,
             String courier,
             String warehouse,
             OffsetDateTime registrationStartDate,
@@ -311,7 +311,6 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
         Join<DeliveryManifestItem, Product> deliveryManifestItemProductJoin = itemRoot.join("product");
         Join<DeliveryManifestItem, DeliveryManifest> deliveryManifestItemDeliveryManifestJoin = itemRoot.join("deliveryManifest");
         Join<DeliveryManifestItem, User> deliveryManifestItemUserJoin = itemRoot.join("user");
-        Join<DeliveryManifestItem,DeliveryStatus> deliveryManifestItemDeliveryStatusJoin = itemRoot.join("deliveryStatus");
         Join<DeliveryManifestItem,OrderItem> deliveryManifestItemOrderItemJoin = itemRoot.join("orderItem");
         Join<Product,Color> productColorJoin = deliveryManifestItemProductJoin.join("color");
         Join<Product,Size> productSizeJoin = deliveryManifestItemProductJoin.join("size");
@@ -331,7 +330,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
                 size,
                 model,
                 brand,
-                deliveryStatus,
+                delivered,
                 courier,
                 warehouse,
                 registrationStartDate,
@@ -347,7 +346,6 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
                 productSizeJoin,
                 productModelJoin,
                 modelBrandJoin,
-                deliveryManifestItemDeliveryStatusJoin,
                 deliveryManifestCourierJoin,
                 deliveryManifestWarehouseJoin
         );

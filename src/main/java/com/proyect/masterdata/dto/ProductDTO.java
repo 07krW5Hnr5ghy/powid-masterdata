@@ -30,4 +30,5 @@ public class ProductDTO {
     private Boolean pictureFlag;
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
+    private Boolean status;
 }

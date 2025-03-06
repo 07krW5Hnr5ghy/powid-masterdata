@@ -30,7 +30,6 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
     private final DeliveryManifestItemRepository deliveryManifestItemRepository;
     private final OrderItemRepository orderItemRepository;
     private final WarehouseStockRepository warehouseStockRepository;
-    private final DeliveryStatusRepository deliveryStatusRepository;
     private final UserRepository userRepository;
     private final IWarehouseStock iWarehouseStock;
     private final IGeneralStock iGeneralStock;
@@ -47,10 +46,8 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
         return CompletableFuture.supplyAsync(()->{
             OrderItem orderItem;
             WarehouseStock warehouseStock;
-            DeliveryStatus deliveryStatus;
             try{
                 orderItem = orderItemRepository.findByIdAndStatusTrue(requestDeliveryManifestItem.getOrderItemId());
-                deliveryStatus = deliveryStatusRepository.findByName("PENDIENTE");
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -71,8 +68,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                         .collected(false)
                         .orderItem(orderItem)
                         .orderItemId(orderItem.getId())
-                        .deliveryStatus(deliveryStatus)
-                        .deliveryStatusId(deliveryStatus.getId())
+                        .delivered(false)
                         .build());
                 iAudit.save(
                         "ADD_DELIVERY_MANIFEST_ITEM",
@@ -90,15 +86,17 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
         });
     }
     @Override
-    public CompletableFuture<ResponseSuccess> updateDeliveryManifestItem(UUID deliveryManifestItemId, String username) {
+    public CompletableFuture<ResponseSuccess> updateDeliveryManifestItem(
+            UUID deliveryManifestItemId,
+            Boolean collected,
+            Boolean delivered,
+            String username) {
         return CompletableFuture.supplyAsync(()->{
             User user;
             DeliveryManifestItem deliveryManifestItem;
-            DeliveryStatus deliveryStatus;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 deliveryManifestItem = deliveryManifestItemRepository.findById(deliveryManifestItemId).orElse(null);
-                deliveryStatus = deliveryStatusRepository.findByName("COMPLETO");
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -109,15 +107,11 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
             if(deliveryManifestItem==null){
                 throw new BadRequestExceptions(Constants.ErrorDeliveryManifestItem);
             }
-            if(deliveryStatus==null){
-                throw new BadRequestExceptions(Constants.ErrorDeliveryStatus);
-            }
             try{
-                deliveryManifestItem.setDeliveryStatus(deliveryStatus);
-                deliveryManifestItem.setDeliveryStatusId(deliveryStatus.getId());
+                deliveryManifestItem.setDelivered(collected);
                 deliveryManifestItem.setUser(user);
                 deliveryManifestItem.setUserId(user.getId());
-                deliveryManifestItem.setCollected(true);
+                deliveryManifestItem.setCollected(delivered);
                 deliveryManifestItemRepository.save(deliveryManifestItem);
                 iWarehouseStock.out(
                         deliveryManifestItem.getDeliveryManifest().getWarehouse(),
@@ -170,9 +164,8 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
             String color,
             String size,
             String model,
-            String supplier,
             String brand,
-            String deliveryStatus,
+            Boolean delivered,
             String courier,
             String warehouse,
             OffsetDateTime registrationStartDate,
@@ -198,7 +191,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                         size,
                         model,
                         brand,
-                        deliveryStatus,
+                        delivered,
                         courier,
                         warehouse,
                         registrationStartDate,

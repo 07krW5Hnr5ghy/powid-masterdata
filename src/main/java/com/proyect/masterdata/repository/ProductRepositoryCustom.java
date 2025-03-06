@@ -4,6 +4,7 @@ import com.proyect.masterdata.domain.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -11,14 +12,20 @@ import java.util.UUID;
 public interface ProductRepositoryCustom {
     Page<Product> searchForProduct(
             UUID clientId,
-            String sku,
+            String productSku,
+            String product,
             String model,
-            List<UUID> brandIds,
-            List<UUID> sizeIds,
-            List<UUID> categoryProductIds,
-            List<UUID> colorIds,
-            List<UUID> unitIds,
+            String brand,
+            String size,
+            String categoryProduct,
+            String subCategoryProduct,
+            String color,
+            String unit,
             Boolean pictureFlag,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,

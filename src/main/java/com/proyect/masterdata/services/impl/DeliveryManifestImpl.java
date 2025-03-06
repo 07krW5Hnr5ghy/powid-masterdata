@@ -38,7 +38,6 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
     private final WarehouseRepository warehouseRepository;
     private final DeliveryManifestItemRepository deliveryManifestItemRepository;
     private final IUtil iUtil;
-    private final DeliveryManifestStatusRepository deliveryManifestStatusRepository;
     private final IAudit iAudit;
     private final DeliveryManifestRepositoryCustom deliveryManifestRepositoryCustom;
     @Override
@@ -47,12 +46,10 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
             User user;
             Courier courier;
             Warehouse warehouse;
-            DeliveryManifestStatus deliveryManifestStatus;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(requestDeliveryManifest.getUsername().toUpperCase());
                 courier = courierRepository.findByNameAndStatusTrue(requestDeliveryManifest.getCourier().toUpperCase());
                 warehouse = warehouseRepository.findByNameAndStatusTrue(requestDeliveryManifest.getWarehouse().toUpperCase());
-                deliveryManifestStatus = deliveryManifestStatusRepository.findByName("ABIERTA");
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -73,8 +70,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 .courier(courier)
                                 .registrationDate(OffsetDateTime.now())
                                 .updateDate(OffsetDateTime.now())
-                                .deliveryManifestStatus(deliveryManifestStatus)
-                                .deliveryManifestStatusId(deliveryManifestStatus.getId())
+                                .open(true)
                                 .user(user)
                                 .userId(user.getId())
                                 .client(user.getClient())
@@ -136,7 +132,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         .registrationDate(deliveryManifest.getRegistrationDate())
                         .updateDate(deliveryManifest.getUpdateDate())
                         .courier(deliveryManifest.getCourier().getName())
-                        .deliveryManifestStatus(deliveryManifest.getDeliveryManifestStatus().getName())
+                        .open(deliveryManifest.getOpen())
                         .deliveryManifestItemDTOS(deliveryManifestItemList)
                         .warehouse(deliveryManifest.getWarehouse().getName())
                         .build();
@@ -166,9 +162,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 throw new BadRequestExceptions(Constants.ErrorDeliveryManifest);
             }
             try{
-                DeliveryManifestStatus deliveryManifestStatus = deliveryManifestStatusRepository.findByName("CERRADA");
-                deliveryManifest.setDeliveryManifestStatus(deliveryManifestStatus);
-                deliveryManifest.setDeliveryManifestStatusId(deliveryManifest.getDeliveryManifestStatusId());
+                deliveryManifest.setOpen(false);
                 deliveryManifest.setUpdateDate(OffsetDateTime.now());
                 deliveryManifest.setUser(user);
                 deliveryManifest.setUserId(user.getId());
@@ -177,7 +171,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         "DELETE_DELIVERY_MANIFEST",
                         "GUIA "+
                                 deliveryManifest.getManifestNumber()+
-                                " ELIMINADA.",
+                                " CERRADA.",
                         deliveryManifest.getManifestNumber().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
@@ -203,7 +197,8 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+            Integer pageSize,
+            Boolean open) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<DeliveryManifest> deliveryManifestPage;
             UUID clientId;
@@ -221,7 +216,8 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         sort,
                         sortColumn,
                         pageNumber,
-                        pageSize
+                        pageSize,
+                        open
                 );
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -247,7 +243,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 return DeliveryManifestDTO.builder()
                         .manifestNumber(deliveryManifest.getManifestNumber())
                         .id(deliveryManifest.getId())
-                        .deliveryManifestStatus(deliveryManifest.getDeliveryManifestStatus().getName())
+                        .open(deliveryManifest.getOpen())
                         .courier(deliveryManifest.getCourier().getName())
                         .warehouse(deliveryManifest.getWarehouse().getName())
                         .registrationDate(deliveryManifest.getRegistrationDate())

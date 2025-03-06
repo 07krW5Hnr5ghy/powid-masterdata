@@ -20,6 +20,6 @@ public class DeliveryManifestDTO {
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
     private String courier;
-    private String deliveryManifestStatus;
+    private Boolean open;
     private String warehouse;
 }
