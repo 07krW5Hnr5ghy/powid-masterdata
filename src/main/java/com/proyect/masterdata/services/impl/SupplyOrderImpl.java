@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.CheckStockDTO;
 import com.proyect.masterdata.dto.SupplyOrderDTO;
+import com.proyect.masterdata.dto.SupplyOrderItemDTO;
 import com.proyect.masterdata.dto.request.RequestSupplyOrder;
 import com.proyect.masterdata.dto.request.RequestSupplyOrderItem;
 import com.proyect.masterdata.dto.request.RequestStockTransactionItem;
@@ -40,6 +41,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
     private final ProductRepository productRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final IUtil iUtil;
+    private final SupplyOrderItemRepository supplyOrderItemRepository;
     @Override
     @Transactional
     public ResponseSuccess save(RequestSupplyOrder requestSupplyOrder, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
@@ -76,9 +78,9 @@ public class SupplyOrderImpl implements ISupplyOrder {
 
         try{
 
-            List<RequestStockTransactionItem> requestStockTransactionItemList = requestSupplyOrder.getRequestSupplyOrderItemList().stream().map(purchaseItem -> RequestStockTransactionItem.builder()
-                    .quantity(purchaseItem.getQuantity())
-                    .productId(purchaseItem.getProductId())
+            List<RequestStockTransactionItem> requestStockTransactionItemList = requestSupplyOrder.getRequestSupplyOrderItemList().stream().map(supplyOrderItem -> RequestStockTransactionItem.builder()
+                    .quantity(supplyOrderItem.getQuantity())
+                    .productId(supplyOrderItem.getProductId())
                     .build()).toList();
             StockTransaction newStockTransaction = iStockTransaction.save("S"+ requestSupplyOrder.getRef().toUpperCase(), warehouse,requestStockTransactionItemList,"COMPRA",user);
             Long orderNumber = supplyOrderRepository.countByClientId(user.getClientId())+1L;
@@ -142,9 +144,9 @@ public class SupplyOrderImpl implements ISupplyOrder {
             }
 
             try{
-                List<RequestStockTransactionItem> requestStockTransactionItemList = requestSupplyOrder.getRequestSupplyOrderItemList().stream().map(purchaseItem -> RequestStockTransactionItem.builder()
-                        .quantity(purchaseItem.getQuantity())
-                        .productId(purchaseItem.getProductId())
+                List<RequestStockTransactionItem> requestStockTransactionItemList = requestSupplyOrder.getRequestSupplyOrderItemList().stream().map(supplyOrderItem -> RequestStockTransactionItem.builder()
+                        .quantity(supplyOrderItem.getQuantity())
+                        .productId(supplyOrderItem.getProductId())
                         .build()).toList();
                 StockTransaction newStockTransaction = iStockTransaction.save("S"+ requestSupplyOrder.getRef().toUpperCase(), warehouse,requestStockTransactionItemList,"COMPRA",user);
                 Long orderNumber = supplyOrderRepository.countByClientId(user.getClientId())+1L;
@@ -224,68 +226,43 @@ public class SupplyOrderImpl implements ISupplyOrder {
                 return new PageImpl<>(Collections.emptyList());
             }
 
-            List<SupplyOrderDTO> supplyOrderDTOS = pagePurchase.getContent().stream().map(purchase -> SupplyOrderDTO.builder()
-                    .ref(purchase.getRef())
-                    .warehouse(purchase.getWarehouse().getName())
-                    .registrationDate(purchase.getRegistrationDate())
-                    .deliveryDate(purchase.getDeliveryDate())
-                    .build()).toList();
+            List<SupplyOrderDTO> supplyOrderDTOS = pagePurchase.getContent().stream().map(supplyOrder -> {
+                List<SupplyOrderItemDTO> supplyOrderItemDTOS = supplyOrderItemRepository.findAllBySupplyOrderId(supplyOrder.getId()).stream()
+                        .map(supplyOrderItem -> SupplyOrderItemDTO.builder()
+                                .id(supplyOrderItem.getId())
+                                .color(supplyOrderItem.getProduct().getColor().getName())
+                                .model(supplyOrderItem.getProduct().getModel().getName())
+                                .size(supplyOrderItem.getProduct().getSize().getName())
+                                .productSku(iUtil.buildProductSku(supplyOrderItem.getProduct()))
+                                .ref(supplyOrderItem.getSupplyOrder().getRef())
+                                .orderNumber(supplyOrderItem.getSupplyOrder().getOrderNumber())
+                                .productId(supplyOrderItem.getProductId())
+                                .registrationDate(supplyOrderItem.getRegistrationDate())
+                                .updateDate(supplyOrderItem.getUpdateDate())
+                                .quantity(supplyOrderItem.getQuantity())
+                                .warehouse(supplyOrderItem.getSupplyOrder().getWarehouse().getName())
+                                .product(supplyOrderItem.getProduct().getName())
+                                .status(supplyOrderItem.getStatus())
+                                .user(supplyOrderItem.getUser().getUsername())
+                                .build())
+                        .toList();
+                return SupplyOrderDTO.builder()
+                        .ref(supplyOrder.getRef())
+                        .warehouse(supplyOrder.getWarehouse().getName())
+                        .registrationDate(supplyOrder.getRegistrationDate())
+                        .updateDate(supplyOrder.getUpdateDate())
+                        .orderNumber(supplyOrder.getOrderNumber())
+                        .status(supplyOrder.getStatus())
+                        .supplyOrderItemDTOList(supplyOrderItemDTOS)
+                        .deliveryDate(supplyOrder.getDeliveryDate())
+                        .user(supplyOrder.getUser().getUsername())
+                        .id(supplyOrder.getId())
+                        .build();
+            }).toList();
 
             return new PageImpl<>(supplyOrderDTOS,pagePurchase.getPageable(),pagePurchase.getTotalElements());
         });
     }
-    @Override
-    public CompletableFuture<List<SupplyOrderDTO>> listPurchase(String user) throws BadRequestExceptions, InternalErrorExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            List<SupplyOrder> supplyOrders;
-            UUID clientId;
-            try {
-                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                supplyOrders = supplyOrderRepository.findAllByClientId(clientId);
-            }catch (RuntimeException e){
-                log.error(e.getMessage());
-                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            }
-
-            if(supplyOrders.isEmpty()){
-                return Collections.emptyList();
-            }
-
-            return supplyOrders.stream().map(purchase -> SupplyOrderDTO.builder()
-                    .ref(purchase.getRef())
-                    .warehouse(purchase.getWarehouse().getName())
-                    .registrationDate(purchase.getRegistrationDate())
-                    .deliveryDate(purchase.getDeliveryDate())
-                    .build()).toList();
-        });
-    }
-
-    @Override
-    public CompletableFuture<List<SupplyOrderDTO>> listFilter(String user) throws BadRequestExceptions, InternalErrorExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            List<SupplyOrder> supplyOrders;
-            UUID clientId;
-            try {
-                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                supplyOrders = supplyOrderRepository.findAllByClientId(clientId);
-            }catch (RuntimeException e){
-                log.error(e.getMessage());
-                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            }
-
-            if(supplyOrders.isEmpty()){
-                return Collections.emptyList();
-            }
-
-            return supplyOrders.stream().map(purchase -> SupplyOrderDTO.builder()
-                    .ref(purchase.getRef())
-                    .warehouse(purchase.getWarehouse().getName())
-                    .registrationDate(purchase.getRegistrationDate())
-                    .deliveryDate(purchase.getDeliveryDate())
-                    .build()).toList();
-        });
-    }
-
     @Override
     public CompletableFuture<List<CheckStockDTO>> checkStock(UUID productId, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{

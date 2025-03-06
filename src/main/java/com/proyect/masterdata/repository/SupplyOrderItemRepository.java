@@ -7,7 +7,8 @@ import java.util.List;
 import java.util.UUID;
 
 public interface SupplyOrderItemRepository extends JpaRepository<SupplyOrderItem, UUID> {
-    SupplyOrderItem findByPurchaseIdAndProductId(UUID purchaseId, UUID productId);
+    SupplyOrderItem findBySupplyOrderIdAndProductId(UUID supplyOrderId, UUID productId);
     List<SupplyOrderItem> findAllByClientId(UUID clientId);
-    List<SupplyOrderItem> findAllByClientIdAndPurchaseId(UUID clientId, UUID purchaseId);
+    List<SupplyOrderItem> findAllByClientIdAndSupplyOrderId(UUID clientId, UUID supplyOrderId);
+    List<SupplyOrderItem> findAllBySupplyOrderId(UUID supplyOrderId);
 }

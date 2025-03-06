@@ -60,7 +60,7 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
         if(product == null){
             throw new BadRequestExceptions(Constants.ErrorProduct);
         }else{
-            supplyOrderItem = supplyOrderItemRepository.findByPurchaseIdAndProductId(supplyOrder.getId(),product.getId());
+            supplyOrderItem = supplyOrderItemRepository.findBySupplyOrderIdAndProductId(supplyOrder.getId(),product.getId());
         }
 
         if (supplyOrderItem != null) {
@@ -129,7 +129,7 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
             if(supplyOrder ==null){
                 throw new BadRequestExceptions(Constants.ErrorPurchase);
             }else{
-                supplyOrderItem = supplyOrderItemRepository.findByPurchaseIdAndProductId(supplyOrder.getId(),product.getId());
+                supplyOrderItem = supplyOrderItemRepository.findBySupplyOrderIdAndProductId(supplyOrder.getId(),product.getId());
             }
             
             if (supplyOrderItem != null) {
@@ -193,14 +193,18 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
-            if(supplyOrder ==null){
+            if(supplyOrder==null){
                 throw new BadRequestExceptions(Constants.ErrorPurchase);
             }
 
             if(product == null){
                 throw new BadRequestExceptions(Constants.ErrorProduct);
             }else {
-                supplyOrderItem = supplyOrderItemRepository.findByPurchaseIdAndProductId(supplyOrder.getId(),product.getId());
+                supplyOrderItem = supplyOrderItemRepository.findBySupplyOrderIdAndProductId(supplyOrder.getId(),product.getId());
+            }
+            
+            if(!supplyOrder.getStatus()){
+                throw new BadRequestExceptions(Constants.ErrorSupplyOrderInactive);
             }
 
             if (supplyOrderItem == null) {
@@ -260,7 +264,7 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
             if(product == null){
                 throw new BadRequestExceptions(Constants.ErrorProduct);
             }else {
-                supplyOrderItem = supplyOrderItemRepository.findByPurchaseIdAndProductId(supplyOrder.getId(),product.getId());
+                supplyOrderItem = supplyOrderItemRepository.findBySupplyOrderIdAndProductId(supplyOrder.getId(),product.getId());
             }
 
             if (supplyOrderItem == null) {
@@ -346,14 +350,14 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
                 return new PageImpl<>(Collections.emptyList());
             }
 
-            List<SupplyOrderItemDTO> supplyOrderItemDTOS = pagePurchaseItem.getContent().stream().map(purchaseItem -> SupplyOrderItemDTO.builder()
-                    .purchase(purchaseItem.getSupplyOrder().getOrderNumber())
-                    .quantity(purchaseItem.getQuantity())
-                    .warehouse(purchaseItem.getSupplyOrder().getWarehouse().getName())
-                    .model(purchaseItem.getProduct().getModel().getName())
-                    .color(purchaseItem.getProduct().getColor().getName())
-                    .size(purchaseItem.getProduct().getSize().getName())
-                    .registrationDate(purchaseItem.getRegistrationDate())
+            List<SupplyOrderItemDTO> supplyOrderItemDTOS = pagePurchaseItem.getContent().stream().map(supplyOrderItem -> SupplyOrderItemDTO.builder()
+                    .orderNumber(supplyOrderItem.getSupplyOrder().getOrderNumber())
+                    .quantity(supplyOrderItem.getQuantity())
+                    .warehouse(supplyOrderItem.getSupplyOrder().getWarehouse().getName())
+                    .model(supplyOrderItem.getProduct().getModel().getName())
+                    .color(supplyOrderItem.getProduct().getColor().getName())
+                    .size(supplyOrderItem.getProduct().getSize().getName())
+                    .registrationDate(supplyOrderItem.getRegistrationDate())
                     .build()).toList();
 
             return new PageImpl<>(supplyOrderItemDTOS, pagePurchaseItem.getPageable(), pagePurchaseItem.getTotalElements());
@@ -361,14 +365,14 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
     }
 
     @Override
-    public CompletableFuture<List<SupplyOrderItemDTO>> listPurchaseItem(String user, UUID id) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<List<SupplyOrderItemDTO>> listSupplyOrderItem(String user, UUID id) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<SupplyOrderItem> supplyOrderItems;
             UUID clientId;
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 if(id != null){
-                    supplyOrderItems = supplyOrderItemRepository.findAllByClientIdAndPurchaseId(clientId,id);
+                    supplyOrderItems = supplyOrderItemRepository.findAllByClientIdAndSupplyOrderId(clientId,id);
                 }else{
                     supplyOrderItems = supplyOrderItemRepository.findAllByClientId(clientId);
                 }
@@ -381,14 +385,17 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
                 return Collections.emptyList();
             }
 
-            return supplyOrderItems.stream().map(purchaseItem -> SupplyOrderItemDTO.builder()
-                    .purchase(purchaseItem.getSupplyOrder().getOrderNumber())
-                    .quantity(purchaseItem.getQuantity())
-                    .warehouse(purchaseItem.getSupplyOrder().getWarehouse().getName())
-                    .model(purchaseItem.getProduct().getModel().getName())
-                    .color(purchaseItem.getProduct().getColor().getName())
-                    .size(purchaseItem.getProduct().getSize().getName())
-                    .registrationDate(purchaseItem.getRegistrationDate())
+            return supplyOrderItems.stream().map(supplyOrderItem -> SupplyOrderItemDTO.builder()
+                    .orderNumber(supplyOrderItem.getSupplyOrder().getOrderNumber())
+                    .quantity(supplyOrderItem.getQuantity())
+                    .warehouse(supplyOrderItem.getSupplyOrder().getWarehouse().getName())
+                    .product(supplyOrderItem.getProduct().getName())
+                    .productId(supplyOrderItem.getProductId())
+                    .productSku(iUtil.buildProductSku(supplyOrderItem.getProduct()))
+                    .model(supplyOrderItem.getProduct().getModel().getName())
+                    .color(supplyOrderItem.getProduct().getColor().getName())
+                    .size(supplyOrderItem.getProduct().getSize().getName())
+                    .registrationDate(supplyOrderItem.getRegistrationDate())
                     .build()).toList();
         });
     }

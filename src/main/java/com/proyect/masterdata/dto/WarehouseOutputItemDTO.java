@@ -19,7 +19,11 @@ public class WarehouseOutputItemDTO {
     private String warehouse;
     private Integer quantity;
     private UUID productId;
+    private String product;
     private String productSku;
+    private String model;
+    private String color;
+    private String size;
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
     private String user;

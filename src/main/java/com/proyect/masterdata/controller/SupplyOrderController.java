@@ -66,23 +66,6 @@ public class SupplyOrderController {
                 status);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
-    @GetMapping()
-    //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_GET')")
-    public ResponseEntity<List<SupplyOrderDTO>> listPurchase(
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<SupplyOrderDTO>> result = iSupplyOrder.listPurchase(user);
-        return new ResponseEntity<>(result.get(),HttpStatus.OK);
-    }
-
-    @GetMapping("filter")
-    public ResponseEntity<List<SupplyOrderDTO>> listFilter(
-            @RequestParam("user") String user
-    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<SupplyOrderDTO>> result = iSupplyOrder.listFilter(user);
-        return new ResponseEntity<>(result.get(),HttpStatus.OK);
-    }
-
     @GetMapping("check-stock")
     public ResponseEntity<List<CheckStockDTO>> checkStock(
             @RequestParam("user") String user,

@@ -30,7 +30,5 @@ public interface ISupplyOrder {
             Integer pageNumber,
             Integer pageSize,
             Boolean status) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<List<SupplyOrderDTO>> listPurchase(String user) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<List<SupplyOrderDTO>> listFilter(String user) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<CheckStockDTO>> checkStock(UUID productId, String user) throws BadRequestExceptions,InternalErrorExceptions;
 }

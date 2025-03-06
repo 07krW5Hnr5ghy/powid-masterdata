@@ -78,11 +78,11 @@ public class SupplyOrderItemController {
     }
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_ITEM_GET')")
-    public ResponseEntity<List<SupplyOrderItemDTO>> listPurchase(
+    public ResponseEntity<List<SupplyOrderItemDTO>> listSupplyOrderItem(
             @RequestParam("user") String user,
             @RequestParam(value = "id", required = false) UUID id
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<SupplyOrderItemDTO>> result = iSupplyOrderItem.listPurchaseItem(user,id);
+        CompletableFuture<List<SupplyOrderItemDTO>> result = iSupplyOrderItem.listSupplyOrderItem(user,id);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

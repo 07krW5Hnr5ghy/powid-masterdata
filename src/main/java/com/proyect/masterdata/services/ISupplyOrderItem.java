@@ -41,5 +41,5 @@ public interface ISupplyOrderItem {
             Integer pageNumber,
             Integer pageSize,
             Boolean status) throws InternalErrorExceptions, BadRequestExceptions;
-    CompletableFuture<List<SupplyOrderItemDTO>> listPurchaseItem(String user, UUID id) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<List<SupplyOrderItemDTO>> listSupplyOrderItem(String user, UUID id) throws InternalErrorExceptions,BadRequestExceptions;
 }
