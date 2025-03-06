@@ -17,7 +17,6 @@ public class WarehouseOutputDTO {
     private UUID id;
     private Long orderNumber;
     private String ref;
-    private String courier;
     private String warehouse;
     private Boolean status;
     private List<WarehouseOutputItemDTO> warehouseOutputItemDTOList;

@@ -4,17 +4,28 @@ import com.proyect.masterdata.domain.SupplyOrderItem;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Repository
 public interface SupplyOrderItemRepositoryCustom {
-    Page<SupplyOrderItem> searchForPurchaseItem(
+    Page<SupplyOrderItem> searchForSupplyOrderItem(
             UUID clientId,
-            Long purchaseNumber,
+            Long orderNumber,
+            String ref,
             String warehouse,
+            Integer quantity,
             String model,
+            String product,
+            String color,
+            String size,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize);
+            Integer pageSize,
+            Boolean status);
 }

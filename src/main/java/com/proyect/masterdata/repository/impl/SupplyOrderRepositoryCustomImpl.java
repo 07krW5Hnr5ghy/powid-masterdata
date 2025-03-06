@@ -14,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -27,8 +28,13 @@ public class SupplyOrderRepositoryCustomImpl implements SupplyOrderRepositoryCus
     @Override
     public Page<SupplyOrder> searchForSupplyOrder(
             UUID clientId,
+            Long orderNumber,
             String ref,
             String warehouse,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
@@ -45,9 +51,14 @@ public class SupplyOrderRepositoryCustomImpl implements SupplyOrderRepositoryCus
 
         List<Predicate> conditions = predicate(
                 clientId,
+                orderNumber,
                 ref,
                 warehouse,
                 status,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
                 criteriaBuilder,
                 itemRoot,
                 purchaseWarehouseJoin);
@@ -76,17 +87,27 @@ public class SupplyOrderRepositoryCustomImpl implements SupplyOrderRepositoryCus
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Long count = getOrderCount(
                 clientId,
+                orderNumber,
                 ref,
                 warehouse,
-                status);
+                status,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
     private List<Predicate> predicate(
             UUID clientId,
+            Long orderNumber,
             String ref,
             String warehouse,
             Boolean status,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             CriteriaBuilder criteriaBuilder,
             Root<SupplyOrder> itemRoot,
             Join<SupplyOrder, Warehouse> purchaseWarehouseJoin) {
@@ -97,12 +118,48 @@ public class SupplyOrderRepositoryCustomImpl implements SupplyOrderRepositoryCus
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
 
+        if(orderNumber!=null){
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("orderNumber"), orderNumber)));
+        }
+
         if(ref != null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(itemRoot.get("ref")),"%"+ref.toUpperCase()+"%"));
         }
 
         if(warehouse != null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(purchaseWarehouseJoin.get("name")),"%"+warehouse.toUpperCase()+"%"));
+        }
+
+        if(registrationStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("registrationDate"),registrationStartDate)
+                    )
+            );
+        }
+
+        if(registrationEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("registrationDate"),registrationEndDate)
+                    )
+            );
+        }
+
+        if(updateStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("updateDate"),updateStartDate)
+                    )
+            );
+        }
+
+        if(updateEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("updateDate"),updateEndDate)
+                    )
+            );
         }
 
         if (status) {
@@ -164,9 +221,14 @@ public class SupplyOrderRepositoryCustomImpl implements SupplyOrderRepositoryCus
 
     private Long getOrderCount(
             UUID clientId,
+            Long orderNumber,
             String ref,
             String warehouse,
-            Boolean status) {
+            Boolean status,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<SupplyOrder> itemRoot = criteriaQuery.from(SupplyOrder.class);
@@ -174,9 +236,14 @@ public class SupplyOrderRepositoryCustomImpl implements SupplyOrderRepositoryCus
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
                 clientId,
+                orderNumber,
                 ref,
                 warehouse,
                 status,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
                 criteriaBuilder,
                 itemRoot,
                 purchaseWarehouseJoin);

@@ -29,7 +29,6 @@ public class WarehouseOutputRepositoryCustomImpl implements WarehouseOutputRepos
             UUID clientId,
             Long orderNumber,
             String ref,
-            String courier,
             String warehouse,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -50,7 +49,6 @@ public class WarehouseOutputRepositoryCustomImpl implements WarehouseOutputRepos
                 clientId,
                 orderNumber,
                 ref,
-                courier,
                 warehouse,
                 status,
                 registrationStartDate,
@@ -87,7 +85,6 @@ public class WarehouseOutputRepositoryCustomImpl implements WarehouseOutputRepos
                 clientId,
                 orderNumber,
                 ref,
-                courier,
                 warehouse,
                 status,
                 registrationStartDate,
@@ -101,7 +98,6 @@ public class WarehouseOutputRepositoryCustomImpl implements WarehouseOutputRepos
             UUID clientId,
             Long orderNumber,
             String ref,
-            String courier,
             String warehouse,
             Boolean status,
             OffsetDateTime registrationStartDate,
@@ -122,10 +118,6 @@ public class WarehouseOutputRepositoryCustomImpl implements WarehouseOutputRepos
         }
         if(ref != null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(itemRoot.get("ref")),"%"+ref.toUpperCase()+"%"));
-        }
-
-        if(courier != null){
-            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(warehouseOutputCourierJoin.get("name")),"%"+courier.toUpperCase()+"%"));
         }
 
         if(warehouse != null){
@@ -239,7 +231,6 @@ public class WarehouseOutputRepositoryCustomImpl implements WarehouseOutputRepos
             UUID clientId,
             Long orderNumber,
             String ref,
-            String courier,
             String warehouse,
             Boolean status,
             OffsetDateTime registrationStartDate,
@@ -257,7 +248,6 @@ public class WarehouseOutputRepositoryCustomImpl implements WarehouseOutputRepos
                 clientId,
                 orderNumber,
                 ref,
-                courier,
                 warehouse,
                 status,
                 registrationStartDate,

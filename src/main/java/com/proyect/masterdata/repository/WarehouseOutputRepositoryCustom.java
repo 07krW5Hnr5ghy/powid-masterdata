@@ -13,7 +13,6 @@ public interface WarehouseOutputRepositoryCustom {
             UUID clientId,
             Long orderNumber,
             String ref,
-            String courier,
             String warehouse,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,

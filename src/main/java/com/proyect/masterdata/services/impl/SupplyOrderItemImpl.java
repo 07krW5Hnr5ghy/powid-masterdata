@@ -295,28 +295,48 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
     @Override
     public CompletableFuture<Page<SupplyOrderItemDTO>> list(
             String user,
-            Long purchaseNumber,
+            Long orderNumber,
+            String ref,
             String warehouse,
+            Integer quantity,
             String model,
+            String product,
+            String color,
+            String size,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+            Integer pageSize,
+            Boolean status) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<SupplyOrderItem> pagePurchaseItem;
             UUID clientId;
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                pagePurchaseItem = supplyOrderItemRepositoryCustom.searchForPurchaseItem(
+                pagePurchaseItem = supplyOrderItemRepositoryCustom.searchForSupplyOrderItem(
                         clientId,
-                        purchaseNumber,
+                        orderNumber,
+                        ref,
                         warehouse,
+                        quantity,
                         model,
+                        product,
+                        color,
+                        size,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
                         sort,
                         sortColumn,
                         pageNumber,
-                        pageSize);
+                        pageSize,
+                        status);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.ResultsFound);

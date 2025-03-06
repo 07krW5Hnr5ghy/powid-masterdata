@@ -27,7 +27,6 @@ public class WarehouseOutputItemRepositoryCustomImpl implements WarehouseOutputI
             UUID clientId,
             Long orderNumber,
             String ref,
-            String courier,
             String warehouse,
             Integer quantity,
             String model,
@@ -57,7 +56,6 @@ public class WarehouseOutputItemRepositoryCustomImpl implements WarehouseOutputI
                 clientId,
                 orderNumber,
                 ref,
-                courier,
                 warehouse,
                 quantity,
                  model,
@@ -104,7 +102,6 @@ public class WarehouseOutputItemRepositoryCustomImpl implements WarehouseOutputI
                 clientId,
                 orderNumber,
                 ref,
-                courier,
                 warehouse,
                 quantity,
                 model,
@@ -122,7 +119,6 @@ public class WarehouseOutputItemRepositoryCustomImpl implements WarehouseOutputI
             UUID clientId,
             Long orderNumber,
             String ref,
-            String courier,
             String warehouse,
             Integer quantity,
             String model,
@@ -153,10 +149,6 @@ public class WarehouseOutputItemRepositoryCustomImpl implements WarehouseOutputI
         }
         if(ref != null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(warehouseOutputItemWarehouseOutputJoin.get("ref")),"%"+ref.toUpperCase()+"%"));
-        }
-
-        if(courier != null){
-            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(warehouseOutputCourierJoin.get("name")),"%"+courier.toUpperCase()+"%"));
         }
 
         if(warehouse != null){
@@ -290,7 +282,6 @@ public class WarehouseOutputItemRepositoryCustomImpl implements WarehouseOutputI
             UUID clientId,
             Long orderNumber,
             String ref,
-            String courier,
             String warehouse,
             Integer quantity,
             String model,
@@ -318,7 +309,6 @@ public class WarehouseOutputItemRepositoryCustomImpl implements WarehouseOutputI
                 clientId,
                 orderNumber,
                 ref,
-                courier,
                 warehouse,
                 quantity,
                 model,

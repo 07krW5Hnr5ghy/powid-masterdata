@@ -20,7 +20,6 @@ public interface IWarehouseOutput {
             String username,
             Long orderNumber,
             String ref,
-            String courier,
             String warehouse,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,

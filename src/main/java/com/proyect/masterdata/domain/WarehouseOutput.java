@@ -29,9 +29,6 @@ public class WarehouseOutput {
     @Column(name="order_number")
     private Long orderNumber;
 
-    @Column(name="courier_id")
-    private UUID courierId;
-
     @Column(name="warehouse_id")
     private UUID warehouseId;
 
@@ -49,10 +46,6 @@ public class WarehouseOutput {
 
     @Column(name = "status")
     private Boolean status;
-
-    @ManyToOne
-    @JoinColumn(name = "courier_id",columnDefinition = "courierId",insertable = false,updatable = false)
-    private Courier courier;
 
     @ManyToOne
     @JoinColumn(name = "warehouse_id",columnDefinition = "warehouseId",insertable = false,updatable = false)

@@ -182,13 +182,19 @@ public class SupplyOrderImpl implements ISupplyOrder {
 
     @Override
     public CompletableFuture<Page<SupplyOrderDTO>> list(
+            Long orderNumber,
             String ref,
             String user,
             String warehouse,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<SupplyOrder> pagePurchase;
             UUID clientId;
@@ -197,13 +203,18 @@ public class SupplyOrderImpl implements ISupplyOrder {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 pagePurchase = supplyOrderRepositoryCustom.searchForSupplyOrder(
                         clientId,
+                        orderNumber,
                         ref,
                         warehouse,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
                         sort,
                         sortColumn,
                         pageNumber,
                         pageSize,
-                        true);
+                        status);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.ResultsFound);
@@ -223,51 +234,6 @@ public class SupplyOrderImpl implements ISupplyOrder {
             return new PageImpl<>(supplyOrderDTOS,pagePurchase.getPageable(),pagePurchase.getTotalElements());
         });
     }
-
-    @Override
-    public CompletableFuture<Page<SupplyOrderDTO>> listFalse(
-            String ref,
-            String user,
-            String warehouse,
-            String sort,
-            String sortColumn,
-            Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            Page<SupplyOrder> pagePurchase;
-            UUID clientId;
-
-            try {
-                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                pagePurchase = supplyOrderRepositoryCustom.searchForSupplyOrder(
-                        clientId,
-                        ref,
-                        warehouse,
-                        sort,
-                        sortColumn,
-                        pageNumber,
-                        pageSize,
-                        false);
-            }catch (RuntimeException e){
-                log.error(e.getMessage());
-                throw new InternalErrorExceptions(Constants.ResultsFound);
-            }
-
-            if(pagePurchase.isEmpty()){
-                return new PageImpl<>(Collections.emptyList());
-            }
-
-            List<SupplyOrderDTO> supplyOrderDTOS = pagePurchase.getContent().stream().map(purchase -> SupplyOrderDTO.builder()
-                    .ref(purchase.getRef())
-                    .warehouse(purchase.getWarehouse().getName())
-                    .registrationDate(purchase.getRegistrationDate())
-                    .deliveryDate(purchase.getDeliveryDate())
-                    .build()).toList();
-
-            return new PageImpl<>(supplyOrderDTOS,pagePurchase.getPageable(),pagePurchase.getTotalElements());
-        });
-    }
-
     @Override
     public CompletableFuture<List<SupplyOrderDTO>> listPurchase(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{

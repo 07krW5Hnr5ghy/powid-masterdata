@@ -175,7 +175,6 @@ public class WarehouseOutputItemImpl implements IWarehouseOutputItem {
             String user,
             Long orderNumber,
             String ref,
-            String courier,
             String warehouse,
             Integer quantity,
             String model,
@@ -201,7 +200,6 @@ public class WarehouseOutputItemImpl implements IWarehouseOutputItem {
                         clientId,
                         orderNumber,
                         ref,
-                        courier,
                         warehouse,
                         quantity,
                         model,
@@ -227,7 +225,6 @@ public class WarehouseOutputItemImpl implements IWarehouseOutputItem {
             }
 
             List<WarehouseOutputItemDTO> warehouseOutputItemDTOs = warehouseOutputItemPage.getContent().stream().map(warehouseOutputItem -> WarehouseOutputItemDTO.builder()
-                    .courier(warehouseOutputItem.getWarehouseOutput().getCourier().getName())
                     .orderNumber(warehouseOutputItem.getWarehouseOutput().getOrderNumber())
                     .ref(warehouseOutputItem.getWarehouseOutput().getRef())
                     .warehouse(warehouseOutputItem.getWarehouseOutput().getWarehouse().getName())
@@ -237,6 +234,7 @@ public class WarehouseOutputItemImpl implements IWarehouseOutputItem {
                         .updateDate(warehouseOutputItem.getUpdateDate())
                         .registrationDate(warehouseOutputItem.getRegistrationDate())
                         .user(warehouseOutputItem.getUser().getUsername())
+                    .status(warehouseOutputItem.getStatus())
                         .build()).toList();
 
             return new PageImpl<>(warehouseOutputItemDTOs, warehouseOutputItemPage.getPageable(), warehouseOutputItemPage.getTotalElements());

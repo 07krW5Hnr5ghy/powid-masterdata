@@ -22,7 +22,6 @@ public interface IWarehouseOutputItem {
             String user,
             Long orderNumber,
             String ref,
-            String courier,
             String warehouse,
             Integer quantity,
             String model,

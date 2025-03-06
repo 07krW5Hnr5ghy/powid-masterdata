@@ -48,11 +48,9 @@ public class WarehouseOutputImpl implements IWarehouseOutput {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Warehouse warehouse;
-            Courier courier;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(requestWarehouseOutput.getUsername().toUpperCase());
                 warehouse = warehouseRepository.findByNameAndStatusTrue(requestWarehouseOutput.getWarehouse().toUpperCase());
-                courier = courierRepository.findByNameAndStatusTrue(requestWarehouseOutput.getCourier().toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.InternalErrorExceptions);
@@ -66,18 +64,12 @@ public class WarehouseOutputImpl implements IWarehouseOutput {
                 throw new BadRequestExceptions(Constants.ErrorWarehouse);
             }
 
-            if(courier==null){
-                throw new BadRequestExceptions(Constants.ErrorCourier);
-            }
-
             try{
                 Long orderNumber = warehouseOutputRepository.countByClientId(user.getClientId())+1L;
                 WarehouseOutput warehouseOutput = warehouseOutputRepository.save(WarehouseOutput.builder()
                                 .ref(requestWarehouseOutput.getRef())
                                 .warehouse(warehouse)
                                 .warehouseId(warehouse.getId())
-                                .courier(courier)
-                                .courierId(courier.getId())
                                 .user(user)
                                 .userId(user.getId())
                                 .orderNumber(orderNumber)
@@ -165,7 +157,19 @@ public class WarehouseOutputImpl implements IWarehouseOutput {
     }
 
     @Override
-    public CompletableFuture<Page<WarehouseOutputDTO>> list(String user, Long orderNumber, String ref, String courier, String warehouse, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<Page<WarehouseOutputDTO>> list(
+            String user,
+            Long orderNumber,
+            String ref,
+            String warehouse,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
+            String sort, String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<WarehouseOutput> warehouseOutputPage;
             UUID clientId;
@@ -175,7 +179,6 @@ public class WarehouseOutputImpl implements IWarehouseOutput {
                         clientId,
                         orderNumber,
                         ref,
-                        courier,
                         warehouse,
                         registrationStartDate,
                         registrationEndDate,
@@ -198,7 +201,6 @@ public class WarehouseOutputImpl implements IWarehouseOutput {
             List<WarehouseOutputDTO> warehouseOutputDTOs = warehouseOutputPage.getContent().stream().map(warehouseOutput -> {
                 List<WarehouseOutputItemDTO> warehouseOutputItemDTOList = warehouseOutputItemRepository.findByWarehouseOutputId(warehouseOutput.getId()).stream().map(warehouseOutputItem->WarehouseOutputItemDTO.builder()
                         .id(warehouseOutputItem.getId())
-                        .courier(warehouseOutput.getCourier().getName())
                         .orderNumber(warehouseOutput.getOrderNumber())
                         .ref(warehouseOutput.getRef())
                         .warehouse(warehouseOutput.getWarehouse().getName())
@@ -211,7 +213,6 @@ public class WarehouseOutputImpl implements IWarehouseOutput {
                         .build()).toList();
                 return WarehouseOutputDTO.builder()
                         .id(warehouseOutput.getId())
-                        .courier(warehouseOutput.getCourier().getName())
                         .orderNumber(warehouseOutput.getOrderNumber())
                         .ref(warehouseOutput.getRef())
                         .warehouse(warehouseOutput.getWarehouse().getName())
