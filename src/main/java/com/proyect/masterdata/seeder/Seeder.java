@@ -78,8 +78,6 @@ public class Seeder implements CommandLineRunner {
         private final IDiscount iDiscount;
         private final IDeliveryPoint iDeliveryPoint;
         private final ISubCategoryProduct iSubCategoryProduct;
-        private final IDeliveryStatus iDeliveryStatus;
-        private final IDeliveryManifestStatus iDeliveryManifestStatus;
         private final IDeliveryCompany iDeliveryCompany;
         private final DeliveryCompanyRepository deliveryCompanyRepository;
         @Override
@@ -1411,12 +1409,6 @@ public class Seeder implements CommandLineRunner {
                         iStockTransactionType.save("transferencia-salida", adminUser.getUsername());
                         iStockTransactionType.save("devolucion-comprador",adminUser.getUsername());
                         iStockTransactionType.save("devolucion-proveedor",adminUser.getUsername());
-
-                        iDeliveryStatus.save("PENDIENTE",adminUser.getUsername());
-                        iDeliveryStatus.save("COMPLETO",adminUser.getUsername());
-
-                        iDeliveryManifestStatus.save("ABIERTA",adminUser.getUsername());
-                        iDeliveryManifestStatus.save("CERRADA",adminUser.getUsername());
 
                         User business1 = userRepository.save(User.builder()
                                 .username("JCOILA")

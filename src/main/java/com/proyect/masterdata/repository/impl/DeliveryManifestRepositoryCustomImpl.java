@@ -37,7 +37,8 @@ public class DeliveryManifestRepositoryCustomImpl implements DeliveryManifestRep
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) {
+            Integer pageSize,
+            Boolean open) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<DeliveryManifest> criteriaQuery = criteriaBuilder.createQuery(DeliveryManifest.class);
         Root<DeliveryManifest> itemRoot = criteriaQuery.from(DeliveryManifest.class);
@@ -50,6 +51,7 @@ public class DeliveryManifestRepositoryCustomImpl implements DeliveryManifestRep
                 manifestNumber,
                 warehouse,
                 courier,
+                open,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -86,6 +88,7 @@ public class DeliveryManifestRepositoryCustomImpl implements DeliveryManifestRep
                 manifestNumber,
                 warehouse,
                 courier,
+                open,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -99,6 +102,7 @@ public class DeliveryManifestRepositoryCustomImpl implements DeliveryManifestRep
             Long manifestNumber,
             String warehouse,
             String courier,
+            Boolean open,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -157,6 +161,13 @@ public class DeliveryManifestRepositoryCustomImpl implements DeliveryManifestRep
                             criteriaBuilder.lessThanOrEqualTo(itemRoot.get("updateDate"),updateEndDate)
                     )
             );
+        }
+
+        if(Boolean.TRUE.equals(open)) {
+            conditions.add(criteriaBuilder.and(criteriaBuilder.isTrue(itemRoot.get("open"))));
+        }
+        if(Boolean.FALSE.equals(open)){
+            conditions.add(criteriaBuilder.and(criteriaBuilder.isFalse(itemRoot.get("open"))));
         }
 
         return conditions;
@@ -223,6 +234,7 @@ public class DeliveryManifestRepositoryCustomImpl implements DeliveryManifestRep
             Long manifestNumber,
             String warehouse,
             String courier,
+            Boolean open,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -240,6 +252,7 @@ public class DeliveryManifestRepositoryCustomImpl implements DeliveryManifestRep
                 manifestNumber,
                 warehouse,
                 courier,
+                open,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,

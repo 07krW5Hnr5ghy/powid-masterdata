@@ -24,11 +24,13 @@ import java.util.concurrent.ExecutionException;
 public class DeliveryManifestItemController {
     private final IDeliveryManifestItem iDeliveryManifestItem;
     @PutMapping("/{deliveryManifestItemId}")
-    public ResponseEntity<ResponseSuccess> closeManifest(
+    public ResponseEntity<ResponseSuccess> updateManifestItem(
             @PathVariable UUID deliveryManifestItemId,
+            @RequestParam("collected") Boolean collected,
+            @RequestParam("delivered") Boolean delivered,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iDeliveryManifestItem.updateDeliveryManifestItem(deliveryManifestItemId,user);
+        CompletableFuture<ResponseSuccess> result = iDeliveryManifestItem.updateDeliveryManifestItem(deliveryManifestItemId,collected,delivered,user);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping()
@@ -41,7 +43,6 @@ public class DeliveryManifestItemController {
             @RequestParam(value = "color",required = false) String color,
             @RequestParam(value = "size",required = false) String size,
             @RequestParam(value = "model",required = false) String model,
-            @RequestParam(value = "supplier",required = false) String supplier,
             @RequestParam(value = "brand",required = false) String brand,
             @RequestParam(value = "deliveryStatus",required = false) String deliveryStatus,
             @RequestParam(value = "courier",required = false) String courier,
@@ -53,7 +54,8 @@ public class DeliveryManifestItemController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = true) Integer pageSize
+            @RequestParam(value = "pageSize", required = true) Integer pageSize,
+            @RequestParam(value = "delivered",required = false) Boolean delivered
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<DeliveryManifestItemDTO>> result = iDeliveryManifestItem.list(
                 user,
@@ -64,9 +66,8 @@ public class DeliveryManifestItemController {
                 color,
                 size,
                 model,
-                supplier,
                 brand,
-                deliveryStatus,
+                delivered,
                 courier,
                 warehouse,
                 registrationStartDate,

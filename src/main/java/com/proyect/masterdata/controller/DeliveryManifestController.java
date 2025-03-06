@@ -60,7 +60,8 @@ public class DeliveryManifestController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
-            @RequestParam(value = "pageSize", required = true) Integer pageSize
+            @RequestParam(value = "pageSize", required = true) Integer pageSize,
+            @RequestParam(value = "open", required = false) Boolean open
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<DeliveryManifestDTO>> result = iDeliveryManifest.list(
                 user,
@@ -74,7 +75,8 @@ public class DeliveryManifestController {
                 sort,
                 sortColumn,
                 pageNumber,
-                pageSize
+                pageSize,
+                open
         );
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }

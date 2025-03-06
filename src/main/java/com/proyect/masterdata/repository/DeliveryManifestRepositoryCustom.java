@@ -21,6 +21,7 @@ public interface DeliveryManifestRepositoryCustom {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize
+            Integer pageSize,
+            Boolean open
     );
 }

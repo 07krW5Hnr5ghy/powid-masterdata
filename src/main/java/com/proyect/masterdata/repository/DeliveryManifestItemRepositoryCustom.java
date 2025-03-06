@@ -19,7 +19,7 @@ public interface DeliveryManifestItemRepositoryCustom {
             String size,
             String model,
             String brand,
-            String deliveryStatus,
+            Boolean delivered,
             String courier,
             String warehouse,
             OffsetDateTime registrationStartDate,

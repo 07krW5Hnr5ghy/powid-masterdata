@@ -23,6 +23,8 @@ public interface IDeliveryManifestItem {
             User user) throws BadRequestExceptions,InterruptedException;
     CompletableFuture<ResponseSuccess> updateDeliveryManifestItem(
             UUID deliveryManifestItemId,
+            Boolean collected,
+            Boolean delivered,
             String user
     );
     CompletableFuture<Page<DeliveryManifestItemDTO>> list(
@@ -34,9 +36,8 @@ public interface IDeliveryManifestItem {
             String color,
             String size,
             String model,
-            String supplier,
             String brand,
-            String deliveryStatus,
+            Boolean delivered,
             String courier,
             String warehouse,
             OffsetDateTime registrationStartDate,
