@@ -70,6 +70,17 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                         .orderItemId(orderItem.getId())
                         .delivered(false)
                         .build());
+                iWarehouseStock.out(
+                        newDeliveryManifestItem.getDeliveryManifest().getWarehouse(),
+                        newDeliveryManifestItem.getProduct(),
+                        newDeliveryManifestItem.getQuantity(),
+                        user
+                );
+                iGeneralStock.out(
+                        newDeliveryManifestItem.getProduct(),
+                        newDeliveryManifestItem.getQuantity(),
+                        user.getUsername()
+                );
                 iAudit.save(
                         "ADD_DELIVERY_MANIFEST_ITEM",
                         "ITEM DE GUIA "+
@@ -113,28 +124,6 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                 deliveryManifestItem.setUserId(user.getId());
                 deliveryManifestItem.setCollected(delivered);
                 deliveryManifestItemRepository.save(deliveryManifestItem);
-                iWarehouseStock.out(
-                        deliveryManifestItem.getDeliveryManifest().getWarehouse(),
-                        deliveryManifestItem.getProduct(),
-                        deliveryManifestItem.getQuantity(),
-                        user
-                );
-                iGeneralStock.out(
-                        deliveryManifestItem.getProduct(),
-                        deliveryManifestItem.getQuantity(),
-                        user.getUsername()
-                );
-                List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
-                stockTransactionList.add(RequestStockTransactionItem.builder()
-                        .productId(deliveryManifestItem.getProduct().getId())
-                        .quantity(deliveryManifestItem.getQuantity())
-                        .build());
-                iStockTransaction.save(
-                        "O"+deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber(),
-                        deliveryManifestItem.getDeliveryManifest().getWarehouse(),
-                        stockTransactionList,
-                        "PEDIDO",
-                        user);
                 iAudit.save(
                         "UPDATE_DELIVERY_MANIFEST_ITEM",
                         "ITEM DE GUIA "+

@@ -1,11 +1,9 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.Courier;
-import com.proyect.masterdata.domain.User;
-import com.proyect.masterdata.domain.Warehouse;
-import com.proyect.masterdata.domain.WarehouseOutput;
+import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.WarehouseOutputDTO;
 import com.proyect.masterdata.dto.WarehouseOutputItemDTO;
+import com.proyect.masterdata.dto.request.RequestStockTransactionItem;
 import com.proyect.masterdata.dto.request.RequestWarehouseOutput;
 import com.proyect.masterdata.dto.request.RequestWarehouseOutputItem;
 import com.proyect.masterdata.dto.response.ResponseDelete;
@@ -13,10 +11,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
-import com.proyect.masterdata.services.IAudit;
-import com.proyect.masterdata.services.IUtil;
-import com.proyect.masterdata.services.IWarehouseOutput;
-import com.proyect.masterdata.services.IWarehouseOutputItem;
+import com.proyect.masterdata.services.*;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -25,6 +20,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -43,6 +39,7 @@ public class WarehouseOutputImpl implements IWarehouseOutput {
     private final WarehouseOutputRepositoryCustom warehouseOutputRepositoryCustom;
     private final WarehouseOutputItemRepository warehouseOutputItemRepository;
     private final IUtil iUtil;
+    private final IStockTransaction iStockTransaction;
     @Override
     public CompletableFuture<ResponseSuccess> save(RequestWarehouseOutput requestWarehouseOutput) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -80,9 +77,19 @@ public class WarehouseOutputImpl implements IWarehouseOutput {
                                 .status(true)
                         .build());
                 iAudit.save("ADD_WAREHOUSE_OUTPUT","SALIDA DE ALMACEN "+warehouseOutput.getOrderNumber()+" CREADA.",warehouseOutput.getOrderNumber().toString(),user.getUsername());
+                List<RequestStockTransactionItem> requestStockTransactionItemList = new ArrayList<>();
                 for(RequestWarehouseOutputItem requestWarehouseOutputItem: requestWarehouseOutput.getRequestWarehouseOutputItemList()){
-                    iWarehouseOutputItem.save(requestWarehouseOutputItem,warehouseOutput,user);
+                    WarehouseOutputItem warehouseOutputItem = iWarehouseOutputItem.save(requestWarehouseOutputItem,warehouseOutput,user);
+                    requestStockTransactionItemList.add(RequestStockTransactionItem.builder()
+                                    .quantity(warehouseOutputItem.getQuantity())
+                                    .productId(warehouseOutputItem.getProductId())
+                            .build());
                 }
+                iStockTransaction.save("WO"+warehouseOutput.getOrderNumber(),
+                        warehouseOutput.getWarehouse(),
+                        requestStockTransactionItemList,
+                        "ENTRADA",
+                        user);
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

@@ -83,7 +83,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
                     .quantity(supplyOrderItem.getQuantity())
                     .productId(supplyOrderItem.getProductId())
                     .build()).toList();
-            StockTransaction newStockTransaction = iStockTransaction.save("S"+ requestSupplyOrder.getRef().toUpperCase(), warehouse,requestStockTransactionItemList,"COMPRA",user);
+            StockTransaction newStockTransaction = iStockTransaction.save("S"+ requestSupplyOrder.getRef().toUpperCase(), warehouse,requestStockTransactionItemList,"ENTRADA",user);
             Long orderNumber = supplyOrderRepository.countByClientId(user.getClientId())+1L;
             SupplyOrder newSupplyOrder = supplyOrderRepository.save(SupplyOrder.builder()
                             .ref(requestSupplyOrder.getRef().toUpperCase())
@@ -149,7 +149,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
                         .quantity(supplyOrderItem.getQuantity())
                         .productId(supplyOrderItem.getProductId())
                         .build()).toList();
-                StockTransaction newStockTransaction = iStockTransaction.save("S"+ requestSupplyOrder.getRef().toUpperCase(), warehouse,requestStockTransactionItemList,"COMPRA",user);
+                StockTransaction newStockTransaction = iStockTransaction.save("S"+ requestSupplyOrder.getRef().toUpperCase(), warehouse,requestStockTransactionItemList,"ENTRADA",user);
                 Long orderNumber = supplyOrderRepository.countByClientId(user.getClientId())+1L;
                 SupplyOrder newSupplyOrder = supplyOrderRepository.save(SupplyOrder.builder()
                         .ref(requestSupplyOrder.getRef().toUpperCase())

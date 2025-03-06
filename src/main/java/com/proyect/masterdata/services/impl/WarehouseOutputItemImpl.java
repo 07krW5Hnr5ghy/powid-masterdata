@@ -3,16 +3,14 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.WarehouseOutputDTO;
 import com.proyect.masterdata.dto.WarehouseOutputItemDTO;
+import com.proyect.masterdata.dto.request.RequestStockTransactionItem;
 import com.proyect.masterdata.dto.request.RequestWarehouseOutputItem;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
-import com.proyect.masterdata.services.IAudit;
-import com.proyect.masterdata.services.IUtil;
-import com.proyect.masterdata.services.IWarehouseOutputItem;
-import com.proyect.masterdata.services.IWarehouseStock;
+import com.proyect.masterdata.services.*;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -36,9 +34,12 @@ public class WarehouseOutputItemImpl implements IWarehouseOutputItem {
     WarehouseOutputRepository warehouseOutputRepository;
     WarehouseOutputItemRepositoryCustom warehouseOutputItemRepositoryCustom;
     WarehouseStockRepository warehouseStockRepository;
+    StockTransactionRepository stockTransactionRepository;
     IUtil iUtil;
     IAudit iAudit;
     IWarehouseStock iWarehouseStock;
+    IStockTransactionItem iStockTransactionItem;
+    IGeneralStock iGeneralStock;
     @Override
     public WarehouseOutputItem save(RequestWarehouseOutputItem requestWarehouseOutputItem, WarehouseOutput warehouseOutput, User user) throws BadRequestExceptions, InternalErrorExceptions {
         Product product;
@@ -80,6 +81,7 @@ public class WarehouseOutputItemImpl implements IWarehouseOutputItem {
                             .product(product)
                             .productId(product.getId())
                     .build());
+            iGeneralStock.out(newWarehouseOutputItem.getProduct(),newWarehouseOutputItem.getQuantity(),user.getUsername());
             iWarehouseStock.out(warehouseOutput.getWarehouse(),product,newWarehouseOutputItem.getQuantity(),user);
             iAudit.save("ADD_WAREHOUSE_OUTPUT_ITEM",
                     "ITEM " +
@@ -103,6 +105,7 @@ public class WarehouseOutputItemImpl implements IWarehouseOutputItem {
             WarehouseOutput warehouseOutput;
             User user;
             WarehouseStock warehouseStock;
+            StockTransaction stockTransaction;
             try{
                 product = productRepository.findByIdAndStatusTrue(requestWarehouseOutputItem.getProductId());
                 warehouseOutput = warehouseOutputRepository.findById(warehouseOutputId).orElse(null);
@@ -121,6 +124,7 @@ public class WarehouseOutputItemImpl implements IWarehouseOutputItem {
                 throw new BadRequestExceptions(Constants.ErrorWarehouseOutput);
             }else{
                 warehouseOutputItem = warehouseOutputItemRepository.findByProductIdAndWarehouseOutputId(requestWarehouseOutputItem.getProductId(),warehouseOutput.getId());
+                stockTransaction = stockTransactionRepository.findBySerial("WO"+warehouseOutput.getOrderNumber());
             }
             if(warehouseOutputItem!=null){
                 throw new BadRequestExceptions(Constants.ErrorWarehouseOutputItemExists);
@@ -135,6 +139,9 @@ public class WarehouseOutputItemImpl implements IWarehouseOutputItem {
             }
             if(!warehouseOutput.getStatus()){
                 throw new BadRequestExceptions(Constants.ErrorWarehouseOutputInactive);
+            }
+            if(stockTransaction==null){
+                throw new BadRequestExceptions(Constants.ErrorStockTransaction);
             }
             try{
                 WarehouseOutputItem newWarehouseOutputItem = warehouseOutputItemRepository.save(WarehouseOutputItem.builder()
@@ -151,7 +158,13 @@ public class WarehouseOutputItemImpl implements IWarehouseOutputItem {
                         .product(product)
                         .productId(product.getId())
                         .build());
+                RequestStockTransactionItem requestStockTransactionItem = RequestStockTransactionItem.builder()
+                        .productId(newWarehouseOutputItem.getProductId())
+                        .quantity(newWarehouseOutputItem.getQuantity())
+                        .build();
+                iGeneralStock.out(newWarehouseOutputItem.getProduct(),newWarehouseOutputItem.getQuantity(),user.getUsername());
                 iWarehouseStock.out(warehouseOutput.getWarehouse(),product,newWarehouseOutputItem.getQuantity(),user);
+                iStockTransactionItem.save(stockTransaction,requestStockTransactionItem,user.getUsername());
                 iAudit.save("ADD_WAREHOUSE_OUTPUT_ITEM",
                         "ITEM " +
                                 iUtil.buildProductSku(product) +

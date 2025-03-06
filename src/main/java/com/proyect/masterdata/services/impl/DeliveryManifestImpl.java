@@ -5,14 +5,12 @@ import com.proyect.masterdata.dto.DeliveryManifestDTO;
 import com.proyect.masterdata.dto.DeliveryManifestItemDTO;
 import com.proyect.masterdata.dto.request.RequestDeliveryManifest;
 import com.proyect.masterdata.dto.request.RequestDeliveryManifestItem;
+import com.proyect.masterdata.dto.request.RequestStockTransactionItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
-import com.proyect.masterdata.services.IAudit;
-import com.proyect.masterdata.services.IDeliveryManifest;
-import com.proyect.masterdata.services.IDeliveryManifestItem;
-import com.proyect.masterdata.services.IUtil;
+import com.proyect.masterdata.services.*;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -26,6 +24,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +39,9 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
     private final IUtil iUtil;
     private final IAudit iAudit;
     private final DeliveryManifestRepositoryCustom deliveryManifestRepositoryCustom;
+    private final IGeneralStock iGeneralStock;
+    private final IWarehouseStock iWarehouseStock;
+    private final IStockTransaction iStockTransaction;
     @Override
     public CompletableFuture<ResponseSuccess> save(RequestDeliveryManifest requestDeliveryManifest) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -78,9 +80,20 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 .warehouse(warehouse)
                                 .warehouseId(warehouse.getId())
                         .build());
+                List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
                 for(RequestDeliveryManifestItem requestDeliveryManifestItem:requestDeliveryManifest.getRequestDeliveryManifestItems()){
-                    iDeliveryManifestItem.save(requestDeliveryManifestItem,deliveryManifest,warehouse,user);
+                    CompletableFuture<DeliveryManifestItem> deliveryManifestItem = iDeliveryManifestItem.save(requestDeliveryManifestItem,deliveryManifest,warehouse,user);
+                    stockTransactionList.add(RequestStockTransactionItem.builder()
+                            .productId(deliveryManifestItem.get().getProductId())
+                            .quantity(deliveryManifestItem.get().getQuantity())
+                            .build());
                 }
+                iStockTransaction.save(
+                        "DM"+deliveryManifest.getManifestNumber(),
+                        deliveryManifest.getWarehouse(),
+                        stockTransactionList,
+                        "GUIA-COURIER",
+                        user);
                 iAudit.save(
                         "ADD_DELIVERY_MANIFEST",
                         "GUIA "+
@@ -91,7 +104,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         .message(Constants.register)
                         .code(200)
                         .build();
-            }catch (RuntimeException | InterruptedException e){
+            }catch (RuntimeException | InterruptedException | ExecutionException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
@@ -167,6 +180,37 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 deliveryManifest.setUser(user);
                 deliveryManifest.setUserId(user.getId());
                 deliveryManifestRepository.save(deliveryManifest);
+                List<DeliveryManifestItem> deliveryManifestItemList = deliveryManifestItemRepository.findAllById(deliveryManifest.getId());
+                List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
+                boolean returnFlag = false;
+                for(DeliveryManifestItem deliveryManifestItem:deliveryManifestItemList){
+                    if(!deliveryManifestItem.getDelivered()){
+                        returnFlag = true;
+                        stockTransactionList.add(RequestStockTransactionItem.builder()
+                                .productId(deliveryManifestItem.getProduct().getId())
+                                .quantity(deliveryManifestItem.getQuantity())
+                                .build());
+                        iGeneralStock.in(
+                                deliveryManifestItem.getProduct(),
+                                deliveryManifestItem.getQuantity(),
+                                user.getUsername()
+                        );
+                        iWarehouseStock.in(
+                                deliveryManifest.getWarehouse(),
+                                deliveryManifestItem.getProduct(),
+                                deliveryManifestItem.getQuantity(),
+                                user
+                        );
+                    }
+                }
+                if(returnFlag){
+                    iStockTransaction.save(
+                            "DMR"+deliveryManifest.getManifestNumber(),
+                            deliveryManifest.getWarehouse(),
+                            stockTransactionList,
+                            "GUIA-COURIER-DEVOLUCION",
+                            user);
+                }
                 iAudit.save(
                         "DELETE_DELIVERY_MANIFEST",
                         "GUIA "+
