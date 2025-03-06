@@ -3,6 +3,7 @@ package com.proyect.masterdata.controller;
 import com.proyect.masterdata.dto.CheckStockDTO;
 import com.proyect.masterdata.dto.SupplyOrderDTO;
 import com.proyect.masterdata.dto.request.RequestSupplyOrder;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.ISupplyOrder;
@@ -73,5 +74,14 @@ public class SupplyOrderController {
             ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<CheckStockDTO>> result = iSupplyOrder.checkStock(supplierProductId,user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+    @DeleteMapping()
+    //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:WAREHOUSE_POST')")
+    public ResponseEntity<ResponseDelete> close(
+            @RequestParam("username") String username,
+            @RequestParam("warehouseOutputId") UUID supplyOrderId
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iSupplyOrder.closeSupplyOrder(supplyOrderId,username);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 }

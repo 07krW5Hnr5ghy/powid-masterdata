@@ -3,6 +3,7 @@ package com.proyect.masterdata.services;
 import com.proyect.masterdata.dto.CheckStockDTO;
 import com.proyect.masterdata.dto.SupplyOrderDTO;
 import com.proyect.masterdata.dto.request.RequestSupplyOrder;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -31,4 +32,5 @@ public interface ISupplyOrder {
             Integer pageSize,
             Boolean status) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<CheckStockDTO>> checkStock(UUID productId, String user) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseDelete> closeSupplyOrder(UUID supplyOrderId,String username) throws BadRequestExceptions,InternalErrorExceptions;
 }

@@ -271,6 +271,10 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
                 throw new BadRequestExceptions(Constants.ErrorPurchaseItem);
             }
 
+            if(!supplyOrder.getStatus()){
+                throw new BadRequestExceptions(Constants.ErrorSupplyOrderInactive);
+            }
+
             try {
                 supplyOrderItem.setStatus(true);
                 supplyOrderItem.setUpdateDate(OffsetDateTime.now());

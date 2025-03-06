@@ -101,7 +101,7 @@ public class WarehouseOutputImpl implements IWarehouseOutput {
             WarehouseOutput warehouseOutput;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                warehouseOutput = warehouseOutputRepository.findById(warehouseOutputId).orElse(null);
+                warehouseOutput = warehouseOutputRepository.findByIdAndStatusTrue(warehouseOutputId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.InternalErrorExceptions);

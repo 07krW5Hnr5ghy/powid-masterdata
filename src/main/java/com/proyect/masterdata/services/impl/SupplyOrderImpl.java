@@ -7,6 +7,7 @@ import com.proyect.masterdata.dto.SupplyOrderItemDTO;
 import com.proyect.masterdata.dto.request.RequestSupplyOrder;
 import com.proyect.masterdata.dto.request.RequestSupplyOrderItem;
 import com.proyect.masterdata.dto.request.RequestStockTransactionItem;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -291,6 +292,41 @@ public class SupplyOrderImpl implements ISupplyOrder {
                         .quantity(warehouseStock.getQuantity())
                         .build()
                 ).toList();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseDelete> closeSupplyOrder(UUID supplyOrderId, String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            SupplyOrder supplyOrder;
+            try {
+                user=userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                supplyOrder=supplyOrderRepository.findByIdAndStatusTrue(supplyOrderId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(supplyOrder==null){
+                throw new BadRequestExceptions(Constants.ErrorSupplyOrderInactive);
+            }
+            try {
+                supplyOrder.setStatus(false);
+                supplyOrder.setUpdateDate(OffsetDateTime.now());
+                supplyOrder.setUser(user);
+                supplyOrder.setUserId(user.getId());
+                supplyOrderRepository.save(supplyOrder);
+                return ResponseDelete.builder()
+                        .code(200)
+                        .message(Constants.delete)
+                        .build();
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

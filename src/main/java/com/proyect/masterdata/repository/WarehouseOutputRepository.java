@@ -9,4 +9,5 @@ import java.util.UUID;
 @Repository
 public interface WarehouseOutputRepository extends JpaRepository<WarehouseOutput, UUID> {
     Long countByClientId(UUID clientId);
+    WarehouseOutput findByIdAndStatusTrue(UUID warehouseOutputId);
 }
