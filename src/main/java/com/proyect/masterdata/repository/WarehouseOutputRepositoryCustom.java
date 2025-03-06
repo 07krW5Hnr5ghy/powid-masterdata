@@ -5,11 +5,16 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Repository
 public interface WarehouseOutputRepositoryCustom {
     Page<WarehouseOutput> searchForWarehouseOutput(
-            String name,
+            UUID clientId,
+            Long orderNumber,
+            String ref,
+            String courier,
+            String warehouse,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,

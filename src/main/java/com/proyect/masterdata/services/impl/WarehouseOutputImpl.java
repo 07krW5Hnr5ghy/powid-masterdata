@@ -4,25 +4,29 @@ import com.proyect.masterdata.domain.Courier;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.domain.Warehouse;
 import com.proyect.masterdata.domain.WarehouseOutput;
+import com.proyect.masterdata.dto.WarehouseOutputDTO;
+import com.proyect.masterdata.dto.WarehouseOutputItemDTO;
 import com.proyect.masterdata.dto.request.RequestWarehouseOutput;
 import com.proyect.masterdata.dto.request.RequestWarehouseOutputItem;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.repository.CourierRepository;
-import com.proyect.masterdata.repository.UserRepository;
-import com.proyect.masterdata.repository.WarehouseOutputRepository;
-import com.proyect.masterdata.repository.WarehouseRepository;
+import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
+import com.proyect.masterdata.services.IUtil;
 import com.proyect.masterdata.services.IWarehouseOutput;
 import com.proyect.masterdata.services.IWarehouseOutputItem;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -36,6 +40,9 @@ public class WarehouseOutputImpl implements IWarehouseOutput {
     private final CourierRepository courierRepository;
     private final IWarehouseOutputItem iWarehouseOutputItem;
     private final IAudit iAudit;
+    private final WarehouseOutputRepositoryCustom warehouseOutputRepositoryCustom;
+    private final WarehouseOutputItemRepository warehouseOutputItemRepository;
+    private final IUtil iUtil;
     @Override
     public CompletableFuture<ResponseSuccess> save(RequestWarehouseOutput requestWarehouseOutput) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -154,6 +161,64 @@ public class WarehouseOutputImpl implements IWarehouseOutput {
             }catch (RuntimeException e){
                 throw new BadRequestExceptions(Constants.InternalErrorExceptions);
             }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<WarehouseOutputDTO>> list(String user, Long orderNumber, String ref, String courier, String warehouse, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Page<WarehouseOutput> warehouseOutputPage;
+            UUID clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                warehouseOutputPage = warehouseOutputRepositoryCustom.searchForWarehouseOutput(
+                        clientId,
+                        orderNumber,
+                        ref,
+                        courier,
+                        warehouse,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        status);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if (warehouseOutputPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+
+            List<WarehouseOutputDTO> warehouseOutputDTOs = warehouseOutputPage.getContent().stream().map(warehouseOutput -> {
+                List<WarehouseOutputItemDTO> warehouseOutputItemDTOList = warehouseOutputItemRepository.findByWarehouseOutputId(warehouseOutput.getId()).stream().map(warehouseOutputItem->WarehouseOutputItemDTO.builder()
+                        .quantity(warehouseOutputItem.getQuantity())
+                        .productSku(iUtil.buildProductSku(warehouseOutputItem.getProduct()))
+                        .productId(warehouseOutputItem.getProductId())
+                        .updateDate(warehouseOutputItem.getUpdateDate())
+                        .registrationDate(warehouseOutputItem.getRegistrationDate())
+                        .user(warehouseOutputItem.getUser().getUsername())
+                        .build()).toList();
+                return WarehouseOutputDTO.builder()
+                        .id(warehouseOutput.getId())
+                        .courier(warehouseOutput.getCourier().getName())
+                        .orderNumber(warehouseOutput.getOrderNumber())
+                        .ref(warehouseOutput.getRef())
+                        .warehouse(warehouseOutput.getWarehouse().getName())
+                        .registrationDate(warehouseOutput.getRegistrationDate())
+                        .updateDate(warehouseOutput.getUpdateDate())
+                        .status(warehouseOutput.getStatus())
+                        .user(warehouseOutput.getUser().getUsername())
+                        .warehouseOutputItemDTOList(warehouseOutputItemDTOList)
+                        .build();
+            }).toList();
+
+            return new PageImpl<>(warehouseOutputDTOs, warehouseOutputPage.getPageable(), warehouseOutputPage.getTotalElements());
         });
     }
 }
