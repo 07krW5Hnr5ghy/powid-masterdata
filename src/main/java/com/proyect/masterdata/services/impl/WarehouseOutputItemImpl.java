@@ -4,14 +4,13 @@ import com.proyect.masterdata.domain.Product;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.domain.WarehouseOutput;
 import com.proyect.masterdata.domain.WarehouseOutputItem;
+import com.proyect.masterdata.dto.WarehouseOutputDTO;
+import com.proyect.masterdata.dto.WarehouseOutputItemDTO;
 import com.proyect.masterdata.dto.request.RequestWarehouseOutputItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.repository.ProductRepository;
-import com.proyect.masterdata.repository.UserRepository;
-import com.proyect.masterdata.repository.WarehouseOutputItemRepository;
-import com.proyect.masterdata.repository.WarehouseOutputRepository;
+import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IUtil;
 import com.proyect.masterdata.services.IWarehouseOutputItem;
@@ -19,9 +18,13 @@ import com.proyect.masterdata.services.IWarehouseStock;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -33,6 +36,7 @@ public class WarehouseOutputItemImpl implements IWarehouseOutputItem {
     UserRepository userRepository;
     WarehouseOutputItemRepository warehouseOutputItemRepository;
     WarehouseOutputRepository warehouseOutputRepository;
+    WarehouseOutputItemRepositoryCustom warehouseOutputItemRepositoryCustom;
     IUtil iUtil;
     IAudit iAudit;
     IWarehouseStock iWarehouseStock;
@@ -152,6 +156,79 @@ public class WarehouseOutputItemImpl implements IWarehouseOutputItem {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.InternalErrorExceptions);
             }
+        });
+    }
+
+    @Override
+    public CompletableFuture<Page<WarehouseOutputItemDTO>> list(
+            String user,
+            Long orderNumber,
+            String ref,
+            String courier,
+            String warehouse,
+            Integer quantity,
+            String model,
+            String product,
+            String color,
+            String size,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) {
+
+        return CompletableFuture.supplyAsync(()->{
+            Page<WarehouseOutputItem> warehouseOutputItemPage;
+            UUID clientId;
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                warehouseOutputItemPage = warehouseOutputItemRepositoryCustom.searchForWarehouseOutputItem(
+                        clientId,
+                        orderNumber,
+                        ref,
+                        courier,
+                        warehouse,
+                        quantity,
+                        model,
+                        product,
+                        color,
+                        size,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        status);
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if (warehouseOutputItemPage.isEmpty()) {
+                return new PageImpl<>(Collections.emptyList());
+            }
+
+            List<WarehouseOutputItemDTO> warehouseOutputItemDTOs = warehouseOutputItemPage.getContent().stream().map(warehouseOutputItem -> WarehouseOutputItemDTO.builder()
+                    .courier(warehouseOutputItem.getWarehouseOutput().getCourier().getName())
+                    .orderNumber(warehouseOutputItem.getWarehouseOutput().getOrderNumber())
+                    .ref(warehouseOutputItem.getWarehouseOutput().getRef())
+                    .warehouse(warehouseOutputItem.getWarehouseOutput().getWarehouse().getName())
+                    .quantity(warehouseOutputItem.getQuantity())
+                        .productSku(iUtil.buildProductSku(warehouseOutputItem.getProduct()))
+                        .productId(warehouseOutputItem.getProductId())
+                        .updateDate(warehouseOutputItem.getUpdateDate())
+                        .registrationDate(warehouseOutputItem.getRegistrationDate())
+                        .user(warehouseOutputItem.getUser().getUsername())
+                        .build()).toList();
+
+            return new PageImpl<>(warehouseOutputItemDTOs, warehouseOutputItemPage.getPageable(), warehouseOutputItemPage.getTotalElements());
         });
     }
 }

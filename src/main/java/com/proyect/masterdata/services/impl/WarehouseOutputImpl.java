@@ -197,6 +197,11 @@ public class WarehouseOutputImpl implements IWarehouseOutput {
 
             List<WarehouseOutputDTO> warehouseOutputDTOs = warehouseOutputPage.getContent().stream().map(warehouseOutput -> {
                 List<WarehouseOutputItemDTO> warehouseOutputItemDTOList = warehouseOutputItemRepository.findByWarehouseOutputId(warehouseOutput.getId()).stream().map(warehouseOutputItem->WarehouseOutputItemDTO.builder()
+                        .id(warehouseOutputItem.getId())
+                        .courier(warehouseOutput.getCourier().getName())
+                        .orderNumber(warehouseOutput.getOrderNumber())
+                        .ref(warehouseOutput.getRef())
+                        .warehouse(warehouseOutput.getWarehouse().getName())
                         .quantity(warehouseOutputItem.getQuantity())
                         .productSku(iUtil.buildProductSku(warehouseOutputItem.getProduct()))
                         .productId(warehouseOutputItem.getProductId())

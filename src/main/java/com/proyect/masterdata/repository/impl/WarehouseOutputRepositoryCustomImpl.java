@@ -53,6 +53,10 @@ public class WarehouseOutputRepositoryCustomImpl implements WarehouseOutputRepos
                 courier,
                 warehouse,
                 status,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
                 criteriaBuilder,
                 itemRoot,
                 warehouseOutputCourierJoin,
@@ -85,7 +89,11 @@ public class WarehouseOutputRepositoryCustomImpl implements WarehouseOutputRepos
                 ref,
                 courier,
                 warehouse,
-                status);
+                status,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
 
@@ -96,6 +104,10 @@ public class WarehouseOutputRepositoryCustomImpl implements WarehouseOutputRepos
             String courier,
             String warehouse,
             Boolean status,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
             CriteriaBuilder criteriaBuilder,
             Root<WarehouseOutput> itemRoot,
             Join<WarehouseOutput,Courier> warehouseOutputCourierJoin,
@@ -106,7 +118,7 @@ public class WarehouseOutputRepositoryCustomImpl implements WarehouseOutputRepos
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
         if(orderNumber!=null){
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("orderNumber"), clientId)));
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("orderNumber"), orderNumber)));
         }
         if(ref != null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(itemRoot.get("ref")),"%"+ref.toUpperCase()+"%"));
@@ -118,6 +130,38 @@ public class WarehouseOutputRepositoryCustomImpl implements WarehouseOutputRepos
 
         if(warehouse != null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(warehouseOutputWarehouseJoin.get("name")),"%"+warehouse.toUpperCase()+"%"));
+        }
+
+        if(registrationStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("registrationDate"),registrationStartDate)
+                    )
+            );
+        }
+
+        if(registrationEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("registrationDate"),registrationEndDate)
+                    )
+            );
+        }
+
+        if(updateStartDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.greaterThanOrEqualTo(itemRoot.get("updateDate"),updateStartDate)
+                    )
+            );
+        }
+
+        if(updateEndDate!=null){
+            conditions.add(
+                    criteriaBuilder.and(
+                            criteriaBuilder.lessThanOrEqualTo(itemRoot.get("updateDate"),updateEndDate)
+                    )
+            );
         }
 
         if (status) {
@@ -197,7 +241,11 @@ public class WarehouseOutputRepositoryCustomImpl implements WarehouseOutputRepos
             String ref,
             String courier,
             String warehouse,
-            Boolean status
+            Boolean status,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate
     ){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
@@ -212,6 +260,10 @@ public class WarehouseOutputRepositoryCustomImpl implements WarehouseOutputRepos
                 courier,
                 warehouse,
                 status,
+                registrationStartDate,
+                registrationEndDate,
+                updateStartDate,
+                updateEndDate,
                 criteriaBuilder,
                 itemRoot,
                 warehouseOutputCourierJoin,

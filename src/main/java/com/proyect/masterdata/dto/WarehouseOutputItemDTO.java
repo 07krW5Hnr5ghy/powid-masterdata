@@ -14,6 +14,10 @@ import java.util.UUID;
 @Data
 public class WarehouseOutputItemDTO {
     private UUID id;
+    private Long orderNumber;
+    private String ref;
+    private String courier;
+    private String warehouse;
     private Integer quantity;
     private UUID productId;
     private String productSku;
