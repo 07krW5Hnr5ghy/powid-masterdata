@@ -338,13 +338,87 @@ public class WarehouseOutputItemImpl implements IWarehouseOutputItem {
                 warehouseOutputItem.setUser(user);
                 warehouseOutputItem.setUserId(user.getId());
                 warehouseOutputItemRepository.save(warehouseOutputItem);
-                iWarehouseStock.in(warehouseOutput.getWarehouse(),product,warehouseOutputItem.getQuantity(),user);
+                iWarehouseStock.out(warehouseOutput.getWarehouse(),product,warehouseOutputItem.getQuantity(),user);
                 iAudit.save("ADD_WAREHOUSE_OUTPUT_ITEM",
                         "ITEM " +
                                 iUtil.buildProductSku(product) +
                                 " DE SALIDA DE ALMACEN "+
                                 warehouseOutput.getOrderNumber()+
                                 " ACTIVADO.",
+                        warehouseOutput.getOrderNumber().toString(),user.getUsername());
+                return ResponseSuccess.builder()
+                        .message(Constants.update)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> updateQuantity(Integer quantity, UUID productId, UUID warehouseOutputId, String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Product product;
+            WarehouseOutputItem warehouseOutputItem;
+            WarehouseOutput warehouseOutput;
+            User user;
+            WarehouseStock warehouseStock;
+            try{
+                product = productRepository.findByIdAndStatusTrue(productId);
+                warehouseOutput = warehouseOutputRepository.findById(warehouseOutputId).orElse(null);
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new BadRequestExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(product==null){
+                throw new BadRequestExceptions(Constants.ErrorProduct);
+            }
+            if(warehouseOutput==null){
+                throw new BadRequestExceptions(Constants.ErrorWarehouseOutput);
+            }else{
+                warehouseOutputItem = warehouseOutputItemRepository.findByProductIdAndWarehouseOutputIdAndStatusTrue(product.getId(),warehouseOutput.getId());
+            }
+            if(warehouseOutputItem==null){
+                throw new BadRequestExceptions(Constants.ErrorWarehouseOutputItem);
+            }else{
+                warehouseStock = warehouseStockRepository.findByWarehouseIdAndProductId(warehouseOutput.getWarehouse().getId(),product.getId());
+            }
+            if(!warehouseOutput.getStatus()){
+                throw new BadRequestExceptions(Constants.ErrorWarehouseOutputInactive);
+            }
+            if(quantity>warehouseStock.getQuantity()){
+                throw new BadRequestExceptions(Constants.ErrorWarehouseStockLess);
+            }
+            if(quantity.equals(warehouseOutputItem.getQuantity())){
+                throw new BadRequestExceptions(Constants.ErrorWarehouseOutputItemEqualUpdate);
+            }
+            try{
+                warehouseOutputItem.setQuantity(quantity);
+                warehouseOutputItem.setUpdateDate(OffsetDateTime.now());
+                warehouseOutputItem.setUser(user);
+                warehouseOutputItem.setUserId(user.getId());
+                warehouseOutputItemRepository.save(warehouseOutputItem);
+                int updatedQuantity;
+                if(quantity>warehouseOutputItem.getQuantity()){
+                    updatedQuantity = quantity-warehouseOutputItem.getQuantity();
+                    iWarehouseStock.out(warehouseOutput.getWarehouse(),product,updatedQuantity,user);
+                }
+                if(quantity<warehouseOutputItem.getQuantity()){
+                    updatedQuantity = warehouseOutputItem.getQuantity()-quantity;
+                    iWarehouseStock.in(warehouseOutput.getWarehouse(),product,updatedQuantity,user);
+                }
+                iAudit.save("ADD_WAREHOUSE_OUTPUT_ITEM",
+                        "ITEM " +
+                                iUtil.buildProductSku(product) +
+                                " DE SALIDA DE ALMACEN "+
+                                warehouseOutput.getOrderNumber()+
+                                " ACTUALIZADO.",
                         warehouseOutput.getOrderNumber().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.update)

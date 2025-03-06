@@ -39,6 +39,7 @@ public interface IWarehouseOutputItem {
             Integer pageSize,
             Boolean status
     );
-    CompletableFuture<ResponseDelete> delete(UUID productId, UUID warehouseOutputId, String user) throws BadRequestExceptions;
-    CompletableFuture<ResponseSuccess> activate(UUID productId, UUID warehouseOutputId, String user) throws BadRequestExceptions;
+    CompletableFuture<ResponseDelete> delete(UUID productId, UUID warehouseOutputId, String user) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> activate(UUID productId, UUID warehouseOutputId, String user) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> updateQuantity(Integer quantity,UUID productId, UUID warehouseOutputId, String user) throws BadRequestExceptions,InternalErrorExceptions;
 }

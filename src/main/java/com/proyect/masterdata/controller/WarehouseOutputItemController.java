@@ -91,14 +91,15 @@ public class WarehouseOutputItemController {
         CompletableFuture<ResponseDelete> result = iWarehouseOutputItem.delete(productId,warehouseOutputId,username);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-    @PutMapping()
+    @PutMapping("update")
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:WAREHOUSE_POST')")
-    public ResponseEntity<ResponseSuccess> activate(
+    public ResponseEntity<ResponseSuccess> update(
             @RequestParam("warehouseOutputId")UUID productId,
             @RequestParam("warehouseOutputId")UUID warehouseOutputId,
+            @RequestParam("warehouseOutputId")Integer quantity,
             @RequestParam("username") String username
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iWarehouseOutputItem.activate(productId,warehouseOutputId,username);
+        CompletableFuture<ResponseSuccess> result = iWarehouseOutputItem.updateQuantity(quantity,productId,warehouseOutputId,username);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 }
