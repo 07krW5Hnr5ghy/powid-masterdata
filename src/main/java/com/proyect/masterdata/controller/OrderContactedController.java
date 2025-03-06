@@ -41,13 +41,23 @@ public class OrderContactedController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @PutMapping("agent")
-    public ResponseEntity<ResponseSuccess> activate(
+    public ResponseEntity<ResponseSuccess> agent(
             @RequestParam("orderId") UUID orderId,
             @RequestParam("username") String username,
             @RequestParam("agentUsername") String agentUsername,
             @RequestParam("observations") String observations
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseSuccess> result = iOrderContacted.selectAgent(orderId,username,agentUsername,observations);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+    @PutMapping("courier")
+    public ResponseEntity<ResponseSuccess> courier(
+            @RequestParam("orderId") UUID orderId,
+            @RequestParam("username") String username,
+            @RequestParam("courierName") String courierName,
+            @RequestParam("observations") String observations
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iOrderContacted.selectCourier(orderId,username,courierName,observations);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping(value = "list")

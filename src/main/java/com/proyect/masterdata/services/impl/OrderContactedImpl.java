@@ -45,6 +45,7 @@ public class OrderContactedImpl implements IOrderContacted {
     private final IUtil iUtil;
     private final IOrderLog iOrderLog;
     private final OrderStateRepository orderStateRepository;
+    private final CourierRepository courierRepository;
     @Override
     public CompletableFuture<ResponseSuccess> save(UUID orderId, String username,String observations) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -116,12 +117,10 @@ public class OrderContactedImpl implements IOrderContacted {
         return CompletableFuture.supplyAsync(()->{
             User user;
             OrderContacted orderContacted;
-            OrderState orderState;
             Ordering ordering;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 orderContacted = orderContactedRepository.findByOrderId(orderId);
-                orderState = orderStateRepository.findByNameAndStatusTrue("EN RUTA");
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -137,12 +136,7 @@ public class OrderContactedImpl implements IOrderContacted {
             if(ordering==null){
                 throw new BadRequestExceptions(Constants.ErrorOrdering);
             }
-            if(orderState==null){
-                throw new BadRequestExceptions(Constants.ErrorOrderState);
-            }
             try{
-                ordering.setOrderState(orderState);
-                ordering.setOrderStateId(orderState.getId());
                 orderingRepository.save(ordering);
                 orderContacted.setContacted(true);
                 orderContacted.setUpdateDate(OffsetDateTime.now());
@@ -377,6 +371,76 @@ public class OrderContactedImpl implements IOrderContacted {
                     orderContacted.setObservations(orderContacted.getObservations() + " " + observations);
                 }
                 orderContactedRepository.save(orderContacted);
+                iAudit.save(
+                        "ADD_ORDER_CONTACTED",
+                        "PEDIDO "+
+                                orderContacted.getOrdering().getOrderNumber()+
+                                " AGREGADO A CONTACT CENTER.",
+                        orderContacted.getOrdering().getOrderNumber().toString(),
+                        user.getUsername());
+                return ResponseSuccess.builder()
+                        .message(Constants.update)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> selectCourier(UUID orderId, String username, String courierName, String observations) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Courier courier;
+            OrderContacted orderContacted;
+            OrderState orderState;
+            Ordering ordering;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                orderContacted = orderContactedRepository.findByOrderId(orderId);
+                courier = courierRepository.findByNameAndStatusTrue(courierName.toUpperCase());
+                orderState = orderStateRepository.findByNameAndStatusTrue("EN RUTA");
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(orderContacted==null){
+                throw new BadRequestExceptions(Constants.ErrorOrderContacted);
+            }else{
+                ordering = orderingRepository.findById(orderContacted.getOrderId()).orElse(null);
+            }
+            if(ordering==null){
+                throw new BadRequestExceptions(Constants.ErrorOrdering);
+            }
+            if(courier==null){
+                throw new BadRequestExceptions(Constants.ErrorCourier);
+            }
+            if(orderState==null){
+                throw new BadRequestExceptions(Constants.ErrorOrderState);
+            }
+            try{
+                ordering.setOrderState(orderState);
+                ordering.setOrderStateId(orderState.getId());
+                ordering.setCourier(courier);
+                ordering.setCourierId(courier.getId());
+                orderingRepository.save(ordering);
+                orderContacted.setUpdateDate(OffsetDateTime.now());
+                orderContacted.setUser(user);
+                orderContacted.setUserId(user.getId());
+                if(observations != null){
+                    orderContacted.setObservations(orderContacted.getObservations() + " " + observations);
+                }
+                orderContactedRepository.save(orderContacted);
+                iOrderLog.save(user,ordering,
+                        OffsetDateTime.now()+
+                                " - "+
+                                user.getUsername()+
+                                " "+ordering.getOrderState().getName());
                 iAudit.save(
                         "ADD_ORDER_CONTACTED",
                         "PEDIDO "+
