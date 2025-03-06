@@ -1,9 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.Product;
-import com.proyect.masterdata.domain.User;
-import com.proyect.masterdata.domain.WarehouseOutput;
-import com.proyect.masterdata.domain.WarehouseOutputItem;
+import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.WarehouseOutputDTO;
 import com.proyect.masterdata.dto.WarehouseOutputItemDTO;
 import com.proyect.masterdata.dto.request.RequestWarehouseOutputItem;
@@ -38,6 +35,7 @@ public class WarehouseOutputItemImpl implements IWarehouseOutputItem {
     WarehouseOutputItemRepository warehouseOutputItemRepository;
     WarehouseOutputRepository warehouseOutputRepository;
     WarehouseOutputItemRepositoryCustom warehouseOutputItemRepositoryCustom;
+    WarehouseStockRepository warehouseStockRepository;
     IUtil iUtil;
     IAudit iAudit;
     IWarehouseStock iWarehouseStock;
@@ -45,6 +43,7 @@ public class WarehouseOutputItemImpl implements IWarehouseOutputItem {
     public WarehouseOutputItem save(RequestWarehouseOutputItem requestWarehouseOutputItem, WarehouseOutput warehouseOutput, User user) throws BadRequestExceptions, InternalErrorExceptions {
         Product product;
         WarehouseOutputItem warehouseOutputItem;
+        WarehouseStock warehouseStock;
         try{
             product = productRepository.findByIdAndStatusTrue(requestWarehouseOutputItem.getProductId());
             warehouseOutputItem = warehouseOutputItemRepository.findByProductIdAndWarehouseOutputId(requestWarehouseOutputItem.getProductId(),warehouseOutput.getId());
@@ -60,6 +59,11 @@ public class WarehouseOutputItemImpl implements IWarehouseOutputItem {
         }
         if(requestWarehouseOutputItem.getQuantity()<1){
             throw new BadRequestExceptions(Constants.ErrorWarehouseOutputItemZero);
+        }else{
+            warehouseStock = warehouseStockRepository.findByWarehouseIdAndProductId(warehouseOutput.getWarehouse().getId(),product.getId());
+        }
+        if(requestWarehouseOutputItem.getQuantity()>warehouseStock.getQuantity()){
+            throw new BadRequestExceptions(Constants.ErrorWarehouseStockLess);
         }
         try{
             WarehouseOutputItem newWarehouseOutputItem = warehouseOutputItemRepository.save(WarehouseOutputItem.builder()
@@ -98,6 +102,7 @@ public class WarehouseOutputItemImpl implements IWarehouseOutputItem {
             WarehouseOutputItem warehouseOutputItem;
             WarehouseOutput warehouseOutput;
             User user;
+            WarehouseStock warehouseStock;
             try{
                 product = productRepository.findByIdAndStatusTrue(requestWarehouseOutputItem.getProductId());
                 warehouseOutput = warehouseOutputRepository.findById(warehouseOutputId).orElse(null);
@@ -122,6 +127,11 @@ public class WarehouseOutputItemImpl implements IWarehouseOutputItem {
             }
             if(requestWarehouseOutputItem.getQuantity()<1){
                 throw new BadRequestExceptions(Constants.ErrorWarehouseOutputItemZero);
+            }else{
+                warehouseStock = warehouseStockRepository.findByWarehouseIdAndProductId(warehouseOutput.getWarehouse().getId(),product.getId());
+            }
+            if(requestWarehouseOutputItem.getQuantity()>warehouseStock.getQuantity()){
+                throw new BadRequestExceptions(Constants.ErrorWarehouseStockLess);
             }
             if(!warehouseOutput.getStatus()){
                 throw new BadRequestExceptions(Constants.ErrorWarehouseOutputInactive);
