@@ -153,13 +153,14 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
     @Modifying
     @Transactional
     @Query("UPDATE OrderItem o SET " +
-            "o.status = false, " +
+            "o.status = :status, " +
             "o.updateDate = :updateDate " +
             "WHERE o.userId = :userId AND o.orderId = :orderId AND o.productId = :productId")
-    void deleteOrderItemLogically (
+    void deleteAndActivateOrderItemLogically (
             @Param("orderId") UUID orderId,
             @Param("productId") UUID productId,
             @Param("updateDate") OffsetDateTime updateDate,
-            @Param("userId") UUID userId
+            @Param("userId") UUID userId,
+            @Param("status") boolean status
     );
 }
