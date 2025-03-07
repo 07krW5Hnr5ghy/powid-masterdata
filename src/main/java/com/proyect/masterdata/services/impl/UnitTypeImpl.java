@@ -58,6 +58,8 @@ public class UnitTypeImpl implements IUnitType {
                             .registrationDate(OffsetDateTime.now())
                             .updateDate(OffsetDateTime.now())
                             .user(user).userId(user.getId())
+                            .client(user.getClient())
+                            .clientId(user.getClientId())
                     .build());
             iAudit.save("ADD_UNIT_TYPE","TIPO DE UNIDAD "+newUnitType.getName()+" CREADO.",newUnitType.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -99,6 +101,8 @@ public class UnitTypeImpl implements IUnitType {
                         .registrationDate(OffsetDateTime.now())
                         .updateDate(OffsetDateTime.now())
                         .user(user).userId(user.getId())
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
                         .build());
                 iAudit.save("ADD_UNIT_TYPE","TIPO DE UNIDAD "+newUnitType.getName()+" CREADO.",newUnitType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -210,6 +214,11 @@ public class UnitTypeImpl implements IUnitType {
 
             return unitTypes.stream().map(unitType -> UnitTypeDTO.builder()
                     .name(unitType.getName())
+                    .id(unitType.getId())
+                    .registrationDate(unitType.getRegistrationDate())
+                    .user(unitType.getUser().getUsername())
+                    .status(unitType.getStatus())
+                    .updateDate(unitType.getUpdateDate())
                     .build()).toList();
         });
     }

@@ -99,6 +99,9 @@ public class MembershipStateImpl implements IMembershipState {
                 return new PageImpl<>(Collections.emptyList());
             }
             List<MembershipStateDTO> membershipStateDTOs = membershipStatePage.getContent().stream().map(membershipState -> MembershipStateDTO.builder()
+                    .status(membershipState.getStatus())
+                    .id(membershipState.getId())
+                    .user(membershipState.getUser().getUsername())
                     .name(membershipState.getName())
                     .registrationDate(membershipState.getRegistrationDate())
                     .updateDate(membershipState.getUpdateDate())
@@ -140,6 +143,9 @@ public class MembershipStateImpl implements IMembershipState {
                 return new PageImpl<>(Collections.emptyList());
             }
             List<MembershipStateDTO> membershipStateDTOs = membershipStatePage.getContent().stream().map(membershipState -> MembershipStateDTO.builder()
+                    .status(membershipState.getStatus())
+                    .id(membershipState.getId())
+                    .user(membershipState.getUser().getUsername())
                     .name(membershipState.getName())
                     .registrationDate(membershipState.getRegistrationDate())
                     .updateDate(membershipState.getUpdateDate())

@@ -296,6 +296,8 @@ public class ModelImpl implements IModel {
             }
 
             List<ModelDTO> models = pageModel.getContent().stream().map(model -> ModelDTO.builder()
+                    .status(model.getStatus())
+                    .id(model.getId())
                     .name(model.getName())
                     .brand(model.getBrand().getName())
                     .sku(model.getSku())
@@ -361,6 +363,8 @@ public class ModelImpl implements IModel {
             }
 
             List<ModelDTO> models = pageModel.getContent().stream().map(model -> ModelDTO.builder()
+                    .status(model.getStatus())
+                    .id(model.getId())
                     .name(model.getName())
                     .brand(model.getBrand().getName())
                     .sku(model.getSku())
@@ -393,6 +397,8 @@ public class ModelImpl implements IModel {
             }
 
             return models.stream().map(model -> ModelDTO.builder()
+                    .status(model.getStatus())
+                    .id(model.getId())
                     .name(model.getName())
                     .brand(model.getBrand().getName())
                     .sku(model.getSku().toUpperCase())
@@ -420,6 +426,8 @@ public class ModelImpl implements IModel {
             }
 
             return models.stream().map(model -> ModelDTO.builder()
+                    .status(model.getStatus())
+                    .id(model.getId())
                     .name(model.getName())
                     .brand(model.getBrand().getName())
                     .sku(model.getSku())
@@ -449,6 +457,8 @@ public class ModelImpl implements IModel {
             }
 
             return models.stream().map(model -> ModelDTO.builder()
+                    .status(model.getStatus())
+                    .id(model.getId())
                     .name(model.getName())
                     .brand(model.getBrand().getName())
                     .sku(model.getSku())
@@ -476,6 +486,8 @@ public class ModelImpl implements IModel {
             }
 
             return models.stream().map(model -> ModelDTO.builder()
+                    .status(model.getStatus())
+                    .id(model.getId())
                     .name(model.getName())
                     .brand(model.getBrand().getName())
                     .user(model.getUser().getUsername())

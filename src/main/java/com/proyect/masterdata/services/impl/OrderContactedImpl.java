@@ -242,6 +242,8 @@ public class OrderContactedImpl implements IOrderContacted {
                     totalDuePayment = (saleAmount+orderContacted.getOrdering().getDeliveryAmount())-orderContacted.getOrdering().getAdvancedPayment();
                 }
                 return OrderContactedDTO.builder()
+                        .user(orderContacted.getUser().getUsername())
+                        .orderContactedId(orderContacted.getId())
                         .orderId(orderContacted.getOrdering().getId())
                         .orderNumber(orderContacted.getOrdering().getOrderNumber())
                         .customerName(orderContacted.getOrdering().getCustomer().getName())
@@ -297,6 +299,9 @@ public class OrderContactedImpl implements IOrderContacted {
                             }
                             String finalSku = iUtil.buildProductSku(orderItem.getProduct());
                             return OrderItemDTO.builder()
+                                    .id(orderItem.getId())
+                                    .user(orderItem.getUser().getUsername())
+                                    .status(orderItem.getStatus())
                                     .orderId(orderItem.getOrderId())
                                     .model(orderItem.getProduct().getModel().getName())
                                     .discountAmount(orderItem.getDiscountAmount())

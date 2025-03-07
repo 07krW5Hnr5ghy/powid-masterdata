@@ -138,6 +138,8 @@ public class MembershipPaymentImpl implements IMembershipPayment {
                 return new PageImpl<>(Collections.emptyList());
             }
             List<MembershipPaymentDTO> membershipPaymentDTOS = membershipPaymentPage.getContent().stream().map(membershipPayment -> MembershipPaymentDTO.builder()
+                    .id(membershipPayment.getId())
+                    .user(membershipPayment.getUser().getUsername())
                     .grossAmount(membershipPayment.getGrossAmount())
                     .netAmount(membershipPayment.getNetAmount())
                     .paymentGatewayFee(membershipPayment.getPaymentGatewayFee())

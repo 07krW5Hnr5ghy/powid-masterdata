@@ -175,6 +175,7 @@ public class AuditEventImpl implements IAuditEvent {
                     .id(auditEvent.getId())
                     .registrationDate(auditEvent.getRegistrationDate())
                     .updateDate(auditEvent.getUpdateDate())
+                    .user(auditEvent.getUser().getUsername())
                     .build()).toList();
             return new PageImpl<>(auditEventDTOS,auditEventPage.getPageable(),auditEventPage.getTotalElements());
         });
@@ -198,6 +199,7 @@ public class AuditEventImpl implements IAuditEvent {
                     .id(auditEvent.getId())
                     .registrationDate(auditEvent.getRegistrationDate())
                     .updateDate(auditEvent.getUpdateDate())
+                    .user(auditEvent.getUser().getUsername())
                     .build()).toList();
             return new PageImpl<>(auditEventDTOS,auditEventPage.getPageable(),auditEventPage.getTotalElements());
         });

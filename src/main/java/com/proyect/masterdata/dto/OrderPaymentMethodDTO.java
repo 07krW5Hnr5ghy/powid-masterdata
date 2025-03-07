@@ -12,6 +12,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 public class OrderPaymentMethodDTO {
-    private UUID code;
+    private UUID id;
     private String name;
+    private String user;
+    private Boolean status;
 }

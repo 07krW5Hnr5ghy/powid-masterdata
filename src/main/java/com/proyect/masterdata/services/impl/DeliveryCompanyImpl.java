@@ -158,6 +158,9 @@ public class DeliveryCompanyImpl implements IDeliveryCompany {
                 return Collections.emptyList();
             }
             return deliveryCompanies.stream().map(deliveryCompany -> DeliveryCompanyDTO.builder()
+                    .status(deliveryCompany.getStatus())
+                    .id(deliveryCompany.getId())
+                    .user(deliveryCompany.getUser().getUsername())
                     .name(deliveryCompany.getName())
                     .registrationDate(deliveryCompany.getRegistrationDate())
                     .updateDate(deliveryCompany.getUpdateDate())
@@ -192,6 +195,9 @@ public class DeliveryCompanyImpl implements IDeliveryCompany {
                 return new PageImpl<>(Collections.emptyList());
             }
             List<DeliveryCompanyDTO> deliveryCompanyDTOS = deliveryCompanyPage.stream().map(deliveryCompany -> DeliveryCompanyDTO.builder()
+                    .status(deliveryCompany.getStatus())
+                    .id(deliveryCompany.getId())
+                    .user(deliveryCompany.getUser().getUsername())
                     .name(deliveryCompany.getName())
                     .registrationDate(deliveryCompany.getRegistrationDate())
                     .updateDate(deliveryCompany.getUpdateDate())
@@ -227,6 +233,9 @@ public class DeliveryCompanyImpl implements IDeliveryCompany {
                 return new PageImpl<>(Collections.emptyList());
             }
             List<DeliveryCompanyDTO> deliveryCompanyDTOS = deliveryCompanyPage.stream().map(deliveryCompany -> DeliveryCompanyDTO.builder()
+                    .status(deliveryCompany.getStatus())
+                    .id(deliveryCompany.getId())
+                    .user(deliveryCompany.getUser().getUsername())
                     .name(deliveryCompany.getName())
                     .registrationDate(deliveryCompany.getRegistrationDate())
                     .updateDate(deliveryCompany.getUpdateDate())

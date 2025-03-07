@@ -153,6 +153,8 @@ public class CancelledOrderImpl implements ICancelledOrder {
             }
 
             List<CancelledOrderDTO> cancelledOrderDTOS = pageCancelledOrder.getContent().stream().map(cancelledOrder -> CancelledOrderDTO.builder()
+                    .id(cancelledOrder.getId())
+                    .user(cancelledOrder.getUser().getUsername())
                     .orderId(cancelledOrder.getOrderingId())
                     .cancellationReason(cancelledOrder.getCancellationReason().getName())
                     .registrationDate(cancelledOrder.getRegistrationDate())

@@ -173,7 +173,12 @@ public class OrderPaymentMethodImpl implements IOrderPaymentMethod {
             if (orderPaymentMethods.isEmpty()) {
                 return Collections.emptyList();
             }
-            return paymentMethodMapper.listPaymentMethodToListPaymentMethodDTO(orderPaymentMethods);
+            return orderPaymentMethods.stream().map(orderPaymentMethod -> OrderPaymentMethodDTO.builder()
+                    .id(orderPaymentMethod.getId())
+                    .name(orderPaymentMethod.getName())
+                    .user(orderPaymentMethod.getUser().getUsername())
+                    .status(orderPaymentMethod.getStatus())
+                    .build()).toList();
         });
     }
 
@@ -181,22 +186,29 @@ public class OrderPaymentMethodImpl implements IOrderPaymentMethod {
     public CompletableFuture<Page<OrderPaymentMethodDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
                                             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Page<OrderPaymentMethod> paymentMethodPage;
+            Page<OrderPaymentMethod> orderPaymentMethodPage;
             try {
-                paymentMethodPage = orderPaymentMethodRepositoryCustom.searchForPaymentMethod(name, user, sort, sortColumn,
+                orderPaymentMethodPage = orderPaymentMethodRepositoryCustom.searchForPaymentMethod(name, user, sort, sortColumn,
                         pageNumber, pageSize, true);
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);
             }
 
-            if (paymentMethodPage.isEmpty()) {
+            if (orderPaymentMethodPage.isEmpty()) {
                 return new PageImpl<>(Collections.emptyList());
             }
 
+            List<OrderPaymentMethodDTO> orderPaymentMethodDTOS = orderPaymentMethodPage.getContent().stream().map(orderPaymentMethod -> OrderPaymentMethodDTO.builder()
+                    .id(orderPaymentMethod.getId())
+                    .name(orderPaymentMethod.getName())
+                    .user(orderPaymentMethod.getUser().getUsername())
+                    .status(orderPaymentMethod.getStatus())
+                    .build()).toList();
+
             return new PageImpl<>(
-                    paymentMethodMapper.listPaymentMethodToListPaymentMethodDTO(paymentMethodPage.getContent()),
-                    paymentMethodPage.getPageable(), paymentMethodPage.getTotalElements());
+                    orderPaymentMethodDTOS,
+                    orderPaymentMethodPage.getPageable(), orderPaymentMethodPage.getTotalElements());
         });
     }
 
@@ -204,22 +216,29 @@ public class OrderPaymentMethodImpl implements IOrderPaymentMethod {
     public CompletableFuture<Page<OrderPaymentMethodDTO>> listStatusFalse(String name, String user, String sort, String sortColumn,
                                                        Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Page<OrderPaymentMethod> paymentMethodPage;
+            Page<OrderPaymentMethod> orderPaymentMethodPage;
             try {
-                paymentMethodPage = orderPaymentMethodRepositoryCustom.searchForPaymentMethod(name, user, sort, sortColumn,
+                orderPaymentMethodPage = orderPaymentMethodRepositoryCustom.searchForPaymentMethod(name, user, sort, sortColumn,
                         pageNumber, pageSize, false);
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);
             }
 
-            if (paymentMethodPage.isEmpty()) {
+            if (orderPaymentMethodPage.isEmpty()) {
                 return new PageImpl<>(Collections.emptyList());
             }
 
+            List<OrderPaymentMethodDTO> orderPaymentMethodDTOS = orderPaymentMethodPage.getContent().stream().map(orderPaymentMethod -> OrderPaymentMethodDTO.builder()
+                    .id(orderPaymentMethod.getId())
+                    .name(orderPaymentMethod.getName())
+                    .user(orderPaymentMethod.getUser().getUsername())
+                    .status(orderPaymentMethod.getStatus())
+                    .build()).toList();
+
             return new PageImpl<>(
-                    paymentMethodMapper.listPaymentMethodToListPaymentMethodDTO(paymentMethodPage.getContent()),
-                    paymentMethodPage.getPageable(), paymentMethodPage.getTotalElements());
+                    orderPaymentMethodDTOS,
+                    orderPaymentMethodPage.getPageable(), orderPaymentMethodPage.getTotalElements());
         });
     }
 
@@ -236,7 +255,12 @@ public class OrderPaymentMethodImpl implements IOrderPaymentMethod {
             if (orderPaymentMethods.isEmpty()) {
                 return Collections.emptyList();
             }
-            return paymentMethodMapper.listPaymentMethodToListPaymentMethodDTO(orderPaymentMethods);
+            return orderPaymentMethods.stream().map(orderPaymentMethod -> OrderPaymentMethodDTO.builder()
+                    .id(orderPaymentMethod.getId())
+                    .name(orderPaymentMethod.getName())
+                    .user(orderPaymentMethod.getUser().getUsername())
+                    .status(orderPaymentMethod.getStatus())
+                    .build()).toList();
         });
     }
 }

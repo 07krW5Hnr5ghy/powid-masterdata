@@ -218,6 +218,8 @@ public class MembershipImpl implements IMembership {
                 return new PageImpl<>(Collections.emptyList());
             }
             List<MembershipDTO> membershipDTOS = membershipPage.getContent().stream().map(membership -> MembershipDTO.builder()
+                    .id(membership.getId())
+                    .user(membership.getUser().getUsername())
                     .membershipState(membership.getMembershipState().getName())
                     .subscription(membership.getSubscription().getName())
                     .registrationDate(membership.getRegistrationDate())
@@ -280,6 +282,8 @@ public class MembershipImpl implements IMembership {
                 return new PageImpl<>(Collections.emptyList());
             }
             List<MembershipDTO> membershipDTOS = membershipPage.getContent().stream().map(membership -> MembershipDTO.builder()
+                    .id(membership.getId())
+                    .user(membership.getUser().getUsername())
                     .membershipState(membership.getMembershipState().getName())
                     .subscription(membership.getSubscription().getName())
                     .registrationDate(membership.getRegistrationDate())

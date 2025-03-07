@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 public class OrderContactedDTO {
-    private UUID orderContactId;
+    private UUID orderContactedId;
     private UUID orderId;
     private Long orderNumber;
     private Boolean contacted;
@@ -59,4 +59,5 @@ public class OrderContactedDTO {
     private String orderStateColor;
     private String cancellationReason;
     private List<OrderLogDTO> orderLogs;
+    private String user;
 }

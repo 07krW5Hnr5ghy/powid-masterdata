@@ -63,6 +63,8 @@ public class SizeTypeImpl implements ISizeType {
                     .status(true)
                     .registrationDate(OffsetDateTime.now())
                     .user(user).userId(user.getId())
+                            .client(user.getClient())
+                            .clientId(user.getClientId())
                     .build());
             iAudit.save("ADD_SIZE_TYPE","TIPO DE TAMAÑO "+newSizeType.getName()+" CREADO.",newSizeType.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -102,6 +104,8 @@ public class SizeTypeImpl implements ISizeType {
                         .status(true)
                         .registrationDate(OffsetDateTime.now())
                         .user(user).userId(user.getId())
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
                         .build());
                 iAudit.save("ADD_SIZE_TYPE","TIPO DE TAMAÑO "+newSizeType.getName()+" CREADO.",newSizeType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -209,7 +213,14 @@ public class SizeTypeImpl implements ISizeType {
             if (sizeTypes.isEmpty()) {
                 return Collections.emptyList();
             }
-            return sizeTypeMapper.listSizeTypeToListSizeTypeDTO(sizeTypes);
+            return sizeTypes.stream().map(sizeType -> SizeTypeDTO.builder()
+                    .id(sizeType.getId())
+                    .user(sizeType.getUser().getUsername())
+                    .registrationDate(sizeType.getRegistrationDate())
+                    .updateDate(sizeType.getUpdateDate())
+                    .name(sizeType.getName())
+                    .status(sizeType.getStatus())
+                    .build()).toList();
         });
     }
 
@@ -228,7 +239,14 @@ public class SizeTypeImpl implements ISizeType {
             if (sizeTypes.isEmpty()) {
                 return Collections.emptyList();
             }
-            return sizeTypeMapper.listSizeTypeToListSizeTypeDTO(sizeTypes);
+            return sizeTypes.stream().map(sizeType -> SizeTypeDTO.builder()
+                    .id(sizeType.getId())
+                    .user(sizeType.getUser().getUsername())
+                    .registrationDate(sizeType.getRegistrationDate())
+                    .updateDate(sizeType.getUpdateDate())
+                    .name(sizeType.getName())
+                    .status(sizeType.getStatus())
+                    .build()).toList();
         });
     }
 
@@ -247,7 +265,15 @@ public class SizeTypeImpl implements ISizeType {
             if (sizeTypePage.isEmpty()) {
                 return new PageImpl<>(Collections.emptyList());
             }
-            return new PageImpl<>(sizeTypeMapper.listSizeTypeToListSizeTypeDTO(sizeTypePage.getContent()),
+            List<SizeTypeDTO> sizeTypeDTOS = sizeTypePage.stream().map(sizeType -> SizeTypeDTO.builder()
+                    .id(sizeType.getId())
+                    .user(sizeType.getUser().getUsername())
+                    .registrationDate(sizeType.getRegistrationDate())
+                    .updateDate(sizeType.getUpdateDate())
+                    .name(sizeType.getName())
+                    .status(sizeType.getStatus())
+                    .build()).toList();
+            return new PageImpl<>(sizeTypeDTOS,
                     sizeTypePage.getPageable(), sizeTypePage.getTotalElements());
         });
     }
@@ -267,7 +293,15 @@ public class SizeTypeImpl implements ISizeType {
             if (sizeTypePage.isEmpty()) {
                 return new PageImpl<>(Collections.emptyList());
             }
-            return new PageImpl<>(sizeTypeMapper.listSizeTypeToListSizeTypeDTO(sizeTypePage.getContent()),
+            List<SizeTypeDTO> sizeTypeDTOS = sizeTypePage.stream().map(sizeType -> SizeTypeDTO.builder()
+                    .id(sizeType.getId())
+                    .user(sizeType.getUser().getUsername())
+                    .registrationDate(sizeType.getRegistrationDate())
+                    .updateDate(sizeType.getUpdateDate())
+                    .name(sizeType.getName())
+                    .status(sizeType.getStatus())
+                    .build()).toList();
+            return new PageImpl<>(sizeTypeDTOS,
                     sizeTypePage.getPageable(), sizeTypePage.getTotalElements());
         });
     }

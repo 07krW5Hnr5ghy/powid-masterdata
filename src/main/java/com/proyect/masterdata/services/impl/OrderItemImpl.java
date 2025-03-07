@@ -503,6 +503,9 @@ public class OrderItemImpl implements IOrderItem {
                 }
 
                 return OrderItemDTO.builder()
+                        .id(orderItem.getId())
+                        .user(orderItem.getUser().getUsername())
+                        .status(orderItem.getStatus())
                         .productId(orderItem.getProductId())
                         .unit(orderItem.getProduct().getUnit().getName())
                         .color(orderItem.getProduct().getColor().getName())
@@ -557,6 +560,9 @@ public class OrderItemImpl implements IOrderItem {
                     totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
                 }
                 return OrderItemDTO.builder()
+                        .id(orderItem.getId())
+                        .user(orderItem.getUser().getUsername())
+                        .status(orderItem.getStatus())
                         .productId(orderItem.getProductId())
                     .unit(orderItem.getProduct().getUnit().getName())
                     .orderId(orderItem.getOrderId())
@@ -606,6 +612,9 @@ public class OrderItemImpl implements IOrderItem {
                     totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
                 }
                 return OrderItemDTO.builder()
+                        .id(orderItem.getId())
+                        .user(orderItem.getUser().getUsername())
+                        .status(orderItem.getStatus())
                         .productId(orderItem.getProductId())
                         .unit(orderItem.getProduct().getUnit().getName())
                         .orderId(orderItem.getOrderId())

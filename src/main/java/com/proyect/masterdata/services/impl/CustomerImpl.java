@@ -75,6 +75,7 @@ public class CustomerImpl implements ICustomer {
                     .district(district)
                     .districtId(district.getId())
                     .clientId(user.getClientId())
+                            .status(true)
                     .user(user)
                             .userId(user.getId())
                     .customerTypeId(customerType.getId())
@@ -135,6 +136,7 @@ public class CustomerImpl implements ICustomer {
                         .district(district)
                         .districtId(district.getId())
                         .clientId(user.getClientId())
+                        .status(true)
                                 .customerType(customerType)
                                 .customerTypeId(customerType.getId())
                         .user(user)
@@ -168,6 +170,9 @@ public class CustomerImpl implements ICustomer {
                 return new ArrayList<>();
             }
             return customerList.stream().map(customer -> CustomerDTO.builder()
+                    .status(customer.getStatus())
+                    .id(customer.getId())
+                    .user(customer.getUser().getUsername())
                     .name(customer.getName())
                     .phone(customer.getPhone())
                     .customerType(customer.getCustomerType().getName())

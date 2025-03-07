@@ -1,32 +1,28 @@
 package com.proyect.masterdata.services.impl;
 
-import java.time.OffsetDateTime;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-
+import com.proyect.masterdata.domain.CategoryProduct;
 import com.proyect.masterdata.domain.SizeType;
 import com.proyect.masterdata.domain.UnitType;
+import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.CategoryProductDTO;
 import com.proyect.masterdata.dto.response.ResponseDelete;
+import com.proyect.masterdata.dto.response.ResponseSuccess;
+import com.proyect.masterdata.exceptions.BadRequestExceptions;
+import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
+import com.proyect.masterdata.services.ICategoryProduct;
+import com.proyect.masterdata.utils.Constants;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
-import com.proyect.masterdata.domain.CategoryProduct;
-import com.proyect.masterdata.domain.User;
-import com.proyect.masterdata.dto.CategoryProductDTO;
-import com.proyect.masterdata.dto.request.RequestCategoryProduct;
-import com.proyect.masterdata.dto.response.ResponseSuccess;
-import com.proyect.masterdata.exceptions.BadRequestExceptions;
-import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.services.ICategoryProduct;
-import com.proyect.masterdata.utils.Constants;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
+import java.time.OffsetDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -87,6 +83,8 @@ public class CategoryProductImpl implements ICategoryProduct {
                             .sizeTypeId(sizeType.getId())
                             .unitType(unitType)
                             .unitTypeId(unitType.getId())
+                            .client(user.getClient())
+                            .clientId(user.getClientId())
                     .build());
             iAudit.save("ADD_CATEGORY_PRODUCT","CATEGORIA DE PRODUCTO "+newCategoryProduct.getName()+" CREADA.",newCategoryProduct.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -147,6 +145,8 @@ public class CategoryProductImpl implements ICategoryProduct {
                                 .sizeTypeId(sizeType.getId())
                                 .unitTypeId(unitType.getId())
                                 .unitType(unitType)
+                                .client(user.getClient())
+                                .clientId(user.getClientId())
                         .build());
                 iAudit.save("ADD_CATEGORY_PRODUCT","CATEGORIA DE PRODUCTO "+newCategoryProduct.getName()+" CREADA.",newCategoryProduct.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -181,6 +181,9 @@ public class CategoryProductImpl implements ICategoryProduct {
 
             List<CategoryProductDTO> categoryProductDTOs = categoryProductPage.getContent().stream()
                     .map(categoryProduct -> CategoryProductDTO.builder()
+                            .status(categoryProduct.getStatus())
+                            .id(categoryProduct.getId())
+                            .user(categoryProduct.getUser().getUsername())
                             .name(categoryProduct.getName())
                             .registrationDate(categoryProduct.getRegistrationDate())
                             .updateDate(categoryProduct.getUpdateDate())
@@ -213,6 +216,9 @@ public class CategoryProductImpl implements ICategoryProduct {
 
             List<CategoryProductDTO> categoryProductDTOs = categoryProductPage.getContent().stream()
                     .map(categoryProduct -> CategoryProductDTO.builder()
+                            .status(categoryProduct.getStatus())
+                            .id(categoryProduct.getId())
+                            .user(categoryProduct.getUser().getUsername())
                             .name(categoryProduct.getName())
                             .registrationDate(categoryProduct.getRegistrationDate())
                             .updateDate(categoryProduct.getUpdateDate())
@@ -240,6 +246,9 @@ public class CategoryProductImpl implements ICategoryProduct {
             }
             return categoryProducts.stream()
                     .map(categoryProduct -> CategoryProductDTO.builder()
+                            .status(categoryProduct.getStatus())
+                            .id(categoryProduct.getId())
+                            .user(categoryProduct.getUser().getUsername())
                             .name(categoryProduct.getName())
                             .registrationDate(categoryProduct.getRegistrationDate())
                             .updateDate(categoryProduct.getUpdateDate())
@@ -370,6 +379,9 @@ public class CategoryProductImpl implements ICategoryProduct {
             }
             return categoryProducts.stream()
                     .map(categoryProduct -> CategoryProductDTO.builder()
+                            .status(categoryProduct.getStatus())
+                            .id(categoryProduct.getId())
+                            .user(categoryProduct.getUser().getUsername())
                             .name(categoryProduct.getName())
                             .registrationDate(categoryProduct.getRegistrationDate())
                             .updateDate(categoryProduct.getUpdateDate())

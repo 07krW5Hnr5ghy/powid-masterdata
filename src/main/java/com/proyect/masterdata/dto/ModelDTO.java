@@ -7,16 +7,19 @@ import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.UUID;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class ModelDTO {
+    private UUID id;
     private String name;
     private String brand;
     private String sku;
     private String user;
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
+    private Boolean status;
 }

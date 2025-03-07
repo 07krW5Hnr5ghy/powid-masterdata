@@ -172,7 +172,14 @@ public class SaleChannelImpl implements ISaleChannel {
             if (saleChannels.isEmpty()) {
                 return Collections.emptyList();
             }
-            return saleChannelMapper.listSaleChannelToListSaleChannelDTO(saleChannels);
+            return saleChannels.stream().map(saleChannel -> SaleChannelDTO.builder()
+                    .name(saleChannel.getName())
+                    .id(saleChannel.getId())
+                    .registrationDate(saleChannel.getRegistrationDate())
+                    .updateDate(saleChannel.getUpdateDate())
+                    .status(saleChannel.getStatus())
+                    .user(saleChannel.getUser().getUsername())
+                    .build()).toList();
         });
     }
 
@@ -191,7 +198,15 @@ public class SaleChannelImpl implements ISaleChannel {
             if (saleChannelPage.isEmpty()) {
                 return new PageImpl<>(Collections.emptyList());
             }
-            return new PageImpl<>(saleChannelMapper.listSaleChannelToListSaleChannelDTO(saleChannelPage.getContent()),
+            List<SaleChannelDTO> saleChannelDTOS = saleChannelPage.stream().map(saleChannel -> SaleChannelDTO.builder()
+                    .name(saleChannel.getName())
+                    .id(saleChannel.getId())
+                    .registrationDate(saleChannel.getRegistrationDate())
+                    .updateDate(saleChannel.getUpdateDate())
+                    .status(saleChannel.getStatus())
+                    .user(saleChannel.getUser().getUsername())
+                    .build()).toList();
+            return new PageImpl<>(saleChannelDTOS,
                     saleChannelPage.getPageable(), saleChannelPage.getTotalElements());
         });
     }
@@ -211,7 +226,15 @@ public class SaleChannelImpl implements ISaleChannel {
             if (saleChannelPage.isEmpty()) {
                 return new PageImpl<>(Collections.emptyList());
             }
-            return new PageImpl<>(saleChannelMapper.listSaleChannelToListSaleChannelDTO(saleChannelPage.getContent()),
+            List<SaleChannelDTO> saleChannelDTOS = saleChannelPage.stream().map(saleChannel -> SaleChannelDTO.builder()
+                    .name(saleChannel.getName())
+                    .id(saleChannel.getId())
+                    .registrationDate(saleChannel.getRegistrationDate())
+                    .updateDate(saleChannel.getUpdateDate())
+                    .status(saleChannel.getStatus())
+                    .user(saleChannel.getUser().getUsername())
+                    .build()).toList();
+            return new PageImpl<>(saleChannelDTOS,
                     saleChannelPage.getPageable(), saleChannelPage.getTotalElements());
         });
     }
@@ -266,7 +289,14 @@ public class SaleChannelImpl implements ISaleChannel {
             if (saleChannels.isEmpty()) {
                 return Collections.emptyList();
             }
-            return saleChannelMapper.listSaleChannelToListSaleChannelDTO(saleChannels);
+            return saleChannels.stream().map(saleChannel -> SaleChannelDTO.builder()
+                    .name(saleChannel.getName())
+                    .id(saleChannel.getId())
+                    .registrationDate(saleChannel.getRegistrationDate())
+                    .updateDate(saleChannel.getUpdateDate())
+                    .status(saleChannel.getStatus())
+                    .user(saleChannel.getUser().getUsername())
+                    .build()).toList();
         });
     }
 

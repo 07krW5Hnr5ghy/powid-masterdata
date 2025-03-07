@@ -19,4 +19,5 @@ public class StockTransactionItemDTO {
     private String transactionType;
     private String supplierProduct;
     private OffsetDateTime registrationDate;
+    private String user;
 }

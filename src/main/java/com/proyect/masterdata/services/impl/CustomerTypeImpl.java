@@ -192,6 +192,9 @@ public class CustomerTypeImpl implements ICustomerType {
                 return new PageImpl<>(Collections.emptyList());
             }
             List<CustomerTypeDTO> customerTypeDTOs = customerTypePage.getContent().stream().map(customerType -> CustomerTypeDTO.builder()
+                    .status(customerType.getStatus())
+                    .id(customerType.getId())
+                    .user(customerType.getUser().getUsername())
                     .name(customerType.getName())
                     .registrationDate(customerType.getRegistrationDate())
                     .updateDate(customerType.getUpdateDate())
@@ -224,6 +227,9 @@ public class CustomerTypeImpl implements ICustomerType {
                 return new PageImpl<>(Collections.emptyList());
             }
             List<CustomerTypeDTO> customerTypeDTOs = customerTypePage.getContent().stream().map(customerType -> CustomerTypeDTO.builder()
+                    .status(customerType.getStatus())
+                    .id(customerType.getId())
+                    .user(customerType.getUser().getUsername())
                     .name(customerType.getName())
                     .registrationDate(customerType.getRegistrationDate())
                     .updateDate(customerType.getUpdateDate())

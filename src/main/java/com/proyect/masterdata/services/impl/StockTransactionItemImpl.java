@@ -215,6 +215,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                             .serial(stockTransactionItem.getStockTransaction().getSerial())
                             .transactionType(stockTransactionItem.getStockTransaction().getStockTransactionType().getName())
                             .registrationDate(stockTransactionItem.getRegistrationDate())
+                            .user(stockTransactionItem.getUser().getUsername())
                             .build())
                     .toList();
 
@@ -252,6 +253,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                             .serial(stockTransactionItem.getStockTransaction().getSerial())
                             .transactionType(stockTransactionItem.getStockTransaction().getStockTransactionType().getName())
                             .registrationDate(stockTransactionItem.getRegistrationDate())
+                            .user(stockTransactionItem.getUser().getUsername())
                             .build())
                     .toList();
         });

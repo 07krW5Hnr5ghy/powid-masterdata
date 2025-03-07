@@ -66,6 +66,8 @@ public class ColorImpl implements IColor {
                         .status(true)
                                 .user(user)
                                 .userId(user.getId())
+                                .client(user.getClient())
+                                .clientId(user.getClientId())
                         .build());
                 iAudit.save("ADD_COLOR","COLOR "+newColor.getName()+" CREADO.",newColor.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -171,7 +173,14 @@ public class ColorImpl implements IColor {
             if (colors.isEmpty()) {
                 return Collections.emptyList();
             }
-            return colorMapper.listColorToListColorDTO(colors);
+            return colors.stream().map(color -> ColorDTO.builder()
+                    .id(color.getId())
+                    .updateDate(color.getUpdateDate())
+                    .name(color.getName())
+                    .registrationDate(color.getRegistrationDate())
+                    .user(color.getUser().getUsername())
+                    .status(color.getStatus())
+                    .build()).toList();
         });
     }
 
@@ -207,7 +216,15 @@ public class ColorImpl implements IColor {
             if (colorPage.isEmpty()) {
                 return new PageImpl<>(Collections.emptyList());
             }
-            return new PageImpl<>(colorMapper.listColorToListColorDTO(colorPage.getContent()),
+            List<ColorDTO> colorDTOS = colorPage.getContent().stream().map(color -> ColorDTO.builder()
+                    .id(color.getId())
+                    .updateDate(color.getUpdateDate())
+                    .name(color.getName())
+                    .registrationDate(color.getRegistrationDate())
+                    .user(color.getUser().getUsername())
+                    .status(color.getStatus())
+                    .build()).toList();
+            return new PageImpl<>(colorDTOS,
                     colorPage.getPageable(), colorPage.getTotalElements());
         });
     }
@@ -246,7 +263,15 @@ public class ColorImpl implements IColor {
                 return new PageImpl<>(Collections.emptyList());
             }
 
-            return new PageImpl<>(colorMapper.listColorToListColorDTO(colorPage.getContent()),
+            List<ColorDTO> colorDTOS = colorPage.getContent().stream().map(color -> ColorDTO.builder()
+                    .id(color.getId())
+                    .updateDate(color.getUpdateDate())
+                    .name(color.getName())
+                    .registrationDate(color.getRegistrationDate())
+                    .user(color.getUser().getUsername())
+                    .status(color.getStatus())
+                    .build()).toList();
+            return new PageImpl<>(colorDTOS,
                     colorPage.getPageable(), colorPage.getTotalElements());
         });
     }
@@ -264,7 +289,14 @@ public class ColorImpl implements IColor {
             if (colors.isEmpty()) {
                 return Collections.emptyList();
             }
-            return colorMapper.listColorToListColorDTO(colors);
+            return colors.stream().map(color -> ColorDTO.builder()
+                    .id(color.getId())
+                    .updateDate(color.getUpdateDate())
+                    .name(color.getName())
+                    .registrationDate(color.getRegistrationDate())
+                    .user(color.getUser().getUsername())
+                    .status(color.getStatus())
+                    .build()).toList();
         });
     }
 }

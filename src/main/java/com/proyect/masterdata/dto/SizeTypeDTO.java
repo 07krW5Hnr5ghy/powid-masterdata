@@ -5,10 +5,18 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
+import java.util.UUID;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class SizeTypeDTO {
+    private UUID id;
     private String name;
+    private String user;
+    private OffsetDateTime registrationDate;
+    private OffsetDateTime updateDate;
+    private Boolean status;
 }

@@ -2,6 +2,7 @@ package com.proyect.masterdata.dto;
 
 import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.UUID;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +14,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class WarehouseStockDTO {
+    public UUID id;
+    public String user;
     public String warehouse;
     public String product;
     public String model;

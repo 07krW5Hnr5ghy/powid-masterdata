@@ -115,7 +115,14 @@ public class EntryChannelImpl implements IEntryChannel {
                 return new PageImpl<>(Collections.emptyList());
             }
 
-            List<EntryChannelDTO> entryChannelDTOS = entryChannelMapper.listEntryChannelToListEntryChannelDTO(entryChannelPage.getContent());
+            List<EntryChannelDTO> entryChannelDTOS = entryChannelPage.getContent().stream().map(entryChannel -> EntryChannelDTO.builder()
+                    .id(entryChannel.getId())
+                    .updateDate(entryChannel.getUpdateDate())
+                    .registrationDate(entryChannel.getRegistrationDate())
+                    .name(entryChannel.getName())
+                    .status(entryChannel.getStatus())
+                    .user(entryChannel.getUser().getUsername())
+                    .build()).toList();
             return new PageImpl<>(entryChannelDTOS,entryChannelPage.getPageable(),entryChannelPage.getTotalElements());
         });
     }
@@ -146,7 +153,14 @@ public class EntryChannelImpl implements IEntryChannel {
                 return new PageImpl<>(Collections.emptyList());
             }
 
-            List<EntryChannelDTO> entryChannelDTOS = entryChannelMapper.listEntryChannelToListEntryChannelDTO(entryChannelPage.getContent());
+            List<EntryChannelDTO> entryChannelDTOS = entryChannelPage.getContent().stream().map(entryChannel -> EntryChannelDTO.builder()
+                    .id(entryChannel.getId())
+                    .updateDate(entryChannel.getUpdateDate())
+                    .registrationDate(entryChannel.getRegistrationDate())
+                    .name(entryChannel.getName())
+                    .status(entryChannel.getStatus())
+                    .user(entryChannel.getUser().getUsername())
+                    .build()).toList();
             return new PageImpl<>(entryChannelDTOS,entryChannelPage.getPageable(),entryChannelPage.getTotalElements());
         });
     }
@@ -163,7 +177,14 @@ public class EntryChannelImpl implements IEntryChannel {
             if(entryChannelList.isEmpty()){
                 return Collections.emptyList();
             }
-            return entryChannelMapper.listEntryChannelToListEntryChannelDTO(entryChannelList);
+            return entryChannelList.stream().map(entryChannel -> EntryChannelDTO.builder()
+                    .id(entryChannel.getId())
+                    .updateDate(entryChannel.getUpdateDate())
+                    .registrationDate(entryChannel.getRegistrationDate())
+                    .name(entryChannel.getName())
+                    .status(entryChannel.getStatus())
+                    .user(entryChannel.getUser().getUsername())
+                    .build()).toList();
         });
     }
 

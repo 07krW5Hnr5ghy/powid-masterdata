@@ -150,11 +150,17 @@ public class ModuleImpl implements IModule {
                 throw new BadRequestExceptions(Constants.ErrorModule);
             }
 
-            module.setMonthlyPrice(requestModule.getMontlyPrice());
-            module.setUpdateDate(OffsetDateTime.now());
-            iAudit.save("UPDATE_MODULE","MODULO ACTUALIZADO "+module.getName()+" CON PRECIO "+module.getMonthlyPrice()+".",module.getName(),user.getUsername());
             try {
-                return moduleMapper.moduleToModuleDTO(moduleRepository.save(module));
+                module.setMonthlyPrice(requestModule.getMontlyPrice());
+                module.setUpdateDate(OffsetDateTime.now());
+                iAudit.save("UPDATE_MODULE","MODULO ACTUALIZADO "+module.getName()+" CON PRECIO "+module.getMonthlyPrice()+".",module.getName(),user.getUsername());
+                return ModuleDTO.builder()
+                        .id(module.getId())
+                        .moduleName(module.getName())
+                        .modulePrice(module.getMonthlyPrice())
+                        .status(module.getStatus())
+                        .user(module.getUser().getUsername())
+                        .build();
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -258,7 +264,14 @@ public class ModuleImpl implements IModule {
             if (modulePage.isEmpty()) {
                 return new PageImpl<>(Collections.emptyList());
             }
-            return new PageImpl<>(moduleMapper.listModuleToListModuleDTO(modulePage.getContent()),
+            List<ModuleDTO> moduleDTOS = modulePage.getContent().stream().map(module -> ModuleDTO.builder()
+                    .id(module.getId())
+                    .moduleName(module.getName())
+                    .modulePrice(module.getMonthlyPrice())
+                    .status(module.getStatus())
+                    .user(module.getUser().getUsername())
+                    .build()).toList();
+            return new PageImpl<>(moduleDTOS,
                     modulePage.getPageable(), modulePage.getTotalElements());
         });
     }
@@ -278,7 +291,14 @@ public class ModuleImpl implements IModule {
             if (modulePage.isEmpty()) {
                 return new PageImpl<>(Collections.emptyList());
             }
-            return new PageImpl<>(moduleMapper.listModuleToListModuleDTO(modulePage.getContent()),
+            List<ModuleDTO> moduleDTOS = modulePage.getContent().stream().map(module -> ModuleDTO.builder()
+                    .id(module.getId())
+                    .moduleName(module.getName())
+                    .modulePrice(module.getMonthlyPrice())
+                    .status(module.getStatus())
+                    .user(module.getUser().getUsername())
+                    .build()).toList();
+            return new PageImpl<>(moduleDTOS,
                     modulePage.getPageable(), modulePage.getTotalElements());
         });
     }
@@ -297,8 +317,13 @@ public class ModuleImpl implements IModule {
             if (modules.isEmpty()) {
                 return Collections.emptyList();
             }
-
-            return moduleMapper.listModuleToListModuleDTO(modules);
+            return modules.stream().map(module -> ModuleDTO.builder()
+                    .id(module.getId())
+                    .moduleName(module.getName())
+                    .modulePrice(module.getMonthlyPrice())
+                    .status(module.getStatus())
+                    .user(module.getUser().getUsername())
+                    .build()).toList();
         });
     }
 }

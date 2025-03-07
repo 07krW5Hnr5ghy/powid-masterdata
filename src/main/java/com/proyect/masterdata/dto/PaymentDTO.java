@@ -6,12 +6,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.UUID;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class PaymentDTO {
+    private UUID id;
+    private Boolean status;
     private String dni;
     private String email;
     private String name;

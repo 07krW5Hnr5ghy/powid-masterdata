@@ -232,10 +232,12 @@ public class BrandImpl implements IBrand {
             }
 
             List<BrandDTO> brandDTOs = brandPage.getContent().stream().map(brand -> BrandDTO.builder()
+                    .status(brand.getStatus())
                     .name(brand.getName())
                     .client(brand.getClient().getBusiness())
                     .registrationDate(brand.getRegistrationDate())
                     .updateDate(brand.getUpdateDate())
+                    .id(brand.getId())
                     .tokenUser(brand.getUser().getUsername())
                     .build()).toList();
 
@@ -291,6 +293,8 @@ public class BrandImpl implements IBrand {
             }
 
             List<BrandDTO> brandDTOs = brandPage.getContent().stream().map(brand -> BrandDTO.builder()
+                    .status(brand.getStatus())
+                    .id(brand.getId())
                     .name(brand.getName())
                     .client(brand.getClient().getBusiness())
                     .registrationDate(brand.getRegistrationDate())
@@ -362,6 +366,7 @@ public class BrandImpl implements IBrand {
             }
 
             return brands.stream().map(brand -> BrandDTO.builder()
+                    .id(brand.getId())
                     .name(brand.getName())
                     .client(brand.getClient().getBusiness())
                     .registrationDate(brand.getRegistrationDate())
@@ -390,6 +395,8 @@ public class BrandImpl implements IBrand {
             }
 
             return brands.stream().map(brand -> BrandDTO.builder()
+                    .status(brand.getStatus())
+                    .id(brand.getId())
                     .name(brand.getName())
                     .client(brand.getClient().getBusiness())
                     .registrationDate(brand.getRegistrationDate())
@@ -418,6 +425,8 @@ public class BrandImpl implements IBrand {
             }
 
             return brands.stream().map(brand -> BrandDTO.builder()
+                    .status(brand.getStatus())
+                    .id(brand.getId())
                     .name(brand.getName())
                     .client(brand.getClient().getBusiness())
                     .registrationDate(brand.getRegistrationDate())

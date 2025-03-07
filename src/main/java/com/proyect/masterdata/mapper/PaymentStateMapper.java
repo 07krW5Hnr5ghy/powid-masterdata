@@ -13,7 +13,7 @@ import java.util.List;
 public interface PaymentStateMapper {
     PaymentStateMapper INSTANCE = Mappers.getMapper(PaymentStateMapper.class);
 
-    @Mapping(target = "code", source = "id")
+    @Mapping(target = "id", source = "id")
     OrderPaymentStateDTO paymentStateToPaymentStateDTO(OrderPaymentState orderPaymentState);
 
     List<OrderPaymentStateDTO> listPaymentStateToListPaymentStateDTO(List<OrderPaymentState> orderPaymentStateList);

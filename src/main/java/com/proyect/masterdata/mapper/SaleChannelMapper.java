@@ -13,16 +13,4 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface SaleChannelMapper {
     SaleChannelMapper INSTANCE = Mappers.getMapper(SaleChannelMapper.class);
-
-    @Mapping(target = "code", source = "id")
-    SaleChannelDTO saleChannelToSaleChannelDTO(SaleChannel saleChannel);
-
-    List<SaleChannelDTO> listSaleChannelToListSaleChannelDTO(List<SaleChannel> saleChannelList);
-
-    @Mapping(target = "status", constant = "true")
-    @Mapping(target = "registrationDate", ignore = true)
-    @Mapping(target = "name", source = "requestSaleChannelSave.name")
-    SaleChannel saleChannelToName(RequestSaleChannelSave requestSaleChannelSave);
-
-    List<SaleChannel> listSaleChannelToListName(List<RequestSaleChannelSave> requestSaleChannelSaveList);
 }

@@ -11,6 +11,4 @@ import com.proyect.masterdata.dto.StoreTypeDTO;
 @Mapper(componentModel = "spring")
 public interface StoreTypeMapper {
     StoreTypeMapper INSTANCE = Mappers.getMapper(StoreTypeMapper.class);
-
-    List<StoreTypeDTO> listStoreTypeToListStoreTypeDTO(List<StoreType> storeTypeList);
 }

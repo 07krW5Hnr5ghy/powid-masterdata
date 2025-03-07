@@ -12,13 +12,4 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface PaymentMethodMapper {
     PaymentMethodMapper INSTANCE = Mappers.getMapper(PaymentMethodMapper.class);
-
-    @Mapping(target = "code", source = "id")
-    OrderPaymentMethodDTO paymentMethodToPaymentMethodDTO(OrderPaymentMethod orderPaymentMethod);
-
-    List<OrderPaymentMethodDTO> listPaymentMethodToListPaymentMethodDTO(List<OrderPaymentMethod> orderPaymentMethodList);
-
-    OrderPaymentMethod paymentMethodToName(RequestOrderPaymentMethodSave requestOrderPaymentMethodSave);
-
-    List<OrderPaymentMethod> listPaymentMethodToListName(List<RequestOrderPaymentMethodSave> requestOrderPaymentMethodSaveList);
 }

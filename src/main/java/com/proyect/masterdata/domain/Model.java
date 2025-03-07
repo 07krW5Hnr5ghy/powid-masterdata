@@ -40,7 +40,7 @@ public class Model {
     private String sku;
 
     @Column(name = "status")
-    private boolean status;
+    private Boolean status;
 
     @Column(name = "registration_date")
     @CreationTimestamp

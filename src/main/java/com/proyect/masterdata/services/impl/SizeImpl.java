@@ -77,6 +77,8 @@ public class SizeImpl implements ISize {
                     .sizeTypeId(sizeTypeData.getId())
                     .status(true)
                     .user(user).userId(user.getId())
+                            .client(user.getClient())
+                            .clientId(user.getClientId())
                     .build());
             iAudit.save("ADD_SIZE","TAMAÑO "+newSize.getName()+" CREADO.",newSize.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -125,6 +127,8 @@ public class SizeImpl implements ISize {
                         .sizeTypeId(sizeTypeData.getId())
                         .status(true)
                         .user(user).userId(user.getId())
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
                         .build());
                 iAudit.save("ADD_SIZE","TAMAÑO "+newSize.getName()+" CREADO.",newSize.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -232,8 +236,12 @@ public class SizeImpl implements ISize {
             }
 
             return sizes.stream().map(size -> SizeDTO.builder()
+                    .id(size.getId())
                     .name(size.getName())
                     .sizeType(size.getSizeType().getName())
+                    .registrationDate(size.getRegistrationDate())
+                    .updateDate(size.getUpdateDate())
+                    .status(size.getStatus())
                     .build()).toList();
         });
     }
@@ -257,7 +265,12 @@ public class SizeImpl implements ISize {
             }
 
             List<SizeDTO> sizeDTOs = sizePage.getContent().stream().map(size -> SizeDTO.builder()
+                    .id(size.getId())
                     .name(size.getName())
+                    .sizeType(size.getSizeType().getName())
+                    .registrationDate(size.getRegistrationDate())
+                    .updateDate(size.getUpdateDate())
+                    .status(size.getStatus())
                     .sizeType(size.getSizeType().getName())
                     .build()).toList();
 
@@ -284,8 +297,12 @@ public class SizeImpl implements ISize {
             }
 
             List<SizeDTO> sizeDTOs = sizePage.getContent().stream().map(size -> SizeDTO.builder()
+                    .id(size.getId())
                     .name(size.getName())
                     .sizeType(size.getSizeType().getName())
+                    .registrationDate(size.getRegistrationDate())
+                    .updateDate(size.getUpdateDate())
+                    .status(size.getStatus())
                     .build()).toList();
 
             return new PageImpl<>(sizeDTOs,
@@ -301,8 +318,12 @@ public class SizeImpl implements ISize {
                 List<Size> sizes = sizeRepository.findAllByStatusTrueAndSizeTypeName(nameSizeType.toUpperCase());
 
                 return sizes.stream().map(size -> SizeDTO.builder()
+                        .id(size.getId())
                         .name(size.getName())
                         .sizeType(size.getSizeType().getName())
+                        .registrationDate(size.getRegistrationDate())
+                        .updateDate(size.getUpdateDate())
+                        .status(size.getStatus())
                         .build()).toList();
             } catch (RuntimeException e) {
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -327,8 +348,12 @@ public class SizeImpl implements ISize {
             }
 
             return sizes.stream().map(size -> SizeDTO.builder()
+                    .id(size.getId())
                     .name(size.getName())
                     .sizeType(size.getSizeType().getName())
+                    .registrationDate(size.getRegistrationDate())
+                    .updateDate(size.getUpdateDate())
+                    .status(size.getStatus())
                     .build()).toList();
         });
     }

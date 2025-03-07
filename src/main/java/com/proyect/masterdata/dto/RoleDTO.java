@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Builder
@@ -12,6 +13,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 public class RoleDTO {
-    private UUID code;
+    private UUID id;
     private String name;
+    private String user;
+    private Boolean status;
+    private OffsetDateTime registrationDate;
+    private OffsetDateTime updateDate;
 }

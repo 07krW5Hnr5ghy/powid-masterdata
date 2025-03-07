@@ -212,10 +212,12 @@ public class AccessImpl implements IAccess {
                 return Collections.emptyList();
             }
             return accessList.stream().map(access -> AccessDTO.builder()
+                    .status(access.getStatus())
                     .name(access.getName())
                     .id(access.getId())
                     .registrationDate(access.getRegistrationDate())
                     .updateDate(access.getUpdateDate())
+                    .user(access.getUser().getUsername())
                     .build()).toList();
         });
     }
@@ -238,10 +240,12 @@ public class AccessImpl implements IAccess {
             }
 
             List<AccessDTO> accessDTOs = accessPage.getContent().stream().map(access -> AccessDTO.builder()
+                    .status(access.getStatus())
                     .name(access.getName())
                     .id(access.getId())
                     .registrationDate(access.getRegistrationDate())
                     .updateDate(access.getUpdateDate())
+                    .user(access.getUser().getUsername())
                     .build()).toList();
 
             return new PageImpl<>(accessDTOs, accessPage.getPageable(),
@@ -268,10 +272,12 @@ public class AccessImpl implements IAccess {
             }
 
             List<AccessDTO> accessDTOs = accessPage.getContent().stream().map(access -> AccessDTO.builder()
+                    .status(access.getStatus())
                     .id(access.getId())
                     .name(access.getName())
                     .registrationDate(access.getRegistrationDate())
                     .updateDate(access.getUpdateDate())
+                    .user(access.getUser().getUsername())
                     .build()).toList();
 
             return new PageImpl<>(accessDTOs, accessPage.getPageable(),

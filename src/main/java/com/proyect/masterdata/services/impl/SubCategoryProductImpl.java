@@ -258,6 +258,8 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
 
             List<SubCategoryProductDTO> subCategoryProductDTOS = subCategoryProductPage.getContent()
                     .stream().map(subCategoryProduct -> SubCategoryProductDTO.builder()
+                            .id(subCategoryProduct.getId())
+                            .user(subCategoryProduct.getUser().getUsername())
                             .categoryProduct(subCategoryProduct.getCategoryProduct().getName())
                             .name(subCategoryProduct.getName())
                             .sizeType(subCategoryProduct.getCategoryProduct().getSizeType().getName())
@@ -292,6 +294,8 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
                 return Collections.emptyList();
             }
             return subCategoryProducts.stream().map(subCategoryProduct -> SubCategoryProductDTO.builder()
+                    .id(subCategoryProduct.getId())
+                    .user(subCategoryProduct.getUser().getUsername())
                     .name(subCategoryProduct.getName())
                     .sku(subCategoryProduct.getSku())
                     .categoryProduct(subCategoryProduct.getCategoryProduct().getName())

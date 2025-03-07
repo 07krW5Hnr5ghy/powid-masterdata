@@ -13,9 +13,4 @@ public interface ModuleMapper {
 
     ModuleMapper INSTANCE = Mappers.getMapper(ModuleMapper.class);
 
-    @Mapping(target = "moduleName", source = "name")
-    @Mapping(target = "modulePrice", source = "monthlyPrice")
-    ModuleDTO moduleToModuleDTO(Module module);
-
-    List<ModuleDTO> listModuleToListModuleDTO(List<Module> moduleList);
 }

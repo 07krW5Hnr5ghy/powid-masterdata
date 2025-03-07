@@ -56,6 +56,8 @@ public class OrderLogImpl implements IOrderLog {
         }
         try{
             return orderLogList.stream().map(orderLog -> OrderLogDTO.builder()
+                    .id(orderLog.getId())
+                    .user(orderLog.getUser().getUsername())
                     .userFullName(orderLog.getUser().getName()+" "+orderLog.getUser().getSurname())
                     .orderState(orderLog.getOrderState().getName())
                     .registrationDate(orderLog.getRegistrationDate())
