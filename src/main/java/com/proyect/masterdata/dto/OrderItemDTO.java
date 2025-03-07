@@ -16,6 +16,7 @@ import java.util.UUID;
 @Data
 public class OrderItemDTO {
     private UUID orderId;
+    private UUID productId;
     private String sku;
     private String model;
     private String color;
