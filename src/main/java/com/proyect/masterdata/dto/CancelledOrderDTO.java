@@ -14,6 +14,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 public class CancelledOrderDTO {
+    private UUID id;
+    private String user;
     private UUID orderId;
     private String cancellationReason;
     private OffsetDateTime registrationDate;

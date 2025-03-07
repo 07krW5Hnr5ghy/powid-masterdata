@@ -6,12 +6,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class OrderLogDTO {
+    private UUID id;
+    private String user;
     private OffsetDateTime registrationDate;
     private String orderState;
     private String userFullName;

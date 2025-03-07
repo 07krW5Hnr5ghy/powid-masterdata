@@ -210,7 +210,13 @@ public class StoreTypeImpl implements IStoreType {
                 return Collections.emptyList();
             }
 
-            return storeTypeMapper.listStoreTypeToListStoreTypeDTO(storeTypes);
+            return storeTypes.stream().map(storeType -> StoreTypeDTO.builder()
+                    .id(storeType.getId())
+                    .name(storeType.getName())
+                    .registrationDate(storeType.getRegistrationDate())
+                    .updateDate(storeType.getUpdateDate())
+                    .status(storeType.getStatus())
+                    .build()).toList();
         });
     }
 

@@ -14,15 +14,4 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface SizeTypeMapper {
     SizeTypeMapper INSTANCE = Mappers.getMapper(SizeTypeMapper.class);
-
-    SizeTypeDTO sizeTypeToSizeTypeDTO(SizeType sizeType);
-
-    List<SizeTypeDTO> listSizeTypeToListSizeTypeDTO(List<SizeType> sizeTypeList);
-
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "status", constant = "true")
-    @Mapping(target = "name", source = "requestSizeTypeSave.name")
-    SizeType sizeTypeToName(RequestSizeTypeSave requestSizeTypeSave);
-
-    List<SizeType> listSizeToListName(List<RequestSizeTypeSave> requestSizeTypeSaveList);
 }

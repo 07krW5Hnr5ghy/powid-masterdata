@@ -13,6 +13,7 @@ import java.util.UUID;
 @Data
 public class DeliveryManifestItemDTO {
     private UUID id;
+    private String user;
     private Integer quantity;
     private String skuProduct;
     private Long orderNumber;

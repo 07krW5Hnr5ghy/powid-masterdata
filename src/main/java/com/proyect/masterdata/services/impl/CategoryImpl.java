@@ -163,7 +163,15 @@ public class CategoryImpl implements ICategory {
                 category.setUserId(user.getId());
                 category.setUpdateDate(OffsetDateTime.now());
                 iAudit.save("UPDATE_CATEGORY","CATEGORIA "+category.getName()+" EDITADA.", category.getName(), user.getUsername());
-                return categoryMapper.categoryToCategoryDTO(categoryRepository.save(category));
+                return CategoryDTO.builder()
+                        .id(category.getId())
+                        .updateDate(category.getUpdateDate())
+                        .registrationDate(category.getRegistrationDate())
+                        .description(category.getDescription())
+                        .name(category.getName())
+                        .status(category.getStatus())
+                        .user(category.getUser().getUsername())
+                        .build();
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.InternalErrorExceptions);
@@ -223,8 +231,15 @@ public class CategoryImpl implements ICategory {
             if (categories.isEmpty()) {
                 return Collections.emptyList();
             }
-
-            return categoryMapper.listCategoryToListCategoryDTO(categories);
+            return categories.stream().map(category -> CategoryDTO.builder()
+                    .id(category.getId())
+                    .updateDate(category.getUpdateDate())
+                    .registrationDate(category.getRegistrationDate())
+                    .description(category.getDescription())
+                    .name(category.getName())
+                    .status(category.getStatus())
+                    .user(category.getUser().getUsername())
+                    .build()).toList();
         });
     }
     @Override
@@ -242,7 +257,16 @@ public class CategoryImpl implements ICategory {
             if (categoryPage.isEmpty()) {
                 return new PageImpl<>(Collections.emptyList());
             }
-            return new PageImpl<>(categoryMapper.listCategoryToListCategoryDTO(categoryPage.getContent()),
+            List<CategoryDTO> categoryDTOS = categoryPage.getContent().stream().map(category -> CategoryDTO.builder()
+                    .id(category.getId())
+                    .updateDate(category.getUpdateDate())
+                    .registrationDate(category.getRegistrationDate())
+                    .description(category.getDescription())
+                    .name(category.getName())
+                    .status(category.getStatus())
+                    .user(category.getUser().getUsername())
+                    .build()).toList();
+            return new PageImpl<>(categoryDTOS,
                     categoryPage.getPageable(), categoryPage.getTotalElements());
         });
     }
@@ -263,7 +287,16 @@ public class CategoryImpl implements ICategory {
                 return new PageImpl<>(Collections.emptyList());
             }
 
-            return new PageImpl<>(categoryMapper.listCategoryToListCategoryDTO(categoryPage.getContent()),
+            List<CategoryDTO> categoryDTOS = categoryPage.getContent().stream().map(category -> CategoryDTO.builder()
+                    .id(category.getId())
+                    .updateDate(category.getUpdateDate())
+                    .registrationDate(category.getRegistrationDate())
+                    .description(category.getDescription())
+                    .name(category.getName())
+                    .status(category.getStatus())
+                    .user(category.getUser().getUsername())
+                    .build()).toList();
+            return new PageImpl<>(categoryDTOS,
                     categoryPage.getPageable(), categoryPage.getTotalElements());
         });
     }
@@ -320,7 +353,15 @@ public class CategoryImpl implements ICategory {
                 return Collections.emptyList();
             }
 
-            return categoryMapper.listCategoryToListCategoryDTO(categories);
+            return categories.stream().map(category -> CategoryDTO.builder()
+                    .id(category.getId())
+                    .updateDate(category.getUpdateDate())
+                    .registrationDate(category.getRegistrationDate())
+                    .description(category.getDescription())
+                    .name(category.getName())
+                    .status(category.getStatus())
+                    .user(category.getUser().getUsername())
+                    .build()).toList();
         });
     }
 

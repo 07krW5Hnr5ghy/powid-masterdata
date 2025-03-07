@@ -15,6 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 public class OrderItemDTO {
+    private UUID id;
     private UUID orderId;
     private String sku;
     private String model;
@@ -32,4 +33,6 @@ public class OrderItemDTO {
     private List<String> pictures;
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
+    private String user;
+    private Boolean status;
 }

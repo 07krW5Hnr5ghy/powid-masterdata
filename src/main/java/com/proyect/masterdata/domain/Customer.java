@@ -47,6 +47,9 @@ public class Customer {
     @Column(name = "district_id")
     private UUID districtId;
 
+    @Column(name = "status")
+    private Boolean status;
+
     @Column(name = "client_id")
     private UUID clientId;
 

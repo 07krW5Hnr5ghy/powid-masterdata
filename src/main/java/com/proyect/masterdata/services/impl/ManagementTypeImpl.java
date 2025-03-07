@@ -178,6 +178,9 @@ public class ManagementTypeImpl implements IManagementType {
                 return new PageImpl<>(Collections.emptyList());
             }
             List<ManagementTypeDTO> managementTypeDTOs = managementTypePage.getContent().stream().map(managementType -> ManagementTypeDTO.builder()
+                    .status(managementType.getStatus())
+                    .id(managementType.getId())
+                    .user(managementType.getUser().getUsername())
                     .name(managementType.getName())
                     .registrationDate(managementType.getRegistrationDate())
                     .updateDate(managementType.getUpdateDate())
@@ -211,6 +214,7 @@ public class ManagementTypeImpl implements IManagementType {
                 return new PageImpl<>(Collections.emptyList());
             }
             List<ManagementTypeDTO> managementTypeDTOs = managementTypePage.getContent().stream().map(managementType -> ManagementTypeDTO.builder()
+                    .status(managementType.getStatus())
                     .name(managementType.getName())
                     .registrationDate(managementType.getRegistrationDate())
                     .updateDate(managementType.getUpdateDate())

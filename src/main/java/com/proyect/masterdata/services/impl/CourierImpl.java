@@ -211,6 +211,9 @@ public class CourierImpl implements ICourier {
             }
 
             List<CourierDTO> courierDTOS = pageCourier.getContent().stream().map(courier -> CourierDTO.builder()
+                    .status(courier.getStatus())
+                    .id(courier.getId())
+                    .user(courier.getUser().getUsername())
                     .name(courier.getName())
                     .phone(courier.getPhone())
                     .address(courier.getAddress())
@@ -266,6 +269,9 @@ public class CourierImpl implements ICourier {
             }
 
             List<CourierDTO> courierDTOS = pageCourier.getContent().stream().map(courier -> CourierDTO.builder()
+                    .status(courier.getStatus())
+                    .id(courier.getId())
+                    .user(courier.getUser().getUsername())
                     .name(courier.getName())
                     .phone(courier.getPhone())
                     .address(courier.getAddress())
@@ -365,6 +371,7 @@ public class CourierImpl implements ICourier {
                 return Collections.emptyList();
             }
             return couriers.stream().map(courier -> CourierDTO.builder()
+                    .status(courier.getStatus())
                     .name(courier.getName())
                     .phone(courier.getPhone())
                     .address(courier.getAddress())
@@ -392,6 +399,7 @@ public class CourierImpl implements ICourier {
                 return Collections.emptyList();
             }
             return couriers.stream().map(courier -> CourierDTO.builder()
+                    .status(courier.getStatus())
                     .name(courier.getName())
                     .phone(courier.getPhone())
                     .address(courier.getAddress())
@@ -419,6 +427,9 @@ public class CourierImpl implements ICourier {
                 return Collections.emptyList();
             }
             List<CourierDTO> courierDTOS = new ArrayList<>(couriers.stream().map(courier -> CourierDTO.builder()
+                    .status(courier.getStatus())
+                    .id(courier.getId())
+                    .user(courier.getUser().getUsername())
                     .name(courier.getName())
                     .phone(courier.getPhone())
                     .address(courier.getAddress())
@@ -429,6 +440,9 @@ public class CourierImpl implements ICourier {
                     .build()).toList());
             Courier defaultNoCourier = courierRepository.findByNameAndStatusTrue("SIN COURIER");
             CourierDTO dtoNoCourier = CourierDTO.builder()
+                    .status(defaultNoCourier.getStatus())
+                    .id(defaultNoCourier.getId())
+                    .user(defaultNoCourier.getUser().getUsername())
                     .name(defaultNoCourier.getName())
                     .phone(defaultNoCourier.getPhone())
                     .address(defaultNoCourier.getAddress())

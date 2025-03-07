@@ -27,7 +27,7 @@ public class DeliveryCompany {
     private String name;
 
     @Column(name = "status")
-    private boolean status;
+    private Boolean status;
 
     @Column(name = "registration_date")
     @CreationTimestamp

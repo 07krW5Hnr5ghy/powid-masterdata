@@ -239,6 +239,9 @@ public class DeliveryPointImpl implements IDeliveryPoint {
                 return new PageImpl<>(Collections.emptyList());
             }
             List<DeliveryPointDTO> deliveryPointDTOS = deliveryPointPage.getContent().stream().map(deliveryPoint -> DeliveryPointDTO.builder()
+                    .status(deliveryPoint.getStatus())
+                    .id(deliveryPoint.getId())
+                    .user(deliveryPoint.getUser().getUsername())
                     .name(deliveryPoint.getName())
                     .registrationDate(deliveryPoint.getRegistrationDate())
                     .updateDate(deliveryPoint.getUpdateDate())
@@ -272,6 +275,9 @@ public class DeliveryPointImpl implements IDeliveryPoint {
                 return new PageImpl<>(Collections.emptyList());
             }
             List<DeliveryPointDTO> deliveryPointDTOS = deliveryPointPage.getContent().stream().map(deliveryPoint -> DeliveryPointDTO.builder()
+                    .status(deliveryPoint.getStatus())
+                    .id(deliveryPoint.getId())
+                    .user(deliveryPoint.getUser().getUsername())
                     .name(deliveryPoint.getName())
                     .registrationDate(deliveryPoint.getRegistrationDate())
                     .updateDate(deliveryPoint.getUpdateDate())

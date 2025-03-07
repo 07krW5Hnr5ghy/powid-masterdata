@@ -132,6 +132,8 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
             try{
                 List<DeliveryManifestItemDTO> deliveryManifestItemList = deliveryManifestItemRepository.findAllById(deliveryManifest.getId())
                         .stream().map(deliveryManifestItem -> DeliveryManifestItemDTO.builder()
+                                .id(deliveryManifestItem.getId())
+                                .user(deliveryManifestItem.getUser().getUsername())
                                 .quantity(deliveryManifestItem.getQuantity())
                                 .skuProduct(iUtil.buildProductSku(deliveryManifestItem.getOrderItem().getProduct()))
                                 .orderNumber(deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber())
@@ -143,6 +145,8 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 .paymentState(deliveryManifestItem.getOrderItem().getOrdering().getOrderPaymentState().getName())
                                 .build()).toList();
                 return DeliveryManifestDTO.builder()
+                        .id(deliveryManifest.getId())
+                        .user(deliveryManifest.getUser().getUsername())
                         .id(deliveryManifest.getId())
                         .manifestNumber(deliveryManifest.getManifestNumber())
                         .registrationDate(deliveryManifest.getRegistrationDate())
@@ -279,6 +283,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 List<DeliveryManifestItemDTO> deliveryManifestItemDTOS = deliveryManifestItemRepository.findAllById(deliveryManifest.getId())
                         .stream().map(deliveryManifestItem -> DeliveryManifestItemDTO.builder()
                                 .id(deliveryManifestItem.getId())
+                                .user(deliveryManifestItem.getUser().getUsername())
                                 .manifestNumber(deliveryManifestItem.getDeliveryManifest().getManifestNumber())
                                 .phone(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getPhone())
                                 .customer(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getName())
@@ -291,6 +296,8 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 .paymentState(deliveryManifestItem.getOrderItem().getOrdering().getOrderPaymentState().getName())
                                 .build()).toList();
                 return DeliveryManifestDTO.builder()
+                        .id(deliveryManifest.getId())
+                        .user(deliveryManifest.getUser().getUsername())
                         .manifestNumber(deliveryManifest.getManifestNumber())
                         .id(deliveryManifest.getId())
                         .open(deliveryManifest.getOpen())

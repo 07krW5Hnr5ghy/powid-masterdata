@@ -219,9 +219,14 @@ public class SubscriptionImpl implements ISubscription {
 
             List<SubscriptionDTO> subscriptionDTOs = subscriptionPage.getContent().stream()
                     .map(subscription -> SubscriptionDTO.builder()
+                            .status(subscription.getStatus())
+                            .id(subscription.getId())
+                            .user(subscription.getUser().getUsername())
                             .name(subscription.getName().toUpperCase())
                             .months(subscription.getMonths())
                             .discountPercent(subscription.getDiscountPercent())
+                            .registrationDate(subscription.getRegistrationDate())
+                            .updateDate(subscription.getUpdateDate())
                             .build())
                     .toList();
 
@@ -248,6 +253,9 @@ public class SubscriptionImpl implements ISubscription {
                         return ModulePlanDTO.builder()
                                 .moduleName(module.getName())
                                 .modulePrice(discountedPrice)
+                                .id(module.getId())
+                                .status(module.getStatus())
+                                .user(module.getUser().getUsername())
                                 .build();
 
                     }).toList();
@@ -255,7 +263,10 @@ public class SubscriptionImpl implements ISubscription {
                     return PlanDTO.builder()
                             .name(subscription.getName())
                             .months(subscription.getMonths())
-                            .discountPercentaje(subscription.getDiscountPercent())
+                            .discountPercentage(subscription.getDiscountPercent())
+                            .id(subscription.getId())
+                            .user(subscription.getUser().getUsername())
+                            .status(subscription.getStatus())
                             .moduleList(moduleList)
                             .build();
                 }).toList();

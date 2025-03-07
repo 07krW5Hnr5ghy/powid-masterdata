@@ -186,6 +186,8 @@ public class WarehouseStockImpl implements IWarehouseStock {
                     .map(warehouseStock -> {
                         String finalSku = iUtil.buildProductSku(warehouseStock.getProduct());
                         return WarehouseStockDTO.builder()
+                                .id(warehouseStock.getId())
+                                .user(warehouseStock.getUser().getUsername())
                                 .quantity(warehouseStock.getQuantity())
                                 .product(finalSku)
                                 .model(warehouseStock.getProduct().getModel().getName())
@@ -235,6 +237,8 @@ public class WarehouseStockImpl implements IWarehouseStock {
                     .map(warehouseStock -> {
                         String finalSku = iUtil.buildProductSku(warehouseStock.getProduct());
                         return WarehouseStockDTO.builder()
+                                .id(warehouseStock.getId())
+                                .user(warehouseStock.getUser().getUsername())
                                 .quantity(warehouseStock.getQuantity())
                                 .product(finalSku)
                                 .model(warehouseStock.getProduct().getModel().getName())

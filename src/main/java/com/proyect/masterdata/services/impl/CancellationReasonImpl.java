@@ -158,6 +158,9 @@ public class CancellationReasonImpl implements ICancellationReason {
             }
 
             List<CancellationReasonDTO> cancellationReasonDTOs = cancellationReasonPage.getContent().stream().map(cancellationReason -> CancellationReasonDTO.builder()
+                    .status(cancellationReason.getStatus())
+                    .id(cancellationReason.getId())
+                    .user(cancellationReason.getUser().getUsername())
                     .name(cancellationReason.getName())
                     .registrationDate(cancellationReason.getRegistrationDate())
                     .updateDate(cancellationReason.getUpdateDate())
@@ -186,6 +189,9 @@ public class CancellationReasonImpl implements ICancellationReason {
             }
 
             List<CancellationReasonDTO> cancellationReasonDTOs = cancellationReasonPage.getContent().stream().map(cancellationReason -> CancellationReasonDTO.builder()
+                    .status(cancellationReason.getStatus())
+                    .id(cancellationReason.getId())
+                    .user(cancellationReason.getUser().getUsername())
                     .name(cancellationReason.getName())
                     .registrationDate(cancellationReason.getRegistrationDate())
                     .updateDate(cancellationReason.getUpdateDate())

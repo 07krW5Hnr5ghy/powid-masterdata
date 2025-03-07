@@ -157,7 +157,14 @@ public class ClosingChannelImpl implements IClosingChannel {
                 return new PageImpl<>(Collections.emptyList());
             }
 
-            List<ClosingChannelDTO> closingChannelDTOS = closingChannelMapper.listClosingChannelToListClosingChannelDTO(closingChannelPage.getContent());
+            List<ClosingChannelDTO> closingChannelDTOS = closingChannelPage.getContent().stream().map(closingChannel -> ClosingChannelDTO.builder()
+                    .id(closingChannel.getId())
+                    .name(closingChannel.getName())
+                    .registrationDate(closingChannel.getRegistrationDate())
+                    .status(closingChannel.getStatus())
+                    .updateDate(closingChannel.getUpdateDate())
+                    .user(closingChannel.getUser().getUsername())
+                    .build()).toList();
             return new PageImpl<>(closingChannelDTOS,closingChannelPage.getPageable(),closingChannelPage.getTotalElements());
         });
 
@@ -188,7 +195,14 @@ public class ClosingChannelImpl implements IClosingChannel {
                 return new PageImpl<>(Collections.emptyList());
             }
 
-            List<ClosingChannelDTO> closingChannelDTOS = closingChannelMapper.listClosingChannelToListClosingChannelDTO(closingChannelPage.getContent());
+            List<ClosingChannelDTO> closingChannelDTOS = closingChannelPage.getContent().stream().map(closingChannel -> ClosingChannelDTO.builder()
+                    .id(closingChannel.getId())
+                    .name(closingChannel.getName())
+                    .registrationDate(closingChannel.getRegistrationDate())
+                    .status(closingChannel.getStatus())
+                    .updateDate(closingChannel.getUpdateDate())
+                    .user(closingChannel.getUser().getUsername())
+                    .build()).toList();
             return new PageImpl<>(closingChannelDTOS,closingChannelPage.getPageable(),closingChannelPage.getTotalElements());
         });
     }
@@ -208,7 +222,14 @@ public class ClosingChannelImpl implements IClosingChannel {
                 return Collections.emptyList();
             }
 
-            return closingChannelMapper.listClosingChannelToListClosingChannelDTO(closingChannelList);
+            return closingChannelList.stream().map(closingChannel -> ClosingChannelDTO.builder()
+                    .id(closingChannel.getId())
+                    .name(closingChannel.getName())
+                    .registrationDate(closingChannel.getRegistrationDate())
+                    .status(closingChannel.getStatus())
+                    .updateDate(closingChannel.getUpdateDate())
+                    .user(closingChannel.getUser().getUsername())
+                    .build()).toList();
         });
     }
 

@@ -44,4 +44,11 @@ public class SizeType {
         @ManyToOne()
         @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
         private User user;
+
+        @Column(name = "client_id")
+        private UUID clientId;
+
+        @ManyToOne()
+        @JoinColumn(name="client_id",columnDefinition = "clientId",insertable = false,updatable = false)
+        private Client client;
 }

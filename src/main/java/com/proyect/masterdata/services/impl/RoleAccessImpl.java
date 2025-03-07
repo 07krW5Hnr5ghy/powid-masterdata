@@ -230,6 +230,9 @@ public class RoleAccessImpl implements IRoleAccess {
                 return RoleAccessDTO.builder()
                         .roleName(role.getName())
                         .accessName(access.getName())
+                        .id(roleAccess.getId())
+                        .status(roleAccess.getStatus())
+                        .user(roleAccess.getUser().getUsername())
                         .build();
             }).toList();
 
@@ -263,6 +266,9 @@ public class RoleAccessImpl implements IRoleAccess {
                 return RoleAccessDTO.builder()
                         .roleName(role.getName())
                         .accessName(access.getName())
+                        .id(roleAccess.getId())
+                        .status(roleAccess.getStatus())
+                        .user(roleAccess.getUser().getUsername())
                         .build();
             }).toList();
 

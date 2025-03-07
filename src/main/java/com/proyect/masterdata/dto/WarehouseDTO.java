@@ -7,12 +7,14 @@ import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.UUID;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class WarehouseDTO {
+    private UUID id;
     private String name;
     private String contact;
     private String phone;
@@ -20,4 +22,6 @@ public class WarehouseDTO {
     private String reference;
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
+    private Boolean status;
+    private String user;
 }

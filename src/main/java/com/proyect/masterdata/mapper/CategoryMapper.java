@@ -12,15 +12,4 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface CategoryMapper {
     CategoryMapper INSTANCE = Mappers.getMapper(CategoryMapper.class);
-
-    CategoryDTO categoryToCategoryDTO(Category category);
-
-    List<CategoryDTO> listCategoryToListCategoryDTO(List<Category> categoryList);
-
-    @Mapping(target = "name", source = "requestCategorySave.name")
-    @Mapping(target = "description", source = "requestCategorySave.description")
-    Category categoryToName(RequestCategorySave requestCategorySave);
-
-    List<Category> ListCategoryToListName(List<RequestCategorySave> requestCategorySaveList);
-
 }

@@ -204,6 +204,11 @@ public class StockTransactionTypeImpl implements IStockTransactionType {
                 stockTransactionTypeList = stockTransactionTypeRepository.findAllByStatusTrue().stream()
                         .map(stockTransactionType -> StockTransactionTypeDTO.builder()
                                 .name(stockTransactionType.getName())
+                                .id(stockTransactionType.getId())
+                                .updateDate(stockTransactionType.getUpdateDate())
+                                .registrationDate(stockTransactionType.getRegistrationDate())
+                                .status(stockTransactionType.getStatus())
+                                .user(stockTransactionType.getUser().getUsername())
                                 .build())
                         .toList();
             } catch (RuntimeException e) {
@@ -228,6 +233,11 @@ public class StockTransactionTypeImpl implements IStockTransactionType {
                 stockTransactionTypeList = stockTransactionTypeRepository.findAll().stream()
                         .map(stockTransactionType -> StockTransactionTypeDTO.builder()
                                 .name(stockTransactionType.getName())
+                                .id(stockTransactionType.getId())
+                                .updateDate(stockTransactionType.getUpdateDate())
+                                .registrationDate(stockTransactionType.getRegistrationDate())
+                                .status(stockTransactionType.getStatus())
+                                .user(stockTransactionType.getUser().getUsername())
                                 .build())
                         .toList();
             } catch (RuntimeException e) {

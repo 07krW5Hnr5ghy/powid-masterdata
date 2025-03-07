@@ -173,7 +173,9 @@ public class OrderStateImpl implements IOrderState {
             return states.stream().map(orderState -> OrderStateDTO.builder()
                     .name(orderState.getName())
                     .hexColor(orderState.getHexColor())
-                    .code(orderState.getId())
+                    .id(orderState.getId())
+                    .status(orderState.getStatus())
+                    .user(orderState.getUser().getUsername())
                     .build()).toList();
         });
     }
@@ -196,7 +198,9 @@ public class OrderStateImpl implements IOrderState {
             List<OrderStateDTO> orderStateDTOS = statePage.getContent().stream().map(orderState -> OrderStateDTO.builder()
                     .name(orderState.getName())
                     .hexColor(orderState.getHexColor())
-                    .code(orderState.getId())
+                    .id(orderState.getId())
+                    .status(orderState.getStatus())
+                    .user(orderState.getUser().getUsername())
                     .build()).toList();
             return new PageImpl<>(orderStateDTOS,
                     statePage.getPageable(), statePage.getTotalElements());
@@ -221,7 +225,9 @@ public class OrderStateImpl implements IOrderState {
             List<OrderStateDTO> orderStateDTOS = statePage.getContent().stream().map(orderState -> OrderStateDTO.builder()
                     .name(orderState.getName())
                     .hexColor(orderState.getHexColor())
-                    .code(orderState.getId())
+                    .id(orderState.getId())
+                    .status(orderState.getStatus())
+                    .user(orderState.getUser().getUsername())
                     .build()).toList();
             return new PageImpl<>(orderStateDTOS,
                     statePage.getPageable(), statePage.getTotalElements());
@@ -244,7 +250,9 @@ public class OrderStateImpl implements IOrderState {
             return states.stream().map(orderState -> OrderStateDTO.builder()
                     .name(orderState.getName())
                     .hexColor(orderState.getHexColor())
-                    .code(orderState.getId())
+                    .id(orderState.getId())
+                    .status(orderState.getStatus())
+                    .user(orderState.getUser().getUsername())
                     .build()).toList();
         });
     }

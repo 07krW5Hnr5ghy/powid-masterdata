@@ -460,6 +460,7 @@ public class ProductImpl implements IProduct {
                         .updateDate(item.getUpdateDate())
                         .pictureFlag(item.getPictureFlag())
                         .status(item.getStatus())
+                        .user(item.getUser().getUsername())
                         .build();
             }).toList();
 
@@ -500,6 +501,8 @@ public class ProductImpl implements IProduct {
                         .price(productPrice.getUnitSalePrice())
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
+                        .status(product.getStatus())
+                        .user(product.getUser().getUsername())
                         .build();
             }).toList();
         });
@@ -538,6 +541,8 @@ public class ProductImpl implements IProduct {
                         .price(productPrice.getUnitSalePrice())
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
+                        .status(product.getStatus())
+                        .user(product.getUser().getUsername())
                         .build();
             }).toList();
         });
@@ -576,6 +581,8 @@ public class ProductImpl implements IProduct {
                         .price(productPrice.getUnitSalePrice())
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
+                        .status(product.getStatus())
+                        .user(product.getUser().getUsername())
                         .build();
             }).toList();
         });
@@ -697,6 +704,8 @@ public class ProductImpl implements IProduct {
                         .price(productPrice.getUnitSalePrice())
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
+                        .status(product.getStatus())
+                        .user(product.getUser().getUsername())
                         .build();
             }).toList();
         });
@@ -740,6 +749,8 @@ public class ProductImpl implements IProduct {
                         .price(productPrice.getUnitSalePrice())
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
+                        .user(product.getUser().getUsername())
+                        .status(product.getStatus())
                         .build();
             }).toList();
         });
@@ -782,6 +793,8 @@ public class ProductImpl implements IProduct {
                         .price(productPrice.getUnitSalePrice())
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
+                        .status(product.getStatus())
+                        .user(product.getUser().getUsername())
                         .build();
             }).toList();
         });
@@ -823,6 +836,8 @@ public class ProductImpl implements IProduct {
                         .price(productPrice.getUnitSalePrice())
                         .registrationDate(product.getRegistrationDate())
                         .updateDate(product.getUpdateDate())
+                        .status(product.getStatus())
+                        .user(product.getUser().getUsername())
                         .build();
             }).toList();
         });

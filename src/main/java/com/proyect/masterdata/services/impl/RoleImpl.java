@@ -169,7 +169,15 @@ public class RoleImpl implements IRole {
             if (rolePage.isEmpty()) {
                 return new PageImpl<>(Collections.emptyList());
             }
-            return new PageImpl<>(roleMapper.listRoleToListRoleDTO(rolePage.getContent()),
+            List<RoleDTO> roleDTOS = rolePage.getContent().stream().map(role -> RoleDTO.builder()
+                    .id(role.getId())
+                    .name(role.getName())
+                    .status(role.getStatus())
+                    .user(role.getName())
+                    .registrationDate(role.getRegistrationDate())
+                    .updateDate(role.getUpdateDate())
+                    .build()).toList();
+            return new PageImpl<>(roleDTOS,
                     rolePage.getPageable(), rolePage.getTotalElements());
         });
     }
@@ -194,7 +202,15 @@ public class RoleImpl implements IRole {
                 return new PageImpl<>(Collections.emptyList());
             }
 
-            return new PageImpl<>(roleMapper.listRoleToListRoleDTO(rolePage.getContent()),
+            List<RoleDTO> roleDTOS = rolePage.getContent().stream().map(role -> RoleDTO.builder()
+                    .id(role.getId())
+                    .name(role.getName())
+                    .status(role.getStatus())
+                    .user(role.getName())
+                    .registrationDate(role.getRegistrationDate())
+                    .updateDate(role.getUpdateDate())
+                    .build()).toList();
+            return new PageImpl<>(roleDTOS,
                     rolePage.getPageable(), rolePage.getTotalElements());
         });
     }
@@ -249,7 +265,14 @@ public class RoleImpl implements IRole {
             if(roleList.isEmpty()){
                 return Collections.emptyList();
             }
-            return roleMapper.listRoleToListRoleDTO(roleList);
+            return roleList.stream().map(role -> RoleDTO.builder()
+                    .id(role.getId())
+                    .name(role.getName())
+                    .status(role.getStatus())
+                    .user(role.getName())
+                    .registrationDate(role.getRegistrationDate())
+                    .updateDate(role.getUpdateDate())
+                    .build()).toList();
         });
     }
 

@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Builder
 @AllArgsConstructor
@@ -13,6 +14,9 @@ import java.time.OffsetDateTime;
 @Data
 public class DeliveryPointDTO {
     private String name;
+    private String user;
+    private UUID id;
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
+    private Boolean status;
 }

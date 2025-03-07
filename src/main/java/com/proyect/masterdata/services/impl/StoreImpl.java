@@ -305,6 +305,8 @@ public class StoreImpl implements IStore {
                     .client(store.getClient().getBusiness())
                     .storeType(store.getStoreType().getName())
                     .user(store.getUser().getUsername())
+                    .id(store.getId())
+                    .status(store.getStatus())
                     .build()).toList();
 
             return new PageImpl<>(
@@ -337,6 +339,8 @@ public class StoreImpl implements IStore {
                     .client(store.getClient().getBusiness())
                     .storeType(store.getStoreType().getName())
                     .user(store.getUser().getUsername())
+                    .id(store.getId())
+                    .status(store.getStatus())
                     .build()).toList();
 
             return new PageImpl<>(
@@ -366,6 +370,8 @@ public class StoreImpl implements IStore {
                     .client(store.getClient().getBusiness())
                     .storeType(store.getStoreType().getName())
                     .user(store.getUser().getUsername())
+                    .id(store.getId())
+                    .status(store.getStatus())
                     .build()).toList();
         });
     }

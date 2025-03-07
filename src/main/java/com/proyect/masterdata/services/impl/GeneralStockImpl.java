@@ -192,6 +192,8 @@ public class GeneralStockImpl implements IGeneralStock {
 
             List<GeneralStockDTO> generalStockDTOs = generalStockPage.getContent().stream()
                     .map(generalStock -> GeneralStockDTO.builder()
+                            .id(generalStock.getId())
+                            .user(generalStock.getUser().getUsername())
                             .quantity(generalStock.getQuantity())
                             .productSku(iUtil.buildProductSku(generalStock.getProduct()))
                             .model(generalStock.getProduct().getModel().getName())

@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.UUID;
 
 @Builder
 @AllArgsConstructor
@@ -16,4 +17,7 @@ public class CustomerTypeDTO {
     private String name;
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
+    private UUID id;
+    private String user;
+    private Boolean status;
 }

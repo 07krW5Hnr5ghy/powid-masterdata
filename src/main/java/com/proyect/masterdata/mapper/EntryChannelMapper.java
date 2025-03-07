@@ -11,6 +11,4 @@ import com.proyect.masterdata.dto.EntryChannelDTO;
 @Mapper(componentModel = "spring")
 public interface EntryChannelMapper {
     EntryChannelMapper INSTANCE = Mappers.getMapper(EntryChannelMapper.class);
-
-    List<EntryChannelDTO> listEntryChannelToListEntryChannelDTO(List<EntryChannel> entryChannelList);
 }

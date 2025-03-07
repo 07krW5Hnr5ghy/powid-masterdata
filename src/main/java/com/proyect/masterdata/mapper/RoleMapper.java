@@ -12,17 +12,4 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface RoleMapper {
     RoleMapper INSTANCE = Mappers.getMapper(RoleMapper.class);
-
-    @Mapping(target = "code", source = "id")
-    RoleDTO roleToRoleDTO(Role role);
-
-    List<RoleDTO> listRoleToListRoleDTO(List<Role> roleList);
-
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "status", constant = "true")
-    @Mapping(target = "registrationDate", ignore = true)
-    @Mapping(target = "name", source = "requestRoleSave.name")
-    Role nameToRole(RequestRoleSave requestRoleSave);
-
-    List<Role> listNameToListRole(List<RequestRoleSave> requestUserRoleSaveList);
 }

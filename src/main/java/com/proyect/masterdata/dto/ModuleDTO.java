@@ -5,11 +5,16 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class ModuleDTO {
-    String moduleName;
-    Double modulePrice;
+    private UUID id;
+    private String moduleName;
+    private Double modulePrice;
+    private String user;
+    private Boolean status;
 }

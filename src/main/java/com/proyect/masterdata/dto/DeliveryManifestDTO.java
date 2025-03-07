@@ -15,6 +15,7 @@ import java.util.UUID;
 @Data
 public class DeliveryManifestDTO {
     private UUID id;
+    private String user;
     private Long manifestNumber;
     private List<DeliveryManifestItemDTO> deliveryManifestItemDTOS;
     private OffsetDateTime registrationDate;

@@ -75,6 +75,8 @@ public class UnitImpl implements IUnit {
                     .registrationDate(OffsetDateTime.now())
                     .updateDate(OffsetDateTime.now())
                     .user(user).userId(user.getId())
+                            .client(user.getClient())
+                            .clientId(user.getClientId())
                     .build());
             iAudit.save("ADD_UNIT","UNIDAD "+newUnit.getName()+" CREADA.",newUnit.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -127,6 +129,8 @@ public class UnitImpl implements IUnit {
                         .registrationDate(OffsetDateTime.now())
                         .updateDate(OffsetDateTime.now())
                         .user(user).userId(user.getId())
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
                         .build());
                 iAudit.save("ADD_UNIT","UNIDAD "+newUnit.getName()+" CREADA.",newUnit.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -254,6 +258,11 @@ public class UnitImpl implements IUnit {
             }
 
             return units.stream().map(unit -> UnitDTO.builder()
+                    .id(unit.getId())
+                    .user(unit.getUser().getUsername())
+                    .registrationDate(unit.getRegistrationDate())
+                    .updateDate(unit.getUpdateDate())
+                    .status(unit.getStatus())
                     .name(unit.getName())
                     .unitType(unit.getUnitType().getName())
                     .build()).toList();
@@ -279,6 +288,11 @@ public class UnitImpl implements IUnit {
             }
 
             return units.stream().map(unit -> UnitDTO.builder()
+                    .id(unit.getId())
+                    .user(unit.getUser().getUsername())
+                    .registrationDate(unit.getRegistrationDate())
+                    .updateDate(unit.getUpdateDate())
+                    .status(unit.getStatus())
                     .name(unit.getName())
                     .unitType(unit.getUnitType().getName())
                     .build()).toList();
@@ -302,6 +316,11 @@ public class UnitImpl implements IUnit {
             }
 
             return units.stream().map(unit -> UnitDTO.builder()
+                    .id(unit.getId())
+                    .user(unit.getUser().getUsername())
+                    .registrationDate(unit.getRegistrationDate())
+                    .updateDate(unit.getUpdateDate())
+                    .status(unit.getStatus())
                     .name(unit.getName())
                     .unitType(unit.getUnitType().getName())
                     .build()).toList();

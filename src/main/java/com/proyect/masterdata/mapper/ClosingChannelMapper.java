@@ -11,6 +11,4 @@ import com.proyect.masterdata.dto.ClosingChannelDTO;
 @Mapper(componentModel = "spring")
 public interface ClosingChannelMapper {
     ClosingChannelMapper INSTANCE = Mappers.getMapper(ClosingChannelMapper.class);
-
-    List<ClosingChannelDTO> listClosingChannelToListClosingChannelDTO(List<ClosingChannel> closingChannelList);
 }

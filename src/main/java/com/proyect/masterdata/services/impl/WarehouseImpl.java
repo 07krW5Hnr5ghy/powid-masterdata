@@ -247,6 +247,9 @@ public class WarehouseImpl implements IWarehouse {
             }
 
             List<WarehouseDTO> warehouseDTOs = warehousePage.getContent().stream().map(warehouse -> WarehouseDTO.builder()
+                    .id(warehouse.getId())
+                    .status(warehouse.getStatus())
+                    .user(warehouse.getUser().getUsername())
                     .name(warehouse.getName())
                     .contact(warehouse.getContact())
                     .phone(warehouse.getPhone())
@@ -278,6 +281,9 @@ public class WarehouseImpl implements IWarehouse {
             }
 
             return warehouses.stream().map(warehouse -> WarehouseDTO.builder()
+                    .id(warehouse.getId())
+                    .status(warehouse.getStatus())
+                    .user(warehouse.getUser().getUsername())
                     .name(warehouse.getName())
                     .contact(warehouse.getContact())
                     .phone(warehouse.getPhone())
@@ -307,6 +313,9 @@ public class WarehouseImpl implements IWarehouse {
             }
 
             return warehouses.stream().map(warehouse -> WarehouseDTO.builder()
+                    .id(warehouse.getId())
+                    .status(warehouse.getStatus())
+                    .user(warehouse.getUser().getUsername())
                     .name(warehouse.getName())
                     .contact(warehouse.getContact())
                     .phone(warehouse.getPhone())
@@ -336,6 +345,9 @@ public class WarehouseImpl implements IWarehouse {
             }
 
             return warehouses.stream().map(warehouse -> WarehouseDTO.builder()
+                    .id(warehouse.getId())
+                    .status(warehouse.getStatus())
+                    .user(warehouse.getUser().getUsername())
                     .name(warehouse.getName())
                     .contact(warehouse.getContact())
                     .phone(warehouse.getPhone())

@@ -17,4 +17,5 @@ public class StockTransactionDTO {
     private String warehouse;
     private String transactionType;
     private OffsetDateTime registrationDate;
+    private String user;
 }

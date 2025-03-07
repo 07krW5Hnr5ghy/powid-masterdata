@@ -18,4 +18,5 @@ public class AuditEventDTO {
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
     private UUID id;
+    private String user;
 }

@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,4 +20,7 @@ public class CustomerDTO {
     private String district;
     private String department;
     private String province;
+    private UUID id;
+    private String user;
+    private Boolean status;
 }

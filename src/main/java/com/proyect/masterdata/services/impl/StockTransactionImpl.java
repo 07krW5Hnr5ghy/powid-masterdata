@@ -202,6 +202,7 @@ public class StockTransactionImpl implements IStockTransaction {
                     .warehouse(stockTransaction.getWarehouse().getName())
                     .transactionType(stockTransaction.getStockTransactionType().getName())
                     .registrationDate(stockTransaction.getRegistrationDate())
+                    .user(stockTransaction.getUser().getUsername())
                     .build()).toList();
 
             return new PageImpl<>(stockTransactionDTOS,pageStockTransaction.getPageable(),pageStockTransaction.getTotalElements());
@@ -228,6 +229,7 @@ public class StockTransactionImpl implements IStockTransaction {
                     .warehouse(stockTransaction.getWarehouse().getName())
                     .transactionType(stockTransaction.getStockTransactionType().getName())
                     .registrationDate(stockTransaction.getRegistrationDate())
+                    .user(stockTransaction.getUser().getUsername())
                     .build()).toList();
         });
     }

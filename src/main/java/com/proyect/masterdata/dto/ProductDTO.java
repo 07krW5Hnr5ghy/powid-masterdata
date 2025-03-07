@@ -31,4 +31,5 @@ public class ProductDTO {
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
     private Boolean status;
+    private String user;
 }

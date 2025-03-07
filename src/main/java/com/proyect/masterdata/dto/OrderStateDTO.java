@@ -12,7 +12,9 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 public class OrderStateDTO {
-    private UUID code;
+    private UUID id;
+    private String user;
+    private Boolean status;
     private String name;
     private String hexColor;
 }

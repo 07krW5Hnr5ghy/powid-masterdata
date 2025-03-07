@@ -667,6 +667,9 @@ public class OrderingImpl implements IOrdering {
                             }
                             String finalSku = iUtil.buildProductSku(orderItem.getProduct());
                             return OrderItemDTO.builder()
+                                    .id(orderItem.getId())
+                                    .user(orderItem.getUser().getUsername())
+                                    .status(orderItem.getStatus())
                                     .orderId(orderItem.getId())
                                     .model(orderItem.getProduct().getModel().getName())
                                     .discountAmount(orderItem.getDiscountAmount())
@@ -687,6 +690,7 @@ public class OrderingImpl implements IOrdering {
                                     .build();
                         }).toList())
                         .orderLogs(iOrderLog.listLogByOrder(order.getId()))
+                        .user(order.getUser().getUsername())
                         .build();
             }).toList();
 
@@ -791,6 +795,9 @@ public class OrderingImpl implements IOrdering {
                             }
                             String finalSku = iUtil.buildProductSku(orderItem.getProduct());
                             return OrderItemDTO.builder()
+                                    .id(orderItem.getId())
+                                    .user(orderItem.getUser().getUsername())
+                                    .status(orderItem.getStatus())
                                     .orderId(orderItem.getId())
                                     .discountAmount(orderItem.getDiscountAmount())
                                     .sku(finalSku)
@@ -811,6 +818,7 @@ public class OrderingImpl implements IOrdering {
                                     .build();
                         }).toList())
                         .orderLogs(iOrderLog.listLogByOrder(order.getId()))
+                        .user(order.getUser().getUsername())
                         .build();
                     if(cancelledOrder != null){
                         newOrderDTO.setCancellationReason(cancelledOrder.getCancellationReason().getName());
@@ -859,8 +867,6 @@ public class OrderingImpl implements IOrdering {
 
         if(ordering == null){
             throw new BadRequestExceptions(Constants.ErrorOrdering);
-        }else {
-//            orderStock = orderStockRepository.findByOrderIdAndClientId(ordering.getId(),user.getClientId());
         }
 
         if(
@@ -1247,6 +1253,7 @@ public class OrderingImpl implements IOrdering {
                         }).toList())
                         .id(ordering.getId())
                         .orderLogs(iOrderLog.listLogByOrder(ordering.getId()))
+                        .user(ordering.getUser().getUsername())
                         .build();
                 if(cancelledOrder != null){
                     newOrderDTO.setCancellationReason(cancelledOrder.getCancellationReason().getName());
