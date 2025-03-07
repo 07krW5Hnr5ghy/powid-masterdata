@@ -16,11 +16,14 @@ import lombok.NoArgsConstructor;
 public class GeneralStockDTO {
     private UUID id;
     private String user;
-    public String productSku;
-    public String model;
-    public String color;
-    public String size;
-    public Integer quantity;
-    public OffsetDateTime registrationDate;
-    public OffsetDateTime updateDate;
+    private String product;
+    private String productSku;
+    private String categoryProduct;
+    private String subCategoryProduct;
+    private String model;
+    private String color;
+    private String size;
+    private Integer quantity;
+    private OffsetDateTime registrationDate;
+    private OffsetDateTime updateDate;
 }
