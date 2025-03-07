@@ -27,9 +27,10 @@ public class DeliveryPointController {
     @PostMapping()
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("name") String name,
+            @RequestParam("address") String address,
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iDeliveryPoint.saveAsync(name,tokenUser);
+        CompletableFuture<ResponseSuccess> result = iDeliveryPoint.saveAsync(name,address,tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @DeleteMapping()
@@ -49,13 +50,13 @@ public class DeliveryPointController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping()
-    public ResponseEntity<List<String>> listDeliveryPoint() throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<String>> result = iDeliveryPoint.listDeliveryPoints();
+    public ResponseEntity<List<DeliveryPointDTO>> listDeliveryPoint() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<DeliveryPointDTO>> result = iDeliveryPoint.listDeliveryPoints();
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
     @GetMapping("filter")
-    public ResponseEntity<List<String>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<String>> result = iDeliveryPoint.listFilter();
+    public ResponseEntity<List<DeliveryPointDTO>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<DeliveryPointDTO>> result = iDeliveryPoint.listFilter();
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
     @GetMapping(value = "list")
