@@ -13,4 +13,13 @@ mvn test
 mvn package
 
 
+
+borrar contenedores
+docker-compose down
+
+borrar imagenes
+docker-compose down --rmi all
+
+
+constuir
 docker-compose up --build -d

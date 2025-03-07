@@ -19,6 +19,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -213,6 +214,7 @@ public class OrderItemImpl implements IOrderItem {
         });
     }
 
+    @Transactional
     @Override
     public CompletableFuture<ResponseDelete> delete(UUID orderId, UUID productId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -252,7 +254,13 @@ public class OrderItemImpl implements IOrderItem {
                 orderItem.setUpdateDate(OffsetDateTime.now());
                 orderItem.setUser(user);
                 orderItem.setUserId(user.getId());
-                orderItemRepository.save(orderItem);
+                //orderItemRepository.save(orderItem);
+                orderItemRepository.deleteOrderItemLogically(
+                        orderId,
+                        productId,
+                        OffsetDateTime.now(),
+                        user.getId()
+                );
                 iAudit.save("DELETE_ORDER_ITEM","PRODUCTO "+iUtil.buildProductSku(orderItem.getProduct())+" DE PEDIDO "+orderItem.getOrderId()+" DESACTIVADO.",orderItem.getOrderId().toString(),user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
@@ -336,6 +344,7 @@ public class OrderItemImpl implements IOrderItem {
         });
     }
 
+    @Transactional
     @Override
     public CompletableFuture<ResponseSuccess> update(UUID orderId, RequestOrderItem requestOrderItem, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -366,7 +375,9 @@ public class OrderItemImpl implements IOrderItem {
             if(product == null){
                 throw new BadRequestExceptions(Constants.ErrorProduct);
             }else {
+                System.out.println("Imprimiendo orden Item");
                 orderItem  = orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());
+                System.out.println(orderItem);
             }
 
             if(orderItem == null ){
@@ -384,7 +395,15 @@ public class OrderItemImpl implements IOrderItem {
                 orderItem.setDiscountAmount(requestOrderItem.getDiscountAmount());
                 orderItem.setUpdateDate(OffsetDateTime.now());
                 orderItem.setObservations(requestOrderItem.getObservations().toUpperCase());
-                orderItemRepository.save(orderItem);
+                System.out.println(orderItem);
+                orderItemRepository.updateOrderItemFields(
+                        orderItem.getId(),
+                        requestOrderItem.getQuantity(),
+                        requestOrderItem.getDiscountAmount(),
+                        requestOrderItem.getObservations().toUpperCase(),
+                        discount.getId(),
+                        OffsetDateTime.now());
+                //orderItemRepository.save(orderItem);
                 iAudit.save("UPDATE_ORDER_ITEM","PRODUCTO "+iUtil.buildProductSku(orderItem.getProduct())+" DE PEDIDO "+orderItem.getOrderId()+" ACTUALIZADO.",orderItem.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
@@ -487,6 +506,7 @@ public class OrderItemImpl implements IOrderItem {
                         .id(orderItem.getId())
                         .user(orderItem.getUser().getUsername())
                         .status(orderItem.getStatus())
+                        .productId(orderItem.getProductId())
                         .unit(orderItem.getProduct().getUnit().getName())
                         .color(orderItem.getProduct().getColor().getName())
                         .size(orderItem.getProduct().getSize().getName())
@@ -543,6 +563,7 @@ public class OrderItemImpl implements IOrderItem {
                         .id(orderItem.getId())
                         .user(orderItem.getUser().getUsername())
                         .status(orderItem.getStatus())
+                        .productId(orderItem.getProductId())
                     .unit(orderItem.getProduct().getUnit().getName())
                     .orderId(orderItem.getOrderId())
                     .color(orderItem.getProduct().getColor().getName())
@@ -594,6 +615,7 @@ public class OrderItemImpl implements IOrderItem {
                         .id(orderItem.getId())
                         .user(orderItem.getUser().getUsername())
                         .status(orderItem.getStatus())
+                        .productId(orderItem.getProductId())
                         .unit(orderItem.getProduct().getUnit().getName())
                         .orderId(orderItem.getOrderId())
                         .color(orderItem.getProduct().getColor().getName())
