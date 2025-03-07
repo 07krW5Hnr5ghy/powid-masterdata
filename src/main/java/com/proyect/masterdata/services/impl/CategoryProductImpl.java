@@ -188,6 +188,7 @@ public class CategoryProductImpl implements ICategoryProduct {
                             .registrationDate(categoryProduct.getRegistrationDate())
                             .updateDate(categoryProduct.getUpdateDate())
                             .sizeType(categoryProduct.getSizeType().getName())
+                            .unitType(categoryProduct.getUnitType().getName())
                             .build())
                     .toList();
 
@@ -223,6 +224,7 @@ public class CategoryProductImpl implements ICategoryProduct {
                             .registrationDate(categoryProduct.getRegistrationDate())
                             .updateDate(categoryProduct.getUpdateDate())
                             .sizeType(categoryProduct.getSizeType().getName())
+                            .unitType(categoryProduct.getUnitType().getName())
                             .build())
                     .toList();
 
@@ -253,6 +255,7 @@ public class CategoryProductImpl implements ICategoryProduct {
                             .registrationDate(categoryProduct.getRegistrationDate())
                             .updateDate(categoryProduct.getUpdateDate())
                             .sizeType(categoryProduct.getSizeType().getName())
+                            .unitType(categoryProduct.getUnitType().getName())
                             .build())
                     .toList();
         });
@@ -386,6 +389,7 @@ public class CategoryProductImpl implements ICategoryProduct {
                             .registrationDate(categoryProduct.getRegistrationDate())
                             .updateDate(categoryProduct.getUpdateDate())
                             .sizeType(categoryProduct.getSizeType().getName())
+                            .unitType(categoryProduct.getUnitType().getName())
                             .build())
                     .toList();
         });
