@@ -28,4 +28,5 @@ public interface IOrderContacted {
             Integer pageSize
     );
     CompletableFuture<ResponseSuccess> selectAgent(UUID orderId, String username, String agentUsername,String observations) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> selectCourier(UUID orderId,String username,String courier,String observations) throws BadRequestExceptions,InternalErrorExceptions;
 }

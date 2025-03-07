@@ -164,6 +164,7 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
                 subCategoryProduct.setUpdateDate(OffsetDateTime.now());
                 subCategoryProduct.setUser(user);
                 subCategoryProduct.setUserId(user.getId());
+                subCategoryProductRepository.save(subCategoryProduct);
                 iAudit.save("DELETE_SUB_CATEGORY_PRODUCT","SUB CATEGORIA DE PRODUCTO "+subCategoryProduct.getName()+" ELIMINADA.",subCategoryProduct.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
@@ -199,6 +200,7 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
                 subCategoryProduct.setUpdateDate(OffsetDateTime.now());
                 subCategoryProduct.setUser(user);
                 subCategoryProduct.setUserId(user.getId());
+                subCategoryProductRepository.save(subCategoryProduct);
                 iAudit.save("ACTIVATE_SUB_CATEGORY_PRODUCT","SUB CATEGORIA DE PRODUCTO "+subCategoryProduct.getName()+" ACTIVADA.",subCategoryProduct.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
