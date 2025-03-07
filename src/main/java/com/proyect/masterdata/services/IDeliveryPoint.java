@@ -12,12 +12,12 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface IDeliveryPoint {
-    ResponseSuccess save(String name,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<ResponseSuccess> saveAsync(String name,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    ResponseSuccess save(String name,String address,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> saveAsync(String name,String address,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<ResponseDelete> delete(String name,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> activate(String name,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<List<String>> listDeliveryPoints() throws BadRequestExceptions;
-    CompletableFuture<List<String>> listFilter() throws BadRequestExceptions;
+    CompletableFuture<List<DeliveryPointDTO>> listDeliveryPoints() throws BadRequestExceptions;
+    CompletableFuture<List<DeliveryPointDTO>> listFilter() throws BadRequestExceptions;
     CompletableFuture<Page<DeliveryPointDTO>> list(
             String name,
             OffsetDateTime registrationStartDate,

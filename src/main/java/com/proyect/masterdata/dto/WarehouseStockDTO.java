@@ -16,8 +16,11 @@ import lombok.NoArgsConstructor;
 public class WarehouseStockDTO {
     public UUID id;
     public String user;
+    private String product;
+    private String productSku;
+    private String categoryProduct;
+    private String subCategoryProduct;
     public String warehouse;
-    public String product;
     public String model;
     public String color;
     public String size;

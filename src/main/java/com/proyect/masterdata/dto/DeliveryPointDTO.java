@@ -16,6 +16,7 @@ public class DeliveryPointDTO {
     private String name;
     private String user;
     private UUID id;
+    private String address;
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
     private Boolean status;
