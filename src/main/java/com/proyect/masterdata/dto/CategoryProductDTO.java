@@ -18,6 +18,7 @@ public class CategoryProductDTO {
     private String user;
     private String name;
     private String sizeType;
+    private String unitType;
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
     private Boolean status;
