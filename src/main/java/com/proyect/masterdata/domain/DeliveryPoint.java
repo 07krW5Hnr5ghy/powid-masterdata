@@ -26,6 +26,9 @@ public class DeliveryPoint {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "address")
+    private String address;
+
     @Column(name = "status")
     private Boolean status;
 

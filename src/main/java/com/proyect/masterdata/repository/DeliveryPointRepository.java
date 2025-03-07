@@ -10,6 +10,7 @@ import java.util.UUID;
 @Repository
 public interface DeliveryPointRepository extends JpaRepository<DeliveryPoint, UUID> {
     DeliveryPoint findByName(String name);
+    DeliveryPoint findByNameOrAddress(String name,String address);
     DeliveryPoint findByNameAndStatusTrue(String name);
     DeliveryPoint findByNameAndStatusFalse(String name);
     List<DeliveryPoint> findAllByStatusTrue();

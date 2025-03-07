@@ -33,12 +33,12 @@ public class DeliveryPointImpl implements IDeliveryPoint {
     private final IAudit iAudit;
     private final DeliveryPointRepositoryCustom deliveryPointRepositoryCustom;
     @Override
-    public ResponseSuccess save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseSuccess save(String name,String address, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         User user;
         DeliveryPoint deliveryPoint;
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            deliveryPoint = deliveryPointRepository.findByName(name.toUpperCase());
+            deliveryPoint = deliveryPointRepository.findByNameOrAddress(name.toUpperCase(),address);
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -53,6 +53,7 @@ public class DeliveryPointImpl implements IDeliveryPoint {
             DeliveryPoint newDeliveryPoint = deliveryPointRepository.save(DeliveryPoint.builder()
                             .name(name.toUpperCase())
                             .status(true)
+                            .address(address)
                             .registrationDate(OffsetDateTime.now())
                             .updateDate(OffsetDateTime.now())
                             .user(user)
@@ -70,13 +71,13 @@ public class DeliveryPointImpl implements IDeliveryPoint {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(String name,String address, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             DeliveryPoint deliveryPoint;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                deliveryPoint = deliveryPointRepository.findByName(name.toUpperCase());
+                deliveryPoint = deliveryPointRepository.findByNameOrAddress(name.toUpperCase(),address);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -90,6 +91,7 @@ public class DeliveryPointImpl implements IDeliveryPoint {
             try {
                 DeliveryPoint newDeliveryPoint = deliveryPointRepository.save(DeliveryPoint.builder()
                         .name(name.toUpperCase())
+                        .address(address)
                         .status(true)
                         .registrationDate(OffsetDateTime.now())
                         .updateDate(OffsetDateTime.now())
@@ -181,7 +183,7 @@ public class DeliveryPointImpl implements IDeliveryPoint {
     }
 
     @Override
-    public CompletableFuture<List<String>> listDeliveryPoints() throws BadRequestExceptions {
+    public CompletableFuture<List<DeliveryPointDTO>> listDeliveryPoints() throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<DeliveryPoint> deliveryPointList;
             try {
@@ -193,12 +195,19 @@ public class DeliveryPointImpl implements IDeliveryPoint {
             if(deliveryPointList.isEmpty()){
                 return Collections.emptyList();
             }
-            return deliveryPointList.stream().map(DeliveryPoint::getName).toList();
+            return deliveryPointList.stream().map(deliveryPoint -> DeliveryPointDTO.builder()
+                    .address(deliveryPoint.getAddress())
+                    .id(deliveryPoint.getId())
+                    .name(deliveryPoint.getName())
+                    .updateDate(deliveryPoint.getUpdateDate())
+                    .registrationDate(deliveryPoint.getRegistrationDate())
+                    .status(deliveryPoint.getStatus())
+                    .build()).toList();
         });
     }
 
     @Override
-    public CompletableFuture<List<String>> listFilter() throws BadRequestExceptions {
+    public CompletableFuture<List<DeliveryPointDTO>> listFilter() throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<DeliveryPoint> deliveryPointList;
             try {
@@ -210,7 +219,14 @@ public class DeliveryPointImpl implements IDeliveryPoint {
             if(deliveryPointList.isEmpty()){
                 return Collections.emptyList();
             }
-            return deliveryPointList.stream().map(DeliveryPoint::getName).toList();
+            return deliveryPointList.stream().map(deliveryPoint -> DeliveryPointDTO.builder()
+                    .address(deliveryPoint.getAddress())
+                    .id(deliveryPoint.getId())
+                    .name(deliveryPoint.getName())
+                    .updateDate(deliveryPoint.getUpdateDate())
+                    .registrationDate(deliveryPoint.getRegistrationDate())
+                    .status(deliveryPoint.getStatus())
+                    .build()).toList();
         });
     }
 
@@ -245,6 +261,7 @@ public class DeliveryPointImpl implements IDeliveryPoint {
                     .name(deliveryPoint.getName())
                     .registrationDate(deliveryPoint.getRegistrationDate())
                     .updateDate(deliveryPoint.getUpdateDate())
+                    .address(deliveryPoint.getAddress())
                     .build()).toList();
             return new PageImpl<>(deliveryPointDTOS,deliveryPointPage.getPageable(),deliveryPointPage.getTotalElements());
         });
@@ -281,6 +298,7 @@ public class DeliveryPointImpl implements IDeliveryPoint {
                     .name(deliveryPoint.getName())
                     .registrationDate(deliveryPoint.getRegistrationDate())
                     .updateDate(deliveryPoint.getUpdateDate())
+                    .address(deliveryPoint.getAddress())
                     .build()).toList();
             return new PageImpl<>(deliveryPointDTOS,deliveryPointPage.getPageable(),deliveryPointPage.getTotalElements());
         });

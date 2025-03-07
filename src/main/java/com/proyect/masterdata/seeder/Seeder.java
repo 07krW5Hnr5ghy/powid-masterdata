@@ -1398,10 +1398,10 @@ public class Seeder implements CommandLineRunner {
                         iDiscount.save("porcentaje",adminUser.getUsername());
                         iDiscount.save("no aplica",adminUser.getUsername());
                         // delivery points
-                        iDeliveryPoint.save("lima",adminUser.getUsername());
-                        iDeliveryPoint.save("punto scharf",adminUser.getUsername());
-                        iDeliveryPoint.save("provincia",adminUser.getUsername());
-                        iDeliveryPoint.save("recojo en tienda",adminUser.getUsername());
+                        iDeliveryPoint.save("lima","limna",adminUser.getUsername());
+                        iDeliveryPoint.save("punto scharf","punto scharft",adminUser.getUsername());
+                        iDeliveryPoint.save("provincia","provincia",adminUser.getUsername());
+                        iDeliveryPoint.save("recojo en tienda","recojo en tienda",adminUser.getUsername());
                         // stock transaction types mocks
                         iStockTransactionType.save("ingreso", adminUser.getUsername());
                         iStockTransactionType.save("salida", adminUser.getUsername());
