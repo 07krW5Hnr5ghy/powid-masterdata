@@ -4,9 +4,11 @@ import com.proyect.masterdata.domain.OrderItem;
 import com.proyect.masterdata.dto.OrderDTO;
 import com.proyect.masterdata.dto.SalesCategoryRawDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.Date;
@@ -128,4 +130,36 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
             @Param("clientId") UUID clientId
     );
     OrderItem findByIdAndStatusTrue(UUID orderItemId);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE OrderItem o SET " +
+            "o.quantity = :quantity, " +
+            "o.discountAmount = :discountAmount, " +
+            "o.observations = :observations, " +
+            "o.discountId = :discountId, " +
+            "o.updateDate = :updateDate " +
+            "WHERE o.id = :id")
+    void updateOrderItemFields(
+            @Param("id") UUID id,
+            @Param("quantity") Integer quantity,
+            @Param("discountAmount") Double discountAmount,
+            @Param("observations") String observations,
+            @Param("discountId") UUID discountId,
+            @Param("updateDate") OffsetDateTime updateDate
+    );
+
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE OrderItem o SET " +
+            "o.status = false, " +
+            "o.updateDate = :updateDate " +
+            "WHERE o.userId = :userId AND o.orderId = :orderId AND o.productId = :productId")
+    void deleteOrderItemLogically (
+            @Param("orderId") UUID orderId,
+            @Param("productId") UUID productId,
+            @Param("updateDate") OffsetDateTime updateDate,
+            @Param("userId") UUID userId
+    );
 }
