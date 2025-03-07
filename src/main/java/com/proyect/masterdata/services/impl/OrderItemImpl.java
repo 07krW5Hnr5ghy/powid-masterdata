@@ -255,11 +255,12 @@ public class OrderItemImpl implements IOrderItem {
                 orderItem.setUser(user);
                 orderItem.setUserId(user.getId());
                 //orderItemRepository.save(orderItem);
-                orderItemRepository.deleteOrderItemLogically(
+                orderItemRepository.deleteAndActivateOrderItemLogically(
                         orderId,
                         productId,
                         OffsetDateTime.now(),
-                        user.getId()
+                        user.getId(),
+                        false
                 );
                 iAudit.save("DELETE_ORDER_ITEM","PRODUCTO "+iUtil.buildProductSku(orderItem.getProduct())+" DE PEDIDO "+orderItem.getOrderId()+" DESACTIVADO.",orderItem.getOrderId().toString(),user.getUsername());
                 return ResponseDelete.builder()
@@ -561,23 +562,23 @@ public class OrderItemImpl implements IOrderItem {
                 }
                 return OrderItemDTO.builder()
                         .id(orderItem.getId())
+                        .productId(orderItem.getProductId())
                         .user(orderItem.getUser().getUsername())
                         .status(orderItem.getStatus())
-                        .productId(orderItem.getProductId())
-                    .unit(orderItem.getProduct().getUnit().getName())
-                    .orderId(orderItem.getOrderId())
-                    .color(orderItem.getProduct().getColor().getName())
-                    .size(orderItem.getProduct().getSize().getName())
-                    .sku(iUtil.buildProductSku(orderItem.getProduct()))
+                        .unit(orderItem.getProduct().getUnit().getName())
+                        .orderId(orderItem.getOrderId())
+                        .color(orderItem.getProduct().getColor().getName())
+                        .size(orderItem.getProduct().getSize().getName())
+                        .sku(iUtil.buildProductSku(orderItem.getProduct()))
                         .model(orderItem.getProduct().getModel().getName())
-                    .category(orderItem.getProduct().getSubCategoryProduct().getCategoryProduct().getName())
+                        .category(orderItem.getProduct().getSubCategoryProduct().getCategoryProduct().getName())
                         .subCategory(orderItem.getProduct().getSubCategoryProduct().getName())
                         .quantity(orderItem.getQuantity())
-                    .unitPrice(productPrice.getUnitSalePrice())
+                        .unitPrice(productPrice.getUnitSalePrice())
                         .discountAmount(orderItem.getDiscountAmount())
                         .discount(orderItem.getDiscount().getName())
                         .totalPrice(totalPrice)
-                    .build();
+                        .build();
             }).toList();
         });
     }
@@ -613,9 +614,9 @@ public class OrderItemImpl implements IOrderItem {
                 }
                 return OrderItemDTO.builder()
                         .id(orderItem.getId())
+                        .productId(orderItem.getProductId())
                         .user(orderItem.getUser().getUsername())
                         .status(orderItem.getStatus())
-                        .productId(orderItem.getProductId())
                         .unit(orderItem.getProduct().getUnit().getName())
                         .orderId(orderItem.getOrderId())
                         .color(orderItem.getProduct().getColor().getName())
@@ -634,6 +635,7 @@ public class OrderItemImpl implements IOrderItem {
         });
     }
 
+    @Transactional
     @Override
     public CompletableFuture<ResponseDelete> activate(UUID orderId, UUID productId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -673,7 +675,15 @@ public class OrderItemImpl implements IOrderItem {
                 orderItem.setUpdateDate(OffsetDateTime.now());
                 orderItem.setUser(user);
                 orderItem.setUserId(user.getId());
-                orderItemRepository.save(orderItem);
+
+                //orderItemRepository.save(orderItem);
+                orderItemRepository.deleteAndActivateOrderItemLogically(
+                        orderId,
+                        productId,
+                        OffsetDateTime.now(),
+                        user.getId(),
+                        true
+                );
                 iAudit.save("ACTIVATE_ORDER_ITEM","PRODUCTO "+iUtil.buildProductSku(orderItem.getProduct())+" DE PEDIDO "+orderItem.getOrderId()+" ACTIVADO.",orderItem.getOrderId().toString(),user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
