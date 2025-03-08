@@ -18,8 +18,5 @@ public interface ISizeType {
     CompletableFuture<List<SizeTypeDTO>> listSizeType() throws BadRequestExceptions;
     CompletableFuture<List<SizeTypeDTO>> listSizeTypeFilter() throws BadRequestExceptions;
     CompletableFuture<Page<SizeTypeDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions;
-
-    CompletableFuture<Page<SizeTypeDTO>> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions;
+            Integer pageSize,Boolean status) throws BadRequestExceptions;
 }

@@ -71,7 +71,7 @@ public class SizeController {
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize,
-            @RequestParam("status") Boolean status) throws BadRequestExceptions, ExecutionException, InterruptedException {
+            @RequestParam(value = "status",required = false) Boolean status) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<SizeDTO>> result = iSize.list(name, user, sort, sortColumn, pageNumber,
                 pageSize,status);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
