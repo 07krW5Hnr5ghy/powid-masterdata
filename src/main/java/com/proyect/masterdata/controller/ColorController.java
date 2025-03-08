@@ -63,7 +63,8 @@ public class ColorController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+            @RequestParam("pageSize") Integer pageSize,
+            @RequestParam("status") Boolean status) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<ColorDTO>> result = iColor.list(
                 name,
                 registrationStartDate,
@@ -73,31 +74,8 @@ public class ColorController {
                 sort,
                 sortColumn,
                 pageNumber,
-                pageSize);
-        return new ResponseEntity<>(result.get(), HttpStatus.OK);
-    }
-    @GetMapping(value = "status-false")
-    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:MARKETING','ROLE:STOCK') and hasAuthority('ACCESS:COLOR_GET')")
-    public ResponseEntity<Page<ColorDTO>> listStatusFalse(
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
-            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
-            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateStartDate,
-            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateEndDate,
-            @RequestParam(value = "sort", required = false) String sort,
-            @RequestParam(value = "sortColumn", required = false) String sortColumn,
-            @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<ColorDTO>> result = iColor.listStatusFalse(
-                name,
-                registrationStartDate,
-                registrationEndDate,
-                updateStartDate,
-                updateEndDate,
-                sort,
-                sortColumn,
-                pageNumber,
-                pageSize);
+                pageSize,
+                status);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @PutMapping()

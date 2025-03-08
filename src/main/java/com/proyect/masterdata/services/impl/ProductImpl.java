@@ -70,8 +70,7 @@ public class ProductImpl implements IProduct {
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            subCategoryProduct = subCategoryProductRepository.findByNameAndStatusTrue(requestProductSave.getSubCategoryProduct().toUpperCase());
-            unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(requestProductSave.getUnit().toUpperCase(),subCategoryProduct.getCategoryProduct().getUnitTypeId());
+            subCategoryProduct = subCategoryProductRepository.findByNameAndClientIdAndStatusTrue(requestProductSave.getSubCategoryProduct().toUpperCase(),user.getClientId());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -82,6 +81,7 @@ public class ProductImpl implements IProduct {
         }else{
             model = modelRepository.findByNameAndClientIdAndStatusTrue(requestProductSave.getModel().toUpperCase(),user.getClientId());
             color = colorRepository.findByNameAndClientIdAndStatusTrue(requestProductSave.getColor().toUpperCase(),user.getClientId());
+            unit = unitRepository.findByNameAndUnitTypeIdAndClientIdAndStatusTrue(requestProductSave.getUnit().toUpperCase(),subCategoryProduct.getCategoryProduct().getUnitTypeId(),user.getClientId());
         }
 
         if (model == null) {
@@ -177,8 +177,7 @@ public class ProductImpl implements IProduct {
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                subCategoryProduct = subCategoryProductRepository.findByNameAndStatusTrue(requestProductSave.getSubCategoryProduct().toUpperCase());
-                unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(requestProductSave.getUnit().toUpperCase(),subCategoryProduct.getCategoryProduct().getUnitTypeId());
+                subCategoryProduct = subCategoryProductRepository.findByNameAndClientIdAndStatusTrue(requestProductSave.getSubCategoryProduct().toUpperCase(),user.getClientId());
                 //subCategoryProduct.getCategoryProduct().getSizeTypeId()
                 System.out.println(unitRepository.findAll());
             } catch (RuntimeException e) {
@@ -191,6 +190,7 @@ public class ProductImpl implements IProduct {
             }else{
                 model = modelRepository.findByNameAndClientIdAndStatusTrue(requestProductSave.getModel().toUpperCase(),user.getClientId());
                 color = colorRepository.findByNameAndClientIdAndStatusTrue(requestProductSave.getColor().toUpperCase(),user.getClientId());
+                unit = unitRepository.findByNameAndUnitTypeIdAndClientIdAndStatusTrue(requestProductSave.getUnit().toUpperCase(),subCategoryProduct.getCategoryProduct().getUnitTypeId(),user.getClientId());
                 //modelRepository.findBySkuAndClientIdAndStatusTrue(requestProductSave.getModel().toUpperCase(),user.getClientId());
             //modelRepository.findByNameAndClientId(requestProductSave.getModel().toUpperCase(),user.getClientId());
                         //

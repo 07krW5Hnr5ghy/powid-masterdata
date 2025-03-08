@@ -43,6 +43,9 @@ public class SubCategoryProduct {
     @Column(name = "user_id")
     private UUID userId;
 
+    @Column(name = "client_id")
+    private UUID clientId;
+
     @Column(name = "category_product_id")
     private UUID categoryProductId;
 
@@ -53,4 +56,8 @@ public class SubCategoryProduct {
     @ManyToOne
     @JoinColumn(name="category_product_id",columnDefinition = "categoryProductId",insertable = false,updatable = false)
     private CategoryProduct categoryProduct;
+
+    @ManyToOne()
+    @JoinColumn(name="client_id",columnDefinition = "clientId",insertable = false,updatable = false)
+    private Client client;
 }

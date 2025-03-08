@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.UUID;
 @Repository
 public interface SubCategoryProductRepository extends JpaRepository<SubCategoryProduct, UUID> {
-    SubCategoryProduct findByNameOrSku(String name,String sku);
-    SubCategoryProduct findByNameAndSkuAndStatusTrue(String name,String sku);
-    SubCategoryProduct findByNameAndStatusTrue(String name);
-    List<SubCategoryProduct> findAllByCategoryProductIdAndStatusTrue(UUID categoryProductId);
+    SubCategoryProduct findByNameOrSkuAndClientId(String name,String sku,UUID clientId);
+    SubCategoryProduct findByNameAndSkuAndClientIdAndStatusTrue(String name,String sku,UUID clientId);
+    SubCategoryProduct findByNameAndClientIdAndStatusTrue(String name,UUID clientId);
+    List<SubCategoryProduct> findAllByCategoryProductIdAndClientIdAndStatusTrue(UUID categoryProductId,UUID clientId);
 }

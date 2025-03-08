@@ -15,7 +15,7 @@ public interface IUnit {
     CompletableFuture<ResponseSuccess> saveAsync(RequestUnit requestUnit, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ResponseDelete> delete(String name, String unitType, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ResponseSuccess> activate(String name, String unitType, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-    CompletableFuture<List<UnitDTO>> listUnit() throws BadRequestExceptions;
-    CompletableFuture<List<UnitDTO>> listUnitByType(String unitTypeName) throws BadRequestExceptions;
-    CompletableFuture<List<UnitDTO>> listFilter() throws BadRequestExceptions;
+    CompletableFuture<List<UnitDTO>> listUnit(String username) throws BadRequestExceptions;
+    CompletableFuture<List<UnitDTO>> listUnitByType(String unitTypeName,String username) throws BadRequestExceptions;
+    CompletableFuture<List<UnitDTO>> listFilter(String username) throws BadRequestExceptions;
 }

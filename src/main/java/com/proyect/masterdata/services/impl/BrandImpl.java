@@ -196,7 +196,8 @@ public class BrandImpl implements IBrand {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+            Integer pageSize,
+            Boolean status) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Brand> brandPage;
             List<String> brandsUppercase;
@@ -221,7 +222,7 @@ public class BrandImpl implements IBrand {
                         sortColumn,
                         pageNumber,
                         pageSize,
-                        true);
+                        status);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -246,69 +247,6 @@ public class BrandImpl implements IBrand {
                     brandPage.getTotalElements());
         });
     }
-
-    @Override
-    public CompletableFuture<Page<BrandDTO>> listStatusFalse(
-            String tokenUser,
-            List<String> names,
-            OffsetDateTime registrationStartDate,
-            OffsetDateTime registrationEndDate,
-            OffsetDateTime updateStartDate,
-            OffsetDateTime updateEndDate,
-            String sort,
-            String sortColumn,
-            Integer pageNumber,
-            Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
-        return CompletableFuture.supplyAsync(() -> {
-            Page<Brand> brandPage;
-            List<String> brandsUppercase;
-            UUID clientId;
-
-            if(names != null && !names.isEmpty()){
-                brandsUppercase = names.stream().map(String::toUpperCase).toList();
-            }else{
-                brandsUppercase = new ArrayList<>();
-            }
-
-            try {
-                clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
-                brandPage = brandRepositoryCustom.searchForBrand(
-                        clientId,
-                        brandsUppercase,
-                        registrationStartDate,
-                        registrationEndDate,
-                        updateStartDate,
-                        updateEndDate,
-                        sort,
-                        sortColumn,
-                        pageNumber,
-                        pageSize,
-                        false);
-            } catch (RuntimeException e) {
-                log.error(e.getMessage());
-                throw new BadRequestExceptions(Constants.ResultsFound);
-            }
-
-            if (brandPage.isEmpty()) {
-                return new PageImpl<>(Collections.emptyList());
-            }
-
-            List<BrandDTO> brandDTOs = brandPage.getContent().stream().map(brand -> BrandDTO.builder()
-                    .status(brand.getStatus())
-                    .id(brand.getId())
-                    .sku(brand.getSku())
-                    .name(brand.getName())
-                    .client(brand.getClient().getBusiness())
-                    .registrationDate(brand.getRegistrationDate())
-                    .updateDate(brand.getUpdateDate())
-                    .tokenUser(brand.getUser().getUsername())
-                    .build()).toList();
-
-            return new PageImpl<>(brandDTOs, brandPage.getPageable(),
-                    brandPage.getTotalElements());
-        });
-    }
-
     @Override
     public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{

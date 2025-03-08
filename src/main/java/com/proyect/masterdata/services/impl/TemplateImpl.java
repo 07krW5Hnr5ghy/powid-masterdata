@@ -802,7 +802,7 @@ public class TemplateImpl implements ITemplate {
                 }
 
                 for(UnitType unitType:unitTypes){
-                    List<Unit> units = unitRepository.findAllByUnitTypeIdAndStatusTrue(unitType.getId());
+                    List<Unit> units = unitRepository.findAllByUnitTypeIdAndClientIdAndStatusTrue(unitType.getId(),user.getClientId());
                     if(units.isEmpty()){
                         throw new BadRequestExceptions(Constants.ErrorUnit);
                     }

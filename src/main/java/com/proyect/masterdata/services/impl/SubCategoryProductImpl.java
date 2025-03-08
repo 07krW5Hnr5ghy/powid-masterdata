@@ -60,7 +60,7 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
         if(categoryProduct == null){
             throw new BadRequestExceptions(Constants.ErrorCategoryProduct);
         }else{
-            subCategoryProduct = subCategoryProductRepository.findByNameOrSku(requestSubCategoryProduct.getName().toUpperCase(), requestSubCategoryProduct.getSku().toUpperCase());
+            subCategoryProduct = subCategoryProductRepository.findByNameOrSkuAndClientId(requestSubCategoryProduct.getName().toUpperCase(), requestSubCategoryProduct.getSku().toUpperCase(),user.getClientId());
         }
 
         if(subCategoryProduct!=null){
@@ -78,6 +78,8 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
                             .status(true)
                             .user(user)
                             .userId(user.getId())
+                            .client(user.getClient())
+                            .clientId(user.getClientId())
                     .build());
             iAudit.save("ADD_SUB_CATEGORY_PRODUCT","SUB CATEGORIA DE PRODUCTO "+requestSubCategoryProduct.getName().toUpperCase()+" CREADA.",requestSubCategoryProduct.getName().toUpperCase(),user.getUsername());
             return ResponseSuccess.builder()
@@ -112,7 +114,7 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
             if(categoryProduct == null){
                 throw new BadRequestExceptions(Constants.ErrorCategoryProduct);
             }else{
-                subCategoryProduct = subCategoryProductRepository.findByNameOrSku(requestSubCategoryProduct.getName().toUpperCase(), requestSubCategoryProduct.getSku().toUpperCase());
+                subCategoryProduct = subCategoryProductRepository.findByNameOrSkuAndClientId(requestSubCategoryProduct.getName().toUpperCase(), requestSubCategoryProduct.getSku().toUpperCase(),user.getClientId());
             }
 
             if(subCategoryProduct!=null){
@@ -130,6 +132,8 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
                         .status(true)
                         .user(user)
                         .userId(user.getId())
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
                         .build());
                 iAudit.save("ADD_SUB_CATEGORY_PRODUCT","SUB CATEGORIA DE PRODUCTO "+requestSubCategoryProduct.getName().toUpperCase()+" CREADA.",requestSubCategoryProduct.getName().toUpperCase(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -150,7 +154,7 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
             SubCategoryProduct subCategoryProduct;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                subCategoryProduct = subCategoryProductRepository.findByNameAndSkuAndStatusTrue(name.toUpperCase(),sku.toUpperCase());
+                subCategoryProduct = subCategoryProductRepository.findByNameAndSkuAndClientIdAndStatusTrue(name.toUpperCase(),sku.toUpperCase(),user.getClientId());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -186,7 +190,7 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
             SubCategoryProduct subCategoryProduct;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                subCategoryProduct = subCategoryProductRepository.findByNameAndSkuAndStatusTrue(name.toUpperCase(),sku.toUpperCase());
+                subCategoryProduct = subCategoryProductRepository.findByNameAndSkuAndClientIdAndStatusTrue(name.toUpperCase(),sku.toUpperCase(),user.getClientId());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -295,7 +299,7 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
             if(categoryProductId==null){
                 throw new BadRequestExceptions(Constants.ErrorCategoryProduct);
             }else{
-                subCategoryProducts = subCategoryProductRepository.findAllByCategoryProductIdAndStatusTrue(categoryProductId);
+                subCategoryProducts = subCategoryProductRepository.findAllByCategoryProductIdAndClientIdAndStatusTrue(categoryProductId,user.getClientId());
             }
             if(subCategoryProducts.isEmpty()){
                 return Collections.emptyList();

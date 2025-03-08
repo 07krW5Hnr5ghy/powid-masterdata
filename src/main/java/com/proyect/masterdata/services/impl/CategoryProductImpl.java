@@ -164,51 +164,14 @@ public class CategoryProductImpl implements ICategoryProduct {
 
     @Override
     public CompletableFuture<Page<CategoryProductDTO>> list(String name, String user,OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions {
+            Integer pageSize,Boolean status) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
 
             Page<CategoryProduct> categoryProductPage;
 
             try {
                 categoryProductPage = categoryProductRepositoryCustom.searchForCategoryProduct(name, user,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate, sort, sortColumn,
-                        pageNumber, pageSize, true);
-            } catch (RuntimeException e) {
-                log.error(e.getMessage());
-                throw new BadRequestExceptions(Constants.ResultsFound);
-            }
-
-            if (categoryProductPage.isEmpty()) {
-                return new PageImpl<>(Collections.emptyList());
-            }
-
-            List<CategoryProductDTO> categoryProductDTOs = categoryProductPage.getContent().stream()
-                    .map(categoryProduct -> CategoryProductDTO.builder()
-                            .sku(categoryProduct.getSku())
-                            .status(categoryProduct.getStatus())
-                            .id(categoryProduct.getId())
-                            .user(categoryProduct.getUser().getUsername())
-                            .name(categoryProduct.getName())
-                            .registrationDate(categoryProduct.getRegistrationDate())
-                            .updateDate(categoryProduct.getUpdateDate())
-                            .sizeType(categoryProduct.getSizeType().getName())
-                            .unitType(categoryProduct.getUnitType().getName())
-                            .build())
-                    .toList();
-
-            return new PageImpl<>(categoryProductDTOs, categoryProductPage.getPageable(),
-                    categoryProductPage.getTotalElements());
-        });
-    }
-
-    @Override
-    public CompletableFuture<Page<CategoryProductDTO>> listFalse(String name, String user, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        return CompletableFuture.supplyAsync(()->{
-
-            Page<CategoryProduct> categoryProductPage;
-
-            try {
-                categoryProductPage = categoryProductRepositoryCustom.searchForCategoryProduct(name, user,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate, sort, sortColumn,
-                        pageNumber, pageSize, false);
+                        pageNumber, pageSize, status);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);

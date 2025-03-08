@@ -32,19 +32,8 @@ public interface IModel {
                 String sort,
                 String columnSort,
                 Integer pageNumber,
-                Integer pageSize);
-        CompletableFuture<Page<ModelDTO>> listStatusFalse(
-                String user,
-                String name,
-                List<String> brands,
-                OffsetDateTime registrationStartDate,
-                OffsetDateTime registrationEndDate,
-                OffsetDateTime updateStartDate,
-                OffsetDateTime updateEndDate,
-                String sort,
-                String columnSort,
-                Integer pageNumber,
-                Integer pageSize);
+                Integer pageSize,
+                Boolean status);
         CompletableFuture<List<ModelDTO>> listModels(String user) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<ModelDTO>> listModelsFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<ModelDTO>> listModelBrand(String user,String brand) throws BadRequestExceptions,InternalErrorExceptions;

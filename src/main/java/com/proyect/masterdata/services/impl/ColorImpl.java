@@ -202,7 +202,8 @@ public class ColorImpl implements IColor {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions {
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Color> colorPage;
             try {
@@ -216,7 +217,7 @@ public class ColorImpl implements IColor {
                         sortColumn,
                         pageNumber,
                         pageSize,
-                        true);
+                        status);
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -237,55 +238,6 @@ public class ColorImpl implements IColor {
                     colorPage.getPageable(), colorPage.getTotalElements());
         });
     }
-
-    @Override
-    public CompletableFuture<Page<ColorDTO>> listStatusFalse(
-            String name,
-            OffsetDateTime registrationStartDate,
-            OffsetDateTime registrationEndDate,
-            OffsetDateTime updateStartDate,
-            OffsetDateTime updateEndDate,
-            String sort,
-            String sortColumn,
-            Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            Page<Color> colorPage;
-            try {
-                colorPage = colorRepositoryCustom.searchForColor(
-                        name,
-                        registrationStartDate,
-                        registrationEndDate,
-                        updateStartDate,
-                        updateEndDate,
-                        sort,
-                        sortColumn,
-                        pageNumber,
-                        pageSize,
-                        false);
-            } catch (RuntimeException e) {
-                log.error(e);
-                throw new BadRequestExceptions(Constants.ResultsFound);
-            }
-
-            if (colorPage.isEmpty()) {
-                return new PageImpl<>(Collections.emptyList());
-            }
-
-            List<ColorDTO> colorDTOS = colorPage.getContent().stream().map(color -> ColorDTO.builder()
-                    .id(color.getId())
-                    .sku(color.getSku())
-                    .updateDate(color.getUpdateDate())
-                    .name(color.getName())
-                    .registrationDate(color.getRegistrationDate())
-                    .user(color.getUser().getUsername())
-                    .status(color.getStatus())
-                    .build()).toList();
-            return new PageImpl<>(colorDTOS,
-                    colorPage.getPageable(), colorPage.getTotalElements());
-        });
-    }
-
     @Override
     public CompletableFuture<List<ColorDTO>> listFilter(String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{

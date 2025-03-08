@@ -259,13 +259,13 @@ public class SizeImpl implements ISize {
 
     @Override
     public CompletableFuture<Page<SizeDTO>> list(String name, String user, String sort,
-            String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+            String sortColumn, Integer pageNumber, Integer pageSize,Boolean status) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Size> sizePage;
 
             try {
                 sizePage = sizeRepositoryCustom.searchForSize(name, user, sort, sortColumn,
-                        pageNumber, pageSize, true);
+                        pageNumber, pageSize, status);
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -289,38 +289,6 @@ public class SizeImpl implements ISize {
                     sizePage.getPageable(), sizePage.getTotalElements());
         });
     }
-
-    public CompletableFuture<Page<SizeDTO>> listStatusFalse(String name, String user, String sort,
-            String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            Page<Size> sizePage;
-
-            try {
-                sizePage = sizeRepositoryCustom.searchForSize(name, user, sort, sortColumn,
-                        pageNumber, pageSize, false);
-            } catch (RuntimeException e) {
-                log.error(e);
-                throw new BadRequestExceptions(Constants.ResultsFound);
-            }
-
-            if (sizePage.isEmpty()) {
-                return new PageImpl<>(Collections.emptyList());
-            }
-
-            List<SizeDTO> sizeDTOs = sizePage.getContent().stream().map(size -> SizeDTO.builder()
-                    .id(size.getId())
-                    .name(size.getName())
-                    .sizeType(size.getSizeType().getName())
-                    .registrationDate(size.getRegistrationDate())
-                    .updateDate(size.getUpdateDate())
-                    .status(size.getStatus())
-                    .build()).toList();
-
-            return new PageImpl<>(sizeDTOs,
-                    sizePage.getPageable(), sizePage.getTotalElements());
-        });
-    }
-
     @Override
     public CompletableFuture<List<SizeDTO>> findAllSizeTypeName(String nameSizeType,String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{

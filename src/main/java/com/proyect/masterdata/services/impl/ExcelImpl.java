@@ -1026,15 +1026,15 @@ public class ExcelImpl implements IExcel {
                                 throw new BadRequestExceptions(Constants.ErrorUnitType);
                             }
                         }
-                        if((i>=1)&&(row.getCell(7).getCellType()==STRING)&&(ii==7)){
-                            assert unitType != null;
-                            unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(row.getCell(7).getRichStringCellValue().getString().toUpperCase(),unitType.getId());
-                            if(unit==null){
-                                throw new BadRequestExceptions(Constants.ErrorUnit);
-                            }
-                            newProduct.setUnit(unit);
-                            newProduct.setUnitId(unit.getId());
-                        }
+//                        if((i>=1)&&(row.getCell(7).getCellType()==STRING)&&(ii==7)){
+//                            assert unitType != null;
+//                            unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(row.getCell(7).getRichStringCellValue().getString().toUpperCase(),unitType.getId());
+//                            if(unit==null){
+//                                throw new BadRequestExceptions(Constants.ErrorUnit);
+//                            }
+//                            newProduct.setUnit(unit);
+//                            newProduct.setUnitId(unit.getId());
+//                        }
                         if((i>=1)&&(row.getCell(8)!=null)&&(row.getCell(8).getCellType()==STRING)&&(ii==8)){
                             //newProduct.setCharacteristics(row.getCell(8).getRichStringCellValue().getString().toUpperCase());
                         }
