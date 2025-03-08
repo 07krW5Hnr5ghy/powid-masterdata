@@ -17,12 +17,12 @@ public interface ISize {
                 throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
-        CompletableFuture<List<SizeDTO>> listSize() throws BadRequestExceptions;
+        CompletableFuture<List<SizeDTO>> listSize(String username) throws BadRequestExceptions;
         CompletableFuture<Page<SizeDTO>> list(String name, String user, String sort,
                         String sortColumn,
                         Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
         CompletableFuture<Page<SizeDTO>> listStatusFalse(String name, String user, String sort,
                         String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
-        CompletableFuture<List<SizeDTO>> findAllSizeTypeName(String nameSizeType) throws BadRequestExceptions;
-        CompletableFuture<List<SizeDTO>> listFilter() throws BadRequestExceptions;
+        CompletableFuture<List<SizeDTO>> findAllSizeTypeName(String nameSizeType,String username) throws BadRequestExceptions;
+        CompletableFuture<List<SizeDTO>> listFilter(String username) throws BadRequestExceptions;
 }

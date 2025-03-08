@@ -46,7 +46,6 @@ public class CategoryProductImpl implements ICategoryProduct {
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            categoryProduct = categoryProductRepository.findByName(name.toUpperCase());
             sizeType = sizeTypeRepository.findByNameAndStatusTrue(sizeTypeName.toUpperCase());
             unitType = unitTypeRepository.findByNameAndStatusTrue(unitTypeName.toUpperCase());
         } catch (RuntimeException e) {
@@ -56,6 +55,8 @@ public class CategoryProductImpl implements ICategoryProduct {
 
         if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
+        }else{
+            categoryProduct = categoryProductRepository.findByNameOrSkuAndClientId(name.toUpperCase(),sku.toUpperCase(),user.getClientId());
         }
 
         if (categoryProduct != null) {
@@ -108,7 +109,6 @@ public class CategoryProductImpl implements ICategoryProduct {
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                categoryProduct = categoryProductRepository.findByName(name.toUpperCase());
                 sizeType = sizeTypeRepository.findByNameAndStatusTrue(sizeTypeName.toUpperCase());
                 unitType = unitTypeRepository.findByNameAndStatusTrue(unitTypeName.toUpperCase());
             } catch (RuntimeException e) {
@@ -118,6 +118,8 @@ public class CategoryProductImpl implements ICategoryProduct {
 
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                categoryProduct = categoryProductRepository.findByNameOrSkuAndClientId(name.toUpperCase(),sku.toUpperCase(),user.getClientId());
             }
 
             if (categoryProduct != null) {
@@ -181,6 +183,7 @@ public class CategoryProductImpl implements ICategoryProduct {
 
             List<CategoryProductDTO> categoryProductDTOs = categoryProductPage.getContent().stream()
                     .map(categoryProduct -> CategoryProductDTO.builder()
+                            .sku(categoryProduct.getSku())
                             .status(categoryProduct.getStatus())
                             .id(categoryProduct.getId())
                             .user(categoryProduct.getUser().getUsername())
@@ -217,6 +220,7 @@ public class CategoryProductImpl implements ICategoryProduct {
 
             List<CategoryProductDTO> categoryProductDTOs = categoryProductPage.getContent().stream()
                     .map(categoryProduct -> CategoryProductDTO.builder()
+                            .sku(categoryProduct.getSku())
                             .status(categoryProduct.getStatus())
                             .id(categoryProduct.getId())
                             .user(categoryProduct.getUser().getUsername())
@@ -234,14 +238,20 @@ public class CategoryProductImpl implements ICategoryProduct {
     }
 
     @Override
-    public CompletableFuture<List<CategoryProductDTO>> listCategoryProducts() throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<List<CategoryProductDTO>> listCategoryProducts(String username) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<CategoryProduct> categoryProducts;
+            User user;
             try {
-                categoryProducts = categoryProductRepository.findAllByStatusTrue();
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                categoryProducts = categoryProductRepository.findAllByStatusTrueAndClientId(user.getClientId());
             }
             if(categoryProducts.isEmpty()){
                 return Collections.emptyList();
@@ -268,13 +278,14 @@ public class CategoryProductImpl implements ICategoryProduct {
             CategoryProduct categoryProduct;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                categoryProduct = categoryProductRepository.findByNameAndStatusTrue(name.toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.InternalErrorExceptions);
             }
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                categoryProduct = categoryProductRepository.findByNameAndStatusTrueAndClientId(name.toUpperCase(),user.getClientId());
             }
             if(categoryProduct==null){
                 throw new BadRequestExceptions(Constants.ErrorCategoryProduct);
@@ -304,13 +315,14 @@ public class CategoryProductImpl implements ICategoryProduct {
             CategoryProduct categoryProduct;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                categoryProduct = categoryProductRepository.findByNameAndStatusFalse(name.toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                categoryProduct = categoryProductRepository.findByNameAndStatusFalseAndClientId(name.toUpperCase(),user.getClientId());
             }
             if(categoryProduct==null){
                 throw new BadRequestExceptions(Constants.ErrorCategoryProduct);
@@ -339,13 +351,14 @@ public class CategoryProductImpl implements ICategoryProduct {
             CategoryProduct categoryProduct;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                categoryProduct = categoryProductRepository.findByNameAndStatusTrue(name);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                categoryProduct = categoryProductRepository.findByNameAndStatusFalseAndClientId(name.toUpperCase(),user.getClientId());
             }
             if(categoryProduct==null){
                 throw new BadRequestExceptions(Constants.ErrorCategoryProduct);
@@ -368,20 +381,27 @@ public class CategoryProductImpl implements ICategoryProduct {
     }
 
     @Override
-    public CompletableFuture<List<CategoryProductDTO>> listFilter() throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<List<CategoryProductDTO>> listFilter(String username) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<CategoryProduct> categoryProducts;
+            User user;
             try {
-                categoryProducts = categoryProductRepository.findAll();
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                categoryProducts = categoryProductRepository.findAllByClientId(user.getClientId());
             }
             if(categoryProducts.isEmpty()){
                 return Collections.emptyList();
             }
             return categoryProducts.stream()
                     .map(categoryProduct -> CategoryProductDTO.builder()
+                            .sku(categoryProduct.getSku())
                             .status(categoryProduct.getStatus())
                             .id(categoryProduct.getId())
                             .user(categoryProduct.getUser().getUsername())

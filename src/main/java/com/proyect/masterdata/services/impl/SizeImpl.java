@@ -45,12 +45,11 @@ public class SizeImpl implements ISize {
     public ResponseSuccess save(String name, String sizeType, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
         User user;
-        boolean existsSize;
+        Size size;
         SizeType sizeTypeData;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            existsSize = sizeRepository.existsByName(name.toUpperCase());
             sizeTypeData = sizeTypeRepository.findByName(sizeType.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -59,9 +58,11 @@ public class SizeImpl implements ISize {
 
         if (user==null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
+        }else{
+            size = sizeRepository.findByNameAndClientId(name.toUpperCase(),user.getClientId());
         }
 
-        if (existsSize) {
+        if (size!=null) {
             throw new BadRequestExceptions(Constants.ErrorSizeExists);
         }
 
@@ -95,12 +96,11 @@ public class SizeImpl implements ISize {
     public CompletableFuture<ResponseSuccess> saveAsync(String name, String sizeType, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            boolean existsSize;
+            Size size;
             SizeType sizeTypeData;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                existsSize = sizeRepository.existsByName(name.toUpperCase());
                 sizeTypeData = sizeTypeRepository.findByName(sizeType.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
@@ -109,9 +109,11 @@ public class SizeImpl implements ISize {
 
             if (user==null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                size = sizeRepository.findByNameAndClientId(name.toUpperCase(),user.getClientId());
             }
 
-            if (existsSize) {
+            if (size==null) {
                 throw new BadRequestExceptions(Constants.ErrorSizeExists);
             }
 
@@ -151,7 +153,6 @@ public class SizeImpl implements ISize {
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                size = sizeRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -159,6 +160,8 @@ public class SizeImpl implements ISize {
 
             if (user==null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }else{
+                size = sizeRepository.findByNameAndStatusTrueAndClientId(name.toUpperCase(),user.getClientId());
             }
             if (size == null) {
                 throw new BadRequestExceptions(Constants.ErrorSize.toUpperCase());
@@ -190,7 +193,6 @@ public class SizeImpl implements ISize {
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                size = sizeRepository.findByNameAndStatusFalse(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -198,6 +200,8 @@ public class SizeImpl implements ISize {
 
             if (user==null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }else{
+                size = sizeRepository.findByNameAndStatusFalseAndClientId(name.toUpperCase(),user.getClientId());
             }
             if (size == null) {
                 throw new BadRequestExceptions(Constants.ErrorSize.toUpperCase());
@@ -220,15 +224,22 @@ public class SizeImpl implements ISize {
     }
 
     @Override
-    public CompletableFuture<List<SizeDTO>> listSize() throws BadRequestExceptions {
+    public CompletableFuture<List<SizeDTO>> listSize(String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Size> sizes;
+            User user;
 
             try {
-                sizes = sizeRepository.findAllByStatusTrue();
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                sizes = sizeRepository.findAllByStatusTrueAndClientId(user.getClientId());
             }
 
             if (sizes.isEmpty()) {
@@ -311,11 +322,17 @@ public class SizeImpl implements ISize {
     }
 
     @Override
-    public CompletableFuture<List<SizeDTO>> findAllSizeTypeName(String nameSizeType) throws BadRequestExceptions {
+    public CompletableFuture<List<SizeDTO>> findAllSizeTypeName(String nameSizeType,String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             try {
+                User user;
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
 
-                List<Size> sizes = sizeRepository.findAllByStatusTrueAndSizeTypeName(nameSizeType.toUpperCase());
+                if(user==null){
+                    throw new BadRequestExceptions(Constants.ErrorUser);
+                }
+
+                List<Size> sizes = sizeRepository.findAllByStatusTrueAndSizeTypeNameAndClientId(nameSizeType.toUpperCase(),user.getClientId());
 
                 return sizes.stream().map(size -> SizeDTO.builder()
                         .id(size.getId())
@@ -332,15 +349,21 @@ public class SizeImpl implements ISize {
     }
 
     @Override
-    public CompletableFuture<List<SizeDTO>> listFilter() throws BadRequestExceptions {
+    public CompletableFuture<List<SizeDTO>> listFilter(String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Size> sizes;
-
+            User user;
             try {
-                sizes = sizeRepository.findAll();
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                sizes = sizeRepository.findAllByClientId(user.getClientId());
             }
 
             if (sizes.isEmpty()) {

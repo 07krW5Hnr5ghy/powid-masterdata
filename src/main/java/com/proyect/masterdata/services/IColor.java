@@ -17,7 +17,7 @@ public interface IColor {
         CompletableFuture<ResponseSuccess> save(String name,String sku, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
         CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
-        CompletableFuture<List<ColorDTO>> listColor() throws BadRequestExceptions;
+        CompletableFuture<List<ColorDTO>> listColor(String username) throws BadRequestExceptions;
         CompletableFuture<Page<ColorDTO>> list(
                 String name,
                 OffsetDateTime registrationStartDate,
@@ -38,5 +38,5 @@ public interface IColor {
                 String sortColumn,
                 Integer pageNumber,
                 Integer pageSize) throws BadRequestExceptions;
-        CompletableFuture<List<ColorDTO>> listFilter() throws BadRequestExceptions;
+        CompletableFuture<List<ColorDTO>> listFilter(String username) throws BadRequestExceptions;
 }

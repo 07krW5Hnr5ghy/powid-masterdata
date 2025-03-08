@@ -437,35 +437,39 @@ public class OrderItemImpl implements IOrderItem {
             List<UUID> sizeIds;
             List<UUID> categoryIds;
             Page<OrderItem> pageOrderItem;
-            if(colors != null && !colors.isEmpty()){
-                colorIds = colorRepository.findByNameIn(
-                        colors.stream().map(String::toUpperCase).toList()
-                ).stream().map(
-                        Color::getId
-                ).toList();
-            }else{
-                colorIds = new ArrayList<>();
-            }
-            if(sizes != null && !sizes.isEmpty()){
-                sizeIds = sizeRepository.findByNameIn(
-                        sizes.stream().map(String::toUpperCase).toList()
-                ).stream().map(
-                        Size::getId
-                ).toList();
-            }else{
-                sizeIds = new ArrayList<>();
-            }
-            if(categories != null && !categories.isEmpty()){
-                categoryIds = categoryProductRepository.findByNameIn(
-                        categories.stream().map(String::toUpperCase).toList()
-                ).stream().map(
-                        CategoryProduct::getId
-                ).toList();
-            }else{
-                categoryIds = new ArrayList<>();
-            }
+
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
+                if(colors != null && !colors.isEmpty()){
+                    colorIds = colorRepository.findByClientIdAndNameIn(
+                            clientId,
+                            colors.stream().map(String::toUpperCase).toList()
+                    ).stream().map(
+                            Color::getId
+                    ).toList();
+                }else{
+                    colorIds = new ArrayList<>();
+                }
+                if(sizes != null && !sizes.isEmpty()){
+                    sizeIds = sizeRepository.findByNameInAndClientId(
+                            sizes.stream().map(String::toUpperCase).toList(),
+                            clientId
+                    ).stream().map(
+                            Size::getId
+                    ).toList();
+                }else{
+                    sizeIds = new ArrayList<>();
+                }
+                if(categories != null && !categories.isEmpty()){
+                    categoryIds = categoryProductRepository.findByClientIdAndNameIn(
+                            clientId,
+                            categories.stream().map(String::toUpperCase).toList()
+                    ).stream().map(
+                            CategoryProduct::getId
+                    ).toList();
+                }else{
+                    categoryIds = new ArrayList<>();
+                }
                 pageOrderItem = orderItemRepositoryCustom.searchForOrderItem(
                         clientId,
                         orderId,

@@ -16,6 +16,7 @@ import java.util.UUID;
 public class BrandDTO {
     private UUID id;
     private String name;
+    private String sku;
     private String client;
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;

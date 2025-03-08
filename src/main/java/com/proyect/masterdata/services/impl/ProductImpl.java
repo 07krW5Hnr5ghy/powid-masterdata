@@ -71,7 +71,6 @@ public class ProductImpl implements IProduct {
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             subCategoryProduct = subCategoryProductRepository.findByNameAndStatusTrue(requestProductSave.getSubCategoryProduct().toUpperCase());
-            color = colorRepository.findByNameAndStatusTrue(requestProductSave.getColor().toUpperCase());
             unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(requestProductSave.getUnit().toUpperCase(),subCategoryProduct.getCategoryProduct().getUnitTypeId());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -82,24 +81,25 @@ public class ProductImpl implements IProduct {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }else{
             model = modelRepository.findByNameAndClientIdAndStatusTrue(requestProductSave.getModel().toUpperCase(),user.getClientId());
+            color = colorRepository.findByNameAndClientIdAndStatusTrue(requestProductSave.getColor().toUpperCase(),user.getClientId());
         }
 
         if (model == null) {
             throw new BadRequestExceptions(Constants.ErrorModel);
         }else{
-            size = sizeRepository.findByNameAndStatusTrue(requestProductSave.getSize().toUpperCase());
+            size = sizeRepository.findByNameAndClientId(requestProductSave.getSize().toUpperCase(),user.getClientId());
         }
 
         if (size == null) {
             throw new BadRequestExceptions(Constants.ErrorSize);
         }
 
-        if (color == null) {
-            throw new BadRequestExceptions(Constants.ErrorColor);
-        }
-
         if (subCategoryProduct == null) {
             throw new BadRequestExceptions(Constants.ErrorSubCategory);
+        }
+
+        if (color == null) {
+            throw new BadRequestExceptions(Constants.ErrorColor);
         }
 
         if(!Objects.equals(size.getSizeTypeId(), subCategoryProduct.getCategoryProduct().getSizeTypeId())){
@@ -109,7 +109,7 @@ public class ProductImpl implements IProduct {
         if(unit == null){
             throw new BadRequestExceptions(Constants.ErrorUnit);
         }else{
-            product = productRepository.findByModelIdAndSizeIdAndColorIdAndClientIdAndStatusTrue(model.getId(),size.getId(),color.getId(),user.getClientId());
+            product = productRepository.findByModelIdAndSizeIdAndColorIdAndSubCategoryProductIdAndUnitIdAndClientIdAndStatusTrue(model.getId(),size.getId(),color.getId(),subCategoryProduct.getId(),unit.getId(),user.getClientId());
         }
 
         if (product != null) {
@@ -178,7 +178,6 @@ public class ProductImpl implements IProduct {
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 subCategoryProduct = subCategoryProductRepository.findByNameAndStatusTrue(requestProductSave.getSubCategoryProduct().toUpperCase());
-                color = colorRepository.findByNameAndStatusTrue(requestProductSave.getColor().toUpperCase());
                 unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(requestProductSave.getUnit().toUpperCase(),subCategoryProduct.getCategoryProduct().getUnitTypeId());
                 //subCategoryProduct.getCategoryProduct().getSizeTypeId()
                 System.out.println(unitRepository.findAll());
@@ -191,6 +190,7 @@ public class ProductImpl implements IProduct {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
                 model = modelRepository.findByNameAndClientIdAndStatusTrue(requestProductSave.getModel().toUpperCase(),user.getClientId());
+                color = colorRepository.findByNameAndClientIdAndStatusTrue(requestProductSave.getColor().toUpperCase(),user.getClientId());
                 //modelRepository.findBySkuAndClientIdAndStatusTrue(requestProductSave.getModel().toUpperCase(),user.getClientId());
             //modelRepository.findByNameAndClientId(requestProductSave.getModel().toUpperCase(),user.getClientId());
                         //
@@ -201,7 +201,7 @@ public class ProductImpl implements IProduct {
             if (model == null) {
                 throw new BadRequestExceptions(Constants.ErrorModel);
             }else{
-                size = sizeRepository.findByNameAndStatusTrue(requestProductSave.getSize().toUpperCase());
+                size = sizeRepository.findByNameAndClientId(requestProductSave.getSize().toUpperCase(),user.getClientId());
             }
 
             if (size == null) {
@@ -223,7 +223,7 @@ public class ProductImpl implements IProduct {
             if(unit == null){
                 throw new BadRequestExceptions(Constants.ErrorUnit);
             }else{
-                product = productRepository.findByModelIdAndSizeIdAndColorIdAndClientIdAndStatusTrue(model.getId(),size.getId(),color.getId(),user.getClientId());
+                product = productRepository.findByModelIdAndSizeIdAndColorIdAndSubCategoryProductIdAndUnitIdAndClientIdAndStatusTrue(model.getId(),size.getId(),color.getId(),subCategoryProduct.getId(),unit.getId(),user.getClientId());
             }
 
             if (product != null) {

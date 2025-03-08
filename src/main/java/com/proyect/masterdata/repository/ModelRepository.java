@@ -10,7 +10,7 @@ import com.proyect.masterdata.domain.Model;
 
 @Repository
 public interface ModelRepository extends JpaRepository<Model, UUID> {
-    boolean existsByName(String name);
+    Model findByNameOrSkuAndClientId(String name,String sku,UUID clientId);
     Model findBySkuAndClientIdAndStatusTrue(String sku,UUID clientId);
     Model findByNameAndClientIdAndStatusTrue(String name,UUID clientId);
     Model findByNameAndClientId(String name,UUID clientId);

@@ -981,45 +981,45 @@ public class ExcelImpl implements IExcel {
                             newProduct.setModel(model);
                             newProduct.setModelId(model.getId());
                         }
-                        if((i>=1)&&(row.getCell(3).getCellType()==STRING)&&(ii==3)){
-                            color = colorRepository.findByNameAndStatusTrue(row.getCell(3).getRichStringCellValue().getString().toUpperCase());
-                            if(color==null){
-                                throw new BadRequestExceptions(Constants.ErrorColor);
-                            }
-                            newProduct.setColor(color);
-                            newProduct.setColorId(color.getId());
-                        }
-                        if((i>=1)&&(row.getCell(4).getCellType()==STRING)&&(ii==4)){
-                            categoryProduct = categoryProductRepository.findByNameAndStatusTrue(row.getCell(4).getRichStringCellValue().getString().toUpperCase());
-                            if(categoryProduct==null){
-                                throw new BadRequestExceptions(Constants.ErrorCategory);
-                            }
-                            //newProduct.setCategoryProduct(categoryProduct);
-                            //newProduct.setCategoryProductId(categoryProduct.getId());
-                        }
-                        if((i>=1)&&(row.getCell(5).getCellType()==STRING)&&(ii==5)&&(categoryProduct!=null)){
-                            size = sizeRepository.findByNameAndStatusTrue(row.getCell(5).getRichStringCellValue().getString().toUpperCase());
-                            if(size==null){
-                                throw new BadRequestExceptions(Constants.ErrorSize);
-                            }
-
-                            if(!Objects.equals(size.getSizeTypeId(), categoryProduct.getSizeTypeId())){
-                                throw new BadRequestExceptions(Constants.ErrorSizeTypeCategoryProduct);
-                            }
-                            newProduct.setSize(size);
-                            newProduct.setSizeId(size.getId());
-                        }
-                        if((i>=1)&&(row.getCell(5).getCellType()==NUMERIC)&&(ii==5)&&(categoryProduct!=null)){
-                            size = sizeRepository.findByNameAndStatusTrue(String.valueOf((int) row.getCell(5).getNumericCellValue()));
-                            if(size==null){
-                                throw new BadRequestExceptions(Constants.ErrorSize);
-                            }
-                            if(!Objects.equals(size.getSizeTypeId(), categoryProduct.getSizeTypeId())){
-                                throw new BadRequestExceptions(Constants.ErrorSizeTypeCategoryProduct);
-                            }
-                            newProduct.setSize(size);
-                            newProduct.setSizeId(size.getId());
-                        }
+//                        if((i>=1)&&(row.getCell(3).getCellType()==STRING)&&(ii==3)){
+//                            color = colorRepository.findByNameAndStatusTrue(row.getCell(3).getRichStringCellValue().getString().toUpperCase());
+//                            if(color==null){
+//                                throw new BadRequestExceptions(Constants.ErrorColor);
+//                            }
+//                            newProduct.setColor(color);
+//                            newProduct.setColorId(color.getId());
+//                        }
+//                        if((i>=1)&&(row.getCell(4).getCellType()==STRING)&&(ii==4)){
+//                            categoryProduct = categoryProductRepository.findByNameAndStatusTrue(row.getCell(4).getRichStringCellValue().getString().toUpperCase());
+//                            if(categoryProduct==null){
+//                                throw new BadRequestExceptions(Constants.ErrorCategory);
+//                            }
+//                            newProduct.setCategoryProduct(categoryProduct);
+//                            newProduct.setCategoryProductId(categoryProduct.getId());
+//                        }
+//                        if((i>=1)&&(row.getCell(5).getCellType()==STRING)&&(ii==5)&&(categoryProduct!=null)){
+//                            size = sizeRepository.findByNameAndStatusTrue(row.getCell(5).getRichStringCellValue().getString().toUpperCase());
+//                            if(size==null){
+//                                throw new BadRequestExceptions(Constants.ErrorSize);
+//                            }
+//
+//                            if(!Objects.equals(size.getSizeTypeId(), categoryProduct.getSizeTypeId())){
+//                                throw new BadRequestExceptions(Constants.ErrorSizeTypeCategoryProduct);
+//                            }
+//                            newProduct.setSize(size);
+//                            newProduct.setSizeId(size.getId());
+//                        }
+//                        if((i>=1)&&(row.getCell(5).getCellType()==NUMERIC)&&(ii==5)&&(categoryProduct!=null)){
+//                            size = sizeRepository.findByNameAndStatusTrue(String.valueOf((int) row.getCell(5).getNumericCellValue()));
+//                            if(size==null){
+//                                throw new BadRequestExceptions(Constants.ErrorSize);
+//                            }
+//                            if(!Objects.equals(size.getSizeTypeId(), categoryProduct.getSizeTypeId())){
+//                                throw new BadRequestExceptions(Constants.ErrorSizeTypeCategoryProduct);
+//                            }
+//                            newProduct.setSize(size);
+//                            newProduct.setSizeId(size.getId());
+//                        }
                         if((i>=1)&&(row.getCell(6).getCellType()==STRING)&&(ii==6)){
                             unitType = unitTypeRepository.findByNameAndStatusTrue(row.getCell(6).getRichStringCellValue().getString().toUpperCase());
                             if(unitType == null){

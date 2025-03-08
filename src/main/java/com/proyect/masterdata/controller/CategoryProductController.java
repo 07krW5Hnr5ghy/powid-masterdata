@@ -80,8 +80,10 @@ public class CategoryProductController {
 
     @GetMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION','ROLE:MARKETING','ROLE:STOCK') and hasAuthority('ACCESS:CATEGORY_PRODUCT_GET')")
-    public ResponseEntity<List<CategoryProductDTO>> listCategoryProducts() throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<CategoryProductDTO>> result = iCategoryProduct.listCategoryProducts();
+    public ResponseEntity<List<CategoryProductDTO>> listCategoryProducts(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<CategoryProductDTO>> result = iCategoryProduct.listCategoryProducts(user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
@@ -115,8 +117,10 @@ public class CategoryProductController {
 
     @GetMapping("filter")
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION','ROLE:MARKETING','ROLE:STOCK') and hasAuthority('ACCESS:CATEGORY_PRODUCT_GET')")
-    public ResponseEntity<List<CategoryProductDTO>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<CategoryProductDTO>> result = iCategoryProduct.listFilter();
+    public ResponseEntity<List<CategoryProductDTO>> listFilter(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<CategoryProductDTO>> result = iCategoryProduct.listFilter(user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

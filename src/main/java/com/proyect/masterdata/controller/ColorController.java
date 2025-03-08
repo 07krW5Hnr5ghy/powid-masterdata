@@ -46,8 +46,10 @@ public class ColorController {
     }
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:MARKETING','ROLE:STOCK') and hasAuthority('ACCESS:COLOR_GET')")
-    public ResponseEntity<List<ColorDTO>> listColor() throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<ColorDTO>> result = iColor.listColor();
+    public ResponseEntity<List<ColorDTO>> listColor(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<ColorDTO>> result = iColor.listColor(user);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping(value = "list")
@@ -108,8 +110,10 @@ public class ColorController {
     }
     @GetMapping("filter")
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:MARKETING','ROLE:STOCK') and hasAuthority('ACCESS:COLOR_GET')")
-    public ResponseEntity<List<ColorDTO>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<ColorDTO>> result = iColor.listFilter();
+    public ResponseEntity<List<ColorDTO>> listFilter(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<ColorDTO>> result = iColor.listFilter(user);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 }

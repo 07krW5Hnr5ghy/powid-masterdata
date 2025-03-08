@@ -10,9 +10,10 @@ import com.proyect.masterdata.domain.CategoryProduct;
 
 @Repository
 public interface CategoryProductRepository extends JpaRepository<CategoryProduct, UUID> {
-    CategoryProduct findByName(String name);
-    List<CategoryProduct> findByNameIn(List<String> names);
-    CategoryProduct findByNameAndStatusTrue(String name);
-    List<CategoryProduct> findAllByStatusTrue();
-    CategoryProduct findByNameAndStatusFalse(String name);
+    CategoryProduct findByNameOrSkuAndClientId(String name,String sku,UUID clientId);
+    List<CategoryProduct> findByClientIdAndNameIn(UUID clientId,List<String> names);
+    CategoryProduct findByNameAndStatusTrueAndClientId(String name,UUID clientId);
+    List<CategoryProduct> findAllByStatusTrueAndClientId(UUID clientId);
+    CategoryProduct findByNameAndStatusFalseAndClientId(String name,UUID clientId);
+    List<CategoryProduct> findAllByClientId(UUID clientId);
 }

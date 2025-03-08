@@ -55,8 +55,10 @@ public class SizeController {
 
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:BUSINESS') and hasAuthority('ACCESS:SIZE_GET')")
-    public ResponseEntity<List<SizeDTO>> listSize() throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<SizeDTO>> result = iSize.listSize();
+    public ResponseEntity<List<SizeDTO>> listSize(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<SizeDTO>> result = iSize.listSize(user);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
@@ -91,15 +93,18 @@ public class SizeController {
     @GetMapping(value = "size-type")
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:STOCK','ROLE:BUSINESS') and hasAuthority('ACCESS:SIZE_GET')")
     public ResponseEntity<List<SizeDTO>> findAllSizeTypeName(
+            @RequestParam("user") String user,
             @RequestParam("sizeType") String nameSizeType) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<SizeDTO>> result = iSize.findAllSizeTypeName(nameSizeType);
+        CompletableFuture<List<SizeDTO>> result = iSize.findAllSizeTypeName(nameSizeType,user);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping("filter")
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:BUSINESS') and hasAuthority('ACCESS:SIZE_GET')")
-    public ResponseEntity<List<SizeDTO>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<SizeDTO>> result = iSize.listFilter();
+    public ResponseEntity<List<SizeDTO>> listFilter(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<SizeDTO>> result = iSize.listFilter(user);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

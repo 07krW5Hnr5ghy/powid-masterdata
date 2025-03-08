@@ -55,7 +55,7 @@ public class ModelImpl implements IModel {
         if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }else{
-            brandData = brandRepository.findByNameAndClientId(requestModel.getBrand().toUpperCase(),user.getClientId());
+            brandData = brandRepository.findByNameOrSkuAndClientId(requestModel.getBrand().toUpperCase(),requestModel.getSku().toUpperCase(),user.getClientId());
         }
 
         if (brandData == null) {
@@ -118,7 +118,7 @@ public class ModelImpl implements IModel {
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
-                brandData = brandRepository.findByNameAndClientId(requestModel.getBrand().toUpperCase(),user.getClientId());
+                brandData = brandRepository.findByNameOrSkuAndClientId(requestModel.getBrand().toUpperCase(), requestModel.getSku().toUpperCase(),user.getClientId());
             }
 
             if (brandData == null) {
@@ -445,11 +445,21 @@ public class ModelImpl implements IModel {
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                brandId = brandRepository.findByNameAndClientId(brand.toUpperCase(),clientId).getId();
-                models = modelRepository.findAllByClientIdAndBrandIdAndStatusTrue(clientId,brandId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(clientId==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                brandId = brandRepository.findByNameAndClientId(brand.toUpperCase(),clientId).getId();
+            }
+
+            if(brandId==null){
+                throw new BadRequestExceptions(Constants.ErrorBrand);
+            }else{
+                models = modelRepository.findAllByClientIdAndBrandIdAndStatusTrue(clientId,brandId);
             }
 
             if(models.isEmpty()){

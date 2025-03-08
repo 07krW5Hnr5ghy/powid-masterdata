@@ -46,7 +46,6 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
         SubCategoryProduct subCategoryProduct;
         try{
             user = userRepository.findByUsernameAndStatusTrue(requestSubCategoryProduct.getTokenUser().toUpperCase());
-            categoryProduct = categoryProductRepository.findByNameAndStatusTrue(requestSubCategoryProduct.getCategoryName().toUpperCase());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -54,6 +53,8 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
 
         if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
+        }else{
+            categoryProduct = categoryProductRepository.findByNameOrSkuAndClientId(requestSubCategoryProduct.getCategoryName().toUpperCase(), requestSubCategoryProduct.getSku().toUpperCase(),user.getClientId());
         }
 
         if(categoryProduct == null){
@@ -97,7 +98,6 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
             SubCategoryProduct subCategoryProduct;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(requestSubCategoryProduct.getTokenUser().toUpperCase());
-                categoryProduct = categoryProductRepository.findByNameAndStatusTrue(requestSubCategoryProduct.getCategoryName().toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -105,6 +105,8 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
 
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                categoryProduct = categoryProductRepository.findByNameOrSkuAndClientId(requestSubCategoryProduct.getCategoryName().toUpperCase(), requestSubCategoryProduct.getSku().toUpperCase(),user.getClientId());
             }
 
             if(categoryProduct == null){
@@ -281,14 +283,19 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
             UUID categoryProductId;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                categoryProductId = categoryProductRepository.findByNameAndStatusTrue(name.toUpperCase()).getId();
-                subCategoryProducts = subCategoryProductRepository.findAllByCategoryProductIdAndStatusTrue(categoryProductId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                categoryProductId = categoryProductRepository.findByNameAndStatusTrueAndClientId(name.toUpperCase(), user.getClientId()).getId();
+            }
+            if(categoryProductId==null){
+                throw new BadRequestExceptions(Constants.ErrorCategoryProduct);
+            }else{
+                subCategoryProducts = subCategoryProductRepository.findAllByCategoryProductIdAndStatusTrue(categoryProductId);
             }
             if(subCategoryProducts.isEmpty()){
                 return Collections.emptyList();
