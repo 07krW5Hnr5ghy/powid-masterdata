@@ -313,6 +313,7 @@ public class BrandImpl implements IBrand {
                     .registrationDate(brand.getRegistrationDate())
                     .updateDate(brand.getUpdateDate())
                     .tokenUser(brand.getUser().getUsername())
+                    .status(brand.getStatus())
                     .build()).toList();
         });
     }
@@ -344,6 +345,7 @@ public class BrandImpl implements IBrand {
                     .registrationDate(brand.getRegistrationDate())
                     .updateDate(brand.getUpdateDate())
                     .tokenUser(brand.getUser().getUsername())
+                    .status(brand.getStatus())
                     .build()).toList();
         });
     }
@@ -375,6 +377,7 @@ public class BrandImpl implements IBrand {
                     .registrationDate(brand.getRegistrationDate())
                     .updateDate(brand.getUpdateDate())
                     .tokenUser(brand.getUser().getUsername())
+                    .status(brand.getStatus())
                     .build()).toList();
         });
     }
