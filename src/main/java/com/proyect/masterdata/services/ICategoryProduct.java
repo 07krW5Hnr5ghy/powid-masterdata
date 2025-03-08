@@ -29,21 +29,11 @@ public interface ICategoryProduct {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions;
-    CompletableFuture<Page<CategoryProductDTO>> listFalse(
-            String name,
-            String user,
-            OffsetDateTime registrationStartDate,
-            OffsetDateTime registrationEndDate,
-            OffsetDateTime updateStartDate,
-            OffsetDateTime updateEndDate,
-            String sort,
-            String sortColumn,
-            Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions;
-    CompletableFuture<List<CategoryProductDTO>> listCategoryProducts() throws InternalErrorExceptions,BadRequestExceptions;
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions;
+    CompletableFuture<List<CategoryProductDTO>> listCategoryProducts(String username) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<ResponseDelete> delete(String name,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> activate(String name,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> update(String name,String description,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<List<CategoryProductDTO>> listFilter() throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<List<CategoryProductDTO>> listFilter(String username) throws InternalErrorExceptions,BadRequestExceptions;
 }

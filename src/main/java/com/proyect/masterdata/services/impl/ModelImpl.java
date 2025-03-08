@@ -55,7 +55,7 @@ public class ModelImpl implements IModel {
         if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }else{
-            brandData = brandRepository.findByNameAndClientId(requestModel.getBrand().toUpperCase(),user.getClientId());
+            brandData = brandRepository.findByNameOrSkuAndClientId(requestModel.getBrand().toUpperCase(),requestModel.getSku().toUpperCase(),user.getClientId());
         }
 
         if (brandData == null) {
@@ -118,7 +118,7 @@ public class ModelImpl implements IModel {
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
-                brandData = brandRepository.findByNameAndClientId(requestModel.getBrand().toUpperCase(),user.getClientId());
+                brandData = brandRepository.findByNameOrSkuAndClientId(requestModel.getBrand().toUpperCase(), requestModel.getSku().toUpperCase(),user.getClientId());
             }
 
             if (brandData == null) {
@@ -257,7 +257,8 @@ public class ModelImpl implements IModel {
             String sort,
             String columnSort,
             Integer pageNumber,
-            Integer pageSize) {
+            Integer pageSize,
+            Boolean status) {
         return CompletableFuture.supplyAsync(()->{
             Page<Model> pageModel;
             List<UUID> brandIds;
@@ -285,7 +286,7 @@ public class ModelImpl implements IModel {
                         columnSort,
                         pageNumber,
                         pageSize,
-                        true);
+                        status);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -310,74 +311,6 @@ public class ModelImpl implements IModel {
                     pageModel.getTotalElements());
         });
     }
-
-    @Override
-    public CompletableFuture<Page<ModelDTO>> listStatusFalse(
-            String user,
-            String name,
-            List<String> brands,
-            OffsetDateTime registrationStartDate,
-            OffsetDateTime registrationEndDate,
-            OffsetDateTime updateStartDate,
-            OffsetDateTime updateEndDate,
-            String sort,
-            String columnSort,
-            Integer pageNumber,
-            Integer pageSize) {
-        return CompletableFuture.supplyAsync(()->{
-            Page<Model> pageModel;
-            List<String> modelsUppercase;
-            List<UUID> brandIds;
-            UUID clientId;
-
-            try {
-                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
-                if (brands != null && !brands.isEmpty()) {
-                    brandIds = brandRepository.findByClientIdAndNameIn(
-                            clientId,
-                            brands.stream().map(String::toUpperCase).toList()
-                    ).stream().map(Brand::getId).toList();
-                } else {
-                    brandIds = new ArrayList<>();
-                }
-                pageModel = modelRepositoryCustom.searchForModel(
-                        clientId,
-                        name,
-                        brandIds,
-                        registrationStartDate,
-                        registrationEndDate,
-                        updateStartDate,
-                        updateEndDate,
-                        sort,
-                        columnSort,
-                        pageNumber,
-                        pageSize,
-                        false);
-            } catch (RuntimeException e) {
-                log.error(e.getMessage());
-                throw new BadRequestExceptions(Constants.ResultsFound);
-            }
-
-            if (pageModel.isEmpty()) {
-                return new PageImpl<>(Collections.emptyList());
-            }
-
-            List<ModelDTO> models = pageModel.getContent().stream().map(model -> ModelDTO.builder()
-                    .status(model.getStatus())
-                    .id(model.getId())
-                    .name(model.getName())
-                    .brand(model.getBrand().getName())
-                    .sku(model.getSku())
-                    .user(model.getUser().getUsername())
-                    .registrationDate(model.getRegistrationDate())
-                    .updateDate(model.getUpdateDate())
-                    .build()).toList();
-
-            return new PageImpl<>(models, pageModel.getPageable(),
-                    pageModel.getTotalElements());
-        });
-    }
-
     @Override
     public CompletableFuture<List<ModelDTO>> listModels(String user) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -445,11 +378,21 @@ public class ModelImpl implements IModel {
 
             try {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                brandId = brandRepository.findByNameAndClientId(brand.toUpperCase(),clientId).getId();
-                models = modelRepository.findAllByClientIdAndBrandIdAndStatusTrue(clientId,brandId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(clientId==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                brandId = brandRepository.findByNameAndClientId(brand.toUpperCase(),clientId).getId();
+            }
+
+            if(brandId==null){
+                throw new BadRequestExceptions(Constants.ErrorBrand);
+            }else{
+                models = modelRepository.findAllByClientIdAndBrandIdAndStatusTrue(clientId,brandId);
             }
 
             if(models.isEmpty()){

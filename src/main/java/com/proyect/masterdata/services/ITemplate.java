@@ -8,6 +8,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public interface ITemplate {
+    CompletableFuture<ByteArrayInputStream> brand(String brand,String username) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<ByteArrayInputStream> purchase(String supplier,String username) throws BadRequestExceptions;
     CompletableFuture<ByteArrayInputStream> stockTransfer(Integer quantity,String warehouseName,String username) throws BadRequestExceptions;
     CompletableFuture<ByteArrayInputStream> stockReturn(String warehouse,String supplier,String username) throws BadRequestExceptions;

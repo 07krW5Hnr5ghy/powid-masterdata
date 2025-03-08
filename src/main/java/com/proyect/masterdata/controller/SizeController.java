@@ -55,8 +55,10 @@ public class SizeController {
 
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:BUSINESS') and hasAuthority('ACCESS:SIZE_GET')")
-    public ResponseEntity<List<SizeDTO>> listSize() throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<SizeDTO>> result = iSize.listSize();
+    public ResponseEntity<List<SizeDTO>> listSize(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<SizeDTO>> result = iSize.listSize(user);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
@@ -68,38 +70,27 @@ public class SizeController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+            @RequestParam("pageSize") Integer pageSize,
+            @RequestParam("status") Boolean status) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<SizeDTO>> result = iSize.list(name, user, sort, sortColumn, pageNumber,
-                pageSize);
+                pageSize,status);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-
-    @GetMapping(value = "pagination/status-false")
-    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:STOCK','ROLE:BUSINESS') and hasAuthority('ACCESS:SIZE_GET')")
-    public ResponseEntity<Page<SizeDTO>> listStatusFalse(
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "user", required = false) String user,
-            @RequestParam(value = "sort", required = false) String sort,
-            @RequestParam(value = "sortColumn", required = false) String sortColumn,
-            @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<SizeDTO>> result = iSize.listStatusFalse(name, user, sort, sortColumn,
-                pageNumber, pageSize);
-        return new ResponseEntity<>(result.get(), HttpStatus.OK);
-    }
-
     @GetMapping(value = "size-type")
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:STOCK','ROLE:BUSINESS') and hasAuthority('ACCESS:SIZE_GET')")
     public ResponseEntity<List<SizeDTO>> findAllSizeTypeName(
+            @RequestParam("user") String user,
             @RequestParam("sizeType") String nameSizeType) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<SizeDTO>> result = iSize.findAllSizeTypeName(nameSizeType);
+        CompletableFuture<List<SizeDTO>> result = iSize.findAllSizeTypeName(nameSizeType,user);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping("filter")
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:BUSINESS') and hasAuthority('ACCESS:SIZE_GET')")
-    public ResponseEntity<List<SizeDTO>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<SizeDTO>> result = iSize.listFilter();
+    public ResponseEntity<List<SizeDTO>> listFilter(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<SizeDTO>> result = iSize.listFilter(user);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

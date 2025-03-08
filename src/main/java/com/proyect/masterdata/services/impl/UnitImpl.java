@@ -59,7 +59,7 @@ public class UnitImpl implements IUnit {
         if(unitType == null){
             throw new BadRequestExceptions(Constants.ErrorUnitType);
         }else{
-            unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(requestUnit.getName().toUpperCase(), unitType.getId());
+            unit = unitRepository.findByNameAndUnitTypeIdAndClientIdAndStatusTrue(requestUnit.getName().toUpperCase(), unitType.getId(),user.getClientId());
         }
 
         if (unit != null) {
@@ -113,7 +113,7 @@ public class UnitImpl implements IUnit {
             if(unitType == null){
                 throw new BadRequestExceptions(Constants.ErrorUnitType);
             }else{
-                unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(requestUnit.getName().toUpperCase(), unitType.getId());
+                unit = unitRepository.findByNameAndUnitTypeIdAndClientIdAndStatusTrue(requestUnit.getName().toUpperCase(), unitType.getId(),user.getClientId());
             }
 
             if (unit != null) {
@@ -167,7 +167,7 @@ public class UnitImpl implements IUnit {
             if(unitType == null){
                 throw new BadRequestExceptions(Constants.ErrorUnitType);
             }else{
-                unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(name.toUpperCase(), unitType.getId());
+                unit = unitRepository.findByNameAndUnitTypeIdAndClientIdAndStatusTrue(name.toUpperCase(), unitType.getId(),user.getClientId());
             }
 
             if (unit != null) {
@@ -215,7 +215,7 @@ public class UnitImpl implements IUnit {
             if(unitType == null){
                 throw new BadRequestExceptions(Constants.ErrorUnitType);
             }else{
-                unit = unitRepository.findByNameAndUnitTypeIdAndStatusFalse(name.toUpperCase(),unitType.getId());
+                unit = unitRepository.findByNameAndUnitTypeIdAndClientIdAndStatusTrue(name.toUpperCase(),unitType.getId(),user.getClientId());
             }
 
             if (unit == null) {
@@ -242,15 +242,21 @@ public class UnitImpl implements IUnit {
     }
 
     @Override
-    public CompletableFuture<List<UnitDTO>> listUnit() throws BadRequestExceptions {
+    public CompletableFuture<List<UnitDTO>> listUnit(String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Unit> units;
-
+            User user;
             try {
-                units = unitRepository.findAllByStatusTrue();
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                units = unitRepository.findAllByClientIdAndStatusTrue(user.getClientId());
             }
 
             if (units.isEmpty()) {
@@ -270,19 +276,24 @@ public class UnitImpl implements IUnit {
     }
 
     @Override
-    public CompletableFuture<List<UnitDTO>> listUnitByType(String unitTypeName) throws BadRequestExceptions {
+    public CompletableFuture<List<UnitDTO>> listUnitByType(String unitTypeName,String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Unit> units;
             UUID unitTypeId;
-
+            User user;
             try {
                 unitTypeId = unitTypeRepository.findByNameAndStatusTrue(unitTypeName.toUpperCase()).getId();
-                units = unitRepository.findAllByUnitTypeIdAndStatusTrue(unitTypeId);
+                user=userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
             }
 
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                units = unitRepository.findAllByUnitTypeIdAndClientIdAndStatusTrue(unitTypeId,user.getClientId());
+            }
             if (units.isEmpty()) {
                 return Collections.emptyList();
             }
@@ -300,15 +311,22 @@ public class UnitImpl implements IUnit {
     }
 
     @Override
-    public CompletableFuture<List<UnitDTO>> listFilter() throws BadRequestExceptions {
+    public CompletableFuture<List<UnitDTO>> listFilter(String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Unit> units;
+            User user;
 
             try {
-                units = unitRepository.findAll();
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                units = unitRepository.findAllByClientId(user.getClientId());
             }
 
             if (units.isEmpty()) {

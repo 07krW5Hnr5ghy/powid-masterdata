@@ -9,11 +9,12 @@ import java.util.UUID;
 
 @Repository
 public interface ColorRepository extends JpaRepository<Color, UUID> {
-    List<Color> findAllByStatusTrue();
-    List<Color> findAllByStatusFalse();
-    Color findByIdAndStatusTrue(UUID id);
-    Color findByNameAndStatusTrue(String name);
-    Color findByNameAndStatusFalse(String name);
-    Color findByNameOrSku(String name,String sku);
-    List<Color> findByNameIn(List<String> names);
+    List<Color> findAllByStatusTrueAndClientId(UUID clientId);
+    List<Color> findAllByStatusFalseAndClientId(UUID clientId);
+    Color findByIdAndClientIdAndStatusTrue(UUID id,UUID clientId);
+    Color findByNameAndClientIdAndStatusTrue(String name,UUID clientId);
+    Color findByNameAndClientIdAndStatusFalse(String name,UUID clientId);
+    Color findByNameOrSkuAndClientId(String name,String sku,UUID clientId);
+    List<Color> findByClientIdAndNameIn(UUID clientId,List<String> names);
+    List<Color> findAllByClientId(UUID clientId);
 }

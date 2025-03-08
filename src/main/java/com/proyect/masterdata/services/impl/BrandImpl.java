@@ -1,29 +1,29 @@
 package com.proyect.masterdata.services.impl;
 
+import com.proyect.masterdata.domain.Brand;
 import com.proyect.masterdata.domain.Membership;
 import com.proyect.masterdata.domain.MembershipState;
-import com.proyect.masterdata.repository.*;
-import com.proyect.masterdata.services.IAudit;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.stereotype.Service;
-
-import com.proyect.masterdata.domain.Brand;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.BrandDTO;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.mapper.BrandMapper;
+import com.proyect.masterdata.repository.*;
+import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IBrand;
 import com.proyect.masterdata.utils.Constants;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -40,13 +40,12 @@ public class BrandImpl implements IBrand {
     @Override
     public ResponseSuccess save(String name, String tokenUser, String sku) throws InternalErrorExceptions, BadRequestExceptions {
         User user;
-        boolean existsBrand;
+        Brand brand;
         Membership membership;
         MembershipState membershipState;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            existsBrand = brandRepository.existsByName(name.toUpperCase());
             membershipState = membershipStateRepository.findByNameAndStatusTrue("ACTIVA");
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -56,14 +55,15 @@ public class BrandImpl implements IBrand {
         if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }else{
-            membership = membershipRepository.findByClientIdAndMembershipStateId(user.getClientId(), membershipState.getId());
+            brand = brandRepository.findByNameOrSkuAndClientId(name.toUpperCase(),sku.toUpperCase(),user.getClientId());
+            //membership = membershipRepository.findByClientIdAndMembershipStateId(user.getClientId(), membershipState.getId());
         }
 
-        if(membership == null){
+        //if(membership == null){
             //throw new BadRequestExceptions(Constants.ErrorMembershipExpired);
-        }
+        //}
 
-        if (existsBrand) {
+        if (brand!=null) {
             throw new BadRequestExceptions(Constants.ErrorBrandExists);
         }
 
@@ -73,9 +73,9 @@ public class BrandImpl implements IBrand {
                     .sku(sku.toUpperCase())
                     .status(true)
                     .registrationDate(OffsetDateTime.now())
-                            .updateDate(OffsetDateTime.now())
-                            .user(user)
-                            .userId(user.getId())
+                    .updateDate(OffsetDateTime.now())
+                    .user(user)
+                    .userId(user.getId())
                     .client(user.getClient())
                     .clientId(user.getClientId())
                     .build());
@@ -94,13 +94,12 @@ public class BrandImpl implements IBrand {
     public CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser, String sku) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(() -> {
             User user;
-            boolean existsBrand;
+            Brand brand;
             Membership membership;
             MembershipState membershipState;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                existsBrand = brandRepository.existsByName(name.toUpperCase());
                 membershipState = membershipStateRepository.findByNameAndStatusTrue("ACTIVA");
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
@@ -110,14 +109,15 @@ public class BrandImpl implements IBrand {
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
-                membership = membershipRepository.findByClientIdAndMembershipStateId(user.getClientId(), membershipState.getId());
+                brand = brandRepository.findByNameOrSkuAndClientId(name.toUpperCase(),sku.toUpperCase(),user.getClientId());
+                //membership = membershipRepository.findByClientIdAndMembershipStateId(user.getClientId(), membershipState.getId());
             }
 
-            if(membership == null){
+            //if(membership == null){
                 //throw new BadRequestExceptions(Constants.ErrorMembershipExpired);
-            }
+            //}
 
-            if (existsBrand) {
+            if (brand!=null) {
                 throw new BadRequestExceptions(Constants.ErrorBrandExists);
             }
 
@@ -196,7 +196,8 @@ public class BrandImpl implements IBrand {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+            Integer pageSize,
+            Boolean status) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Brand> brandPage;
             List<String> brandsUppercase;
@@ -221,7 +222,7 @@ public class BrandImpl implements IBrand {
                         sortColumn,
                         pageNumber,
                         pageSize,
-                        true);
+                        status);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -234,6 +235,7 @@ public class BrandImpl implements IBrand {
             List<BrandDTO> brandDTOs = brandPage.getContent().stream().map(brand -> BrandDTO.builder()
                     .status(brand.getStatus())
                     .name(brand.getName())
+                    .sku(brand.getSku())
                     .client(brand.getClient().getBusiness())
                     .registrationDate(brand.getRegistrationDate())
                     .updateDate(brand.getUpdateDate())
@@ -245,68 +247,6 @@ public class BrandImpl implements IBrand {
                     brandPage.getTotalElements());
         });
     }
-
-    @Override
-    public CompletableFuture<Page<BrandDTO>> listStatusFalse(
-            String tokenUser,
-            List<String> names,
-            OffsetDateTime registrationStartDate,
-            OffsetDateTime registrationEndDate,
-            OffsetDateTime updateStartDate,
-            OffsetDateTime updateEndDate,
-            String sort,
-            String sortColumn,
-            Integer pageNumber,
-            Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
-        return CompletableFuture.supplyAsync(() -> {
-            Page<Brand> brandPage;
-            List<String> brandsUppercase;
-            UUID clientId;
-
-            if(names != null && !names.isEmpty()){
-                brandsUppercase = names.stream().map(String::toUpperCase).toList();
-            }else{
-                brandsUppercase = new ArrayList<>();
-            }
-
-            try {
-                clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClient().getId();
-                brandPage = brandRepositoryCustom.searchForBrand(
-                        clientId,
-                        brandsUppercase,
-                        registrationStartDate,
-                        registrationEndDate,
-                        updateStartDate,
-                        updateEndDate,
-                        sort,
-                        sortColumn,
-                        pageNumber,
-                        pageSize,
-                        false);
-            } catch (RuntimeException e) {
-                log.error(e.getMessage());
-                throw new BadRequestExceptions(Constants.ResultsFound);
-            }
-
-            if (brandPage.isEmpty()) {
-                return new PageImpl<>(Collections.emptyList());
-            }
-
-            List<BrandDTO> brandDTOs = brandPage.getContent().stream().map(brand -> BrandDTO.builder()
-                    .status(brand.getStatus())
-                    .id(brand.getId())
-                    .name(brand.getName())
-                    .client(brand.getClient().getBusiness())
-                    .registrationDate(brand.getRegistrationDate())
-                    .updateDate(brand.getUpdateDate())
-                    .tokenUser(brand.getUser().getUsername())
-                    .build()).toList();
-
-            return new PageImpl<>(brandDTOs, brandPage.getPageable(),
-                    brandPage.getTotalElements());
-        });
-    }
-
     @Override
     public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -368,6 +308,7 @@ public class BrandImpl implements IBrand {
             return brands.stream().map(brand -> BrandDTO.builder()
                     .id(brand.getId())
                     .name(brand.getName())
+                    .sku(brand.getSku())
                     .client(brand.getClient().getBusiness())
                     .registrationDate(brand.getRegistrationDate())
                     .updateDate(brand.getUpdateDate())
@@ -398,6 +339,7 @@ public class BrandImpl implements IBrand {
                     .status(brand.getStatus())
                     .id(brand.getId())
                     .name(brand.getName())
+                    .sku(brand.getSku())
                     .client(brand.getClient().getBusiness())
                     .registrationDate(brand.getRegistrationDate())
                     .updateDate(brand.getUpdateDate())
@@ -428,6 +370,7 @@ public class BrandImpl implements IBrand {
                     .status(brand.getStatus())
                     .id(brand.getId())
                     .name(brand.getName())
+                    .sku(brand.getSku())
                     .client(brand.getClient().getBusiness())
                     .registrationDate(brand.getRegistrationDate())
                     .updateDate(brand.getUpdateDate())

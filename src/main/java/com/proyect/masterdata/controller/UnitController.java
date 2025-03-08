@@ -66,24 +66,29 @@ public class UnitController {
 
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:UNIT_GET')")
-    public ResponseEntity<List<UnitDTO>> list() throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<UnitDTO>> result = iUnit.listUnit();
+    public ResponseEntity<List<UnitDTO>> list(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<UnitDTO>> result = iUnit.listUnit(user);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping("unit-type")
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:UNIT_GET')")
-    public ResponseEntity<List<UnitDTO>> list(
-            @RequestParam("unitType") String unitType
+    public ResponseEntity<List<UnitDTO>> listByUnitType(
+            @RequestParam("unitType") String unitType,
+            @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<UnitDTO>> result = iUnit.listUnitByType(unitType);
+        CompletableFuture<List<UnitDTO>> result = iUnit.listUnitByType(unitType,user);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
     @GetMapping("filter")
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:UNIT_GET')")
-    public ResponseEntity<List<UnitDTO>> listFilter() throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<UnitDTO>> result = iUnit.listFilter();
+    public ResponseEntity<List<UnitDTO>> listFilter(
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<List<UnitDTO>> result = iUnit.listFilter(user);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

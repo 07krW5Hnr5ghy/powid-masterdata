@@ -9,13 +9,14 @@ import java.util.UUID;
 
 @Repository
 public interface SizeRepository extends JpaRepository<Size, UUID> {
-    boolean existsByName(String name);
-    List<Size> findAllByStatusTrue();
-    List<Size> findAllByStatusFalse();
+    Size findByNameAndClientId(String name,UUID clientId);
+    List<Size> findAllByStatusTrueAndClientId(UUID clientId);
+    List<Size> findAllByStatusFalseAndClientId(UUID clientId);
     List<Size> findAllByStatusTrueAndSizeTypeId(UUID id);
-    List<Size> findAllByStatusTrueAndSizeTypeName(String name);
+    List<Size> findAllByStatusTrueAndSizeTypeNameAndClientId(String name,UUID clientId);
     Size findByIdAndStatusTrue(UUID id);
-    Size findByNameAndStatusTrue(String name);
-    Size findByNameAndStatusFalse(String name);
-    List<Size> findByNameIn(List<String> names);
+    Size findByNameAndStatusTrueAndClientId(String name,UUID clientId);
+    Size findByNameAndStatusFalseAndClientId(String name,UUID clientId);
+    List<Size> findByNameInAndClientId(List<String> names,UUID clientId);
+    List<Size> findAllByClientId(UUID clientId);
 }

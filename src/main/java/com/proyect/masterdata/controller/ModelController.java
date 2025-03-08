@@ -77,7 +77,8 @@ public class ModelController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,
-            @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+            @RequestParam(value = "pageSize") Integer pageSize,
+            @RequestParam(value = "status",required = false) Boolean status) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<ModelDTO>> result = iModel.list(
                 user,
                 name,
@@ -89,39 +90,10 @@ public class ModelController {
                 sort,
                 sortColumn,
                 pageNumber,
-                pageSize);
+                pageSize,
+                status);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-
-    @GetMapping(value = "pagination-status-false")
-    //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:MARKETING','ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODEL_GET')")
-    public ResponseEntity<Page<ModelDTO>> listStatusFalse(
-            @RequestParam(value = "user") String user,
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "brands", required = false) List<String> brands,
-            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
-            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
-            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateStartDate,
-            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateEndDate,
-            @RequestParam(value = "sort", required = false) String sort,
-            @RequestParam(value = "sortColumn", required = false) String sortColumn,
-            @RequestParam(value = "pageNumber") Integer pageNumber,
-            @RequestParam(value = "pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<ModelDTO>> result = iModel.listStatusFalse(
-                user,
-                name,
-                brands,
-                registrationStartDate,
-                registrationEndDate,
-                updateStartDate,
-                updateEndDate,
-                sort,
-                sortColumn,
-                pageNumber,
-                pageSize);
-        return new ResponseEntity<>(result.get(), HttpStatus.OK);
-    }
-
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:MARKETING','ROLE:STOCK','ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:MODEL_GET')")
     public ResponseEntity<List<ModelDTO>> listModels(

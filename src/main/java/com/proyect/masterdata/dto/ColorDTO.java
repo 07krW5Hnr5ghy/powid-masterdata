@@ -16,6 +16,7 @@ import java.util.UUID;
 public class ColorDTO {
     private String name;
     private String user;
+    private String sku;
     private UUID id;
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;

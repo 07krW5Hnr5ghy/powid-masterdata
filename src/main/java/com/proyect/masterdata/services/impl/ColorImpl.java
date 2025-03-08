@@ -22,8 +22,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
-import java.util.Date;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -45,7 +43,6 @@ public class ColorImpl implements IColor {
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                color = colorRepository.findByNameOrSku(name.toUpperCase(),sku.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -53,6 +50,8 @@ public class ColorImpl implements IColor {
 
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }else{
+                color = colorRepository.findByNameOrSkuAndClientId(name.toUpperCase(),sku.toUpperCase(),user.getClientId());
             }
             if (color != null) {
                 throw new BadRequestExceptions(Constants.ErrorColorExists.toUpperCase());
@@ -90,7 +89,6 @@ public class ColorImpl implements IColor {
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                color = colorRepository.findByNameAndStatusTrue(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -98,6 +96,8 @@ public class ColorImpl implements IColor {
 
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }else{
+                color = colorRepository.findByNameAndClientIdAndStatusTrue(name.toUpperCase(),user.getClientId());
             }
             if (color == null) {
                 throw new BadRequestExceptions(Constants.ErrorColor.toUpperCase());
@@ -129,7 +129,6 @@ public class ColorImpl implements IColor {
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                color = colorRepository.findByNameAndStatusFalse(name.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -137,6 +136,8 @@ public class ColorImpl implements IColor {
 
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
+            }else{
+                color = colorRepository.findByNameAndClientIdAndStatusFalse(name.toUpperCase(),user.getClientId());
             }
             if (color == null) {
                 throw new BadRequestExceptions(Constants.ErrorColor.toUpperCase());
@@ -161,20 +162,27 @@ public class ColorImpl implements IColor {
     }
 
     @Override
-    public CompletableFuture<List<ColorDTO>> listColor() throws BadRequestExceptions {
+    public CompletableFuture<List<ColorDTO>> listColor(String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Color> colors;
+            User user;
             try {
-                colors = colorRepository.findAllByStatusTrue();
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                colors = colorRepository.findAllByStatusTrueAndClientId(user.getClientId());
             }
             if (colors.isEmpty()) {
                 return Collections.emptyList();
             }
             return colors.stream().map(color -> ColorDTO.builder()
                     .id(color.getId())
+                    .sku(color.getSku())
                     .updateDate(color.getUpdateDate())
                     .name(color.getName())
                     .registrationDate(color.getRegistrationDate())
@@ -194,7 +202,8 @@ public class ColorImpl implements IColor {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions {
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Color> colorPage;
             try {
@@ -208,7 +217,7 @@ public class ColorImpl implements IColor {
                         sortColumn,
                         pageNumber,
                         pageSize,
-                        true);
+                        status);
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -218,6 +227,7 @@ public class ColorImpl implements IColor {
             }
             List<ColorDTO> colorDTOS = colorPage.getContent().stream().map(color -> ColorDTO.builder()
                     .id(color.getId())
+                    .sku(color.getSku())
                     .updateDate(color.getUpdateDate())
                     .name(color.getName())
                     .registrationDate(color.getRegistrationDate())
@@ -228,69 +238,28 @@ public class ColorImpl implements IColor {
                     colorPage.getPageable(), colorPage.getTotalElements());
         });
     }
-
     @Override
-    public CompletableFuture<Page<ColorDTO>> listStatusFalse(
-            String name,
-            OffsetDateTime registrationStartDate,
-            OffsetDateTime registrationEndDate,
-            OffsetDateTime updateStartDate,
-            OffsetDateTime updateEndDate,
-            String sort,
-            String sortColumn,
-            Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            Page<Color> colorPage;
-            try {
-                colorPage = colorRepositoryCustom.searchForColor(
-                        name,
-                        registrationStartDate,
-                        registrationEndDate,
-                        updateStartDate,
-                        updateEndDate,
-                        sort,
-                        sortColumn,
-                        pageNumber,
-                        pageSize,
-                        false);
-            } catch (RuntimeException e) {
-                log.error(e);
-                throw new BadRequestExceptions(Constants.ResultsFound);
-            }
-
-            if (colorPage.isEmpty()) {
-                return new PageImpl<>(Collections.emptyList());
-            }
-
-            List<ColorDTO> colorDTOS = colorPage.getContent().stream().map(color -> ColorDTO.builder()
-                    .id(color.getId())
-                    .updateDate(color.getUpdateDate())
-                    .name(color.getName())
-                    .registrationDate(color.getRegistrationDate())
-                    .user(color.getUser().getUsername())
-                    .status(color.getStatus())
-                    .build()).toList();
-            return new PageImpl<>(colorDTOS,
-                    colorPage.getPageable(), colorPage.getTotalElements());
-        });
-    }
-
-    @Override
-    public CompletableFuture<List<ColorDTO>> listFilter() throws BadRequestExceptions {
+    public CompletableFuture<List<ColorDTO>> listFilter(String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             List<Color> colors;
+            User user;
             try {
-                colors = colorRepository.findAll();
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                colors = colorRepository.findAllByClientId(user.getClientId());
             }
             if (colors.isEmpty()) {
                 return Collections.emptyList();
             }
             return colors.stream().map(color -> ColorDTO.builder()
                     .id(color.getId())
+                    .sku(color.getSku())
                     .updateDate(color.getUpdateDate())
                     .name(color.getName())
                     .registrationDate(color.getRegistrationDate())

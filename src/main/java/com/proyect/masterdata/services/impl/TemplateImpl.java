@@ -43,6 +43,48 @@ public class TemplateImpl implements ITemplate {
     private final ProductRepository productRepository;
     private final IExcel iExcel;
     private final IUtil iUtil;
+
+    @Override
+    public CompletableFuture<ByteArrayInputStream> brand(String brand, String username) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            try{
+                XSSFWorkbook workbook = new XSSFWorkbook();
+                XSSFSheet sheet = workbook.createSheet("marcas");
+
+                DataFormat format = workbook.createDataFormat();
+
+                CellStyle headerStyle = workbook.createCellStyle();
+                headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
+                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle.setDataFormat(format.getFormat("@"));
+
+                Row headerRow = sheet.createRow(0);
+                Cell cell = headerRow.createCell(0);
+                cell.setCellValue("NOMBRE");
+                cell.setCellStyle(headerStyle);
+
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                workbook.write(out);
+                workbook.close();
+                return new ByteArrayInputStream(out.toByteArray());
+
+            }catch (RuntimeException | IOException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
     @Override
     public CompletableFuture<ByteArrayInputStream> purchase(String supplierRuc, String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -717,8 +759,6 @@ public class TemplateImpl implements ITemplate {
             Map<String,List<String>> unitMap = new HashMap<>();
             try {
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                colors = colorRepository.findAllByStatusTrue();
-                categoryProducts = categoryProductRepository.findAllByStatusTrue();
                 unitTypes = unitTypeRepository.findAllByStatusTrue();
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -728,6 +768,8 @@ public class TemplateImpl implements ITemplate {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
                 brands = brandRepository.findAllByClientIdAndStatusTrue(user.getClientId());
+                colors = colorRepository.findAllByStatusTrueAndClientId(user.getClientId());
+                categoryProducts = categoryProductRepository.findAllByStatusTrueAndClientId(user.getClientId());
             }
             if(brands.isEmpty()){
                 throw new BadRequestExceptions(Constants.ErrorBrand);
@@ -760,7 +802,7 @@ public class TemplateImpl implements ITemplate {
                 }
 
                 for(UnitType unitType:unitTypes){
-                    List<Unit> units = unitRepository.findAllByUnitTypeIdAndStatusTrue(unitType.getId());
+                    List<Unit> units = unitRepository.findAllByUnitTypeIdAndClientIdAndStatusTrue(unitType.getId(),user.getClientId());
                     if(units.isEmpty()){
                         throw new BadRequestExceptions(Constants.ErrorUnit);
                     }
