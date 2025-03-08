@@ -252,12 +252,12 @@ public class SizeTypeImpl implements ISizeType {
 
     @Override
     public CompletableFuture<Page<SizeTypeDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions {
+            Integer pageSize,Boolean status) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<SizeType> sizeTypePage;
             try {
                 sizeTypePage = sizeTypeRepositoryCustom.searchForSizeType(name, user, sort, sortColumn, pageNumber,
-                        pageSize, true);
+                        pageSize, status);
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -277,33 +277,4 @@ public class SizeTypeImpl implements ISizeType {
                     sizeTypePage.getPageable(), sizeTypePage.getTotalElements());
         });
     }
-
-    @Override
-    public CompletableFuture<Page<SizeTypeDTO>> listStatusFalse(String name, String user, String sort, String sortColumn,
-            Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            Page<SizeType> sizeTypePage;
-            try {
-                sizeTypePage = sizeTypeRepositoryCustom.searchForSizeType(name, user, sort, sortColumn, pageNumber,
-                        pageSize, false);
-            } catch (RuntimeException e) {
-                log.error(e);
-                throw new BadRequestExceptions(Constants.ResultsFound);
-            }
-            if (sizeTypePage.isEmpty()) {
-                return new PageImpl<>(Collections.emptyList());
-            }
-            List<SizeTypeDTO> sizeTypeDTOS = sizeTypePage.stream().map(sizeType -> SizeTypeDTO.builder()
-                    .id(sizeType.getId())
-                    .user(sizeType.getUser().getUsername())
-                    .registrationDate(sizeType.getRegistrationDate())
-                    .updateDate(sizeType.getUpdateDate())
-                    .name(sizeType.getName())
-                    .status(sizeType.getStatus())
-                    .build()).toList();
-            return new PageImpl<>(sizeTypeDTOS,
-                    sizeTypePage.getPageable(), sizeTypePage.getTotalElements());
-        });
-    }
-
 }

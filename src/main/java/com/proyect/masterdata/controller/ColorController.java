@@ -64,7 +64,7 @@ public class ColorController {
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize,
-            @RequestParam("status") Boolean status) throws BadRequestExceptions, ExecutionException, InterruptedException {
+            @RequestParam(value = "status",required = false) Boolean status) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<ColorDTO>> result = iColor.list(
                 name,
                 registrationStartDate,

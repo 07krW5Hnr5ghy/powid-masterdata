@@ -73,21 +73,9 @@ public class SizeTypeController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<SizeTypeDTO>> result = iSizeType.list(name, user, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result.get(), HttpStatus.OK);
-    }
-
-    @GetMapping(value = "pagination/status-false")
-    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:STOCK','ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:BUSINESS') and hasAuthority('ACCESS:SIZE_TYPE_GET')")
-    public ResponseEntity<Page<SizeTypeDTO>> listStatusFalse(
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "user", required = false) String user,
-            @RequestParam(value = "sort", required = false) String sort,
-            @RequestParam(value = "sortColumn", required = false) String sortColumn,
-            @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<SizeTypeDTO>> result = iSizeType.listStatusFalse(name, user, sort, sortColumn, pageNumber, pageSize);
+            @RequestParam("pageSize") Integer pageSize,
+            @RequestParam(value = "status",required = false) Boolean status) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<SizeTypeDTO>> result = iSizeType.list(name, user, sort, sortColumn, pageNumber, pageSize,status);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 }
