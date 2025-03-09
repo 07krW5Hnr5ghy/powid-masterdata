@@ -73,7 +73,7 @@ public class OrderingController {
             @RequestParam(value = "pageNumber") Integer pageNumber,
             @RequestParam(value = "pageSize") Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<OrderDTO>> result = iOrdering.list(
+            CompletableFuture<Page<OrderDTO>> result = iOrdering.list(
                 orderId,
                 user,
                 seller,

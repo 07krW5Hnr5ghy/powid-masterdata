@@ -75,9 +75,9 @@ public class CustomerImpl implements ICustomer {
                     .district(district)
                     .districtId(district.getId())
                     .clientId(user.getClientId())
-                            .status(true)
+                    .status(true)
                     .user(user)
-                            .userId(user.getId())
+                    .userId(user.getId())
                     .customerTypeId(customerType.getId())
                     .customerType(customerType)
                     .dni(requestCustomer.getDni())
@@ -137,10 +137,11 @@ public class CustomerImpl implements ICustomer {
                         .districtId(district.getId())
                         .clientId(user.getClientId())
                         .status(true)
-                                .customerType(customerType)
-                                .customerTypeId(customerType.getId())
+                        .customerType(customerType)
+                        .customerTypeId(customerType.getId())
                         .user(user)
-                                .userId(user.getId())
+                        .dni(requestCustomer.getDni())
+                        .userId(user.getId())
                         .build());
                 iAudit.save("ADD_CUSTOMER","COMPRADOR "+newCustomer.getName()+"/"+newCustomer.getPhone()+" CREADO.",newCustomer.getPhone(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -181,6 +182,7 @@ public class CustomerImpl implements ICustomer {
                     .district(customer.getDistrict().getName())
                     .address(customer.getAddress())
                     .instagram(customer.getInstagram())
+                    .dni(customer.getDni())
                     .build()).toList();
         });
     }
