@@ -758,7 +758,7 @@ public class TemplateImpl implements ITemplate {
                         categoryProductSizeMap.put(categoryProduct.getName(),sizes.stream().map(Size::getName).toList());
                     }
                     if(!subCategoryProducts.isEmpty()){
-                        categoryProductSubCategoryProductMap.put(categoryProduct.getName()+"_",subCategoryProducts.stream().map(SubCategoryProduct::getName).toList());
+                        categoryProductSubCategoryProductMap.put(categoryProduct.getName(),subCategoryProducts.stream().map(SubCategoryProduct::getName).toList());
                     }
                 }
 
@@ -906,7 +906,7 @@ public class TemplateImpl implements ITemplate {
                 for (int i = 0; i < categoryProductSizeMap.size(); i++) {
                     String category = (String) categoryProductSizeMap.keySet().toArray()[i];
                     Name name = workbook.createName();
-                    name.setNameName(category);
+                    name.setNameName("Size_"+category);
                     name.setRefersToFormula("Hidden2!$B$" + (i + 2) + ":$" + iExcel.getExcelColumnReference('B',maxSubcatLength2-1) + "$" + (i + 2));
                 }
 
@@ -917,7 +917,7 @@ public class TemplateImpl implements ITemplate {
                 sheet.addValidationData(categoryValidation);
 
                 for (int i = 1; i <= quantity; i++) {
-                    DataValidationConstraint sizeConstraint = validationHelperCategory.createFormulaListConstraint("INDIRECT($E" + (i + 1) + ")");
+                    DataValidationConstraint sizeConstraint = validationHelperCategory.createFormulaListConstraint("INDIRECT(\"Size_\" & $E" + (i + 1) + ")");
                     CellRangeAddressList sizeAddressList = new CellRangeAddressList(i, i, 6, 6);
                     DataValidation sizeValidation = validationHelperCategory.createValidation(sizeConstraint, sizeAddressList);
                     sheet.addValidationData(sizeValidation);
@@ -980,23 +980,23 @@ public class TemplateImpl implements ITemplate {
                     maxSubcatLength3 = Math.max(maxSubcatLength3, subcatList.size());
                 }
 
-                Name categories2Name = workbook.createName();
-                categories2Name.setNameName("categories2");
-//                categories2Name.setRefersToFormula("Hidden4!$A$1:$" + iExcel.getExcelColumnReference(
-//                        'A',
-//                        categoryProductSubCategoryProductMap.keySet().size() - 1
-//                ) + "$1");
+                Name subCategoriesName = workbook.createName();
+                subCategoriesName.setNameName("sub_categories");
+                subCategoriesName.setRefersToFormula("Hidden4!$A$1:$" + iExcel.getExcelColumnReference(
+                        'A',
+                        categoryProductSubCategoryProductMap.keySet().size() - 1
+                ) + "$1");
 
                 for (int i = 0; i < categoryProductSubCategoryProductMap.size(); i++) {
                     String category = (String) categoryProductSubCategoryProductMap.keySet().toArray()[i];
-                    System.out.println(category);
+                    System.out.println(categoryProductSubCategoryProductMap);
                     Name name = workbook.createName();
-                    name.setNameName(category+"_");
+                    name.setNameName("Category_"+category);
                     name.setRefersToFormula("Hidden4!$B$" + (i + 2) + ":$" + iExcel.getExcelColumnReference('B',maxSubcatLength3-1) + "$" + (i + 2));
                 }
 
                 for (int i = 1; i <= quantity; i++) {
-                    DataValidationConstraint subCategoryProductConstraint = validationHelperCategory.createFormulaListConstraint("INDIRECT($E" + (i + 1) + ")");
+                    DataValidationConstraint subCategoryProductConstraint = validationHelperCategory.createFormulaListConstraint("INDIRECT(\"Category_\" & $E" + (i + 1) + ")");
                     CellRangeAddressList subCategoryProductAddressList = new CellRangeAddressList(i, i, 5, 5);
                     DataValidation subCategoryProductValidation = validationHelperCategory.createValidation(subCategoryProductConstraint, subCategoryProductAddressList);
                     sheet.addValidationData(subCategoryProductValidation);
