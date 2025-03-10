@@ -23,4 +23,5 @@ public class CustomerDTO {
     private UUID id;
     private String user;
     private Boolean status;
+    private  String dni;
 }

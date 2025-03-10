@@ -141,7 +141,7 @@ public class Seeder implements CommandLineRunner {
                                         .client(systemClient)
                                         .clientId(systemClient.getId())
                                         .mobile("00000000")
-                                        .password(passwordEncoder.encode("n>53F-8W5L7Dw+"))
+                                                .password(passwordEncoder.encode("n>53F-8W5L7Dw+"))
                                         .status(true)
                                         .registrationDate(OffsetDateTime.now())
                                         .updateDate(OffsetDateTime.now())
