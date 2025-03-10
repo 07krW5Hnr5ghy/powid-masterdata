@@ -716,6 +716,7 @@ public class TemplateImpl implements ITemplate {
             Map<String,List<String>> brandModelMap = new HashMap<>();
             Map<String,List<String>> categoryProductSizeMap = new HashMap<>();
             Map<String,List<String>> categoryProductSubCategoryProductMap = new HashMap<>();
+            Map<String,List<String>> categoryProductUnitMap = new HashMap<>();
             try {
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 unitTypes = unitTypeRepository.findAllByStatusTrue();
@@ -754,11 +755,15 @@ public class TemplateImpl implements ITemplate {
                 for(CategoryProduct categoryProduct:categoryProducts){
                     List<Size> sizes = sizeRepository.findAllByStatusTrueAndSizeTypeIdAndClientId(categoryProduct.getSizeTypeId(),user.getClientId());
                     List<SubCategoryProduct> subCategoryProducts = subCategoryProductRepository.findAllByCategoryProductIdAndClientIdAndStatusTrue(categoryProduct.getId(),user.getClientId());
+                    List<Unit> units = unitRepository.findAllByUnitTypeIdAndClientIdAndStatusTrue(categoryProduct.getUnitTypeId(),user.getClientId());
                     if(!sizes.isEmpty()){
                         categoryProductSizeMap.put(categoryProduct.getName(),sizes.stream().map(Size::getName).toList());
                     }
                     if(!subCategoryProducts.isEmpty()){
                         categoryProductSubCategoryProductMap.put(categoryProduct.getName(),subCategoryProducts.stream().map(SubCategoryProduct::getName).toList());
+                    }
+                    if(!units.isEmpty()){
+                        categoryProductUnitMap.put(categoryProduct.getName(),units.stream().map(Unit::getName).toList());
                     }
                 }
 
@@ -803,6 +808,10 @@ public class TemplateImpl implements ITemplate {
                 cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(7);
+                cell.setCellValue("UNIDAD");
+                cell.setCellStyle(headerStyle2);
+
+                cell = headerRow.createCell(8);
                 cell.setCellValue("PRECIO");
                 cell.setCellStyle(headerStyle);
 
@@ -1002,13 +1011,67 @@ public class TemplateImpl implements ITemplate {
                     sheet.addValidationData(subCategoryProductValidation);
                 }
 
+                // unit validation list
+                XSSFSheet hiddenSheet5 = workbook.createSheet("Hidden5");
+                workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet5), true);
+
+                int rownum5 = 0;
+                Row row5;
+                Cell hiddenCell5;
+
+                row5 = hiddenSheet4.createRow(rownum5++);
+                int colnum5 = 0;
+                for (String key : categoryProductUnitMap.keySet()) {
+                    hiddenCell5 = row5.createCell(colnum5++);
+                    hiddenCell5.setCellValue(key);
+                }
+
+                int maxSubcatLength4 = 0;
+                for (Map.Entry<String, List<String>> entry : categoryProductUnitMap.entrySet()) {
+                    String key = entry.getKey();
+                    List<String> subcatList = entry.getValue();
+
+                    row5 = hiddenSheet5.createRow(rownum5++);
+                    colnum5 = 0;
+                    hiddenCell5 = row5.createCell(colnum5++);
+                    hiddenCell5.setCellValue(key);
+
+                    for (String subcat : subcatList) {
+                        hiddenCell5 = row5.createCell(colnum5++);
+                        hiddenCell5.setCellValue(subcat);
+                    }
+
+                    maxSubcatLength4 = Math.max(maxSubcatLength4, subcatList.size());
+                }
+
+                Name unitsName = workbook.createName();
+                unitsName.setNameName("units");
+                unitsName.setRefersToFormula("Hidden5!$A$1:$" + iExcel.getExcelColumnReference(
+                        'A',
+                        categoryProductUnitMap.keySet().size() - 1
+                ) + "$1");
+
+                for (int i = 0; i < categoryProductUnitMap.size(); i++) {
+                    String category = (String) categoryProductUnitMap.keySet().toArray()[i];
+                    Name name = workbook.createName();
+                    name.setNameName("Unit_"+category);
+                    name.setRefersToFormula("Hidden5!$B$" + (i + 2) + ":$" + iExcel.getExcelColumnReference('B',maxSubcatLength4-1) + "$" + (i + 2));
+                }
+
+                for (int i = 1; i <= quantity; i++) {
+                    DataValidationConstraint unitConstraint = validationHelperCategory.createFormulaListConstraint("INDIRECT(\"Unit_\" & $E" + (i + 1) + ")");
+                    CellRangeAddressList unitAddressList = new CellRangeAddressList(i, i, 7, 7);
+                    DataValidation unitValidation = validationHelperCategory.createValidation(unitConstraint, unitAddressList);
+                    sheet.addValidationData(unitValidation);
+                }
+
                 CellStyle priceStyle = workbook.createCellStyle();
                 DataFormat priceFormat = workbook.createDataFormat();
                 priceStyle.setDataFormat(priceFormat.getFormat("_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)"));
 
                 for(int rowIndex = 1; rowIndex <= quantity;rowIndex++){
                     Row row = sheet.createRow(rowIndex);
-                    Cell priceCell = row.createCell(7);
+                    Cell priceCell = row.createCell(8);
                     priceCell.setCellStyle(priceStyle);
                 }
 
