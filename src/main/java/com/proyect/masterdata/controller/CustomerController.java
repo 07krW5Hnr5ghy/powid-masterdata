@@ -2,6 +2,7 @@ package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.CustomerDTO;
 import com.proyect.masterdata.dto.request.RequestCustomer;
+import com.proyect.masterdata.dto.response.ResponseExistCustomer;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.ICustomer;
@@ -33,5 +34,15 @@ public class CustomerController {
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<CustomerDTO>> result = iCustomer.listFilter(user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("exists")
+    private ResponseEntity<ResponseExistCustomer> existCustomer(
+            @RequestParam("phone") String phone,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        System.out.println("phone: " + phone + " tokenUser: " + tokenUser);
+        ResponseExistCustomer result = iCustomer.existsCustomer(phone, tokenUser);
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

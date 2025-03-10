@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.CustomerDTO;
 import com.proyect.masterdata.dto.request.RequestCustomer;
+import com.proyect.masterdata.dto.response.ResponseExistCustomer;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -75,9 +76,9 @@ public class CustomerImpl implements ICustomer {
                     .district(district)
                     .districtId(district.getId())
                     .clientId(user.getClientId())
-                            .status(true)
+                    .status(true)
                     .user(user)
-                            .userId(user.getId())
+                    .userId(user.getId())
                     .customerTypeId(customerType.getId())
                     .customerType(customerType)
                     .dni(requestCustomer.getDni())
@@ -137,10 +138,11 @@ public class CustomerImpl implements ICustomer {
                         .districtId(district.getId())
                         .clientId(user.getClientId())
                         .status(true)
-                                .customerType(customerType)
-                                .customerTypeId(customerType.getId())
+                        .customerType(customerType)
+                        .customerTypeId(customerType.getId())
                         .user(user)
-                                .userId(user.getId())
+                        .dni(requestCustomer.getDni())
+                        .userId(user.getId())
                         .build());
                 iAudit.save("ADD_CUSTOMER","COMPRADOR "+newCustomer.getName()+"/"+newCustomer.getPhone()+" CREADO.",newCustomer.getPhone(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -181,7 +183,34 @@ public class CustomerImpl implements ICustomer {
                     .district(customer.getDistrict().getName())
                     .address(customer.getAddress())
                     .instagram(customer.getInstagram())
+                    .dni(customer.getDni())
                     .build()).toList();
         });
+    }
+
+
+    public ResponseExistCustomer existsCustomer(String phone, String tokenUser ) throws BadRequestExceptions, InterruptedException {
+        Customer customer;
+        User user;
+        try {
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            customer = customerRepository.findByPhone(phone);
+        } catch (RuntimeException e) {
+            throw new RuntimeException(e);
+        }
+
+        if(user==null){
+            throw new BadRequestExceptions(Constants.ErrorUserExist);
+        }
+
+        if(customer==null){
+            return ResponseExistCustomer.builder()
+                    .exist(false)
+                    .build();
+        }
+
+        return ResponseExistCustomer.builder()
+                .exist(true)
+                .build();
     }
 }

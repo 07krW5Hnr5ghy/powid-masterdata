@@ -73,7 +73,7 @@ public class OrderingController {
             @RequestParam(value = "pageNumber") Integer pageNumber,
             @RequestParam(value = "pageSize") Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<OrderDTO>> result = iOrdering.list(
+            CompletableFuture<Page<OrderDTO>> result = iOrdering.list(
                 orderId,
                 user,
                 seller,
@@ -125,9 +125,9 @@ public class OrderingController {
     @GetMapping("detail")
     public ResponseEntity<OrderDTO> detail(
             @RequestParam("user") String user,
-            @RequestParam("id") UUID id
+            @RequestParam("orderId") UUID orderId
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<OrderDTO> result = iOrdering.selectOrder(id,user);
+        CompletableFuture<OrderDTO> result = iOrdering.selectOrder(orderId,user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }
