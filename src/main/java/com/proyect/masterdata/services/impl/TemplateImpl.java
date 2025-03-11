@@ -1238,10 +1238,26 @@ public class TemplateImpl implements ITemplate {
                 CellStyle headerStyle = workbook.createCellStyle();
                 headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle.setBorderTop(BorderStyle.THIN);
+                headerStyle.setBorderBottom(BorderStyle.THIN);
+                headerStyle.setBorderLeft(BorderStyle.THIN);
+                headerStyle.setBorderRight(BorderStyle.THIN);
 
                 CellStyle headerStyle2 = workbook.createCellStyle();
                 headerStyle2.setFillForegroundColor(IndexedColors.RED.getIndex());
                 headerStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle2.setBorderTop(BorderStyle.THIN);
+                headerStyle2.setBorderBottom(BorderStyle.THIN);
+                headerStyle2.setBorderLeft(BorderStyle.THIN);
+                headerStyle2.setBorderRight(BorderStyle.THIN);
+
+                CellStyle cellStyle = workbook.createCellStyle();
+                cellStyle.setFillForegroundColor(IndexedColors.AQUA.getIndex());
+                cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                cellStyle.setBorderTop(BorderStyle.THIN);
+                cellStyle.setBorderBottom(BorderStyle.THIN);
+                cellStyle.setBorderLeft(BorderStyle.THIN);
+                cellStyle.setBorderRight(BorderStyle.THIN);
 
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
@@ -1276,9 +1292,23 @@ public class TemplateImpl implements ITemplate {
                 namedRange1.setRefersToFormula(reference1);
                 DataValidationHelper validationHelper = sheet.getDataValidationHelper();
                 DataValidationConstraint constraint = validationHelper.createFormulaListConstraint("Brands");
-                CellRangeAddressList addressList = new CellRangeAddressList(1,quantity+1,0,0);
+                CellRangeAddressList addressList = new CellRangeAddressList(1,quantity,0,0);
                 DataValidation dataValidation = validationHelper.createValidation(constraint,addressList);
                 sheet.addValidationData(dataValidation);
+
+                for(int rowNum=1;rowNum<=quantity;rowNum++){
+                    Row row = sheet.getRow(rowNum);
+                    if(row==null){
+                        row=sheet.createRow(rowNum);
+                    }
+                    for(int colNum = 0;colNum<=2;colNum++){
+                        Cell colorCell = row.getCell(colNum);
+                        if(colorCell==null){
+                            colorCell=row.createCell(colNum);
+                        }
+                        colorCell.setCellStyle(cellStyle);
+                    }
+                }
 
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 workbook.write(out);
