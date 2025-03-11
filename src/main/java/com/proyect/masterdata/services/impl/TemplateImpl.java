@@ -773,10 +773,26 @@ public class TemplateImpl implements ITemplate {
                 CellStyle headerStyle = workbook.createCellStyle();
                 headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle.setBorderTop(BorderStyle.THIN);
+                headerStyle.setBorderBottom(BorderStyle.THIN);
+                headerStyle.setBorderLeft(BorderStyle.THIN);
+                headerStyle.setBorderRight(BorderStyle.THIN);
 
                 CellStyle headerStyle2 = workbook.createCellStyle();
                 headerStyle2.setFillForegroundColor(IndexedColors.RED.getIndex());
                 headerStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle2.setBorderTop(BorderStyle.THIN);
+                headerStyle2.setBorderBottom(BorderStyle.THIN);
+                headerStyle2.setBorderLeft(BorderStyle.THIN);
+                headerStyle2.setBorderRight(BorderStyle.THIN);
+
+                CellStyle cellStyle = workbook.createCellStyle();
+                cellStyle.setFillForegroundColor(IndexedColors.AQUA.getIndex());
+                cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                cellStyle.setBorderTop(BorderStyle.THIN);
+                cellStyle.setBorderBottom(BorderStyle.THIN);
+                cellStyle.setBorderLeft(BorderStyle.THIN);
+                cellStyle.setBorderRight(BorderStyle.THIN);
 
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
@@ -998,7 +1014,6 @@ public class TemplateImpl implements ITemplate {
 
                 for (int i = 0; i < categoryProductSubCategoryProductMap.size(); i++) {
                     String category = (String) categoryProductSubCategoryProductMap.keySet().toArray()[i];
-                    System.out.println(categoryProductSubCategoryProductMap);
                     Name name = workbook.createName();
                     name.setNameName("Category_"+category);
                     name.setRefersToFormula("Hidden4!$B$" + (i + 2) + ":$" + iExcel.getExcelColumnReference('B',maxSubcatLength3-1) + "$" + (i + 2));
@@ -1073,6 +1088,13 @@ public class TemplateImpl implements ITemplate {
                     Row row = sheet.createRow(rowIndex);
                     Cell priceCell = row.createCell(8);
                     priceCell.setCellStyle(priceStyle);
+                    for(int colNum = 0;colNum<=8;colNum++){
+                        Cell colorCell = row.getCell(colNum);
+                        if(colorCell==null){
+                            colorCell=row.createCell(colNum);
+                        }
+                        colorCell.setCellStyle(cellStyle);
+                    }
                 }
 
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
