@@ -780,7 +780,7 @@ public class TemplateImpl implements ITemplate {
 
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
-                cell.setCellValue("SKU PRODUCTO");
+                cell.setCellValue("NOMBRE");
                 cell.setCellStyle(headerStyle);
 
                 cell = headerRow.createCell(1);
