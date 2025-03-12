@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 @RequiredArgsConstructor
@@ -44,28 +45,29 @@ public class OrderLogImpl implements IOrderLog {
 
     @Override
     public List<OrderLogDTO> listLogByOrder(UUID orderId) throws InternalErrorExceptions, BadRequestExceptions {
-        List<OrderLog> orderLogList;
-        try{
-            orderLogList = orderLogRepository.findAllByOrderId(orderId);
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        if(orderLogList.isEmpty()){
-            return new ArrayList<>();
-        }
-        try{
-            return orderLogList.stream().map(orderLog -> OrderLogDTO.builder()
-                    .id(orderLog.getId())
-                    .user(orderLog.getUser().getUsername())
-                    .userFullName(orderLog.getUser().getName()+" "+orderLog.getUser().getSurname())
-                    .orderState(orderLog.getOrderState().getName())
-                    .registrationDate(orderLog.getRegistrationDate())
-                    .detail(orderLog.getDetail())
-                    .build()).toList();
-        }catch (RuntimeException e){
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
+
+            List<OrderLog> orderLogList;
+            try{
+                orderLogList = orderLogRepository.findAllByOrderId(orderId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(orderLogList.isEmpty()){
+                return new ArrayList<>();
+            }
+            try{
+                return orderLogList.stream().map(orderLog -> OrderLogDTO.builder()
+                        .id(orderLog.getId())
+                        .user(orderLog.getUser().getUsername())
+                        .userFullName(orderLog.getUser().getName()+" "+orderLog.getUser().getSurname())
+                        .orderState(orderLog.getOrderState().getName())
+                        .registrationDate(orderLog.getRegistrationDate())
+                        .detail(orderLog.getDetail())
+                        .build()).toList();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
     }
 }
