@@ -1119,9 +1119,22 @@ public class ExcelImpl implements IExcel {
                     if(products.size() != productPrices.size()){
                         throw new IllegalArgumentException("Both lists must have the same size");
                     }
-                    Product existingProduct = null;
                     Product product = products.get(j);
                     ProductPrice productPrice = productPrices.get(j);
+                    Product existingProductDB = productRepository.findByModelIdAndSizeIdAndColorIdAndSubCategoryProductIdAndUnitIdAndClientId(
+                            product.getModelId(),
+                            product.getSizeId(),
+                            product.getColorId(),
+                            product.getSubCategoryProductId(),
+                            product.getUnitId(),
+                            product.getClientId()
+                    );
+                    if(existingProductDB!=null){
+                        return ResponseSuccess.builder()
+                                .code(400)
+                                .message(Constants.ErrorProductExists)
+                                .build();
+                    }
                     if(!names.add(product.getName())||
                             !uniqueCombinations.add(iUtil.buildProductSku(product))){
                         hasDuplicate = true;
