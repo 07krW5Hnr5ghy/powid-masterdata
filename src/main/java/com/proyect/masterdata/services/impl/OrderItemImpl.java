@@ -90,6 +90,7 @@ public class OrderItemImpl implements IOrderItem {
                             .productId(product.getId())
                             .observations(requestOrderItem.getObservations().toUpperCase())
                             .status(true)
+                            .selectOrderStatus(false)
                             .registrationDate(OffsetDateTime.now())
                             .updateDate(OffsetDateTime.now())
                             .user(user)
@@ -152,6 +153,7 @@ public class OrderItemImpl implements IOrderItem {
                         .productId(product.getId())
                         .observations(requestOrderItem.getObservations().toUpperCase())
                         .status(true)
+                        .selectOrderStatus(false)
                         .registrationDate(OffsetDateTime.now())
                         .updateDate(OffsetDateTime.now())
                         .user(user)
@@ -319,6 +321,7 @@ public class OrderItemImpl implements IOrderItem {
                         .ordering(ordering)
                         .orderId(ordering.getId())
                         .status(true)
+                        .selectOrderStatus(orderItem.getSelectOrderStatus())
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .discount(discount)
@@ -329,6 +332,7 @@ public class OrderItemImpl implements IOrderItem {
                         .productId(product.getId())
                         .quantity(requestOrderItem.getQuantity())
                         .registrationDate(OffsetDateTime.now())
+                                .selectOrderStatus(false)
                         .updateDate(OffsetDateTime.now())
                                 .user(user)
                                 .userId(user.getId())
@@ -511,6 +515,7 @@ public class OrderItemImpl implements IOrderItem {
                         .id(orderItem.getId())
                         .user(orderItem.getUser().getUsername())
                         .status(orderItem.getStatus())
+                        .selectOrderStatus(orderItem.getSelectOrderStatus())
                         .productId(orderItem.getProductId())
                         .unit(orderItem.getProduct().getUnit().getName())
                         .color(orderItem.getProduct().getColor().getName())
@@ -569,6 +574,7 @@ public class OrderItemImpl implements IOrderItem {
                         .productId(orderItem.getProductId())
                         .user(orderItem.getUser().getUsername())
                         .status(orderItem.getStatus())
+                        .selectOrderStatus(orderItem.getSelectOrderStatus())
                         .unit(orderItem.getProduct().getUnit().getName())
                         .orderId(orderItem.getOrderId())
                         .color(orderItem.getProduct().getColor().getName())
@@ -621,6 +627,7 @@ public class OrderItemImpl implements IOrderItem {
                         .productId(orderItem.getProductId())
                         .user(orderItem.getUser().getUsername())
                         .status(orderItem.getStatus())
+                        .selectOrderStatus(orderItem.getSelectOrderStatus())
                         .unit(orderItem.getProduct().getUnit().getName())
                         .orderId(orderItem.getOrderId())
                         .color(orderItem.getProduct().getColor().getName())
@@ -699,4 +706,56 @@ public class OrderItemImpl implements IOrderItem {
             }
         });
     }
+
+    @Transactional
+    @Override
+    public CompletableFuture<ResponseSuccess> preparateOrderItemCheck(UUID orderItemId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync( () -> {
+            Ordering ordering;
+            OrderItem orderItem;
+            User user;
+
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                orderItem = orderItemRepository.findOrderItemById(orderItemId);
+                ordering = orderingRepository.findById(orderItem.getOrderId()).orElse(null);
+                System.out.println("user");
+                System.out.println("orderItem: "+orderItem);
+                System.out.println("ordering:" + ordering );
+            } catch (RuntimeException e) {
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(ordering == null){
+                throw new BadRequestExceptions(Constants.ErrorOrdering);
+            }
+            if(orderItem == null){
+                throw new BadRequestExceptions(Constants.ErrorOrderItem);
+            }
+
+            try {
+                orderItemRepository.selectPreparedOrdetItem(
+                        ordering.getId(),
+                        orderItemId,
+                        user.getId(),
+                        OffsetDateTime.now(),
+                        !orderItem.getSelectOrderStatus()
+                );
+                return ResponseSuccess.builder()
+                        .message(Constants.update)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+
 }

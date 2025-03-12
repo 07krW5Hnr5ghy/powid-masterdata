@@ -37,4 +37,5 @@ public interface IOrderItem {
     CompletableFuture<List<OrderItemDTO>> listByOrder(String user,UUID orderId) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<OrderItemDTO>> listByOrderFalse(String user,UUID orderId) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<ResponseDelete> activate(UUID orderId,UUID productId,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> preparateOrderItemCheck (UUID orderItemId,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
 }

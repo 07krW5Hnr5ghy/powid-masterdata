@@ -82,6 +82,15 @@ public class OrderItemController {
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
+    @PutMapping("preparate")
+    public ResponseEntity<ResponseSuccess> preparateOrderItem(
+            @RequestParam("orderItemId") UUID orderItemId,
+            @RequestParam("tokerUser") String tokenUser
+    )throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iOrderItem.preparateOrderItemCheck(orderItemId,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:STOCK','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_ITEM_GET')")
     public ResponseEntity<Page<OrderItemDTO>> listOrderItems(
