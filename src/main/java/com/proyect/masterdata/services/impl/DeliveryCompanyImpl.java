@@ -97,6 +97,7 @@ public class DeliveryCompanyImpl implements IDeliveryCompany {
                 deliveryCompany.setUpdateDate(OffsetDateTime.now());
                 deliveryCompany.setUser(user);
                 deliveryCompany.setUserId(user.getId());
+                deliveryCompanyRepository.save(deliveryCompany);
                 iAudit.save("DELETE_DELIVERY_COMPANY","EMPRESA DE COURIER "+deliveryCompany.getName()+" CREADA.",deliveryCompany.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
@@ -132,6 +133,7 @@ public class DeliveryCompanyImpl implements IDeliveryCompany {
                 deliveryCompany.setUpdateDate(OffsetDateTime.now());
                 deliveryCompany.setUser(user);
                 deliveryCompany.setUserId(user.getId());
+                deliveryCompanyRepository.save(deliveryCompany);
                 iAudit.save("ACTIVATE_DELIVERY_COMPANY","EMPRESA DE COURIER "+deliveryCompany.getName()+" CREADA.",deliveryCompany.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .message(Constants.update)
