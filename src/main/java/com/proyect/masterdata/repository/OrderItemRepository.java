@@ -18,6 +18,7 @@ import java.util.UUID;
 @Repository
 public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
     List<OrderItem> findAllByOrderId(UUID orderId);
+    OrderItem findOrderItemById(UUID orderItemId);
     List<OrderItem> findAllByOrderIdAndStatusTrue(UUID orderId);
     OrderItem findByIdAndOrderId(UUID itemId, UUID orderId);
     OrderItem findByProductIdAndOrderId(UUID productId,UUID orderId);
@@ -162,5 +163,19 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
             @Param("updateDate") OffsetDateTime updateDate,
             @Param("userId") UUID userId,
             @Param("status") boolean status
+    );
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE OrderItem o SET " +
+                    "o.selectOrderStatus = :selectOrderStatus," +
+                    "o.updateDate = :updateDate " +
+                    "WHERE o.userId = :userId AND o.orderId = :orderId AND o.id = :orderItemId")
+    void selectPreparedOrdetItem (
+            @Param("orderId") UUID orderId,
+            @Param("orderItemId") UUID orderItemId,
+            @Param("userId") UUID userId,
+            @Param("updateDate") OffsetDateTime updateDate,
+            @Param("selectOrderStatus") Boolean selectOrderStatus
     );
 }

@@ -61,6 +61,9 @@ public class OrderItem {
     @Column(name = "update_date")
     private OffsetDateTime updateDate;
 
+    @Column(name = "select_order_status")
+    private Boolean selectOrderStatus;
+
     @ManyToOne
     @JoinColumn(name = "product_id", columnDefinition = "productId", insertable = false,updatable = false)
     private Product product;

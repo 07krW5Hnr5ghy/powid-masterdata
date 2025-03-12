@@ -30,6 +30,7 @@ public class OrderItemDTO {
     private String discount;
     private Double discountAmount;
     private Double totalPrice;
+    private Boolean selectOrderStatus;
     private String observations;
     private List<String> pictures;
     private OffsetDateTime registrationDate;
