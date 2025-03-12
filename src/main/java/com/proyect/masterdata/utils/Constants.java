@@ -332,4 +332,6 @@ public class Constants {
     public static final String ErrorWarehouseOutputInactive = "Salida de almacen inactiva";
     public static final String ErrorWarehouseOutputItemEqualUpdate = "La nueva cantidad es igual a la anterior cantidad";
     public static final String ErrorSupplyOrderInactive = "Salida de almacen inactiva";
+    public static final String ErrorExcelNullRowData = "Faltan datos en filas validadas del archivo de excel";
+    public static final String ErrorExcelDuplicatedRecordFile = "Registro duplicado en archivo";
 }
