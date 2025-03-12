@@ -161,6 +161,7 @@ public class WarehouseImpl implements IWarehouse {
                 warehouse.setUpdateDate(OffsetDateTime.now());
                 warehouse.setUser(user);
                 warehouse.setUserId(user.getId());
+                warehouseRepository.save(warehouse);
                 iAudit.save("DELETE_WAREHOUSE","ALMACEN "+warehouse.getName()+" DESACTIVADO.",warehouse.getName(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
@@ -197,6 +198,7 @@ public class WarehouseImpl implements IWarehouse {
                 warehouse.setUpdateDate(OffsetDateTime.now());
                 warehouse.setUser(user);
                 warehouse.setUserId(user.getId());
+                warehouseRepository.save(warehouse);
                 iAudit.save("ACTIVATE_WAREHOUSE","ALMACEN "+warehouse.getName()+" ACTIVADO.",warehouse.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
