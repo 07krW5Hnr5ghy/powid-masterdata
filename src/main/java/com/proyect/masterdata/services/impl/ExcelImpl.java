@@ -1095,7 +1095,6 @@ public class ExcelImpl implements IExcel {
                         productPrice.setStatus(true);
                         products.add(newProduct);
                         productPrices.add(productPrice);
-                        uniqueCombinations.add(iUtil.getUniqueProductKey(newProduct));
                     }
                     if(i>=1 && (
                             newProduct.getName() == null ||
@@ -1112,7 +1111,10 @@ public class ExcelImpl implements IExcel {
                 }
 
                 if(products.isEmpty()){
-                    throw new BadRequestExceptions(Constants.ErrorProduct);
+                    return ResponseSuccess.builder()
+                            .code(400)
+                            .message(Constants.ErrorExcelEmptyFile)
+                            .build();
                 }
 
                 for(int j = 0;j < products.size();j++){
@@ -1278,6 +1280,7 @@ public class ExcelImpl implements IExcel {
 
                 List<Model> models = new ArrayList<>();
                 Set<String> modelNames = new HashSet<>();
+                Set<String> modelSkus = new HashSet<>();
                 boolean hasDuplicate = false;
                 int i = 0;
                 for(Row row:sheet){
@@ -1289,7 +1292,10 @@ public class ExcelImpl implements IExcel {
                         if((i>=1) && (cell.getCellType() == STRING) && (ii==0)){
                             brand = brandRepository.findByNameAndClientIdAndStatusTrue(cell.getStringCellValue().toUpperCase(),user.getClientId());
                             if(brand==null){
-                                throw new BadRequestExceptions(Constants.ErrorBrand);
+                                return ResponseSuccess.builder()
+                                        .code(400)
+                                        .message(Constants.ErrorBrand+" en linea: "+(i+1)+".")
+                                        .build();
                             }
                             newModel.setBrand(brand);
                             newModel.setBrandId(brand.getId());
@@ -1297,14 +1303,20 @@ public class ExcelImpl implements IExcel {
                         if((i>=1)&&(cell.getCellType() == STRING) && (ii==1)){
                             model = modelRepository.findByNameAndClientId(cell.getRichStringCellValue().getString().toUpperCase(),user.getClientId());
                             if(model!=null){
-                                throw new BadRequestExceptions(Constants.ErrorModelExists);
+                                return ResponseSuccess.builder()
+                                        .code(400)
+                                        .message(Constants.ErrorModelExists+" en linea: "+(i+1)+".")
+                                        .build();
                             }
                             newModel.setName(cell.getRichStringCellValue().getString().toUpperCase());
                         }
                         if((i>=1)&&(cell.getCellType() == STRING) && (ii==2)){
                             model = modelRepository.findBySkuAndClientId(cell.getRichStringCellValue().getString().toUpperCase(),user.getClientId());
                             if(model!=null){
-                                throw new BadRequestExceptions(Constants.ErrorModelExists);
+                                return ResponseSuccess.builder()
+                                        .code(400)
+                                        .message(Constants.ErrorModelExists+" en linea: "+(i+1)+".")
+                                        .build();
                             }
                             newModel.setSku(cell.getRichStringCellValue().getString().toUpperCase());
                         }
@@ -1334,14 +1346,30 @@ public class ExcelImpl implements IExcel {
                     i++;
                 }
                 if(models.isEmpty()){
-                    throw new BadRequestExceptions(Constants.ErrorModel);
+                    return ResponseSuccess.builder()
+                            .code(400)
+                            .message(Constants.ErrorExcelEmptyFile)
+                            .build();
                 }
-                for(Model model : models){
-                    if(!modelNames.add(model.getSku())){
+                for(int j = 0;j < models.size();j++){
+                    Model model = models.get(j);
+                    Model existingModelDB = modelRepository.findByNameOrSkuAndClientId(model.getName(),model.getSku(),model.getClientId());
+                    if(existingModelDB!=null){
+                        return ResponseSuccess.builder()
+                                .code(400)
+                                .message(Constants.ErrorProductExists+" en linea: "+(j+1)+".")
+                                .build();
+                    }
+                    if(!modelNames.add(model.getName()) ||
+                            !modelSkus.add(model.getSku())
+                    ){
                         hasDuplicate = true;
                     }
                     if(hasDuplicate){
-                        throw new BadRequestExceptions(Constants.ErrorModelExists);
+                        return ResponseSuccess.builder()
+                                .code(400)
+                                .message(Constants.ErrorExcelDuplicatedRecordFile+" en linea: "+i+".")
+                                .build();
                     }else{
                         modelRepository.save(model);
                         iAudit.save("ADD_MODEL_EXCEL","MODEL "+model.getSku()+" CREADO POR EXCEL.",model.getSku(),user.getUsername());

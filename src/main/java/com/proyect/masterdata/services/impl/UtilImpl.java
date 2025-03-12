@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
+import com.proyect.masterdata.domain.Model;
 import com.proyect.masterdata.domain.OrderItem;
 import com.proyect.masterdata.domain.Product;
 import com.proyect.masterdata.domain.ProductPrice;
@@ -66,12 +67,4 @@ public class UtilImpl implements IUtil {
                 + product.getSize().getName();
     }
 
-    @Override
-    public String getUniqueProductKey(Product product) {
-        return product.getModel().getId().toString()+
-                product.getColor().getId().toString()+
-                product.getSubCategoryProduct().getId().toString()+
-                product.getSize().getId().toString()+
-                product.getUnit().getId().toString();
-    }
 }
