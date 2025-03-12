@@ -931,6 +931,7 @@ public class ExcelImpl implements IExcel {
                 List<Product> products = new ArrayList<>();
                 List<ProductPrice> productPrices = new ArrayList<>();
                 Set<String> names = new HashSet<>();
+                Set<String> uniqueCombinations = new HashSet<>();
                 boolean hasDuplicate = false;
                 int i = 0;
                 for(Row row:sheet){
@@ -1080,6 +1081,7 @@ public class ExcelImpl implements IExcel {
                                     newProduct.getColor() != null
                             )){
                         newProduct.setStatus(true);
+                        newProduct.setPictureFlag(false);
                         newProduct.setRegistrationDate(OffsetDateTime.now());
                         newProduct.setUpdateDate(OffsetDateTime.now());
                         newProduct.setUser(user);
@@ -1093,6 +1095,7 @@ public class ExcelImpl implements IExcel {
                         productPrice.setStatus(true);
                         products.add(newProduct);
                         productPrices.add(productPrice);
+                        uniqueCombinations.add(iUtil.getUniqueProductKey(newProduct));
                     }
                     if(i>=1 && (
                             newProduct.getName() == null ||
@@ -1116,9 +1119,11 @@ public class ExcelImpl implements IExcel {
                     if(products.size() != productPrices.size()){
                         throw new IllegalArgumentException("Both lists must have the same size");
                     }
+                    Product existingProduct = null;
                     Product product = products.get(j);
                     ProductPrice productPrice = productPrices.get(j);
-                    if(!names.add(product.getName())){
+                    if(!names.add(product.getName())||
+                            !uniqueCombinations.add(iUtil.buildProductSku(product))){
                         hasDuplicate = true;
                     }
                     if(hasDuplicate){

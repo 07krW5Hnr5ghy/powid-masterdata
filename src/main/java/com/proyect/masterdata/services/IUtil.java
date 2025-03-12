@@ -10,4 +10,5 @@ public interface IUtil {
     Date setToUTCEndOfDay(Date date);
     double calculateTotalPrice(OrderItem orderItem);
     String buildProductSku(Product product);
+    String getUniqueProductKey(Product product);
 }

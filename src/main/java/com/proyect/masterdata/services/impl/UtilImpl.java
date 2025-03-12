@@ -65,4 +65,13 @@ public class UtilImpl implements IUtil {
                 + product.getColor().getSku()
                 + product.getSize().getName();
     }
+
+    @Override
+    public String getUniqueProductKey(Product product) {
+        return product.getModel().getId().toString()+
+                product.getColor().getId().toString()+
+                product.getSubCategoryProduct().getId().toString()+
+                product.getSize().getId().toString()+
+                product.getUnit().getId().toString();
+    }
 }
