@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
+import com.proyect.masterdata.domain.Model;
 import com.proyect.masterdata.domain.OrderItem;
 import com.proyect.masterdata.domain.Product;
 import com.proyect.masterdata.domain.ProductPrice;
@@ -65,4 +66,5 @@ public class UtilImpl implements IUtil {
                 + product.getColor().getSku()
                 + product.getSize().getName();
     }
+
 }

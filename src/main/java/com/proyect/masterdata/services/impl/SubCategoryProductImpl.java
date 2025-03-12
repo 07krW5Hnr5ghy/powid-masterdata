@@ -64,7 +64,7 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
         }
 
         if(subCategoryProduct!=null){
-            throw new BadRequestExceptions(Constants.ErrorSubCategoryExists);
+            throw new BadRequestExceptions(Constants.ErrorSubCategoryProductExists);
         }
 
         try{
@@ -118,7 +118,7 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
             }
 
             if(subCategoryProduct!=null){
-                throw new BadRequestExceptions(Constants.ErrorSubCategoryExists);
+                throw new BadRequestExceptions(Constants.ErrorSubCategoryProductExists);
             }
 
             try{
@@ -163,7 +163,7 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
             if(subCategoryProduct==null){
-                throw new BadRequestExceptions(Constants.ErrorSubCategoryExists);
+                throw new BadRequestExceptions(Constants.ErrorSubCategoryProductExists);
             }
             try {
                 subCategoryProduct.setStatus(false);
@@ -199,7 +199,7 @@ public class SubCategoryProductImpl implements ISubCategoryProduct {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
             if(subCategoryProduct==null){
-                throw new BadRequestExceptions(Constants.ErrorSubCategoryExists);
+                throw new BadRequestExceptions(Constants.ErrorSubCategoryProductExists);
             }
             try {
                 subCategoryProduct.setStatus(true);

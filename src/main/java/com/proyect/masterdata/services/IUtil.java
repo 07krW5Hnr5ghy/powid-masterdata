@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services;
 
+import com.proyect.masterdata.domain.Model;
 import com.proyect.masterdata.domain.OrderItem;
 import com.proyect.masterdata.domain.Product;
 
