@@ -56,9 +56,6 @@ public class Model {
     @Column(name = "client_id")
     private UUID clientId;
 
-    @Column(name = "sub_category_product_id")
-    private UUID subCategoryProductId;
-
     @ManyToOne
     @JoinColumn(name = "brand_id", columnDefinition = "brandId", insertable = false, updatable = false)
     private Brand brand;
@@ -73,8 +70,4 @@ public class Model {
     @ManyToOne()
     @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
     private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "sub_category_product_id",columnDefinition = "subCategoryProductId",insertable = false,updatable = false)
-    private SubCategoryProduct subCategoryProduct;
 }

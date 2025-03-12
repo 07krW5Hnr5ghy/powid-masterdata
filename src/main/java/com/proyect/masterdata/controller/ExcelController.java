@@ -22,63 +22,63 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class ExcelController {
     private final IExcel iExcel;
-    @PostMapping("supplyOrder")
-    public ResponseEntity<ResponseSuccess> purchase(
-            @RequestPart("requestSupplyOrderExcel") RequestSupplyOrderExcel requestSupplyOrderExcel,
-            @RequestPart("multipartFile") MultipartFile multipartFile
-    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iExcel.purchase(requestSupplyOrderExcel,multipartFile);
-        return new ResponseEntity<>(result.get(), HttpStatus.OK);
-    }
-
-    @PostMapping("transfer")
-    public ResponseEntity<ResponseSuccess> transfer(
-            @RequestPart("requestStockTransferExcel") RequestStockTransferExcel requestStockTransferExcel,
-            @RequestPart("multipartFile") MultipartFile multipartFile
-    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iExcel.stockTransfer(requestStockTransferExcel,multipartFile);
-        return new ResponseEntity<>(result.get(), HttpStatus.OK);
-    }
-
-    @PostMapping("return")
-    public ResponseEntity<ResponseSuccess> stockReturn(
-            @RequestPart("requestStockReturnExcel") RequestStockReturnExcel requestStockReturnExcel,
-            @RequestPart("multipartFile") MultipartFile multipartFile
-    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iExcel.stockReturn(requestStockReturnExcel,multipartFile);
-        return new ResponseEntity<>(result.get(), HttpStatus.OK);
-    }
-
-    @PostMapping("replenishment")
-    public ResponseEntity<ResponseSuccess> stockReplenishment(
-            @RequestParam("orderId") UUID orderId,
-            @RequestPart("multipartFile") MultipartFile multipartFile,
-            @RequestParam("tokenUser") String tokenUser
-    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iExcel.stockReplenishment(orderId,multipartFile,tokenUser);
-        return new ResponseEntity<>(result.get(), HttpStatus.OK);
-    }
-
-    @PostMapping("order-stock")
-    public ResponseEntity<ResponseSuccess> orderStock(
-            @RequestParam("orderId") UUID orderId,
-            @RequestParam("warehouse") String warehouse,
-            @RequestPart("multipartFile") MultipartFile multipartFile,
-            @RequestParam("tokenUser") String tokenUser
-    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iExcel.orderStock(orderId,warehouse,multipartFile,tokenUser);
-        return new ResponseEntity<>(result.get(), HttpStatus.OK);
-    }
-
-    @PostMapping("order-return")
-    public ResponseEntity<ResponseSuccess> orderReturn(
-            @RequestParam("orderId") UUID orderId,
-            @RequestPart("multipartFile") MultipartFile multipartFile,
-            @RequestParam("tokenUser") String tokenUser
-    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iExcel.orderReturn(orderId,multipartFile,tokenUser);
-        return new ResponseEntity<>(result.get(), HttpStatus.OK);
-    }
+//    @PostMapping("supplyOrder")
+//    public ResponseEntity<ResponseSuccess> purchase(
+//            @RequestPart("requestSupplyOrderExcel") RequestSupplyOrderExcel requestSupplyOrderExcel,
+//            @RequestPart("multipartFile") MultipartFile multipartFile
+//    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+//        CompletableFuture<ResponseSuccess> result = iExcel.purchase(requestSupplyOrderExcel,multipartFile);
+//        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+//    }
+//
+//    @PostMapping("transfer")
+//    public ResponseEntity<ResponseSuccess> transfer(
+//            @RequestPart("requestStockTransferExcel") RequestStockTransferExcel requestStockTransferExcel,
+//            @RequestPart("multipartFile") MultipartFile multipartFile
+//    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+//        CompletableFuture<ResponseSuccess> result = iExcel.stockTransfer(requestStockTransferExcel,multipartFile);
+//        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+//    }
+//
+//    @PostMapping("return")
+//    public ResponseEntity<ResponseSuccess> stockReturn(
+//            @RequestPart("requestStockReturnExcel") RequestStockReturnExcel requestStockReturnExcel,
+//            @RequestPart("multipartFile") MultipartFile multipartFile
+//    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+//        CompletableFuture<ResponseSuccess> result = iExcel.stockReturn(requestStockReturnExcel,multipartFile);
+//        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+//    }
+//
+//    @PostMapping("replenishment")
+//    public ResponseEntity<ResponseSuccess> stockReplenishment(
+//            @RequestParam("orderId") UUID orderId,
+//            @RequestPart("multipartFile") MultipartFile multipartFile,
+//            @RequestParam("tokenUser") String tokenUser
+//    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+//        CompletableFuture<ResponseSuccess> result = iExcel.stockReplenishment(orderId,multipartFile,tokenUser);
+//        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+//    }
+//
+//    @PostMapping("order-stock")
+//    public ResponseEntity<ResponseSuccess> orderStock(
+//            @RequestParam("orderId") UUID orderId,
+//            @RequestParam("warehouse") String warehouse,
+//            @RequestPart("multipartFile") MultipartFile multipartFile,
+//            @RequestParam("tokenUser") String tokenUser
+//    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+//        CompletableFuture<ResponseSuccess> result = iExcel.orderStock(orderId,warehouse,multipartFile,tokenUser);
+//        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+//    }
+//
+//    @PostMapping("order-return")
+//    public ResponseEntity<ResponseSuccess> orderReturn(
+//            @RequestParam("orderId") UUID orderId,
+//            @RequestPart("multipartFile") MultipartFile multipartFile,
+//            @RequestParam("tokenUser") String tokenUser
+//    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+//        CompletableFuture<ResponseSuccess> result = iExcel.orderReturn(orderId,multipartFile,tokenUser);
+//        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+//    }
 
     @PostMapping("product")
     public ResponseEntity<ResponseSuccess> product(
@@ -89,14 +89,14 @@ public class ExcelController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @PostMapping("supplier-product")
-    public ResponseEntity<ResponseSuccess> supplierProduct(
-            @RequestPart("multipartFile") MultipartFile multipartFile,
-            @RequestParam("tokenUser") String tokenUser
-    ) throws BadRequestExceptions,ExecutionException,InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iExcel.supplierProduct(multipartFile,tokenUser);
-        return new ResponseEntity<>(result.get(),HttpStatus.OK);
-    }
+//    @PostMapping("supplier-product")
+//    public ResponseEntity<ResponseSuccess> supplierProduct(
+//            @RequestPart("multipartFile") MultipartFile multipartFile,
+//            @RequestParam("tokenUser") String tokenUser
+//    ) throws BadRequestExceptions,ExecutionException,InterruptedException {
+//        CompletableFuture<ResponseSuccess> result = iExcel.supplierProduct(multipartFile,tokenUser);
+//        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+//    }
 
     @PostMapping("model")
     public ResponseEntity<ResponseSuccess> model(

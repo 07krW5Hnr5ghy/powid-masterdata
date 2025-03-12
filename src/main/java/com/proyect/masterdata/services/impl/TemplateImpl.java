@@ -43,48 +43,7 @@ public class TemplateImpl implements ITemplate {
     private final ProductRepository productRepository;
     private final IExcel iExcel;
     private final IUtil iUtil;
-
-    @Override
-    public CompletableFuture<ByteArrayInputStream> brand(String brand, String username) throws BadRequestExceptions, InternalErrorExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            User user;
-            try {
-                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-            }catch (RuntimeException e){
-                log.error(e.getMessage());
-                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            }
-            if(user==null){
-                throw new BadRequestExceptions(Constants.ErrorUser);
-            }
-            try{
-                XSSFWorkbook workbook = new XSSFWorkbook();
-                XSSFSheet sheet = workbook.createSheet("marcas");
-
-                DataFormat format = workbook.createDataFormat();
-
-                CellStyle headerStyle = workbook.createCellStyle();
-                headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
-                headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-                headerStyle.setDataFormat(format.getFormat("@"));
-
-                Row headerRow = sheet.createRow(0);
-                Cell cell = headerRow.createCell(0);
-                cell.setCellValue("NOMBRE");
-                cell.setCellStyle(headerStyle);
-
-                ByteArrayOutputStream out = new ByteArrayOutputStream();
-                workbook.write(out);
-                workbook.close();
-                return new ByteArrayInputStream(out.toByteArray());
-
-            }catch (RuntimeException | IOException e){
-                log.error(e.getMessage());
-                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            }
-        });
-    }
-
+    private final SubCategoryProductRepository subCategoryProductRepository;
     @Override
     public CompletableFuture<ByteArrayInputStream> purchase(String supplierRuc, String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -754,9 +713,10 @@ public class TemplateImpl implements ITemplate {
             List<Color> colors;
             List<CategoryProduct> categoryProducts;
             List<UnitType> unitTypes;
-            Map<String,List<String>> modelMap = new HashMap<>();
+            Map<String,List<String>> brandModelMap = new HashMap<>();
             Map<String,List<String>> categoryProductSizeMap = new HashMap<>();
-            Map<String,List<String>> unitMap = new HashMap<>();
+            Map<String,List<String>> categoryProductSubCategoryProductMap = new HashMap<>();
+            Map<String,List<String>> categoryProductUnitMap = new HashMap<>();
             try {
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 unitTypes = unitTypeRepository.findAllByStatusTrue();
@@ -787,26 +747,24 @@ public class TemplateImpl implements ITemplate {
 
                 for(Brand brand:brands){
                     List<Model> models = modelRepository.findAllByClientIdAndBrandIdAndStatusTrue(user.getClientId(), brand.getId());
-                    if(models.isEmpty()){
-                        throw new BadRequestExceptions(Constants.ErrorModel);
+                    if(!models.isEmpty()){
+                        brandModelMap.put(brand.getName(),models.stream().map(Model::getName).toList());
                     }
-                    modelMap.put(brand.getName(),models.stream().map(Model::getName).toList());
                 }
 
                 for(CategoryProduct categoryProduct:categoryProducts){
-                    List<Size> sizes = sizeRepository.findAllByStatusTrueAndSizeTypeId(categoryProduct.getSizeTypeId());
-                    if(sizes.isEmpty()){
-                        throw new BadRequestExceptions(Constants.ErrorSize);
+                    List<Size> sizes = sizeRepository.findAllByStatusTrueAndSizeTypeIdAndClientId(categoryProduct.getSizeTypeId(),user.getClientId());
+                    List<SubCategoryProduct> subCategoryProducts = subCategoryProductRepository.findAllByCategoryProductIdAndClientIdAndStatusTrue(categoryProduct.getId(),user.getClientId());
+                    List<Unit> units = unitRepository.findAllByUnitTypeIdAndClientIdAndStatusTrue(categoryProduct.getUnitTypeId(),user.getClientId());
+                    if(!sizes.isEmpty()){
+                        categoryProductSizeMap.put(categoryProduct.getName(),sizes.stream().map(Size::getName).toList());
                     }
-                    categoryProductSizeMap.put(categoryProduct.getName(),sizes.stream().map(Size::getName).toList());
-                }
-
-                for(UnitType unitType:unitTypes){
-                    List<Unit> units = unitRepository.findAllByUnitTypeIdAndClientIdAndStatusTrue(unitType.getId(),user.getClientId());
-                    if(units.isEmpty()){
-                        throw new BadRequestExceptions(Constants.ErrorUnit);
+                    if(!subCategoryProducts.isEmpty()){
+                        categoryProductSubCategoryProductMap.put(categoryProduct.getName(),subCategoryProducts.stream().map(SubCategoryProduct::getName).toList());
                     }
-                    unitMap.put(unitType.getName(),units.stream().map(Unit::getName).toList());
+                    if(!units.isEmpty()){
+                        categoryProductUnitMap.put(categoryProduct.getName(),units.stream().map(Unit::getName).toList());
+                    }
                 }
 
                 XSSFWorkbook workbook = new XSSFWorkbook();
@@ -815,14 +773,30 @@ public class TemplateImpl implements ITemplate {
                 CellStyle headerStyle = workbook.createCellStyle();
                 headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle.setBorderTop(BorderStyle.THIN);
+                headerStyle.setBorderBottom(BorderStyle.THIN);
+                headerStyle.setBorderLeft(BorderStyle.THIN);
+                headerStyle.setBorderRight(BorderStyle.THIN);
 
                 CellStyle headerStyle2 = workbook.createCellStyle();
                 headerStyle2.setFillForegroundColor(IndexedColors.RED.getIndex());
                 headerStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle2.setBorderTop(BorderStyle.THIN);
+                headerStyle2.setBorderBottom(BorderStyle.THIN);
+                headerStyle2.setBorderLeft(BorderStyle.THIN);
+                headerStyle2.setBorderRight(BorderStyle.THIN);
+
+                CellStyle cellStyle = workbook.createCellStyle();
+                cellStyle.setFillForegroundColor(IndexedColors.AQUA.getIndex());
+                cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                cellStyle.setBorderTop(BorderStyle.THIN);
+                cellStyle.setBorderBottom(BorderStyle.THIN);
+                cellStyle.setBorderLeft(BorderStyle.THIN);
+                cellStyle.setBorderRight(BorderStyle.THIN);
 
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
-                cell.setCellValue("SKU PRODUCTO");
+                cell.setCellValue("NOMBRE");
                 cell.setCellStyle(headerStyle);
 
                 cell = headerRow.createCell(1);
@@ -842,11 +816,11 @@ public class TemplateImpl implements ITemplate {
                 cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(5);
-                cell.setCellValue("TAMAÑO");
+                cell.setCellValue("SUB CATEGORIA");
                 cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(6);
-                cell.setCellValue("TIPO_UNIDAD");
+                cell.setCellValue("TAMAÑO");
                 cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(7);
@@ -854,10 +828,6 @@ public class TemplateImpl implements ITemplate {
                 cell.setCellStyle(headerStyle2);
 
                 cell = headerRow.createCell(8);
-                cell.setCellValue("CARACTERISTICAS");
-                cell.setCellStyle(headerStyle);
-
-                cell = headerRow.createCell(9);
                 cell.setCellValue("PRECIO");
                 cell.setCellStyle(headerStyle);
 
@@ -871,13 +841,13 @@ public class TemplateImpl implements ITemplate {
 
                 row1 = hiddenSheet1.createRow(rownum1++);
                 int colnum1 = 0;
-                for (String key : modelMap.keySet()) {
+                for (String key : brandModelMap.keySet()) {
                     hiddenCell1 = row1.createCell(colnum1++);
                     hiddenCell1.setCellValue(key);
                 }
 
                 int maxSubcatLength1 = 0;
-                for (Map.Entry<String, List<String>> entry : modelMap.entrySet()) {
+                for (Map.Entry<String, List<String>> entry : brandModelMap.entrySet()) {
                     String key = entry.getKey();
                     List<String> subcatList = entry.getValue();
 
@@ -894,15 +864,15 @@ public class TemplateImpl implements ITemplate {
                     maxSubcatLength1 = Math.max(maxSubcatLength1, subcatList.size());
                 }
 
-                Name categoriesName1 = workbook.createName();
-                categoriesName1.setNameName("brands");
-                categoriesName1.setRefersToFormula("Hidden1!$A$1:$" + iExcel.getExcelColumnReference(
+                Name brandsName = workbook.createName();
+                brandsName.setNameName("brands");
+                brandsName.setRefersToFormula("Hidden1!$A$1:$" + iExcel.getExcelColumnReference(
                         'A',
-                        modelMap.keySet().size() - 1
+                        brandModelMap.keySet().size() - 1
                 ) + "$1");
 
-                for (int i = 0; i < modelMap.size(); i++) {
-                    String category = (String) modelMap.keySet().toArray()[i];
+                for (int i = 0; i < brandModelMap.size(); i++) {
+                    String category = (String) brandModelMap.keySet().toArray()[i];
                     Name name = workbook.createName();
                     name.setNameName(category);
                     name.setRefersToFormula("Hidden1!$B$" + (i + 2) + ":$" + iExcel.getExcelColumnReference('B',maxSubcatLength1-1) + "$" + (i + 2));
@@ -961,7 +931,7 @@ public class TemplateImpl implements ITemplate {
                 for (int i = 0; i < categoryProductSizeMap.size(); i++) {
                     String category = (String) categoryProductSizeMap.keySet().toArray()[i];
                     Name name = workbook.createName();
-                    name.setNameName(category);
+                    name.setNameName("Size_"+category);
                     name.setRefersToFormula("Hidden2!$B$" + (i + 2) + ":$" + iExcel.getExcelColumnReference('B',maxSubcatLength2-1) + "$" + (i + 2));
                 }
 
@@ -972,102 +942,165 @@ public class TemplateImpl implements ITemplate {
                 sheet.addValidationData(categoryValidation);
 
                 for (int i = 1; i <= quantity; i++) {
-                    DataValidationConstraint sizeConstraint = validationHelperCategory.createFormulaListConstraint("INDIRECT($E" + (i + 1) + ")");
-                    CellRangeAddressList sizeAddressList = new CellRangeAddressList(i, i, 5, 5);
+                    DataValidationConstraint sizeConstraint = validationHelperCategory.createFormulaListConstraint("INDIRECT(\"Size_\" & $E" + (i + 1) + ")");
+                    CellRangeAddressList sizeAddressList = new CellRangeAddressList(i, i, 6, 6);
                     DataValidation sizeValidation = validationHelperCategory.createValidation(sizeConstraint, sizeAddressList);
                     sheet.addValidationData(sizeValidation);
                 }
 
-                // unit and unit type dependent validation lists
                 XSSFSheet hiddenSheet3 = workbook.createSheet("Hidden3");
                 workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet3), true);
 
+                // color validation list
+                String[] colorArray = colors.stream().map(Color::getName).toList().toArray(new String[0]);
                 int rownum3 = 0;
                 Row row3;
                 Cell hiddenCell3;
-
                 row3 = hiddenSheet3.createRow(rownum3++);
                 int colnum3 = 0;
-                for (String key : unitMap.keySet()) {
-                    hiddenCell3 = row3.createCell(colnum3++);
-                    hiddenCell3.setCellValue(key);
-                }
-
-                int maxSubcatLength3 = 0;
-                for (Map.Entry<String, List<String>> entry : unitMap.entrySet()) {
-                    String key = entry.getKey();
-                    List<String> subcatList = entry.getValue();
-
-                    row3 = hiddenSheet3.createRow(rownum3++);
-                    colnum3 = 0;
-                    hiddenCell3 = row3.createCell(colnum3++);
-                    hiddenCell3.setCellValue(key);
-
-                    for (String subcat : subcatList) {
-                        hiddenCell3 = row3.createCell(colnum3++);
-                        hiddenCell3.setCellValue(subcat);
-                    }
-
-                    maxSubcatLength3 = Math.max(maxSubcatLength3, subcatList.size());
-                }
-
-                Name categoriesName3 = workbook.createName();
-                categoriesName3.setNameName("unit_types");
-                categoriesName3.setRefersToFormula("Hidden3!$A$1:$" + iExcel.getExcelColumnReference('A',unitMap.keySet().size()-1) + "$1");
-
-                for (int i = 0; i < unitMap.size(); i++) {
-                    String category = (String) unitMap.keySet().toArray()[i];
-                    System.out.println(category);
-                    Name name = workbook.createName();
-                    name.setNameName(category);
-                    name.setRefersToFormula("Hidden3!$B$" + (i + 2) + ":$"+ iExcel.getExcelColumnReference('B',maxSubcatLength3-1) + "$" + (i + 2));
-                }
-
-                DataValidationHelper validationHelperUnitType = sheet.getDataValidationHelper();
-                DataValidationConstraint unitTypeConstraint = validationHelperUnitType.createFormulaListConstraint("unit_types");
-                CellRangeAddressList unitTypeAddressList = new CellRangeAddressList(1, quantity, 6, 6);
-                DataValidation unitTypeValidation = validationHelperUnitType.createValidation(unitTypeConstraint, unitTypeAddressList);
-                sheet.addValidationData(unitTypeValidation);
-
-                for (int i = 1; i <= quantity; i++) {
-                    DataValidationConstraint unitConstraint = validationHelperUnitType.createFormulaListConstraint("INDIRECT($G" + (i + 1) + ")");
-                    CellRangeAddressList unitAddressList = new CellRangeAddressList(i, i, 7, 7);
-                    DataValidation unitValidation = validationHelperUnitType.createValidation(unitConstraint, unitAddressList);
-                    sheet.addValidationData(unitValidation);
-                }
-
-                XSSFSheet hiddenSheet4 = workbook.createSheet("Hidden4");
-                workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet4), true);
-
-                // color validation list
-                String[] colorArray = colors.stream().map(Color::getName).toList().toArray(new String[0]);
-                int rownum4 = 0;
-                Row row4;
-                Cell hiddenCell4;
-                row1 = hiddenSheet4.createRow(rownum4++);
-                int colnum4 = 0;
                 for (String key : colorArray) {
-                    hiddenCell4 = row1.createCell(colnum4++);
-                    hiddenCell4.setCellValue(key);
+                    hiddenCell3 = row3.createCell(colnum3++);
+                    hiddenCell3.setCellValue(key);
                 }
-                Name namedRange4 = workbook.createName();
-                namedRange4.setNameName("Colors");
-                String reference1 = "Hidden4!$A$1:" + iExcel.getExcelColumnReference('A',colorArray.length-1) + "$1";
-                namedRange4.setRefersToFormula(reference1);
+                Name namedRange3 = workbook.createName();
+                namedRange3.setNameName("Colors");
+                String reference1 = "Hidden3!$A$1:" + iExcel.getExcelColumnReference('A',colorArray.length-1) + "$1";
+                namedRange3.setRefersToFormula(reference1);
                 DataValidationHelper validationHelperColor = sheet.getDataValidationHelper();
                 DataValidationConstraint colorConstraint = validationHelperColor.createFormulaListConstraint("Colors");
                 CellRangeAddressList colorAddressList = new CellRangeAddressList(1,quantity,3,3);
                 DataValidation colorDataValidation = validationHelperColor.createValidation(colorConstraint,colorAddressList);
                 sheet.addValidationData(colorDataValidation);
 
+                // subCategory validation list
+                XSSFSheet hiddenSheet4 = workbook.createSheet("Hidden4");
+                workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet4), true);
+
+                int rownum4 = 0;
+                Row row4;
+                Cell hiddenCell4;
+
+                row4 = hiddenSheet4.createRow(rownum4++);
+                int colnum4 = 0;
+                for (String key : categoryProductSubCategoryProductMap.keySet()) {
+                    hiddenCell4 = row4.createCell(colnum4++);
+                    hiddenCell4.setCellValue(key);
+                }
+
+                int maxSubcatLength3 = 0;
+                for (Map.Entry<String, List<String>> entry : categoryProductSubCategoryProductMap.entrySet()) {
+                    String key = entry.getKey();
+                    List<String> subcatList = entry.getValue();
+
+                    row4 = hiddenSheet4.createRow(rownum4++);
+                    colnum4 = 0;
+                    hiddenCell4 = row4.createCell(colnum4++);
+                    hiddenCell4.setCellValue(key);
+
+                    for (String subcat : subcatList) {
+                        hiddenCell4 = row4.createCell(colnum4++);
+                        hiddenCell4.setCellValue(subcat);
+                    }
+
+                    maxSubcatLength3 = Math.max(maxSubcatLength3, subcatList.size());
+                }
+
+                Name subCategoriesName = workbook.createName();
+                subCategoriesName.setNameName("sub_categories");
+                subCategoriesName.setRefersToFormula("Hidden4!$A$1:$" + iExcel.getExcelColumnReference(
+                        'A',
+                        categoryProductSubCategoryProductMap.keySet().size() - 1
+                ) + "$1");
+
+                for (int i = 0; i < categoryProductSubCategoryProductMap.size(); i++) {
+                    String category = (String) categoryProductSubCategoryProductMap.keySet().toArray()[i];
+                    Name name = workbook.createName();
+                    name.setNameName("Category_"+category);
+                    name.setRefersToFormula("Hidden4!$B$" + (i + 2) + ":$" + iExcel.getExcelColumnReference('B',maxSubcatLength3-1) + "$" + (i + 2));
+                }
+
+                for (int i = 1; i <= quantity; i++) {
+                    DataValidationConstraint subCategoryProductConstraint = validationHelperCategory.createFormulaListConstraint("INDIRECT(\"Category_\" & $E" + (i + 1) + ")");
+                    CellRangeAddressList subCategoryProductAddressList = new CellRangeAddressList(i, i, 5, 5);
+                    DataValidation subCategoryProductValidation = validationHelperCategory.createValidation(subCategoryProductConstraint, subCategoryProductAddressList);
+                    sheet.addValidationData(subCategoryProductValidation);
+                }
+
+                // unit validation list
+                XSSFSheet hiddenSheet5 = workbook.createSheet("Hidden5");
+                workbook.setSheetHidden(workbook.getSheetIndex(hiddenSheet5), true);
+
+                int rownum5 = 0;
+                Row row5;
+                Cell hiddenCell5;
+
+                row5 = hiddenSheet4.createRow(rownum5++);
+                int colnum5 = 0;
+                for (String key : categoryProductUnitMap.keySet()) {
+                    hiddenCell5 = row5.createCell(colnum5++);
+                    hiddenCell5.setCellValue(key);
+                }
+
+                int maxSubcatLength4 = 0;
+                for (Map.Entry<String, List<String>> entry : categoryProductUnitMap.entrySet()) {
+                    String key = entry.getKey();
+                    List<String> subcatList = entry.getValue();
+
+                    row5 = hiddenSheet5.createRow(rownum5++);
+                    colnum5 = 0;
+                    hiddenCell5 = row5.createCell(colnum5++);
+                    hiddenCell5.setCellValue(key);
+
+                    for (String subcat : subcatList) {
+                        hiddenCell5 = row5.createCell(colnum5++);
+                        hiddenCell5.setCellValue(subcat);
+                    }
+
+                    maxSubcatLength4 = Math.max(maxSubcatLength4, subcatList.size());
+                }
+
+                Name unitsName = workbook.createName();
+                unitsName.setNameName("units");
+                unitsName.setRefersToFormula("Hidden5!$A$1:$" + iExcel.getExcelColumnReference(
+                        'A',
+                        categoryProductUnitMap.keySet().size() - 1
+                ) + "$1");
+
+                for (int i = 0; i < categoryProductUnitMap.size(); i++) {
+                    String category = (String) categoryProductUnitMap.keySet().toArray()[i];
+                    Name name = workbook.createName();
+                    name.setNameName("Unit_"+category);
+                    name.setRefersToFormula("Hidden5!$B$" + (i + 2) + ":$" + iExcel.getExcelColumnReference('B',maxSubcatLength4-1) + "$" + (i + 2));
+                }
+
+                for (int i = 1; i <= quantity; i++) {
+                    DataValidationConstraint unitConstraint = validationHelperCategory.createFormulaListConstraint("INDIRECT(\"Unit_\" & $E" + (i + 1) + ")");
+                    CellRangeAddressList unitAddressList = new CellRangeAddressList(i, i, 7, 7);
+                    DataValidation unitValidation = validationHelperCategory.createValidation(unitConstraint, unitAddressList);
+                    sheet.addValidationData(unitValidation);
+                }
+
                 CellStyle priceStyle = workbook.createCellStyle();
                 DataFormat priceFormat = workbook.createDataFormat();
                 priceStyle.setDataFormat(priceFormat.getFormat("_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)"));
+                priceStyle.setFillForegroundColor(IndexedColors.AQUA.getIndex());
+                priceStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                priceStyle.setBorderTop(BorderStyle.THIN);
+                priceStyle.setBorderBottom(BorderStyle.THIN);
+                priceStyle.setBorderLeft(BorderStyle.THIN);
+                priceStyle.setBorderRight(BorderStyle.THIN);
 
                 for(int rowIndex = 1; rowIndex <= quantity;rowIndex++){
                     Row row = sheet.createRow(rowIndex);
-                    Cell priceCell = row.createCell(9);
-                    priceCell.setCellStyle(priceStyle);
+                    for(int colNum = 0;colNum<=8;colNum++){
+                        Cell colorCell = row.getCell(colNum);
+                        if(colorCell==null){
+                            colorCell=row.createCell(colNum);
+                        }
+                        colorCell.setCellStyle(cellStyle);
+                        Cell priceCell = row.createCell(8);
+                        priceCell.setCellStyle(priceStyle);
+                    }
                 }
 
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -1233,10 +1266,26 @@ public class TemplateImpl implements ITemplate {
                 CellStyle headerStyle = workbook.createCellStyle();
                 headerStyle.setFillForegroundColor(IndexedColors.YELLOW.getIndex());
                 headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle.setBorderTop(BorderStyle.THIN);
+                headerStyle.setBorderBottom(BorderStyle.THIN);
+                headerStyle.setBorderLeft(BorderStyle.THIN);
+                headerStyle.setBorderRight(BorderStyle.THIN);
 
                 CellStyle headerStyle2 = workbook.createCellStyle();
                 headerStyle2.setFillForegroundColor(IndexedColors.RED.getIndex());
                 headerStyle2.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                headerStyle2.setBorderTop(BorderStyle.THIN);
+                headerStyle2.setBorderBottom(BorderStyle.THIN);
+                headerStyle2.setBorderLeft(BorderStyle.THIN);
+                headerStyle2.setBorderRight(BorderStyle.THIN);
+
+                CellStyle cellStyle = workbook.createCellStyle();
+                cellStyle.setFillForegroundColor(IndexedColors.AQUA.getIndex());
+                cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                cellStyle.setBorderTop(BorderStyle.THIN);
+                cellStyle.setBorderBottom(BorderStyle.THIN);
+                cellStyle.setBorderLeft(BorderStyle.THIN);
+                cellStyle.setBorderRight(BorderStyle.THIN);
 
                 Row headerRow = sheet.createRow(0);
                 Cell cell = headerRow.createCell(0);
@@ -1271,9 +1320,23 @@ public class TemplateImpl implements ITemplate {
                 namedRange1.setRefersToFormula(reference1);
                 DataValidationHelper validationHelper = sheet.getDataValidationHelper();
                 DataValidationConstraint constraint = validationHelper.createFormulaListConstraint("Brands");
-                CellRangeAddressList addressList = new CellRangeAddressList(1,quantity+1,0,0);
+                CellRangeAddressList addressList = new CellRangeAddressList(1,quantity,0,0);
                 DataValidation dataValidation = validationHelper.createValidation(constraint,addressList);
                 sheet.addValidationData(dataValidation);
+
+                for(int rowNum=1;rowNum<=quantity;rowNum++){
+                    Row row = sheet.getRow(rowNum);
+                    if(row==null){
+                        row=sheet.createRow(rowNum);
+                    }
+                    for(int colNum = 0;colNum<=2;colNum++){
+                        Cell colorCell = row.getCell(colNum);
+                        if(colorCell==null){
+                            colorCell=row.createCell(colNum);
+                        }
+                        colorCell.setCellStyle(cellStyle);
+                    }
+                }
 
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 workbook.write(out);

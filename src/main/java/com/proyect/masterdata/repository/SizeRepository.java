@@ -12,7 +12,7 @@ public interface SizeRepository extends JpaRepository<Size, UUID> {
     Size findByNameAndClientId(String name,UUID clientId);
     List<Size> findAllByStatusTrueAndClientId(UUID clientId);
     List<Size> findAllByStatusFalseAndClientId(UUID clientId);
-    List<Size> findAllByStatusTrueAndSizeTypeId(UUID id);
+    List<Size> findAllByStatusTrueAndSizeTypeIdAndClientId(UUID sizeTypeId,UUID clientId);
     List<Size> findAllByStatusTrueAndSizeTypeNameAndClientId(String name,UUID clientId);
     Size findByIdAndStatusTrue(UUID id);
     Size findByNameAndStatusTrueAndClientId(String name,UUID clientId);

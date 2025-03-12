@@ -48,6 +48,7 @@ public class ExcelImpl implements IExcel {
     private final UnitTypeRepository unitTypeRepository;
     private final BrandRepository brandRepository;
     private final IUtil iUtil;
+    private final SubCategoryProductRepository subCategoryProductRepository;
     @Override
     public CompletableFuture<ResponseSuccess> purchase(RequestSupplyOrderExcel requestSupplyOrderExcel, MultipartFile multipartFile) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -929,7 +930,8 @@ public class ExcelImpl implements IExcel {
                 Sheet sheet = workbook.getSheetAt(0);
                 List<Product> products = new ArrayList<>();
                 List<ProductPrice> productPrices = new ArrayList<>();
-                Set<String> skus = new HashSet<>();
+                Set<String> names = new HashSet<>();
+                Set<String> uniqueCombinations = new HashSet<>();
                 boolean hasDuplicate = false;
                 int i = 0;
                 for(Row row:sheet){
@@ -940,9 +942,10 @@ public class ExcelImpl implements IExcel {
                     Size size;
                     UnitType unitType=null;
                     Unit unit;
+                    SubCategoryProduct subCategoryProduct=null;
                     Product newProduct = Product.builder().build();
                     ProductPrice productPrice = ProductPrice.builder().build();
-                    for(int ii = 0;ii <= 9;ii++){
+                    for(int ii = 0;ii <= 8;ii++){
                         if((i>=1)&&(
                                 (row.getCell(0)==null) ||
                                         (row.getCell(1)==null)) ||
@@ -952,142 +955,166 @@ public class ExcelImpl implements IExcel {
                                 (row.getCell(5)==null) ||
                                 (row.getCell(6)==null) ||
                                 (row.getCell(7)==null) ||
-                                (row.getCell(9)==null)
+                                (row.getCell(8)==null)
                         ){
                             break;
                         }
                         if((i>=1) && (row.getCell(0).getCellType() == STRING) && (ii==0)){
-                            System.out.println(row.getCell(0).getRichStringCellValue());
-//                            product = productRepository.findBySku(row.getCell(0).getRichStringCellValue().getString().toUpperCase());
-//                            if(product != null){
-//                                throw new BadRequestExceptions(Constants.ErrorProductExists);
-//                            }
-                            //newProduct.setSku(row.getCell(0).getRichStringCellValue().getString().toUpperCase());
+                            product = productRepository.findByNameAndClientId(row.getCell(0).getRichStringCellValue().getString().toUpperCase(),user.getClientId());
+                            if(product!=null){
+                                return ResponseSuccess.builder()
+                                        .code(400)
+                                        .message(Constants.ErrorProductExists+" en linea: "+(i+1)+".")
+                                        .build();
+                            }
+                            newProduct.setName(row.getCell(0).getStringCellValue().toUpperCase());
                         }
                         if((i>=1) && (row.getCell(0).getCellType() == NUMERIC) && (ii==0)){
-                            System.out.println(row.getCell(0).getRichStringCellValue());
-//                            product = productRepository.findBySku(String.valueOf((int) (row.getCell(0).getNumericCellValue())));
-//                            if(product != null){
-//                                throw new BadRequestExceptions(Constants.ErrorProductExists);
-//                            }
-                            //newProduct.setSku(row.getCell(0).getRichStringCellValue().getString().toUpperCase());
+                            product = productRepository.findByNameAndClientId(String.valueOf((int) (row.getCell(0).getNumericCellValue())),user.getClientId());
+                            if(product!=null){
+                                return ResponseSuccess.builder()
+                                        .code(400)
+                                        .message(Constants.ErrorProductExists+" en linea: "+(i+1)+".")
+                                        .build();
+                            }
+                            newProduct.setName(String.valueOf((int) (row.getCell(0).getNumericCellValue())));
                         }
                         if((i>=1)&&(row.getCell(2).getCellType() == STRING) && (ii==2)){
-                            System.out.println(row.getCell(2).getRichStringCellValue());
                             model = modelRepository.findByNameAndClientIdAndStatusTrue(row.getCell(2).getRichStringCellValue().getString().toUpperCase(),user.getClientId());
                             if(model == null){
-                                throw new BadRequestExceptions(Constants.ErrorModel);
+                                return ResponseSuccess.builder()
+                                        .code(400)
+                                        .message(Constants.ErrorModel+" en linea: "+(i+1)+".")
+                                        .build();
                             }
                             newProduct.setModel(model);
                             newProduct.setModelId(model.getId());
                         }
-//                        if((i>=1)&&(row.getCell(3).getCellType()==STRING)&&(ii==3)){
-//                            color = colorRepository.findByNameAndStatusTrue(row.getCell(3).getRichStringCellValue().getString().toUpperCase());
-//                            if(color==null){
-//                                throw new BadRequestExceptions(Constants.ErrorColor);
-//                            }
-//                            newProduct.setColor(color);
-//                            newProduct.setColorId(color.getId());
-//                        }
-//                        if((i>=1)&&(row.getCell(4).getCellType()==STRING)&&(ii==4)){
-//                            categoryProduct = categoryProductRepository.findByNameAndStatusTrue(row.getCell(4).getRichStringCellValue().getString().toUpperCase());
-//                            if(categoryProduct==null){
-//                                throw new BadRequestExceptions(Constants.ErrorCategory);
-//                            }
-//                            newProduct.setCategoryProduct(categoryProduct);
-//                            newProduct.setCategoryProductId(categoryProduct.getId());
-//                        }
-//                        if((i>=1)&&(row.getCell(5).getCellType()==STRING)&&(ii==5)&&(categoryProduct!=null)){
-//                            size = sizeRepository.findByNameAndStatusTrue(row.getCell(5).getRichStringCellValue().getString().toUpperCase());
-//                            if(size==null){
-//                                throw new BadRequestExceptions(Constants.ErrorSize);
-//                            }
-//
-//                            if(!Objects.equals(size.getSizeTypeId(), categoryProduct.getSizeTypeId())){
-//                                throw new BadRequestExceptions(Constants.ErrorSizeTypeCategoryProduct);
-//                            }
-//                            newProduct.setSize(size);
-//                            newProduct.setSizeId(size.getId());
-//                        }
-//                        if((i>=1)&&(row.getCell(5).getCellType()==NUMERIC)&&(ii==5)&&(categoryProduct!=null)){
-//                            size = sizeRepository.findByNameAndStatusTrue(String.valueOf((int) row.getCell(5).getNumericCellValue()));
-//                            if(size==null){
-//                                throw new BadRequestExceptions(Constants.ErrorSize);
-//                            }
-//                            if(!Objects.equals(size.getSizeTypeId(), categoryProduct.getSizeTypeId())){
-//                                throw new BadRequestExceptions(Constants.ErrorSizeTypeCategoryProduct);
-//                            }
-//                            newProduct.setSize(size);
-//                            newProduct.setSizeId(size.getId());
-//                        }
-                        if((i>=1)&&(row.getCell(6).getCellType()==STRING)&&(ii==6)){
-                            unitType = unitTypeRepository.findByNameAndStatusTrue(row.getCell(6).getRichStringCellValue().getString().toUpperCase());
-                            if(unitType == null){
-                                throw new BadRequestExceptions(Constants.ErrorUnitType);
+                        if((i>=1)&&(row.getCell(3).getCellType()==STRING)&&(ii==3)){
+                            color = colorRepository.findByNameAndClientIdAndStatusTrue(row.getCell(3).getRichStringCellValue().getString().toUpperCase(),user.getClientId());
+                            if(color==null){
+                                return ResponseSuccess.builder()
+                                        .code(400)
+                                        .message(Constants.ErrorColor+" en linea: "+(i+1)+".")
+                                        .build();
                             }
+                            newProduct.setColor(color);
+                            newProduct.setColorId(color.getId());
                         }
-//                        if((i>=1)&&(row.getCell(7).getCellType()==STRING)&&(ii==7)){
-//                            assert unitType != null;
-//                            unit = unitRepository.findByNameAndUnitTypeIdAndStatusTrue(row.getCell(7).getRichStringCellValue().getString().toUpperCase(),unitType.getId());
-//                            if(unit==null){
-//                                throw new BadRequestExceptions(Constants.ErrorUnit);
-//                            }
-//                            newProduct.setUnit(unit);
-//                            newProduct.setUnitId(unit.getId());
-//                        }
-                        if((i>=1)&&(row.getCell(8)!=null)&&(row.getCell(8).getCellType()==STRING)&&(ii==8)){
-                            //newProduct.setCharacteristics(row.getCell(8).getRichStringCellValue().getString().toUpperCase());
-                        }
-//                        if(newProduct.getCharacteristics()==null){
-//                            newProduct.setCharacteristics("NO APLICA");
-//                        }
-                        if((i>=1)&&(row.getCell(9).getCellType()==NUMERIC)&&(ii==9)){
-                            if(row.getCell(9).getNumericCellValue() < 0.01){
-                                throw new BadRequestExceptions(Constants.ErrorProductPriceZero);
+                        if((i>=1)&&(row.getCell(5).getCellType()==STRING)&&(ii==5)){
+                            subCategoryProduct = subCategoryProductRepository.findByNameAndClientIdAndStatusTrue(
+                                    row.getCell(5).getRichStringCellValue().getString().toUpperCase(),
+                                    user.getClientId()
+                            );
+                            if(subCategoryProduct==null){
+                                return ResponseSuccess.builder()
+                                        .code(400)
+                                        .message(Constants.ErrorSubCategoryProduct+" en linea: "+(i+1)+".")
+                                        .build();
                             }
-                            productPrice.setUnitSalePrice(row.getCell(9).getNumericCellValue());
+                            newProduct.setSubCategoryProduct(subCategoryProduct);
+                            newProduct.setSubCategoryProductId(subCategoryProduct.getId());
+                        }
+                        if((i>=1)&&(row.getCell(6).getCellType()==STRING)&&(ii==6)&&(subCategoryProduct!=null)){
+                            size = sizeRepository.findByNameAndStatusTrueAndClientId(row.getCell(6).getRichStringCellValue().getString().toUpperCase(),user.getClientId());
+                            if(size==null){
+                                return ResponseSuccess.builder()
+                                        .code(400)
+                                        .message(Constants.ErrorSize+" en linea: "+(i+1)+".")
+                                        .build();
+                            }
+
+                            if(!Objects.equals(size.getSizeTypeId(), subCategoryProduct.getCategoryProduct().getSizeTypeId())){
+                                return ResponseSuccess.builder()
+                                        .code(400)
+                                        .message(Constants.ErrorSizeTypeCategoryProduct+" en linea: "+(i+1)+".")
+                                        .build();
+                            }
+                            newProduct.setSize(size);
+                            newProduct.setSizeId(size.getId());
+                        }
+                        if((i>=1)&&(row.getCell(6).getCellType()==NUMERIC)&&(ii==6)&&(subCategoryProduct!=null)){
+                            size = sizeRepository.findByNameAndStatusTrueAndClientId(String.valueOf((int) row.getCell(6).getNumericCellValue()),user.getClientId());
+                            if(size==null){
+                                return ResponseSuccess.builder()
+                                        .code(400)
+                                        .message(Constants.ErrorSize+" en linea: "+(i+1)+".")
+                                        .build();
+                            }
+                            if(!Objects.equals(size.getSizeTypeId(), subCategoryProduct.getCategoryProduct().getSizeTypeId())){
+                                return ResponseSuccess.builder()
+                                        .code(400)
+                                        .message(Constants.ErrorSizeTypeCategoryProduct+" en linea: "+(i+1)+".")
+                                        .build();
+                            }
+                            newProduct.setSize(size);
+                            newProduct.setSizeId(size.getId());
+                        }
+                        if((i>=1)&&(row.getCell(7).getCellType()==STRING)&&(ii==7)&&(subCategoryProduct!=null)){
+                            unit = unitRepository.findByNameAndUnitTypeIdAndClientIdAndStatusTrue(row.getCell(7).getRichStringCellValue().getString().toUpperCase(),subCategoryProduct.getCategoryProduct().getUnitTypeId(),user.getClientId());
+                            if(unit==null){
+                                return ResponseSuccess.builder()
+                                        .code(400)
+                                        .message(Constants.ErrorUnit+" en linea: "+(i+1)+".")
+                                        .build();
+                            }
+                            newProduct.setUnit(unit);
+                            newProduct.setUnitId(unit.getId());
+                        }
+                        if((i>=1)&&(row.getCell(8).getCellType()==NUMERIC)&&(ii==8)){
+                            if(row.getCell(8).getNumericCellValue() < 0.01){
+                                return ResponseSuccess.builder()
+                                        .code(400)
+                                        .message(Constants.ErrorProductPriceZero+" en linea: "+(i+1)+".")
+                                        .build();
+                            }
+                            productPrice.setUnitSalePrice(row.getCell(8).getNumericCellValue());
                         }
                     }
-//                    if(i>=1 && (
-//                            newProduct.getSku() != null &&
-//                                    newProduct.getSize() != null &&
-//                                    newProduct.getUnit() != null &&
-//                                    newProduct.getCategoryProduct() != null &&
-//                                    newProduct.getModel() != null &&
-//                                    productPrice.getUnitSalePrice() != null &&
-//                                    newProduct.getColor() != null
-//                            )){
-//                        newProduct.setStatus(true);
-//                        newProduct.setRegistrationDate(OffsetDateTime.now());
-//                        newProduct.setUpdateDate(OffsetDateTime.now());
-//                        newProduct.setUser(user);
-//                        newProduct.setUserId(user.getId());
-//                        newProduct.setClient(user.getClient());
-//                        newProduct.setClientId(user.getClientId());
-//                        productPrice.setUser(user);
-//                        newProduct.setUserId(user.getId());
-//                        productPrice.setRegistrationDate(OffsetDateTime.now());
-//                        productPrice.setUpdateDate(OffsetDateTime.now());
-//                        productPrice.setStatus(true);
-//                        products.add(newProduct);
-//                        productPrices.add(productPrice);
-//                    }
-//                    if(i>=1 && (
-//                            newProduct.getSku() == null ||
-//                                    newProduct.getSize() == null ||
-//                                    newProduct.getUnit() == null ||
-//                                    productPrice.getUnitSalePrice() == null ||
-//                                    newProduct.getModel() == null ||
-//                                    newProduct.getCategoryProduct() == null ||
-//                                    newProduct.getColor() == null
-//                    )){
-//                        break;
-//                    }
+                    if(i>=1 && (
+                            newProduct.getName() != null &&
+                                    newProduct.getSize() != null &&
+                                    newProduct.getUnit() != null &&
+                                    newProduct.getSubCategoryProduct() != null &&
+                                    newProduct.getModel() != null &&
+                                    productPrice.getUnitSalePrice() != null &&
+                                    newProduct.getColor() != null
+                            )){
+                        newProduct.setStatus(true);
+                        newProduct.setPictureFlag(false);
+                        newProduct.setRegistrationDate(OffsetDateTime.now());
+                        newProduct.setUpdateDate(OffsetDateTime.now());
+                        newProduct.setUser(user);
+                        newProduct.setUserId(user.getId());
+                        newProduct.setClient(user.getClient());
+                        newProduct.setClientId(user.getClientId());
+                        productPrice.setUser(user);
+                        newProduct.setUserId(user.getId());
+                        productPrice.setRegistrationDate(OffsetDateTime.now());
+                        productPrice.setUpdateDate(OffsetDateTime.now());
+                        productPrice.setStatus(true);
+                        products.add(newProduct);
+                        productPrices.add(productPrice);
+                    }
+                    if(i>=1 && (
+                            newProduct.getName() == null ||
+                                    newProduct.getSize() == null ||
+                                    newProduct.getUnit() == null ||
+                                    productPrice.getUnitSalePrice() == null ||
+                                    newProduct.getModel() == null ||
+                                    newProduct.getSubCategoryProduct() == null ||
+                                    newProduct.getColor() == null
+                    )){
+                        continue;
+                    }
                     i++;
                 }
 
                 if(products.isEmpty()){
-                    throw new BadRequestExceptions(Constants.ErrorProduct);
+                    return ResponseSuccess.builder()
+                            .code(400)
+                            .message(Constants.ErrorExcelEmptyFile)
+                            .build();
                 }
 
                 for(int j = 0;j < products.size();j++){
@@ -1096,17 +1123,35 @@ public class ExcelImpl implements IExcel {
                     }
                     Product product = products.get(j);
                     ProductPrice productPrice = productPrices.get(j);
-//                    if(!skus.add(product.getSku())){
-//                        hasDuplicate = true;
-//                    }
+                    Product existingProductDB = productRepository.findByModelIdAndSizeIdAndColorIdAndSubCategoryProductIdAndUnitIdAndClientId(
+                            product.getModelId(),
+                            product.getSizeId(),
+                            product.getColorId(),
+                            product.getSubCategoryProductId(),
+                            product.getUnitId(),
+                            product.getClientId()
+                    );
+                    if(existingProductDB!=null){
+                        return ResponseSuccess.builder()
+                                .code(400)
+                                .message(Constants.ErrorProductExists+" en linea: "+(j+1)+".")
+                                .build();
+                    }
+                    if(!names.add(product.getName())||
+                            !uniqueCombinations.add(iUtil.buildProductSku(product))){
+                        hasDuplicate = true;
+                    }
                     if(hasDuplicate){
-                        throw new BadRequestExceptions(Constants.ErrorProductExists);
+                        return ResponseSuccess.builder()
+                                .code(400)
+                                .message(Constants.ErrorExcelDuplicatedRecordFile+" en linea: "+i+".")
+                                .build();
                     }else {
                         Product storedProduct = productRepository.save(product);
                         productPrice.setProductId(storedProduct.getId());
                         productPrice.setProduct(storedProduct);
                         productPriceRepository.save(productPrice);
-                        //iAudit.save("ADD_PRODUCT_EXCEL","PRODUCTO DE MARKETING "+product.getSku()+" CREADO POR EXCEL.",product.getSku(),user.getUsername());
+                        iAudit.save("ADD_PRODUCT_EXCEL","PRODUCTO "+product.getName()+" CREADO POR EXCEL.",product.getName(),user.getUsername());
                     }
                 }
                 return ResponseSuccess.builder()
@@ -1235,6 +1280,7 @@ public class ExcelImpl implements IExcel {
 
                 List<Model> models = new ArrayList<>();
                 Set<String> modelNames = new HashSet<>();
+                Set<String> modelSkus = new HashSet<>();
                 boolean hasDuplicate = false;
                 int i = 0;
                 for(Row row:sheet){
@@ -1246,7 +1292,10 @@ public class ExcelImpl implements IExcel {
                         if((i>=1) && (cell.getCellType() == STRING) && (ii==0)){
                             brand = brandRepository.findByNameAndClientIdAndStatusTrue(cell.getStringCellValue().toUpperCase(),user.getClientId());
                             if(brand==null){
-                                throw new BadRequestExceptions(Constants.ErrorBrand);
+                                return ResponseSuccess.builder()
+                                        .code(400)
+                                        .message(Constants.ErrorBrand+" en linea: "+(i+1)+".")
+                                        .build();
                             }
                             newModel.setBrand(brand);
                             newModel.setBrandId(brand.getId());
@@ -1254,14 +1303,20 @@ public class ExcelImpl implements IExcel {
                         if((i>=1)&&(cell.getCellType() == STRING) && (ii==1)){
                             model = modelRepository.findByNameAndClientId(cell.getRichStringCellValue().getString().toUpperCase(),user.getClientId());
                             if(model!=null){
-                                throw new BadRequestExceptions(Constants.ErrorModelExists);
+                                return ResponseSuccess.builder()
+                                        .code(400)
+                                        .message(Constants.ErrorModelExists+" en linea: "+(i+1)+".")
+                                        .build();
                             }
                             newModel.setName(cell.getRichStringCellValue().getString().toUpperCase());
                         }
                         if((i>=1)&&(cell.getCellType() == STRING) && (ii==2)){
                             model = modelRepository.findBySkuAndClientId(cell.getRichStringCellValue().getString().toUpperCase(),user.getClientId());
                             if(model!=null){
-                                throw new BadRequestExceptions(Constants.ErrorModelExists);
+                                return ResponseSuccess.builder()
+                                        .code(400)
+                                        .message(Constants.ErrorModelExists+" en linea: "+(i+1)+".")
+                                        .build();
                             }
                             newModel.setSku(cell.getRichStringCellValue().getString().toUpperCase());
                         }
@@ -1291,14 +1346,30 @@ public class ExcelImpl implements IExcel {
                     i++;
                 }
                 if(models.isEmpty()){
-                    throw new BadRequestExceptions(Constants.ErrorModel);
+                    return ResponseSuccess.builder()
+                            .code(400)
+                            .message(Constants.ErrorExcelEmptyFile)
+                            .build();
                 }
-                for(Model model : models){
-                    if(!modelNames.add(model.getSku())){
+                for(int j = 0;j < models.size();j++){
+                    Model model = models.get(j);
+                    Model existingModelDB = modelRepository.findByNameOrSkuAndClientId(model.getName(),model.getSku(),model.getClientId());
+                    if(existingModelDB!=null){
+                        return ResponseSuccess.builder()
+                                .code(400)
+                                .message(Constants.ErrorProductExists+" en linea: "+(j+1)+".")
+                                .build();
+                    }
+                    if(!modelNames.add(model.getName()) ||
+                            !modelSkus.add(model.getSku())
+                    ){
                         hasDuplicate = true;
                     }
                     if(hasDuplicate){
-                        throw new BadRequestExceptions(Constants.ErrorModelExists);
+                        return ResponseSuccess.builder()
+                                .code(400)
+                                .message(Constants.ErrorExcelDuplicatedRecordFile+" en linea: "+i+".")
+                                .build();
                     }else{
                         modelRepository.save(model);
                         iAudit.save("ADD_MODEL_EXCEL","MODEL "+model.getSku()+" CREADO POR EXCEL.",model.getSku(),user.getUsername());

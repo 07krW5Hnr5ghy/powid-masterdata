@@ -95,7 +95,7 @@ public class ProductImpl implements IProduct {
         }
 
         if (subCategoryProduct == null) {
-            throw new BadRequestExceptions(Constants.ErrorSubCategory);
+            throw new BadRequestExceptions(Constants.ErrorSubCategoryProduct);
         }
 
         if (color == null) {
@@ -213,7 +213,7 @@ public class ProductImpl implements IProduct {
             }
 
             if (subCategoryProduct == null) {
-                throw new BadRequestExceptions(Constants.ErrorSubCategory);
+                throw new BadRequestExceptions(Constants.ErrorSubCategoryProduct);
             }
 
             if(!Objects.equals(size.getSizeTypeId(), subCategoryProduct.getCategoryProduct().getSizeTypeId())){

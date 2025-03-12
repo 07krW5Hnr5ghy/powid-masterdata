@@ -222,6 +222,7 @@ public class CategoryProductImpl implements ICategoryProduct {
             return categoryProducts.stream()
                     .map(categoryProduct -> CategoryProductDTO.builder()
                             .status(categoryProduct.getStatus())
+                            .sku(categoryProduct.getSku())
                             .id(categoryProduct.getId())
                             .user(categoryProduct.getUser().getUsername())
                             .name(categoryProduct.getName())
