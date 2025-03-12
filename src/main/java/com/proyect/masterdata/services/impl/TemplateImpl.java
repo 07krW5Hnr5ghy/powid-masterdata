@@ -1083,17 +1083,23 @@ public class TemplateImpl implements ITemplate {
                 CellStyle priceStyle = workbook.createCellStyle();
                 DataFormat priceFormat = workbook.createDataFormat();
                 priceStyle.setDataFormat(priceFormat.getFormat("_($* #,##0.00_);_($* (#,##0.00);_($* \"-\"??_);_(@_)"));
+                priceStyle.setFillForegroundColor(IndexedColors.AQUA.getIndex());
+                priceStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                priceStyle.setBorderTop(BorderStyle.THIN);
+                priceStyle.setBorderBottom(BorderStyle.THIN);
+                priceStyle.setBorderLeft(BorderStyle.THIN);
+                priceStyle.setBorderRight(BorderStyle.THIN);
 
                 for(int rowIndex = 1; rowIndex <= quantity;rowIndex++){
                     Row row = sheet.createRow(rowIndex);
-                    Cell priceCell = row.createCell(8);
-                    priceCell.setCellStyle(priceStyle);
                     for(int colNum = 0;colNum<=8;colNum++){
                         Cell colorCell = row.getCell(colNum);
                         if(colorCell==null){
                             colorCell=row.createCell(colNum);
                         }
                         colorCell.setCellStyle(cellStyle);
+                        Cell priceCell = row.createCell(8);
+                        priceCell.setCellStyle(priceStyle);
                     }
                 }
 
