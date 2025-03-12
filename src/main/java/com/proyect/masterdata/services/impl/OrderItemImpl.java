@@ -12,6 +12,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IAudit;
 import com.proyect.masterdata.services.IOrderItem;
+import com.proyect.masterdata.services.IOrderLog;
 import com.proyect.masterdata.services.IUtil;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,7 @@ public class OrderItemImpl implements IOrderItem {
     private final ProductRepository productRepository;
     private final WarehouseStockRepository warehouseStockRepository;
     private final OrderingRepository orderingRepository;
+    private final IOrderLog iOrderLog;
     private final ProductPriceRepository productPriceRepository;
     private final ProductPictureRepository productPictureRepository;
     private final OrderItemRepositoryCustom orderItemRepositoryCustom;
@@ -264,6 +266,11 @@ public class OrderItemImpl implements IOrderItem {
                         user.getId(),
                         false
                 );
+                iOrderLog.save(
+                        user,
+                        ordering,
+                        "item eliminado"
+                );
                 iAudit.save("DELETE_ORDER_ITEM","PRODUCTO "+iUtil.buildProductSku(orderItem.getProduct())+" DE PEDIDO "+orderItem.getOrderId()+" DESACTIVADO.",orderItem.getOrderId().toString(),user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
@@ -409,6 +416,11 @@ public class OrderItemImpl implements IOrderItem {
                         discount.getId(),
                         OffsetDateTime.now());
                 //orderItemRepository.save(orderItem);
+                iOrderLog.save(
+                        user,
+                        ordering,
+                        "pedido actualizado"
+                );
                 iAudit.save("UPDATE_ORDER_ITEM","PRODUCTO "+iUtil.buildProductSku(orderItem.getProduct())+" DE PEDIDO "+orderItem.getOrderId()+" ACTUALIZADO.",orderItem.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
@@ -628,6 +640,7 @@ public class OrderItemImpl implements IOrderItem {
                         .user(orderItem.getUser().getUsername())
                         .status(orderItem.getStatus())
                         .selectOrderStatus(orderItem.getSelectOrderStatus())
+                        .selectOrderStatus(orderItem.getSelectOrderStatus())
                         .unit(orderItem.getProduct().getUnit().getName())
                         .orderId(orderItem.getOrderId())
                         .color(orderItem.getProduct().getColor().getName())
@@ -695,6 +708,11 @@ public class OrderItemImpl implements IOrderItem {
                         user.getId(),
                         true
                 );
+                iOrderLog.save(
+                        user,
+                        ordering,
+                        "item activado"
+                );
                 iAudit.save("ACTIVATE_ORDER_ITEM","PRODUCTO "+iUtil.buildProductSku(orderItem.getProduct())+" DE PEDIDO "+orderItem.getOrderId()+" ACTIVADO.",orderItem.getOrderId().toString(),user.getUsername());
                 return ResponseDelete.builder()
                         .message(Constants.delete)
@@ -739,12 +757,19 @@ public class OrderItemImpl implements IOrderItem {
             }
 
             try {
+                boolean statusLogOrderItem = orderItem.getSelectOrderStatus();
                 orderItemRepository.selectPreparedOrdetItem(
                         ordering.getId(),
                         orderItemId,
                         user.getId(),
                         OffsetDateTime.now(),
-                        !orderItem.getSelectOrderStatus()
+                        !statusLogOrderItem
+                );
+                iOrderLog.save(
+                        user,
+                        ordering,
+                        (statusLogOrderItem ? "item preparado ":"item deseleccionado ")
+                                + orderItem.getProduct().getName().toUpperCase()
                 );
                 return ResponseSuccess.builder()
                         .message(Constants.update)
