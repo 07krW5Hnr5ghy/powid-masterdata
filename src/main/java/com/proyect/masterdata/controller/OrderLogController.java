@@ -23,22 +23,18 @@ import java.util.concurrent.ExecutionException;
 public class OrderLogController {
     private final IOrderLog iOrderLog;
 
-    @GetMapping("list")
-    public ResponseEntity<List<OrderLogDTO>> listOrderLogs(
-            @RequestParam("orderId") UUID orderId
-    ) throws ExecutionException, InterruptedException {
-        //CompletableFuture<List<OrderLogDTO>> result = iOrderLog.listLogByOrder(orderId);
-        //return new ResponseEntity<>(result.get(),HttpStatus.OK);
-        return null;
-    }
-
-    @PostMapping
+    @PostMapping("comment")
     public ResponseEntity<ResponseSuccess> addComment(
             @RequestParam("tokenUser") String tokenUser,
             @RequestParam("orderId") UUID orderId,
             @RequestParam("comment") String comment
-    ){
-        return null;
+    ) throws ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iOrderLog.saveCommentUserAsync(
+                tokenUser,
+                orderId,
+                comment
+        );
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
 }

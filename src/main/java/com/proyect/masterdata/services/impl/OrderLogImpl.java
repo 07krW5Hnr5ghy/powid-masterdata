@@ -4,14 +4,18 @@ import com.proyect.masterdata.domain.OrderLog;
 import com.proyect.masterdata.domain.Ordering;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.OrderLogDTO;
+import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.OrderLogRepository;
+import com.proyect.masterdata.repository.OrderingRepository;
+import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IOrderLog;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,6 +27,8 @@ import java.util.concurrent.CompletableFuture;
 @Log4j2
 public class OrderLogImpl implements IOrderLog {
     private final OrderLogRepository orderLogRepository;
+    private final UserRepository userRepository;
+    private final OrderingRepository orderingRepository;
     @Override
     public OrderLog save(User user, Ordering order,String detail) throws InternalErrorExceptions, BadRequestExceptions {
         try{
@@ -69,5 +75,55 @@ public class OrderLogImpl implements IOrderLog {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
+    }
+
+    @Transactional
+    @Override
+    public CompletableFuture<ResponseSuccess> saveCommentUserAsync(
+            String tokenUser,
+            UUID orderId,
+            String comment) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Ordering order;
+            try {
+                user = userRepository.findByUsername(tokenUser);
+                order = orderingRepository.findById(orderId).get();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(order == null){
+                throw new BadRequestExceptions(Constants.ErrorOrdering);
+            }
+
+            try {
+                orderLogRepository.save(
+                        OrderLog.builder()
+                                .ordering(order)
+                                .orderId(order.getId())
+                                .orderState(order.getOrderState())
+                                .orderStateId(order.getOrderStateId())
+                                .detail(comment.toUpperCase())
+                                .user(user)
+                                .userId(user.getId())
+                                .client(user.getClient())
+                                .clientId(user.getClientId())
+                                .build()
+                );
+
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
     }
 }
