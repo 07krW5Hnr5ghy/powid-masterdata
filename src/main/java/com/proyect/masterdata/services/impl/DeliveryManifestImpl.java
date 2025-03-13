@@ -68,6 +68,13 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
             }
             try{
                 Long deliveryManifestNumber = deliveryManifestRepository.countByClientId(user.getClientId()) + 1L;
+                List<OrderItem> orderItems = new ArrayList<>();
+                for(UUID orderId:requestDeliveryManifest.getOrderUUIDs()){
+                    orderItems = orderItemRepository.findAllByClientIdAndStatusTrueAndSelectOrderStatusTrue(orderId);
+                    if(orderItems.isEmpty()){
+                        throw new BadRequestExceptions(Constants.ErrorDeliveryManifestNotItems);
+                    }
+                }
                 DeliveryManifest deliveryManifest = deliveryManifestRepository.save(DeliveryManifest.builder()
                                 .manifestNumber(deliveryManifestNumber)
                                 .courier(courier)
@@ -82,18 +89,12 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 .warehouseId(warehouse.getId())
                         .build());
                 List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
-                for(UUID orderId:requestDeliveryManifest.getOrderUUIDs()){
-                    List<OrderItem> orderItems = orderItemRepository.findAllByClientIdAndStatusTrueAndSelectOrderStatusTrue(orderId);
-                    if(orderItems.isEmpty()){
-                        throw new BadRequestExceptions(Constants.ErrorDeliveryManifestNotItems);
-                    }
-                    for(OrderItem orderItem:orderItems){
-                        CompletableFuture<DeliveryManifestItem> deliveryManifestItem = iDeliveryManifestItem.save(orderItem,deliveryManifest,warehouse,user);
-                        stockTransactionList.add(RequestStockTransactionItem.builder()
-                                .productId(deliveryManifestItem.get().getProductId())
-                                .quantity(deliveryManifestItem.get().getQuantity())
-                                .build());
-                    }
+                for(OrderItem orderItem:orderItems){
+                    CompletableFuture<DeliveryManifestItem> deliveryManifestItem = iDeliveryManifestItem.save(orderItem,deliveryManifest,warehouse,user);
+                    stockTransactionList.add(RequestStockTransactionItem.builder()
+                            .productId(deliveryManifestItem.get().getProductId())
+                            .quantity(deliveryManifestItem.get().getQuantity())
+                            .build());
                 }
                 iStockTransaction.save(
                         "DM"+deliveryManifest.getManifestNumber(),
