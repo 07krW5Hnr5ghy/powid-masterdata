@@ -28,8 +28,9 @@ public class DepartmentController {
         //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DEPARTMENT_POST')")
         public ResponseEntity<ResponseSuccess> save(
                         @RequestParam("name") String name,
+                        @RequestParam("country") String country,
                         @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
-                CompletableFuture<ResponseSuccess> result = iDepartment.saveAsync(name, tokenUser);
+                CompletableFuture<ResponseSuccess> result = iDepartment.saveAsync(name,country,tokenUser);
                 return new ResponseEntity<>(result.get(), HttpStatus.OK);
         }
 

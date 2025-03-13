@@ -34,7 +34,7 @@ public class CountryImpl implements ICountry {
     private final CountryRepositoryCustom countryRepositoryCustom;
     private final IAudit iAudit;
     @Override
-    public CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Country country;
@@ -60,8 +60,6 @@ public class CountryImpl implements ICountry {
                         .name(name.toUpperCase())
                         .registrationDate(OffsetDateTime.now())
                         .status(true)
-                        .user(user)
-                                .userId(user.getId())
                         .build());
                 iAudit.save("ADD_COUNTRY","PAIS "+newCountry.getName()+" CREADO.", newCountry.getName(), user.getUsername());
                 return ResponseSuccess.builder()
@@ -73,6 +71,44 @@ public class CountryImpl implements ICountry {
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
         });
+    }
+
+    @Override
+    public ResponseSuccess save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        User user;
+        Country country;
+
+        try {
+            user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+            country = countryRepository.findByNameAndStatusTrue(name.toUpperCase());
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(user == null){
+            throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+
+        if(country != null){
+            throw new BadRequestExceptions(Constants.ErrorCountry);
+        }
+
+        try {
+            Country newCountry = countryRepository.save(Country.builder()
+                    .name(name.toUpperCase())
+                    .registrationDate(OffsetDateTime.now())
+                    .status(true)
+                    .build());
+            iAudit.save("ADD_COUNTRY","PAIS "+newCountry.getName()+" CREADO.", newCountry.getName(), user.getUsername());
+            return ResponseSuccess.builder()
+                    .code(200)
+                    .message(Constants.register)
+                    .build();
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
     }
 
     @Override

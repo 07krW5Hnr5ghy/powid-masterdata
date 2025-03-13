@@ -38,4 +38,11 @@ public class Department {
         @CreationTimestamp
         private OffsetDateTime updateDate;
 
+        @Column(name = "country_id")
+        private UUID countryId;
+
+        @ManyToOne
+        @JoinColumn(name = "country_id", columnDefinition = "countryId", insertable = false, updatable = false)
+        private Country country;
+
 }

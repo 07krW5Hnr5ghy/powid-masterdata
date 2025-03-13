@@ -80,16 +80,24 @@ public class Seeder implements CommandLineRunner {
         private final ISubCategoryProduct iSubCategoryProduct;
         private final IDeliveryCompany iDeliveryCompany;
         private final DeliveryCompanyRepository deliveryCompanyRepository;
+        private final CountryRepository countryRepository;
         @Override
         public void run(String... args) throws Exception {
 
                 try{
                         //DirectoryManager.createDirectoryIfNotExists();
                         // department, province and district to create system user
-
+                        Country systemCountry = countryRepository.save(Country.builder()
+                                        .registrationDate(OffsetDateTime.now())
+                                        .updateDate(OffsetDateTime.now())
+                                        .status(true)
+                                        .name("SISTEMA")
+                                .build());
 
                         Department department = departmentRepository.save(Department.builder()
                                         .name("SISTEMA")
+                                        .country(systemCountry)
+                                        .countryId(systemCountry.getId())
                                         .status(true)
                                         .registrationDate(OffsetDateTime.now())
                                         .updateDate(OffsetDateTime.now())
@@ -207,14 +215,24 @@ public class Seeder implements CommandLineRunner {
                                         .clientId(systemClient.getId())
                                 .build());
 
+                        // mock countries
+
+                        List<CountryDTO> listCountry = iJsonFileReader.filterCountry();
+
+                        for(CountryDTO country : listCountry){
+                                iCountry.save(country.getValue(),adminUser.getUsername());
+                        }
+
+                        iCountry.save("NO APLICA",adminUser.getUsername());
+
                         // mock departments peru
                         List<LocationDTO> listDepartment = iJsonFileReader.filterDepartment();
 
                         for (LocationDTO locationDepartment : listDepartment) {
-                                iDepartment.save(locationDepartment.getDepartment(), adminUser.getUsername());
+                                iDepartment.save(locationDepartment.getDepartment(),"PERÚ", adminUser.getUsername());
                         }
 
-                        iDepartment.save("NO APLICA",adminUser.getUsername());
+                        iDepartment.save("NO APLICA","NO APLICA",adminUser.getUsername());
 
                         List<LocationDTO> listProvince = iJsonFileReader.filterProvince();
 
@@ -249,14 +267,6 @@ public class Seeder implements CommandLineRunner {
                                         .district(districtB)
                                         .districtId(districtB.getId())
                                 .build());
-
-                        // mock countries
-
-                        List<CountryDTO> listCountry = iJsonFileReader.filterCountry();
-
-                        for(CountryDTO country : listCountry){
-                                iCountry.save(country.getValue(),adminUser.getUsername());
-                        }
 
                         // audit
                         iAuditEvent.save("ACTIVATE_ACCESS",adminUser.getUsername());

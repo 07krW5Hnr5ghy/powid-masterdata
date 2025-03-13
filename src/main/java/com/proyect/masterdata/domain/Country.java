@@ -37,10 +37,4 @@ public class Country {
     @CreationTimestamp
     private OffsetDateTime updateDate;
 
-    @Column(name = "user_id")
-    private UUID userId;
-
-    @ManyToOne()
-    @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
-    private User user;
 }
