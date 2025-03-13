@@ -12,8 +12,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface IDepartment {
-    ResponseSuccess save(String name, String user) throws BadRequestExceptions, InternalErrorExceptions;
-    CompletableFuture<ResponseSuccess> saveAsync(String name, String user) throws BadRequestExceptions, InternalErrorExceptions;
+    ResponseSuccess save(String name, String country, String user) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> saveAsync(String name, String country, String user) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<ResponseDelete> delete(String name,String user) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> activate(String name,String user) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<List<DepartmentDTO>> listDepartment();

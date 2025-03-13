@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
+import com.proyect.masterdata.domain.Country;
 import com.proyect.masterdata.domain.Department;
 import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.DepartmentDTO;
@@ -8,6 +9,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.mapper.DepartmentMapper;
+import com.proyect.masterdata.repository.CountryRepository;
 import com.proyect.masterdata.repository.DepartmentRepository;
 import com.proyect.masterdata.repository.DepartmentRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
@@ -34,13 +36,16 @@ public class DepartmentImpl implements IDepartment {
     private final DepartmentMapper departmentMapper;
     private final UserRepository userRepository;
     private final IAudit iAudit;
+    private final CountryRepository countryRepository;
     @Override
-    public ResponseSuccess save(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
+    public ResponseSuccess save(String name, String countryName, String username) throws BadRequestExceptions, InternalErrorExceptions {
         User user;
         Department department;
+        Country country;
         try {
             user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
             department = departmentRepository.findByNameAndStatusTrue(name.toUpperCase());
+            country = countryRepository.findByNameAndStatusTrue(countryName.toUpperCase());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -52,11 +57,17 @@ public class DepartmentImpl implements IDepartment {
         if (department != null) {
             throw new BadRequestExceptions(Constants.ErrorDepartmentExist.toUpperCase());
         }
+        if(country==null){
+            throw new BadRequestExceptions(Constants.ErrorCountry);
+        }
 
         try {
             Department newDepartment = departmentRepository.save(Department.builder()
                     .name(name.toUpperCase())
+                            .country(country)
+                            .countryId(country.getId())
                     .registrationDate(OffsetDateTime.now())
+                            .updateDate(OffsetDateTime.now())
                     .status(true)
                     .build());
             iAudit.save("ADD_DEPARTMENT","DEPARTAMENTO "+newDepartment.getName()+" CREADO.",newDepartment.getName(),user.getUsername());
@@ -71,13 +82,15 @@ public class DepartmentImpl implements IDepartment {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> saveAsync(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(String name, String countryName, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Department department;
+            Country country;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 department = departmentRepository.findByNameAndStatusTrue(name.toUpperCase());
+                country = countryRepository.findByNameAndStatusTrue(countryName.toUpperCase());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -89,11 +102,17 @@ public class DepartmentImpl implements IDepartment {
             if (department != null) {
                 throw new BadRequestExceptions(Constants.ErrorDepartmentExist.toUpperCase());
             }
+            if(country==null){
+                throw new BadRequestExceptions(Constants.ErrorCountry);
+            }
 
             try {
                 Department newDepartment = departmentRepository.save(Department.builder()
                         .name(name.toUpperCase())
+                        .country(country)
+                        .countryId(country.getId())
                         .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .status(true)
                         .build());
                 iAudit.save("ADD_DEPARTMENT","DEPARTAMENTO "+newDepartment.getName()+" CREADO.",newDepartment.getName(),user.getUsername());

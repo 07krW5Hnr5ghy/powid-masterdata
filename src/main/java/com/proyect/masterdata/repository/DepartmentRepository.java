@@ -14,4 +14,5 @@ public interface DepartmentRepository extends JpaRepository<Department, UUID> {
     Department findByNameAndStatusTrue(String name);
     Department findByNameAndStatusFalse(String name);
     List<Department> findByNameIn(List<String> name);
+    Department findByNameAndCountryIdAndStatusTrue(String name,UUID countryId);
 }

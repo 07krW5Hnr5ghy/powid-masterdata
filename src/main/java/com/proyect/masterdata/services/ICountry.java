@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface ICountry {
-    CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<ResponseSuccess> saveAsync(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    ResponseSuccess save(String name,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<Page<CountryDTO>> listCountry(String name, String sort, String sortColumn, Integer pageNumber,
                                  Integer pageSize) throws BadRequestExceptions;
     CompletableFuture<List<CountryDTO>> listFilter() throws BadRequestExceptions,InternalErrorExceptions;
