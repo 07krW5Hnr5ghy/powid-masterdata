@@ -39,32 +39,35 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
     private final IUtil iUtil;
     @Override
     public CompletableFuture<DeliveryManifestItem> save(
-            RequestDeliveryManifestItem requestDeliveryManifestItem,
+            OrderItem orderItem,
             DeliveryManifest deliveryManifest,
             Warehouse warehouse,
             User user) throws BadRequestExceptions, InterruptedException {
         return CompletableFuture.supplyAsync(()->{
-            OrderItem orderItem;
             WarehouseStock warehouseStock;
+            DeliveryManifestItem deliveryManifestItem;
             try{
-                orderItem = orderItemRepository.findByIdAndStatusTrue(requestDeliveryManifestItem.getOrderItemId());
+                warehouseStock = warehouseStockRepository.findByWarehouseIdAndProductId(warehouse.getId(),orderItem.getProduct().getId());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
-            if(orderItem==null){
-                throw new BadRequestExceptions(Constants.ErrorOrderItem);
+            if(warehouseStock==null){
+                throw new BadRequestExceptions(Constants.ErrorWarehouseStock);
             }else{
-                warehouseStock = warehouseStockRepository.findByWarehouseIdAndProductId(warehouse.getId(),orderItem.getProduct().getId());
+                deliveryManifestItem = deliveryManifestItemRepository.findByOrderItemIdAndProductIdAndDeliveredTrue(orderItem.getId(),orderItem.getProductId());
             }
-            if(warehouseStock.getQuantity()<requestDeliveryManifestItem.getQuantity()){
+            if(deliveryManifestItem!=null){
+                throw new BadRequestExceptions(Constants.ErrorDeliveryManifestItemDelivered);
+            }
+            if(warehouseStock.getQuantity()<orderItem.getQuantity()){
                 throw new BadRequestExceptions(Constants.ErrorWarehouseStockLess);
             }
             try{
                 DeliveryManifestItem newDeliveryManifestItem = deliveryManifestItemRepository.save(DeliveryManifestItem.builder()
                         .deliveryManifest(deliveryManifest)
                         .deliveryManifestId(deliveryManifest.getId())
-                        .quantity(requestDeliveryManifestItem.getQuantity())
+                        .quantity(orderItem.getQuantity())
                         .collected(false)
                         .orderItem(orderItem)
                         .orderItemId(orderItem.getId())
