@@ -9,6 +9,7 @@ import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public interface ICustomer {
@@ -16,4 +17,5 @@ public interface ICustomer {
     CompletableFuture<ResponseSuccess> saveAsync(RequestCustomer requestCustomer) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<List<CustomerDTO>> listFilter(String user) throws BadRequestExceptions,InternalErrorExceptions;
     ResponseExistCustomer existsCustomer (String phone, String tokenUser ) throws BadRequestExceptions, InterruptedException;
+    ResponseSuccess update(UUID userId, RequestCustomer requestCustomer) throws BadRequestExceptions, InternalErrorExceptions;
 }
