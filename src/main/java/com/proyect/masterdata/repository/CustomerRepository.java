@@ -11,4 +11,5 @@ import java.util.UUID;
 public interface CustomerRepository extends JpaRepository<Customer, UUID> {
     Customer findByPhone(String phone);
     List<Customer> findAllByClientId(UUID clientId);
+    Customer findByIdAndStatusTrue(UUID customerId);
 }

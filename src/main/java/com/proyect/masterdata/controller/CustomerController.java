@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -44,5 +45,18 @@ public class CustomerController {
         System.out.println("phone: " + phone + " tokenUser: " + tokenUser);
         ResponseExistCustomer result = iCustomer.existsCustomer(phone, tokenUser);
         return new ResponseEntity<>(result,HttpStatus.OK);
+    }
+
+    @PutMapping()
+    private ResponseEntity<ResponseSuccess> updateCustomer(
+            @RequestParam("customerId") UUID customerId,
+            @RequestBody RequestCustomer requestCustomer
+            )
+    throws BadRequestExceptions, ExecutionException, InterruptedException {
+        ResponseSuccess result = iCustomer.update(
+                customerId,
+                requestCustomer
+        );
+        return  new ResponseEntity<>(result,HttpStatus.OK);
     }
 }

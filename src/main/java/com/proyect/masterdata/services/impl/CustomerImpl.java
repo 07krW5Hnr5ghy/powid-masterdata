@@ -19,6 +19,7 @@ import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -213,4 +214,62 @@ public class CustomerImpl implements ICustomer {
                 .exist(true)
                 .build();
     }
+
+    @Override
+    public ResponseSuccess update(
+            UUID customerId,
+            RequestCustomer requestCustomer
+    ) throws BadRequestExceptions, InternalErrorExceptions {
+        User user;
+        Customer customer;
+        CustomerType customerType;
+        District district;
+
+        try {
+            user = userRepository.findByUsernameAndStatusTrue(requestCustomer.getTokenUser().toUpperCase());
+            customer = customerRepository.findByIdAndStatusTrue(customerId);
+            customerType = customerTypeRepository.findByNameAndStatusTrue(
+                    requestCustomer.getCustomerType().toUpperCase()
+            );
+            district = districtRepository.findByNameAndStatusTrue(requestCustomer.getDistrict().toUpperCase());
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(user==null){
+            throw new BadRequestExceptions(Constants.ErrorUserExist);
+        }
+
+        if (customer == null) {
+            throw new BadRequestExceptions(Constants.ErrorCustomerExist);
+        }
+
+        if (customerType == null) {
+            throw new BadRequestExceptions(Constants.ErrorCustomerType);
+        }
+
+        customer.setName(requestCustomer.getName());
+        customer.setCustomerTypeId(customerType.getId());
+        customer.setCustomerType(customerType);
+        customer.setInstagram(requestCustomer.getInstagram());
+        customer.setPhone(requestCustomer.getPhone());
+        customer.setAddress(requestCustomer.getAddress());
+        customer.setDistrict(district);
+        customer.setDni(requestCustomer.getDni());
+        customer.setReference(requestCustomer.getReference());
+        customerRepository.save(customer);
+        return ResponseSuccess.builder()
+                .code(200)
+                .message(Constants.update)
+                .build();
+    }
 }
+
+
+
+
+
+
+
+
