@@ -16,5 +16,5 @@ public class RequestDeliveryManifest {
     private String courier;
     private String username;
     private String warehouse;
-    private List<RequestDeliveryManifestItem> requestDeliveryManifestItems;
+    private List<UUID> orderUUIDs;
 }
