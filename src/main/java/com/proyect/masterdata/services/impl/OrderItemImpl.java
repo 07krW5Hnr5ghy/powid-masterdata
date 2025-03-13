@@ -757,18 +757,17 @@ public class OrderItemImpl implements IOrderItem {
             }
 
             try {
-                boolean statusLogOrderItem = orderItem.getSelectOrderStatus();
                 orderItemRepository.selectPreparedOrdetItem(
                         ordering.getId(),
                         orderItemId,
                         user.getId(),
                         OffsetDateTime.now(),
-                        !statusLogOrderItem
+                        !orderItem.getSelectOrderStatus()
                 );
                 iOrderLog.save(
                         user,
                         ordering,
-                        (statusLogOrderItem ? "item preparado ":"item deseleccionado ")
+                        (!orderItem.getSelectOrderStatus() ? "item preparado ":"item deseleccionado ")
                                 + orderItem.getProduct().getName().toUpperCase()
                 );
                 return ResponseSuccess.builder()
