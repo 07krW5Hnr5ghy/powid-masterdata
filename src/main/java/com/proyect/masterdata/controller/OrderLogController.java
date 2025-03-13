@@ -3,6 +3,7 @@ package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.domain.OrderLog;
 import com.proyect.masterdata.dto.OrderLogDTO;
+import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.services.IOrderLog;
 import lombok.AllArgsConstructor;
 import org.springframework.data.repository.query.Param;
@@ -28,6 +29,15 @@ public class OrderLogController {
     ) throws ExecutionException, InterruptedException {
         //CompletableFuture<List<OrderLogDTO>> result = iOrderLog.listLogByOrder(orderId);
         //return new ResponseEntity<>(result.get(),HttpStatus.OK);
+        return null;
+    }
+
+    @PostMapping
+    public ResponseEntity<ResponseSuccess> addComment(
+            @RequestParam("tokenUser") String tokenUser,
+            @RequestParam("orderId") UUID orderId,
+            @RequestParam("comment") String comment
+    ){
         return null;
     }
 

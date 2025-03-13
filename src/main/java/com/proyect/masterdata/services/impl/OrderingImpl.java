@@ -1240,7 +1240,7 @@ public class OrderingImpl implements IOrdering {
                                     .productId(orderItem.getProductId())
                                     .orderId(orderItem.getId())
                                     .status(orderItem.getStatus())
-                                    .selectOrderStatus(orderItem.getStatus())
+                                    .selectOrderStatus(orderItem.getSelectOrderStatus())
                                     .model(orderItem.getProduct().getModel().getName())
                                     .discountAmount(orderItem.getDiscountAmount())
                                     .sku(finalSku)
