@@ -84,6 +84,9 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
                 for(UUID orderId:requestDeliveryManifest.getOrderUUIDs()){
                     List<OrderItem> orderItems = orderItemRepository.findAllByClientIdAndStatusTrueAndSelectOrderStatusTrue(orderId);
+                    if(orderItems.isEmpty()){
+                        throw new BadRequestExceptions(Constants.ErrorDeliveryManifestNotItems);
+                    }
                     for(OrderItem orderItem:orderItems){
                         CompletableFuture<DeliveryManifestItem> deliveryManifestItem = iDeliveryManifestItem.save(orderItem,deliveryManifest,warehouse,user);
                         stockTransactionList.add(RequestStockTransactionItem.builder()

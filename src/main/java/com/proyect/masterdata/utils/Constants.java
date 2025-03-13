@@ -336,4 +336,5 @@ public class Constants {
     public static final String ErrorExcelDuplicatedRecordFile = "Registro duplicado en archivo";
     public static final String ErrorExcelEmptyFile = "Archivo vacio o sin ninguna fila con data valida";
     public static final String ErrorDeliveryManifestItemDelivered = "Item de pedido ya fue entregado";
+    public static final String ErrorDeliveryManifestNotItems = "No hay items preparados";
 }
