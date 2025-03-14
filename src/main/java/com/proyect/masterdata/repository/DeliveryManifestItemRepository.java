@@ -10,4 +10,5 @@ import java.util.UUID;
 @Repository
 public interface DeliveryManifestItemRepository extends JpaRepository<DeliveryManifestItem, UUID> {
     List<DeliveryManifestItem> findAllById(UUID deliveryManifestId);
+    DeliveryManifestItem findByOrderItemIdAndProductIdAndDeliveredTrue(UUID orderItemId,UUID productId);
 }
