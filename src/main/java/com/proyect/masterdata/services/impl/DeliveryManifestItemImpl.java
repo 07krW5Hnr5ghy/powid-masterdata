@@ -17,10 +17,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -37,6 +34,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
     private final IStockTransaction iStockTransaction;
     private final DeliveryManifestItemRepositoryCustom deliveryManifestItemRepositoryCustom;
     private final IUtil iUtil;
+    private final ProductPriceRepository productPriceRepository;
     @Override
     public CompletableFuture<DeliveryManifestItem> save(
             OrderItem orderItem,
@@ -203,19 +201,35 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
             if(deliveryManifestItemPage.isEmpty()){
                 return new PageImpl<>(Collections.emptyList());
             }
-            List<DeliveryManifestItemDTO> deliveryManifestItemDTOS = deliveryManifestItemPage.stream().map(deliveryManifestItem -> DeliveryManifestItemDTO.builder()
-                    .id(deliveryManifestItem.getId())
-                    .phone(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getPhone())
-                    .district(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getDistrict().getName())
-                    .manifestNumber(deliveryManifestItem.getDeliveryManifest().getManifestNumber())
-                    .orderNumber(deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber())
-                    .quantity(deliveryManifestItem.getQuantity())
-                    .customer(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getName())
-                    .skuProduct(iUtil.buildProductSku(deliveryManifestItem.getProduct()))
-                    .management(deliveryManifestItem.getOrderItem().getOrdering().getManagementType().getName())
-                    .paymentMethod(deliveryManifestItem.getOrderItem().getOrdering().getOrderPaymentMethod().getName())
-                    .paymentState(deliveryManifestItem.getOrderItem().getOrdering().getOrderPaymentState().getName())
-                    .build()).toList();
+            List<DeliveryManifestItemDTO> deliveryManifestItemDTOS = deliveryManifestItemPage.stream().map(deliveryManifestItem -> {
+                ProductPrice productPrice = productPriceRepository.findByProductId(deliveryManifestItem.getProductId());
+                Double totalPrice = null;
+                if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "PORCENTAJE")){
+                    totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity())-((productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity())*(deliveryManifestItem.getOrderItem().getDiscountAmount()/100));
+                }
+
+                if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "MONTO")){
+                    totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity())-(deliveryManifestItem.getOrderItem().getDiscountAmount());
+                }
+
+                if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "NO APLICA")){
+                    totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity());
+                }
+                return DeliveryManifestItemDTO.builder()
+                        .id(deliveryManifestItem.getId())
+                        .phone(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getPhone())
+                        .district(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getDistrict().getName())
+                        .manifestNumber(deliveryManifestItem.getDeliveryManifest().getManifestNumber())
+                        .orderNumber(deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber())
+                        .quantity(deliveryManifestItem.getQuantity())
+                        .customer(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getName())
+                        .skuProduct(iUtil.buildProductSku(deliveryManifestItem.getProduct()))
+                        .management(deliveryManifestItem.getOrderItem().getOrdering().getManagementType().getName())
+                        .paymentMethod(deliveryManifestItem.getOrderItem().getOrdering().getOrderPaymentMethod().getName())
+                        .paymentState(deliveryManifestItem.getOrderItem().getOrdering().getOrderPaymentState().getName())
+                        .orderItemAmount(totalPrice)
+                        .build();
+            }).toList();
             return new PageImpl<>(deliveryManifestItemDTOS,deliveryManifestItemPage.getPageable(),deliveryManifestItemPage.getTotalElements());
         });
     }
