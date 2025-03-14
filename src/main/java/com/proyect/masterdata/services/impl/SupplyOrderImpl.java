@@ -21,7 +21,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -85,6 +88,11 @@ public class SupplyOrderImpl implements ISupplyOrder {
                     .build()).toList();
             iStockTransaction.save("S"+ requestSupplyOrder.getRef().toUpperCase(), warehouse,requestStockTransactionItemList,"ENTRADA",user);
             Long orderNumber = supplyOrderRepository.countByClientId(user.getClientId())+1L;
+            // Parse to LocalDate
+            LocalDate localDate = LocalDate.parse(requestSupplyOrder.getDeliveryDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+            // Convert LocalDate to OffsetDateTime (Midnight at UTC)
+            OffsetDateTime offsetDateTime = localDate.atStartOfDay().atOffset(ZoneOffset.UTC);
             SupplyOrder newSupplyOrder = supplyOrderRepository.save(SupplyOrder.builder()
                             .ref(requestSupplyOrder.getRef().toUpperCase())
                             .orderNumber(orderNumber)
@@ -96,7 +104,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
                             .client(user.getClient())
                             .clientId(user.getClientId())
                             .user(user).userId(user.getId())
-                            .deliveryDate(requestSupplyOrder.getDeliveryDate())
+                            .deliveryDate(offsetDateTime)
                       .build());
             iAudit.save("ADD_PURCHASE","COMPRA " + newSupplyOrder.getRef() +" CREADA.", newSupplyOrder.getRef(),user.getUsername());
             return ResponseSuccess.builder()
@@ -149,6 +157,11 @@ public class SupplyOrderImpl implements ISupplyOrder {
                         .quantity(supplyOrderItem.getQuantity())
                         .productId(supplyOrderItem.getProductId())
                         .build()).toList();
+                // Parse to LocalDate
+                LocalDate localDate = LocalDate.parse(requestSupplyOrder.getDeliveryDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+
+                // Convert LocalDate to OffsetDateTime (Midnight at UTC)
+                OffsetDateTime offsetDateTime = localDate.atStartOfDay().atOffset(ZoneOffset.UTC);
                 iStockTransaction.save("S"+ requestSupplyOrder.getRef().toUpperCase(), warehouse,requestStockTransactionItemList,"ENTRADA",user);
                 Long orderNumber = supplyOrderRepository.countByClientId(user.getClientId())+1L;
                 SupplyOrder newSupplyOrder = supplyOrderRepository.save(SupplyOrder.builder()
@@ -162,7 +175,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .user(user).userId(user.getId())
-                        .deliveryDate(OffsetDateTime.now())
+                        .deliveryDate(offsetDateTime)
                         .build());
                 for(RequestSupplyOrderItem requestSupplyOrderItem : requestSupplyOrder.getRequestSupplyOrderItemList()){
                     iSupplyOrderItem.save(newSupplyOrder,warehouse.getName(), requestSupplyOrderItem,user.getUsername());
