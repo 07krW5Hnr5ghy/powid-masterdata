@@ -88,7 +88,7 @@ public class WarehouseOutputImpl implements IWarehouseOutput {
                 iStockTransaction.save("WO"+warehouseOutput.getOrderNumber(),
                         warehouseOutput.getWarehouse(),
                         requestStockTransactionItemList,
-                        "ENTRADA",
+                        "SALIDA",
                         user);
                 return ResponseSuccess.builder()
                         .code(200)
