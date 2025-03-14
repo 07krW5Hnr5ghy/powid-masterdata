@@ -25,4 +25,5 @@ public class DeliveryManifestItemDTO {
     private Boolean delivered;
     private String paymentMethod;
     private String paymentState;
+    private Double orderItemAmount;
 }

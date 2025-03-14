@@ -33,7 +33,7 @@ public class OrderItem {
     @Column(name = "discount_amount")
     private Double discountAmount;
 
-    @Column(name = "observations")
+    @Column(name = "observations",columnDefinition = "text")
     private String observations;
 
     @Column(name = "product_id")
