@@ -17,4 +17,5 @@ public class RequestDeliveryManifest {
     private String username;
     private String warehouse;
     private List<UUID> orderUUIDs;
+    private String observations;
 }

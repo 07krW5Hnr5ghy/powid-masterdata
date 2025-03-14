@@ -27,6 +27,9 @@ public class DeliveryManifest {
     @Column(name = "manifest_number")
     private Long manifestNumber;
 
+    @Column(name = "observations",columnDefinition = "text")
+    private String observations;
+
     @Column(name = "registration_date")
     @CreationTimestamp
     private OffsetDateTime registrationDate;
