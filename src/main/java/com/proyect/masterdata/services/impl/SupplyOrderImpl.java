@@ -86,7 +86,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
                     .quantity(supplyOrderItem.getQuantity())
                     .productId(supplyOrderItem.getProductId())
                     .build()).toList();
-            iStockTransaction.save("S"+ requestSupplyOrder.getRef().toUpperCase(), warehouse,requestStockTransactionItemList,"ENTRADA",user);
+            iStockTransaction.save("S"+ requestSupplyOrder.getRef().toUpperCase(), warehouse,requestStockTransactionItemList,"INGRESO",user);
             Long orderNumber = supplyOrderRepository.countByClientId(user.getClientId())+1L;
             // Parse to LocalDate
             LocalDate localDate = LocalDate.parse(requestSupplyOrder.getDeliveryDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -162,7 +162,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
 
                 // Convert LocalDate to OffsetDateTime (Midnight at UTC)
                 OffsetDateTime offsetDateTime = localDate.atStartOfDay().atOffset(ZoneOffset.UTC);
-                iStockTransaction.save("S"+ requestSupplyOrder.getRef().toUpperCase(), warehouse,requestStockTransactionItemList,"ENTRADA",user);
+                iStockTransaction.save("S"+ requestSupplyOrder.getRef().toUpperCase(), warehouse,requestStockTransactionItemList,"INGRESO",user);
                 Long orderNumber = supplyOrderRepository.countByClientId(user.getClientId())+1L;
                 SupplyOrder newSupplyOrder = supplyOrderRepository.save(SupplyOrder.builder()
                         .ref(requestSupplyOrder.getRef().toUpperCase())
