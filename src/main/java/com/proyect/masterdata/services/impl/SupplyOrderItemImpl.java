@@ -347,6 +347,7 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
                         status);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
+                e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.ResultsFound);
             }
 
