@@ -231,6 +231,8 @@ public class GeneralStockImpl implements IGeneralStock {
 
             return generalStocks.stream()
                     .map(generalStock -> GeneralStockDTO.builder()
+                            .id(generalStock.getId())
+                            .user(generalStock.getUser().getUsername())
                             .quantity(generalStock.getQuantity())
                             .product(generalStock.getProduct().getName())
                             .productSku(iUtil.buildProductSku(generalStock.getProduct()))

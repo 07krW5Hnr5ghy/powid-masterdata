@@ -7,6 +7,7 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.canvas.draw.ILineDrawer;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.Style;
+import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.LineSeparator;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
@@ -290,23 +291,34 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                 Document document = new Document(pdfDoc);
                 document.setMargins(2,2,2,2);
                 // Title
-                Paragraph title = new Paragraph("Delivery Manifest")
+                Paragraph title = new Paragraph("Guia Motorizado")
                         .setBold()
                         .setFontSize(18)
                         .setTextAlignment(TextAlignment.CENTER);
                 document.add(title);
 
                 // Manifest Details
-//                document.add(new Paragraph("Manifest Number: " + manifestNumber));
-//                document.add(new Paragraph("Delivery Date: " + deliveryDate));
-//                document.add(new Paragraph("\n"));
-//
+                document.add(new Paragraph("Guia Numero : " + deliveryManifestDTO.getManifestNumber()));
+                document.add(new Paragraph("\n"));
 //                // Table Header
-//                Table table = new Table(4);
-//                table.addCell(new Cell().add("Item Code").setBold());
-//                table.addCell(new Cell().add("Description").setBold());
-//                table.addCell(new Cell().add("Quantity").setBold());
-//                table.addCell(new Cell().add("Destination").setBold());
+                Table table = new Table(4);
+                table.addCell("# Pedido").setBold();
+                table.addCell("Descripcion").setBold();
+                table.addCell("Telefono").setBold();
+                table.addCell("Producto").setBold();
+                table.addCell("Distrito").setBold();
+                table.addCell("Importe").setBold();
+                table.addCell("Gestion").setBold();
+
+                for(DeliveryManifestItemDTO deliveryManifestItemDTO:deliveryManifestItemDTOS){
+                    table.addCell(deliveryManifestItemDTO.getOrderNumber().toString());
+                    table.addCell(deliveryManifestItemDTO.getCustomer());
+                    table.addCell(deliveryManifestItemDTO.getPhone());
+                    table.addCell(deliveryManifestItemDTO.getSkuProduct());
+                    table.addCell(deliveryManifestItemDTO.getDistrict());
+                    table.addCell(deliveryManifestItemDTO.getOrderItemAmount().toString());
+                    table.addCell(deliveryManifestItemDTO.getManagement());
+                }
 //
 //                // Populate Table with Items
 //                for (DeliveryItem item : items) {
