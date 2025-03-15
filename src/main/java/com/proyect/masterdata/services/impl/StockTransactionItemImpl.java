@@ -67,6 +67,8 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                             .registrationDate(OffsetDateTime.now())
                             .client(user.getClient())
                             .clientId(user.getClientId())
+                            .product(product)
+                            .productId(product.getId())
                             .quantity(requestStockTransactionItem.getQuantity())
                             .user(user).userId(user.getId())
                     .build());
@@ -84,6 +86,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                     .code(200)
                     .build();
         } catch (RuntimeException e) {
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }

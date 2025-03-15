@@ -81,6 +81,7 @@ public class StockTransactionImpl implements IStockTransaction {
             iAudit.save("ADD_STOCK_TRANSACTION","TRANSACCION DE STOCK "+newStockTransaction.getSerial()+" CREADO.",newStockTransaction.getSerial(),user.getUsername());
             return newStockTransaction;
         }catch (RuntimeException e){
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
