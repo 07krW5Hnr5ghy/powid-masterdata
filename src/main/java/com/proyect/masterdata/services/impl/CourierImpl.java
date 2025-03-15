@@ -371,6 +371,8 @@ public class CourierImpl implements ICourier {
                 return Collections.emptyList();
             }
             return couriers.stream().map(courier -> CourierDTO.builder()
+                    .id(courier.getId())
+                    .user(courier.getUser().getUsername())
                     .status(courier.getStatus())
                     .name(courier.getName())
                     .phone(courier.getPhone())
@@ -399,6 +401,8 @@ public class CourierImpl implements ICourier {
                 return Collections.emptyList();
             }
             return couriers.stream().map(courier -> CourierDTO.builder()
+                    .id(courier.getId())
+                    .user(courier.getUser().getUsername())
                     .status(courier.getStatus())
                     .name(courier.getName())
                     .phone(courier.getPhone())
