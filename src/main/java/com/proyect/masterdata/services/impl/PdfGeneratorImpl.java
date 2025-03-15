@@ -308,6 +308,7 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                 table.addCell("Producto").setBold();
                 table.addCell("Distrito").setBold();
                 table.addCell("Importe").setBold();
+                table.addCell("Gestion").setBold();
 
                 for(DeliveryManifestItemDTO deliveryManifestItemDTO:deliveryManifestItemDTOS){
                     table.addCell(deliveryManifestItemDTO.getOrderNumber().toString());
@@ -316,6 +317,7 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                     table.addCell(deliveryManifestItemDTO.getSkuProduct());
                     table.addCell(deliveryManifestItemDTO.getDistrict());
                     table.addCell(deliveryManifestItemDTO.getOrderItemAmount().toString());
+                    table.addCell(deliveryManifestItemDTO.getManagement());
                 }
 //
 //                // Populate Table with Items
