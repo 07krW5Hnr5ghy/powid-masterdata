@@ -37,12 +37,20 @@ public class OrderContactedCustomImpl implements OrderContactedRepositoryCustom 
             Integer pageSize) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<OrderContacted> criteriaQuery = criteriaBuilder.createQuery(OrderContacted.class);
+
+
         Root<OrderContacted> itemRoot = criteriaQuery.from(OrderContacted.class);
+
+
         Join<OrderContacted, Ordering> orderContactedOrderingJoin = itemRoot.join("ordering");
+
+
         criteriaQuery.select(itemRoot);
+
+
         List<Predicate> conditions = predicate(
                 orderNumber,
-                contacted,
+                    contacted,
                 clientId,
                 registrationStartDate,
                 registrationEndDate,
@@ -52,6 +60,8 @@ public class OrderContactedCustomImpl implements OrderContactedRepositoryCustom 
                 itemRoot,
                 orderContactedOrderingJoin
         );
+
+        //System.out.println(conditions.get(0));
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
             List<Order> orderContactedList = new ArrayList<>();
             if (sort.equalsIgnoreCase("ASC")) {
@@ -136,13 +146,14 @@ public class OrderContactedCustomImpl implements OrderContactedRepositoryCustom 
             );
         }
 
-        if (contacted) {
+        if (Boolean.TRUE.equals(contacted)) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.isTrue(itemRoot.get("contacted"))));
         }
 
-        if (!contacted) {
+        if (Boolean.FALSE.equals(contacted)) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.isFalse(itemRoot.get("contacted"))));
         }
+
 
         return conditions;
     }
