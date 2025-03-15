@@ -51,11 +51,11 @@ public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepos
         CriteriaQuery<SupplyOrderItem> criteriaQuery = criteriaBuilder.createQuery(SupplyOrderItem.class);
         Root<SupplyOrderItem> itemRoot = criteriaQuery.from(SupplyOrderItem.class);
         Join<SupplyOrderItem, SupplyOrder> supplyOrderItemSupplyOrderJoin = itemRoot.join("supplyOrder");
-        Join<SupplyOrderItem, Product> supplyOrderItemProductJoin = supplyOrderItemSupplyOrderJoin.join("product");
-        Join<SupplyOrder, Warehouse> supplyOrderItemWarehouseJoin = supplyOrderItemSupplyOrderJoin.join("warehouse");
-        Join<Product, Model> productModelJoin = supplyOrderItemSupplyOrderJoin.join("model");
-        Join<Product,Color> productColorJoin = supplyOrderItemSupplyOrderJoin.join("color");
-        Join<Product,Size> productSizeJoin = supplyOrderItemSupplyOrderJoin.join("size");
+        Join<SupplyOrderItem, Product> supplyOrderItemProductJoin = itemRoot.join("product");
+        Join<SupplyOrder, Warehouse> supplyOrderWarehouseJoin = supplyOrderItemSupplyOrderJoin.join("warehouse");
+        Join<Product, Model> productModelJoin = supplyOrderItemProductJoin.join("model");
+        Join<Product,Color> productColorJoin = supplyOrderItemProductJoin.join("color");
+        Join<Product,Size> productSizeJoin = supplyOrderItemProductJoin.join("size");
 
         criteriaQuery.select(itemRoot);
 
@@ -78,7 +78,7 @@ public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepos
                 itemRoot,
                 supplyOrderItemSupplyOrderJoin,
                 supplyOrderItemProductJoin,
-                supplyOrderItemWarehouseJoin,
+                supplyOrderWarehouseJoin,
                 productModelJoin,
                 productColorJoin,
                 productSizeJoin);
@@ -304,11 +304,11 @@ public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepos
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<SupplyOrderItem> itemRoot = criteriaQuery.from(SupplyOrderItem.class);
         Join<SupplyOrderItem, SupplyOrder> supplyOrderItemSupplyOrderJoin = itemRoot.join("supplyOrder");
-        Join<SupplyOrderItem, Product> supplyOrderItemProductJoin = supplyOrderItemSupplyOrderJoin.join("product");
+        Join<SupplyOrderItem, Product> supplyOrderItemProductJoin = itemRoot.join("product");
         Join<SupplyOrder, Warehouse> supplyOrderItemWarehouseJoin = supplyOrderItemSupplyOrderJoin.join("warehouse");
-        Join<Product, Model> productModelJoin = supplyOrderItemSupplyOrderJoin.join("model");
-        Join<Product,Color> productColorJoin = supplyOrderItemSupplyOrderJoin.join("color");
-        Join<Product,Size> productSizeJoin = supplyOrderItemSupplyOrderJoin.join("size");
+        Join<Product, Model> productModelJoin = supplyOrderItemProductJoin.join("model");
+        Join<Product,Color> productColorJoin = supplyOrderItemProductJoin.join("color");
+        Join<Product,Size> productSizeJoin = supplyOrderItemProductJoin.join("size");
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
                 clientId,
