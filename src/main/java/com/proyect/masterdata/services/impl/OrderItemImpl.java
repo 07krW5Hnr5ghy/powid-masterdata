@@ -52,11 +52,12 @@ public class OrderItemImpl implements IOrderItem {
         User user;
         Product product;
         Discount discount;
-
+        WarehouseStock warehouseStock;
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             product = productRepository.findByIdAndStatusTrue(requestOrderItem.getProductId());
             discount = discountRepository.findByName(requestOrderItem.getDiscount().toUpperCase());
+
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -77,6 +78,8 @@ public class OrderItemImpl implements IOrderItem {
         if(requestOrderItem.getQuantity()<1){
             throw new BadRequestExceptions(Constants.ErrorOrderItemZero);
         }
+
+
 
         try{
             OrderItem newOrderItem = orderItemRepository.save(OrderItem.builder()
@@ -179,10 +182,11 @@ public class OrderItemImpl implements IOrderItem {
             User user;
             Product product;
             List<CheckStockItemDTO> checkStockItemDTOList = new ArrayList<>();
-
+            WarehouseStock warehouseStock;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 product = productRepository.findByIdAndStatusTrue(productId);
+                warehouseStock = warehouseStockRepository.findProductByProductId(productId);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -194,6 +198,10 @@ public class OrderItemImpl implements IOrderItem {
 
             if(product == null){
                 throw new BadRequestExceptions(Constants.ErrorProduct);
+            }
+
+            if(warehouseStock.getQuantity()<quantity){
+                throw new BadRequestExceptions(Constants.ErrorWarehouseStockLess);
             }
 
             try{
@@ -737,6 +745,8 @@ public class OrderItemImpl implements IOrderItem {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 orderItem = orderItemRepository.findOrderItemById(orderItemId);
                 ordering = orderingRepository.findById(orderItem.getOrderId()).orElse(null);
+
+
                 System.out.println("user");
                 System.out.println("orderItem: "+orderItem);
                 System.out.println("ordering:" + ordering );
