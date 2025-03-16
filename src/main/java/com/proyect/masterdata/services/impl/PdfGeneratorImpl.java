@@ -338,6 +338,117 @@ public class PdfGeneratorImpl implements IPdfGenerator {
 
                 document.add(new Paragraph("\n"));
 
+                // Paid Orders Table
+                document.add(new Paragraph("PAGADOS").setFont(boldFont).setFontSize(12));
+
+                Table paidTable = new Table(new float[]{1, 1, 3, 2, 2, 2});
+                paidTable.setWidth(UnitValue.createPercentValue(100));
+
+                paidTable.addCell("No. Pedido").setBold();
+                paidTable.addCell("No. Paquetes").setBold();
+                paidTable.addCell("Descripción").setBold();
+                paidTable.addCell("Teléfono").setBold();
+                paidTable.addCell("Distrito").setBold();
+                paidTable.addCell("Importe").setBold();
+
+                paidTable.addCell("32");
+                paidTable.addCell("1");
+                paidTable.addCell("Gabriela esther Anampa villanueva");
+                paidTable.addCell("932840132");
+                paidTable.addCell("San juan de lurigancho");
+                paidTable.addCell("S/ " + "75.2");
+
+                paidTable.addCell("192");
+                paidTable.addCell("1");
+                paidTable.addCell("Elisa puma robles");
+                paidTable.addCell("932840132");
+                paidTable.addCell("San juan de lurigancho");
+                paidTable.addCell("S/ " + "67.2");
+
+                paidTable.addCell("192");
+                paidTable.addCell("1");
+                paidTable.addCell("Soraida De la cruz ochante");
+                paidTable.addCell("932840132");
+                paidTable.addCell("San juan de lurigancho");
+                paidTable.addCell("S/ " + "83.2");
+
+                document.add(paidTable);
+                document.add(new Paragraph("\n"));
+
+                // COD Orders Table
+                document.add(new Paragraph("CONTRAENTREGA").setFont(boldFont).setFontSize(12));
+
+                Table cashOnDeliveryTable = new Table(new float[]{1, 1, 3, 2, 2, 2});
+                cashOnDeliveryTable.setWidth(UnitValue.createPercentValue(100));
+
+                cashOnDeliveryTable.addCell("No. Pedido").setBold();
+                cashOnDeliveryTable.addCell("No. Paquetes").setBold();
+                cashOnDeliveryTable.addCell("Descripción").setBold();
+                cashOnDeliveryTable.addCell("Teléfono").setBold();
+                cashOnDeliveryTable.addCell("Distrito").setBold();
+                cashOnDeliveryTable.addCell("Importe").setBold();
+
+                cashOnDeliveryTable.addCell("32");
+                cashOnDeliveryTable.addCell("1");
+                cashOnDeliveryTable.addCell("Gabriela esther Anampa villanueva");
+                cashOnDeliveryTable.addCell("932840132");
+                cashOnDeliveryTable.addCell("San juan de lurigancho");
+                cashOnDeliveryTable.addCell("S/ " + "75.2");
+
+                cashOnDeliveryTable.addCell("192");
+                cashOnDeliveryTable.addCell("1");
+                cashOnDeliveryTable.addCell("Elisa puma robles");
+                cashOnDeliveryTable.addCell("932840132");
+                cashOnDeliveryTable.addCell("San juan de lurigancho");
+                cashOnDeliveryTable.addCell("S/ " + "67.2");
+
+                cashOnDeliveryTable.addCell("192");
+                cashOnDeliveryTable.addCell("1");
+                cashOnDeliveryTable.addCell("Soraida De la cruz ochante");
+                cashOnDeliveryTable.addCell("932840132");
+                cashOnDeliveryTable.addCell("San juan de lurigancho");
+                cashOnDeliveryTable.addCell("S/ " + "83.2");
+
+                document.add(cashOnDeliveryTable);
+
+                document.add(new Paragraph("\n"));
+
+                // Summary Section
+                Table summaryTable = new Table(new float[]{3, 1});
+                summaryTable.setWidth(UnitValue.createPercentValue(100));
+
+                summaryTable.addCell("No. PEDIDOS").setFont(boldFont);
+                summaryTable.addCell("3").setTextAlignment(TextAlignment.RIGHT);
+
+                summaryTable.addCell("TOTAL PAGADO").setFont(boldFont);
+                summaryTable.addCell("S/ " + "0.00").setTextAlignment(TextAlignment.RIGHT);
+
+                summaryTable.addCell("No. PEDIDOS").setFont(boldFont);
+                summaryTable.addCell("0").setTextAlignment(TextAlignment.RIGHT);
+
+                summaryTable.addCell("TOTAL POR COBRAR").setFont(boldFont);
+                summaryTable.addCell("S/ " + "83.2").setTextAlignment(TextAlignment.RIGHT);
+
+                document.add(summaryTable);
+
+                document.add(new Paragraph("\n"));
+
+                // Bank Details
+                document.add(new Paragraph("BCP\nCta Cte: 191985539036\nCCI: 0021910098553903658\nYAPE ó PLIN: 970 334 874")
+                        .setFont(regularFont)
+                        .setFontSize(10));
+
+                document.add(new Paragraph("\n"));
+
+                // Signature Section
+                Table signatureTable = new Table(3);
+                signatureTable.setWidth(UnitValue.createPercentValue(100));
+
+                signatureTable.addCell(new Cell().add(new Paragraph("DESPACHADO POR")).setBackgroundColor(new DeviceGray(0.85f)).setTextAlignment(TextAlignment.CENTER));
+                signatureTable.addCell(new Cell().add(new Paragraph("RECIBIDO POR")).setBackgroundColor(new DeviceGray(0.85f)).setTextAlignment(TextAlignment.CENTER));
+                signatureTable.addCell(new Cell().add(new Paragraph("VALIDADO POR")).setBackgroundColor(new DeviceGray(0.85f)).setTextAlignment(TextAlignment.CENTER));
+
+                document.add(signatureTable);
 
 //                for(DeliveryManifestItemDTO deliveryManifestItemDTO:deliveryManifestItemDTOS){
 //                    table.addCell(deliveryManifestItemDTO.getOrderNumber().toString());
