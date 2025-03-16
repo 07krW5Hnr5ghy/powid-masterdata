@@ -42,7 +42,6 @@ public class WarehouseOutputRepositoryCustomImpl implements WarehouseOutputRepos
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<WarehouseOutput> criteriaQuery = criteriaBuilder.createQuery(WarehouseOutput.class);
         Root<WarehouseOutput> itemRoot = criteriaQuery.from(WarehouseOutput.class);
-        Join<WarehouseOutput, Courier> warehouseOutputCourierJoin = itemRoot.join("courier");
         Join<WarehouseOutput, Warehouse> warehouseOutputWarehouseJoin = itemRoot.join("warehouse");
         criteriaQuery.select(itemRoot);
         List<Predicate> conditions = predicate(
@@ -57,7 +56,6 @@ public class WarehouseOutputRepositoryCustomImpl implements WarehouseOutputRepos
                 updateEndDate,
                 criteriaBuilder,
                 itemRoot,
-                warehouseOutputCourierJoin,
                 warehouseOutputWarehouseJoin
         );
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
@@ -106,7 +104,6 @@ public class WarehouseOutputRepositoryCustomImpl implements WarehouseOutputRepos
             OffsetDateTime updateEndDate,
             CriteriaBuilder criteriaBuilder,
             Root<WarehouseOutput> itemRoot,
-            Join<WarehouseOutput,Courier> warehouseOutputCourierJoin,
             Join<WarehouseOutput,Warehouse> warehouseOutputWarehouseJoin
     ){
         List<Predicate> conditions = new ArrayList<>();
@@ -241,7 +238,6 @@ public class WarehouseOutputRepositoryCustomImpl implements WarehouseOutputRepos
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<WarehouseOutput> itemRoot = criteriaQuery.from(WarehouseOutput.class);
-        Join<WarehouseOutput, Courier> warehouseOutputCourierJoin = itemRoot.join("courier");
         Join<WarehouseOutput, Warehouse> warehouseOutputWarehouseJoin = itemRoot.join("warehouse");
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
@@ -256,7 +252,6 @@ public class WarehouseOutputRepositoryCustomImpl implements WarehouseOutputRepos
                 updateEndDate,
                 criteriaBuilder,
                 itemRoot,
-                warehouseOutputCourierJoin,
                 warehouseOutputWarehouseJoin
         );
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
