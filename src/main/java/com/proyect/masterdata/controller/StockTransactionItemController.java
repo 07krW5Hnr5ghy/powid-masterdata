@@ -27,8 +27,8 @@ public class StockTransactionItemController {
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:STOCK_TRANSACTION_ITEM_GET')")
     public ResponseEntity<Page<StockTransactionItemDTO>> list(
             @RequestParam(value = "user", required = true) String user,
-            @RequestParam(value = "stockTransactions", required = false) List<String> stockTransactions,
-            @RequestParam(value = "supplierProductIds", required = false) List<UUID> supplierProductIds,
+            @RequestParam(value = "serial", required = false) String serial,
+            @RequestParam(value = "product", required = false) String product,
             @RequestParam(value = "warehouses",required = false) List<String> warehouses,
             @RequestParam(value = "stockTransactionTypes",required = false) List<String> stockTransactionTypes,
             @RequestParam(value = "sort", required = false) String sort,
@@ -37,8 +37,8 @@ public class StockTransactionItemController {
             @RequestParam(value = "pageSize", required = true) Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<StockTransactionItemDTO>> result = iStockTransactionItem.list(
                 user,
-                stockTransactions,
-                supplierProductIds,
+                serial,
+                product,
                 warehouses,
                 stockTransactionTypes,
                 sort,
