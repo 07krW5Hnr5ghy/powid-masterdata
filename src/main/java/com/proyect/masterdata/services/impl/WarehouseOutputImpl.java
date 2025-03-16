@@ -40,6 +40,7 @@ public class WarehouseOutputImpl implements IWarehouseOutput {
     private final WarehouseOutputItemRepository warehouseOutputItemRepository;
     private final IUtil iUtil;
     private final IStockTransaction iStockTransaction;
+    private final WarehouseStockRepository warehouseStockRepository;
     @Override
     public CompletableFuture<ResponseSuccess> save(RequestWarehouseOutput requestWarehouseOutput) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -62,6 +63,15 @@ public class WarehouseOutputImpl implements IWarehouseOutput {
             }
 
             try{
+                for(RequestWarehouseOutputItem requestWarehouseOutputItem: requestWarehouseOutput.getRequestWarehouseOutputItemList()){
+                    WarehouseStock warehouseStock = warehouseStockRepository.findByWarehouseIdAndProductId(warehouse.getId(),requestWarehouseOutputItem.getProductId());
+                    if(warehouseStock==null){
+                        throw new BadRequestExceptions(Constants.ErrorWarehouseStock);
+                    }
+                    if(warehouseStock.getQuantity()<requestWarehouseOutputItem.getQuantity()){
+                        throw new BadRequestExceptions(Constants.ErrorWarehouseStockLess);
+                    }
+                }
                 Long orderNumber = warehouseOutputRepository.countByClientId(user.getClientId())+1L;
                 WarehouseOutput warehouseOutput = warehouseOutputRepository.save(WarehouseOutput.builder()
                                 .ref(requestWarehouseOutput.getRef())
