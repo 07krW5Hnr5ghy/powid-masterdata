@@ -9,4 +9,5 @@ import java.util.concurrent.CompletableFuture;
 
 public interface IPdfGenerator {
     CompletableFuture<InputStream> generateOrderReport(UUID orderId, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
+    CompletableFuture<InputStream> generateDeliveryManifestReport(UUID deliveryManifestId,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
 }

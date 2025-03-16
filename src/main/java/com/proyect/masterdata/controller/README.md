@@ -2653,7 +2653,7 @@ http://localhost:8080/masterdata/stock-return-orderItem?user=gjimenez&pageNumber
         {
             "serial": "SAA00001",
             "warehouse": "LUMINOUS",
-            "stockTransactionType": "ENTRADA",
+            "stockTransactionType": "INGRESO",
             "registrationDate": "2024-02-14T08:15:10.100+00:00"
         }
     ],
@@ -2704,7 +2704,7 @@ http://localhost:8080/masterdata/stock-transaction?user=gjimenez&pageNumber=0&pa
             "quantity": 15,
             "warehouse": "LUMINOUS",
             "stockTransactionSerial": "SAA00001",
-            "stockTransactionType": "ENTRADA",
+            "stockTransactionType": "INGRESO",
             "supplierProductSerial": "A00001A",
             "date": "2024-02-14T17:21:50.367+00:00"
         }
@@ -2744,7 +2744,7 @@ http://localhost:8080/masterdata/stock-transaction-orderItem?user=gjimenez&pageN
 
 [
     {
-        "name": "ENTRADA"
+        "name": "INGRESO"
     },
     {
         "name": "SALIDA"

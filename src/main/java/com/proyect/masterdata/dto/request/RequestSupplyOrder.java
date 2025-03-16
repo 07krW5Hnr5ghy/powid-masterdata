@@ -15,6 +15,6 @@ import java.util.List;
 public class RequestSupplyOrder {
     private String ref;
     private String warehouse;
-    private OffsetDateTime deliveryDate;
+    private String deliveryDate;
     private List<RequestSupplyOrderItem> requestSupplyOrderItemList;
 }

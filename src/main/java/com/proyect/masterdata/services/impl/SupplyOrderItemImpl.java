@@ -347,6 +347,7 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
                         status);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
+                e.printStackTrace();
                 throw new InternalErrorExceptions(Constants.ResultsFound);
             }
 
@@ -355,6 +356,11 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
             }
 
             List<SupplyOrderItemDTO> supplyOrderItemDTOS = pagePurchaseItem.getContent().stream().map(supplyOrderItem -> SupplyOrderItemDTO.builder()
+                    .id(supplyOrderItem.getId())
+                    .ref(supplyOrderItem.getSupplyOrder().getRef())
+                    .productId(supplyOrderItem.getProductId())
+                    .product(supplyOrderItem.getProduct().getName())
+                    .productSku(iUtil.buildProductSku(supplyOrderItem.getProduct()))
                     .orderNumber(supplyOrderItem.getSupplyOrder().getOrderNumber())
                     .quantity(supplyOrderItem.getQuantity())
                     .warehouse(supplyOrderItem.getSupplyOrder().getWarehouse().getName())
@@ -362,6 +368,9 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
                     .color(supplyOrderItem.getProduct().getColor().getName())
                     .size(supplyOrderItem.getProduct().getSize().getName())
                     .registrationDate(supplyOrderItem.getRegistrationDate())
+                    .updateDate(supplyOrderItem.getUpdateDate())
+                    .user(supplyOrderItem.getUser().getUsername())
+                    .status(supplyOrderItem.getStatus())
                     .build()).toList();
 
             return new PageImpl<>(supplyOrderItemDTOS, pagePurchaseItem.getPageable(), pagePurchaseItem.getTotalElements());
@@ -390,16 +399,21 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
             }
 
             return supplyOrderItems.stream().map(supplyOrderItem -> SupplyOrderItemDTO.builder()
+                    .id(supplyOrderItem.getId())
+                    .ref(supplyOrderItem.getSupplyOrder().getRef())
+                    .productId(supplyOrderItem.getProductId())
+                    .product(supplyOrderItem.getProduct().getName())
+                    .productSku(iUtil.buildProductSku(supplyOrderItem.getProduct()))
                     .orderNumber(supplyOrderItem.getSupplyOrder().getOrderNumber())
                     .quantity(supplyOrderItem.getQuantity())
                     .warehouse(supplyOrderItem.getSupplyOrder().getWarehouse().getName())
-                    .product(supplyOrderItem.getProduct().getName())
-                    .productId(supplyOrderItem.getProductId())
-                    .productSku(iUtil.buildProductSku(supplyOrderItem.getProduct()))
                     .model(supplyOrderItem.getProduct().getModel().getName())
                     .color(supplyOrderItem.getProduct().getColor().getName())
                     .size(supplyOrderItem.getProduct().getSize().getName())
                     .registrationDate(supplyOrderItem.getRegistrationDate())
+                    .updateDate(supplyOrderItem.getUpdateDate())
+                    .user(supplyOrderItem.getUser().getUsername())
+                    .status(supplyOrderItem.getStatus())
                     .build()).toList();
         });
     }

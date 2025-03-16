@@ -282,6 +282,7 @@ public class OrderContactedImpl implements IOrderContacted {
                         .receiptFlag(orderContacted.getOrdering().getReceiptFlag())
                         .deliveryFlag(orderContacted.getOrdering().getDeliveryFlag())
                         .orderStateColor(orderContacted.getOrdering().getOrderState().getHexColor())
+                        .contacted(orderContacted.getContacted())
                         .orderItemDTOS(orderItems.stream().map(orderItem -> {
                             ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
                             List<ProductPicture> productPictures = productPictureRepository.findAlByClientIdAndProductId(clientId,orderItem.getProductId());

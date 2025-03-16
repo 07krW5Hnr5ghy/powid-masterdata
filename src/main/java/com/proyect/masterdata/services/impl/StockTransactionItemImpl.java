@@ -67,6 +67,8 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                             .registrationDate(OffsetDateTime.now())
                             .client(user.getClient())
                             .clientId(user.getClientId())
+                            .product(product)
+                            .productId(product.getId())
                             .quantity(requestStockTransactionItem.getQuantity())
                             .user(user).userId(user.getId())
                     .build());
@@ -84,6 +86,7 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                     .code(200)
                     .build();
         } catch (RuntimeException e) {
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
@@ -145,8 +148,8 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
     @Override
     public CompletableFuture<Page<StockTransactionItemDTO>> list(
             String user,
-            List<String> stockTransactions,
-            List<UUID> supplierProductIds,
+            String serial,
+            String product,
             List<String> warehouses,
             List<String> stockTransactionTypes,
             String sort,
@@ -155,18 +158,9 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
             Integer pageSize) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             UUID clientId;
-            List<UUID> stockTransactionIds;
             List<UUID> warehouseIds;
             List<UUID> stockTransactionTypeIds;
             Page<StockTransactionItem> stockTransactionItemPage;
-
-            if (stockTransactions != null && !stockTransactions.isEmpty()) {
-                stockTransactionIds = stockTransactionRepository.findBySerialIn(
-                        stockTransactions.stream().map(String::toUpperCase).toList()
-                ).stream().map(StockTransaction::getId).toList();
-            } else {
-                stockTransactionIds = new ArrayList<>();
-            }
 
             if(warehouses!=null && !warehouses.isEmpty()){
                 warehouseIds = warehouseRepository
@@ -189,8 +183,8 @@ public class StockTransactionItemImpl implements IStockTransactionItem {
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
                 stockTransactionItemPage = stockTransactionItemRepositoryCustom.searchForStockTransactionItem(
                         clientId,
-                        stockTransactionIds,
-                        supplierProductIds,
+                        serial,
+                        product,
                         warehouseIds,
                         stockTransactionTypeIds,
                         sort,

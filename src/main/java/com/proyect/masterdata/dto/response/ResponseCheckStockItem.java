@@ -14,6 +14,7 @@ import java.util.List;
 @Data
 public class ResponseCheckStockItem {
     private Boolean pendingStock;
+    private String message;
     private Integer pendingQuantity;
     private List<CheckStockItemDTO> itemStockList;
 }

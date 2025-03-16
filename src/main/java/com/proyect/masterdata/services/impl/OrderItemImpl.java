@@ -52,11 +52,12 @@ public class OrderItemImpl implements IOrderItem {
         User user;
         Product product;
         Discount discount;
-
+        WarehouseStock warehouseStock;
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             product = productRepository.findByIdAndStatusTrue(requestOrderItem.getProductId());
             discount = discountRepository.findByName(requestOrderItem.getDiscount().toUpperCase());
+
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -77,6 +78,8 @@ public class OrderItemImpl implements IOrderItem {
         if(requestOrderItem.getQuantity()<1){
             throw new BadRequestExceptions(Constants.ErrorOrderItemZero);
         }
+
+
 
         try{
             OrderItem newOrderItem = orderItemRepository.save(OrderItem.builder()
@@ -179,10 +182,13 @@ public class OrderItemImpl implements IOrderItem {
             User user;
             Product product;
             List<CheckStockItemDTO> checkStockItemDTOList = new ArrayList<>();
-
+            List<WarehouseStock> warehouseStocksList;
+            WarehouseStock warehouseStock;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 product = productRepository.findByIdAndStatusTrue(productId);
+                warehouseStock = warehouseStockRepository.findProductByProductId(productId);
+                warehouseStocksList = warehouseStockRepository.findByProductIdAndClientId(productId,user.getClientId());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -196,8 +202,23 @@ public class OrderItemImpl implements IOrderItem {
                 throw new BadRequestExceptions(Constants.ErrorProduct);
             }
 
+            if(warehouseStocksList == null){
+                throw new BadRequestExceptions(Constants.ErrorWarehouseStock);
+            }
+
+
+
             try{
                 Integer stockUnits = 0;
+
+                for(WarehouseStock w : warehouseStocksList) {
+                    stockUnits += warehouseStock.getQuantity();
+                    checkStockItemDTOList.add(CheckStockItemDTO.builder()
+                            .key(w.getWarehouse().getName())
+                            .stockQuantity(w.getQuantity())
+                            .warehouse(warehouseStock.getWarehouse().getName())
+                            .build());
+                }
                 if(stockUnits >= quantity){
                     return ResponseCheckStockItem.builder()
                             .itemStockList(checkStockItemDTOList)
@@ -211,10 +232,26 @@ public class OrderItemImpl implements IOrderItem {
                             .itemStockList(checkStockItemDTOList)
                             .build();
                 }
+
+
+
+//                if(quantity > warehouseStock.getQuantity()){
+//                    return ResponseCheckStockItem.builder()
+//                            .message(Constants.ErrorWarehouseStockLess)
+//                            .itemStockList(checkStockItemDTOList)
+//                            .build();
+//                }else{
+//                    return ResponseCheckStockItem.builder()
+//                            .message("Producto Disponible")
+//                            .build();
+//                }
+
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
+
+
         });
     }
 
@@ -737,6 +774,8 @@ public class OrderItemImpl implements IOrderItem {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 orderItem = orderItemRepository.findOrderItemById(orderItemId);
                 ordering = orderingRepository.findById(orderItem.getOrderId()).orElse(null);
+
+
                 System.out.println("user");
                 System.out.println("orderItem: "+orderItem);
                 System.out.println("ordering:" + ordering );

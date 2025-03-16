@@ -76,6 +76,7 @@ public class OrderingImpl implements IOrdering {
     private final IUtil iUtil;
     private final IOrderLog iOrderLog;
     private final IOrderContacted iOrderContacted;
+    private final IOrderContacted iOrderContact;
 
     @Value("${storage.path.server}")
     private String urlPathServer ;
@@ -874,6 +875,7 @@ public class OrderingImpl implements IOrdering {
             throw new BadRequestExceptions(Constants.ErrorOrdering);
         }
 
+
         if(
                 requestOrderUpdate.getCancellationReason() != null &&
                         Objects.equals(requestOrderUpdate.getOrderState().toUpperCase(), "CANCELADO") &&
@@ -945,6 +947,16 @@ public class OrderingImpl implements IOrdering {
                 ordering.setDeliveryFlag(true);
                 updatedOrder = orderingRepository.save(ordering);
             }
+
+            if(orderState.getName().equals("PREPARADO")){
+                iOrderContact.save(
+                        orderId,
+                        user.getUsername(),
+                        ""
+                );
+                System.out.println("Order Contacted -----------");
+            }
+
             iOrderLog.save(user,updatedOrder,
                     OffsetDateTime.now()+
                             " - "+
@@ -999,6 +1011,7 @@ public class OrderingImpl implements IOrdering {
             if(orderPaymentState == null){
                 throw new BadRequestExceptions(Constants.ErrorPaymentState);
             }
+
 
             if(ordering == null){
                 throw new BadRequestExceptions(Constants.ErrorOrdering);
@@ -1119,6 +1132,17 @@ public class OrderingImpl implements IOrdering {
                         }
                     });
                 }
+
+                System.out.println("order state ---> " + orderState.getName());
+
+                if(orderState.getName().equals("PREPARADO")){
+                    iOrderContact.save(
+                            orderId,
+                            user.getUsername(),
+                            ""
+                    );
+                }
+
                 iOrderLog.save(user,updatedOrder,
                         OffsetDateTime.now()+
                                 " - "+

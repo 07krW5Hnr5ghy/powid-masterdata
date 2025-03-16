@@ -7,16 +7,20 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.canvas.draw.ILineDrawer;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.Style;
+import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.LineSeparator;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.UnitValue;
 import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.dto.DeliveryManifestDTO;
+import com.proyect.masterdata.dto.DeliveryManifestItemDTO;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IPdfGenerator;
+import com.proyect.masterdata.services.IUtil;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -29,9 +33,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -43,6 +45,9 @@ public class PdfGeneratorImpl implements IPdfGenerator {
     private final OrderingRepository orderingRepository;
     private final OrderItemRepository orderItemRepository;
     private final ProductPriceRepository productPriceRepository;
+    private final DeliveryManifestRepository deliveryManifestRepository;
+    private final DeliveryManifestItemRepository deliveryManifestItemRepository;
+    private final IUtil iUtil;
     @Override
     public CompletableFuture<InputStream> generateOrderReport(UUID orderId, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -164,6 +169,164 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                 String formattedTime = now.format(timeFormatter);
                 // Date and Time
                 document.add(new Paragraph("Impreso en: "+formattedDate+" - "+formattedTime).addStyle(normalStyle).setMargin(0).setPadding(0).setTextAlignment(TextAlignment.CENTER));
+
+                document.close();
+
+                return new ByteArrayInputStream(out.toByteArray());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<InputStream> generateDeliveryManifestReport(UUID deliveryManifestId, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            DeliveryManifest deliveryManifest;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                deliveryManifest = deliveryManifestRepository.findById(deliveryManifestId).orElse(null);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(deliveryManifest==null){
+                throw new BadRequestExceptions(Constants.ErrorDeliveryStatusExists);
+            }
+            try{
+                List<Ordering> orders = new ArrayList<>();
+                Set<Long> uniqueOrderNumbers = new HashSet<>();
+                List<DeliveryManifestItemDTO> deliveryManifestItemDTOS = deliveryManifestItemRepository.findAllById(deliveryManifest.getId())
+                        .stream().map(deliveryManifestItem -> {
+                            if(!uniqueOrderNumbers.contains(deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber())){
+                                uniqueOrderNumbers.add(deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber());
+                                orders.add(deliveryManifestItem.getOrderItem().getOrdering());
+                            }
+                            ProductPrice productPrice = productPriceRepository.findByProductId(deliveryManifestItem.getProductId());
+                            Double totalPrice = null;
+                            if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "PORCENTAJE")){
+                                totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity())-((productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity())*(deliveryManifestItem.getOrderItem().getDiscountAmount()/100));
+                            }
+
+                            if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "MONTO")){
+                                totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity())-(deliveryManifestItem.getOrderItem().getDiscountAmount());
+                            }
+
+                            if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "NO APLICA")){
+                                totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity());
+                            }
+                            return DeliveryManifestItemDTO.builder()
+                                    .id(deliveryManifestItem.getId())
+                                    .user(deliveryManifestItem.getUser().getUsername())
+                                    .manifestNumber(deliveryManifestItem.getDeliveryManifest().getManifestNumber())
+                                    .phone(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getPhone())
+                                    .customer(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getName())
+                                    .district(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getDistrict().getName())
+                                    .orderNumber(deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber())
+                                    .quantity(deliveryManifestItem.getQuantity())
+                                    .skuProduct(iUtil.buildProductSku(deliveryManifestItem.getProduct()))
+                                    .management(deliveryManifestItem.getOrderItem().getOrdering().getManagementType().getName())
+                                    .paymentMethod(deliveryManifestItem.getOrderItem().getOrdering().getOrderPaymentMethod().getName())
+                                    .paymentState(deliveryManifestItem.getOrderItem().getOrdering().getOrderPaymentState().getName())
+                                    .orderItemAmount(totalPrice)
+                                    .build();
+                        }).toList();
+                double totalOrdersSaleAmount = 0.00;
+                double totalOrdersDuePayment = 0.00;
+                for(Ordering order:orders){
+                    List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndStatusTrue(order.getId());
+                    double saleAmount = 0.00;
+                    for(OrderItem orderItem : orderItems){
+                        ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
+                        if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
+                            saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - ((productPrice.getUnitSalePrice() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
+                        }
+                        if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                            saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
+                        }
+                        if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                            saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                        }
+                    }
+                    double totalDuePayment=0;
+                    if(Objects.equals(order.getDiscount().getName(), "PORCENTAJE")){
+                        totalDuePayment = (saleAmount-((saleAmount)*(order.getDiscountAmount()/100))+order.getDeliveryAmount())-order.getAdvancedPayment();
+                    }
+                    if(Objects.equals(order.getDiscount().getName(), "MONTO")){
+                        totalDuePayment = (saleAmount-order.getDiscountAmount()+order.getDeliveryAmount())-order.getAdvancedPayment();
+                    }
+                    if(Objects.equals(order.getDiscount().getName(), "NO APLICA")){
+                        totalDuePayment = (saleAmount+order.getDeliveryAmount())-order.getAdvancedPayment();
+                    }
+                    totalOrdersSaleAmount+=saleAmount;
+                    totalOrdersDuePayment+=totalDuePayment;
+                }
+                DeliveryManifestDTO deliveryManifestDTO =  DeliveryManifestDTO.builder()
+                        .id(deliveryManifest.getId())
+                        .user(deliveryManifest.getUser().getUsername())
+                        .manifestNumber(deliveryManifest.getManifestNumber())
+                        .id(deliveryManifest.getId())
+                        .open(deliveryManifest.getOpen())
+                        .courier(deliveryManifest.getCourier().getName())
+                        .warehouse(deliveryManifest.getWarehouse().getName())
+                        .registrationDate(deliveryManifest.getRegistrationDate())
+                        .updateDate(deliveryManifest.getUpdateDate())
+                        .deliveryManifestItemDTOS(deliveryManifestItemDTOS)
+                        .pickupAddress(deliveryManifest.getWarehouse().getAddress())
+                        .amount(totalOrdersSaleAmount)
+                        .paidAmount(totalOrdersSaleAmount-totalOrdersDuePayment)
+                        .payableAmount(totalOrdersDuePayment)
+                        .observations(deliveryManifest.getObservations())
+                        .build();
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                PdfWriter writer = new PdfWriter(out);
+                PdfDocument pdfDoc = new PdfDocument(writer);
+                pdfDoc.setDefaultPageSize(PageSize.A4);
+
+                Document document = new Document(pdfDoc);
+                document.setMargins(2,2,2,2);
+                // Title
+                Paragraph title = new Paragraph("Guia Motorizado")
+                        .setBold()
+                        .setFontSize(18)
+                        .setTextAlignment(TextAlignment.CENTER);
+                document.add(title);
+
+                // Manifest Details
+                document.add(new Paragraph("Guia Numero : " + deliveryManifestDTO.getManifestNumber()));
+                document.add(new Paragraph("\n"));
+//                // Table Header
+                Table table = new Table(4);
+                table.addCell("# Pedido").setBold();
+                table.addCell("Descripcion").setBold();
+                table.addCell("Telefono").setBold();
+                table.addCell("Producto").setBold();
+                table.addCell("Distrito").setBold();
+                table.addCell("Importe").setBold();
+                table.addCell("Gestion").setBold();
+
+                for(DeliveryManifestItemDTO deliveryManifestItemDTO:deliveryManifestItemDTOS){
+                    table.addCell(deliveryManifestItemDTO.getOrderNumber().toString());
+                    table.addCell(deliveryManifestItemDTO.getCustomer());
+                    table.addCell(deliveryManifestItemDTO.getPhone());
+                    table.addCell(deliveryManifestItemDTO.getSkuProduct());
+                    table.addCell(deliveryManifestItemDTO.getDistrict());
+                    table.addCell(deliveryManifestItemDTO.getOrderItemAmount().toString());
+                    table.addCell(deliveryManifestItemDTO.getManagement());
+                }
+//
+//                // Populate Table with Items
+//                for (DeliveryItem item : items) {
+//                    table.addCell(item.getItemCode());
+//                    table.addCell(item.getDescription());
+//                    table.addCell(String.valueOf(item.getQuantity()));
+//                    table.addCell(item.getDestination());
+//                }
 
                 document.close();
 
