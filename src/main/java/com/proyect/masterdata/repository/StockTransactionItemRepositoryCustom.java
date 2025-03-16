@@ -12,8 +12,8 @@ import java.util.UUID;
 public interface StockTransactionItemRepositoryCustom {
     Page<StockTransactionItem> searchForStockTransactionItem(
             UUID clientId,
-            List<UUID> stockTransactionId,
-            List<UUID> supplierProductsIds,
+            String serial,
+            String product,
             List<UUID> warehouseIds,
             List<UUID> stockTransactionTypeIds,
             String sort,

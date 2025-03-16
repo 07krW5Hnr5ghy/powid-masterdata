@@ -1,9 +1,6 @@
 package com.proyect.masterdata.repository.impl;
 
-import com.proyect.masterdata.domain.StockTransaction;
-import com.proyect.masterdata.domain.StockTransactionItem;
-import com.proyect.masterdata.domain.StockTransactionType;
-import com.proyect.masterdata.domain.Warehouse;
+import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.repository.StockTransactionItemRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -29,8 +26,8 @@ public class StockTransactionItemRepositoryCustomImpl implements StockTransactio
     @Override
     public Page<StockTransactionItem> searchForStockTransactionItem(
             UUID clientId,
-            List<UUID> stockTransactionIds,
-            List<UUID> supplierProductIds,
+            String serial,
+            String product,
             List<UUID> warehouseIds,
             List<UUID> stockTransactionTypesIds,
             String sort,
@@ -40,24 +37,26 @@ public class StockTransactionItemRepositoryCustomImpl implements StockTransactio
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<StockTransactionItem> criteriaQuery = criteriaBuilder.createQuery(StockTransactionItem.class);
-
         Root<StockTransactionItem> stockTransactionItemRoot = criteriaQuery.from(StockTransactionItem.class);
         Join<StockTransactionItem,StockTransaction> stockTransactionItemStockTransactionJoin = stockTransactionItemRoot.join("stockTransaction");
         Join<StockTransaction,Warehouse> stockTransactionWarehouseJoin = stockTransactionItemStockTransactionJoin.join("warehouse");
         Join<StockTransaction, StockTransactionType> stockTransactionStockTransactionTypeJoin = stockTransactionItemStockTransactionJoin.join("stockTransactionType");
+        Join<StockTransactionItem, Product> stockTransactionItemProductJoin = stockTransactionItemRoot.join("product");
 
         criteriaQuery.select(stockTransactionItemRoot);
 
         List<Predicate> conditions = predicate(
                 clientId,
-                stockTransactionIds,
-                supplierProductIds,
+                serial,
+                product,
                 warehouseIds,
                 stockTransactionTypesIds,
                 criteriaBuilder,
                 stockTransactionItemRoot,
                 stockTransactionWarehouseJoin,
-                stockTransactionStockTransactionTypeJoin
+                stockTransactionItemStockTransactionJoin,
+                stockTransactionStockTransactionTypeJoin,
+                stockTransactionItemProductJoin
         );
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
@@ -84,8 +83,8 @@ public class StockTransactionItemRepositoryCustomImpl implements StockTransactio
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
         Long count = getOrderCount(
                 clientId,
-                stockTransactionIds,
-                supplierProductIds,
+                serial,
+                product,
                 warehouseIds,
                 stockTransactionTypesIds
                 );
@@ -94,14 +93,16 @@ public class StockTransactionItemRepositoryCustomImpl implements StockTransactio
 
     private List<Predicate> predicate(
             UUID clientId,
-            List<UUID> stockTransactionIds,
-            List<UUID> supplierProductIds,
+            String serial,
+            String product,
             List<UUID> warehouseIds,
             List<UUID> stockTransactionTypeIds,
             CriteriaBuilder criteriaBuilder,
             Root<StockTransactionItem> itemRoot,
             Join<StockTransaction,Warehouse> stockTransactionWarehouseJoin,
-            Join<StockTransaction,StockTransactionType> stockTransactionStockTransactionTypeJoin
+            Join<StockTransactionItem,StockTransaction> stockTransactionItemStockTransactionJoin,
+            Join<StockTransaction,StockTransactionType> stockTransactionStockTransactionTypeJoin,
+            Join<StockTransactionItem, Product> stockTransactionItemProductJoin
             ) {
 
         List<Predicate> conditions = new ArrayList<>();
@@ -118,12 +119,12 @@ public class StockTransactionItemRepositoryCustomImpl implements StockTransactio
             conditions.add(criteriaBuilder.and(stockTransactionStockTransactionTypeJoin.get("id").in(stockTransactionTypeIds)));
         }
 
-        if(!supplierProductIds.isEmpty()){
-            conditions.add(criteriaBuilder.and(itemRoot.get("supplierProduct").get("id").in(supplierProductIds)));
+        if(product!=null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(stockTransactionItemProductJoin.get("name")),"%"+product.toUpperCase()+"%"));
         }
 
-        if (!stockTransactionIds.isEmpty()) {
-            conditions.add(criteriaBuilder.and(itemRoot.get("stockTransactionId").in(stockTransactionIds)));
+        if (serial!=null) {
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(stockTransactionItemStockTransactionJoin.get("serial")),"%"+serial.toUpperCase()+"%"));
         }
         
         return conditions;
@@ -170,8 +171,8 @@ public class StockTransactionItemRepositoryCustomImpl implements StockTransactio
 
     private Long getOrderCount(
             UUID clientId,
-            List<UUID> stockTransactionIds,
-            List<UUID> supplierProductIds,
+            String serial,
+            String product,
             List<UUID> warehouseIds,
             List<UUID> stockTransactionTypeIds
     ) {
@@ -180,18 +181,21 @@ public class StockTransactionItemRepositoryCustomImpl implements StockTransactio
         Root<StockTransactionItem> stockTransactionItemRoot = criteriaQuery.from(StockTransactionItem.class);
         Join<StockTransactionItem,StockTransaction> stockTransactionItemStockTransactionJoin = stockTransactionItemRoot.join("stockTransaction");
         Join<StockTransaction,Warehouse> stockTransactionWarehouseJoin = stockTransactionItemStockTransactionJoin.join("warehouse");
-        Join<StockTransaction,StockTransactionType> stockTransactionStockTransactionTypeJoin = stockTransactionItemStockTransactionJoin.join("stockTransactionType");
+        Join<StockTransaction, StockTransactionType> stockTransactionStockTransactionTypeJoin = stockTransactionItemStockTransactionJoin.join("stockTransactionType");
+        Join<StockTransactionItem, Product> stockTransactionItemProductJoin = stockTransactionItemRoot.join("product");
         criteriaQuery.select(criteriaBuilder.count(stockTransactionItemRoot));
         List<Predicate> conditions = predicate(
                 clientId,
-                stockTransactionIds,
-                supplierProductIds,
+                serial,
+                product,
                 warehouseIds,
                 stockTransactionTypeIds,
                 criteriaBuilder,
                 stockTransactionItemRoot,
                 stockTransactionWarehouseJoin,
-                stockTransactionStockTransactionTypeJoin
+                stockTransactionItemStockTransactionJoin,
+                stockTransactionStockTransactionTypeJoin,
+                stockTransactionItemProductJoin
         );
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
