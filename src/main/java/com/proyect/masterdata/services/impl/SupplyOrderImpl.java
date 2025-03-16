@@ -86,7 +86,6 @@ public class SupplyOrderImpl implements ISupplyOrder {
                     .quantity(supplyOrderItem.getQuantity())
                     .productId(supplyOrderItem.getProductId())
                     .build()).toList();
-            iStockTransaction.save("S"+ requestSupplyOrder.getRef().toUpperCase(), warehouse,requestStockTransactionItemList,"INGRESO",user);
             Long orderNumber = supplyOrderRepository.countByClientId(user.getClientId())+1L;
             // Parse to LocalDate
             LocalDate localDate = LocalDate.parse(requestSupplyOrder.getDeliveryDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -106,6 +105,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
                             .user(user).userId(user.getId())
                             .deliveryDate(offsetDateTime)
                       .build());
+            iStockTransaction.save("S"+newSupplyOrder.getOrderNumber(), warehouse,requestStockTransactionItemList,"INGRESO",user);
             iAudit.save("ADD_PURCHASE","COMPRA " + newSupplyOrder.getRef() +" CREADA.", newSupplyOrder.getRef(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
@@ -162,7 +162,6 @@ public class SupplyOrderImpl implements ISupplyOrder {
 
                 // Convert LocalDate to OffsetDateTime (Midnight at UTC)
                 OffsetDateTime offsetDateTime = localDate.atStartOfDay().atOffset(ZoneOffset.UTC);
-                iStockTransaction.save("S"+ requestSupplyOrder.getRef().toUpperCase(), warehouse,requestStockTransactionItemList,"INGRESO",user);
                 Long orderNumber = supplyOrderRepository.countByClientId(user.getClientId())+1L;
                 SupplyOrder newSupplyOrder = supplyOrderRepository.save(SupplyOrder.builder()
                         .ref(requestSupplyOrder.getRef().toUpperCase())
@@ -180,6 +179,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
                 for(RequestSupplyOrderItem requestSupplyOrderItem : requestSupplyOrder.getRequestSupplyOrderItemList()){
                     iSupplyOrderItem.save(newSupplyOrder,warehouse.getName(), requestSupplyOrderItem,user.getUsername());
                 }
+                iStockTransaction.save("S"+newSupplyOrder.getOrderNumber(), warehouse,requestStockTransactionItemList,"INGRESO",user);
                 iAudit.save("ADD_PURCHASE","COMPRA " + newSupplyOrder.getRef() +" CREADA.", newSupplyOrder.getRef(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
