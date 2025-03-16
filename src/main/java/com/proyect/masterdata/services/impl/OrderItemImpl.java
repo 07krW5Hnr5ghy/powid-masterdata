@@ -182,11 +182,13 @@ public class OrderItemImpl implements IOrderItem {
             User user;
             Product product;
             List<CheckStockItemDTO> checkStockItemDTOList = new ArrayList<>();
+            List<WarehouseStock> warehouseStocksList;
             WarehouseStock warehouseStock;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 product = productRepository.findByIdAndStatusTrue(productId);
                 warehouseStock = warehouseStockRepository.findProductByProductId(productId);
+                warehouseStocksList = warehouseStockRepository.findByProductIdAndClientId(productId,user.getClientId());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -200,12 +202,23 @@ public class OrderItemImpl implements IOrderItem {
                 throw new BadRequestExceptions(Constants.ErrorProduct);
             }
 
-            if(warehouseStock.getQuantity()<quantity){
-                throw new BadRequestExceptions(Constants.ErrorWarehouseStockLess);
+            if(warehouseStocksList == null){
+                throw new BadRequestExceptions(Constants.ErrorWarehouseStock);
             }
+
+
 
             try{
                 Integer stockUnits = 0;
+
+                for(WarehouseStock w : warehouseStocksList) {
+                    stockUnits += warehouseStock.getQuantity();
+                    checkStockItemDTOList.add(CheckStockItemDTO.builder()
+                            .key(w.getWarehouse().getName())
+                            .stockQuantity(w.getQuantity())
+                            .warehouse(warehouseStock.getWarehouse().getName())
+                            .build());
+                }
                 if(stockUnits >= quantity){
                     return ResponseCheckStockItem.builder()
                             .itemStockList(checkStockItemDTOList)
@@ -219,10 +232,26 @@ public class OrderItemImpl implements IOrderItem {
                             .itemStockList(checkStockItemDTOList)
                             .build();
                 }
+
+
+
+//                if(quantity > warehouseStock.getQuantity()){
+//                    return ResponseCheckStockItem.builder()
+//                            .message(Constants.ErrorWarehouseStockLess)
+//                            .itemStockList(checkStockItemDTOList)
+//                            .build();
+//                }else{
+//                    return ResponseCheckStockItem.builder()
+//                            .message("Producto Disponible")
+//                            .build();
+//                }
+
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
+
+
         });
     }
 
