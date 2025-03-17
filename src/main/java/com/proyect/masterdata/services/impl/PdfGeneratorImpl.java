@@ -414,7 +414,7 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                 document.add(new Paragraph("\n"));
 
                 // Summary Section
-                Table summaryTable = new Table(new float[]{3, 1});
+                Table summaryTable = new Table(new float[]{3, 1,3,1});
                 summaryTable.setWidth(UnitValue.createPercentValue(100));
 
                 summaryTable.addCell("No. PEDIDOS").setFont(boldFont);
