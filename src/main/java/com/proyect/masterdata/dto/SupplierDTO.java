@@ -12,9 +12,6 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @Data
 public class SupplierDTO {
-    private String id;
-    private Boolean status;
-    private String user;
     private String name;
     private String ruc;
     private String country;

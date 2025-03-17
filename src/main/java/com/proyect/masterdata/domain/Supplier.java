@@ -46,8 +46,8 @@ public class Supplier {
     @CreationTimestamp
     private OffsetDateTime updateDate;
 
-    @Column(name = "token_user")
-    private String tokenUser;
+    @Column(name = "user_id")
+    private UUID userId;
 
     @Column(name = "client_id")
     private UUID clientId;
@@ -79,4 +79,8 @@ public class Supplier {
     @ManyToOne()
     @JoinColumn(name = "country_id",columnDefinition = "countryId",insertable = false,updatable = false)
     private Country country;
+
+    @ManyToOne()
+    @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
+    private User user;
 }

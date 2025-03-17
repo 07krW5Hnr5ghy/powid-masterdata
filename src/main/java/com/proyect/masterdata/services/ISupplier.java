@@ -30,7 +30,8 @@ public interface ISupplier {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions;
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions;
     CompletableFuture<List<SupplierDTO>> listSuppliers(String user) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<List<SupplierDTO>> listSuppliersFalse(String user) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<List<SupplierDTO>> listSuppliersFilter(String user) throws InternalErrorExceptions,BadRequestExceptions;
