@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableSupplier, schema = Constants.schemaLogistics)
+@Table(name = Constants.tableSupplierType, schema = Constants.schemaLogistics)
 public class SupplierType {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

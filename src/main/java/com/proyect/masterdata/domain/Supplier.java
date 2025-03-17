@@ -50,16 +50,16 @@ public class Supplier {
     private String tokenUser;
 
     @Column(name = "client_id")
-    private Long clientId;
+    private UUID clientId;
 
     @Column(name = "supplier_type_id")
-    private Long supplierTypeId;
+    private UUID supplierTypeId;
 
     @Column(name = "district_id")
-    private Long districtId;
+    private UUID districtId;
 
     @Column(name = "country_id")
-    private Long countryId;
+    private UUID countryId;
 
     @Column(name = "status")
     private Boolean status;
