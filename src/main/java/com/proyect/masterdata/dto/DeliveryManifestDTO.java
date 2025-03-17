@@ -21,6 +21,8 @@ public class DeliveryManifestDTO {
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
     private String courier;
+    private String courierPhone;
+    private String courierPlate;
     private Boolean open;
     private String warehouse;
     private String pickupAddress;

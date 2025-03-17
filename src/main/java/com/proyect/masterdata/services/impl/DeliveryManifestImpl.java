@@ -172,6 +172,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                     .paymentMethod(deliveryManifestItem.getOrderItem().getOrdering().getOrderPaymentMethod().getName())
                                     .paymentState(deliveryManifestItem.getOrderItem().getOrdering().getOrderPaymentState().getName())
                                     .orderItemAmount(totalPrice)
+                                    .product(deliveryManifestItem.getProduct().getName())
                                     .build();
                         }).toList();
                 double totalOrdersSaleAmount = 0.00;
@@ -220,6 +221,8 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         .paidAmount(totalOrdersSaleAmount-totalOrdersDuePayment)
                         .payableAmount(totalOrdersDuePayment)
                         .observations(deliveryManifest.getObservations())
+                        .courierPhone(deliveryManifest.getCourier().getPhone())
+                        .courierPlate(deliveryManifest.getCourier().getPlate())
                         .build();
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -379,6 +382,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                     .paymentMethod(deliveryManifestItem.getOrderItem().getOrdering().getOrderPaymentMethod().getName())
                                     .paymentState(deliveryManifestItem.getOrderItem().getOrdering().getOrderPaymentState().getName())
                                     .orderItemAmount(totalPrice)
+                                    .product(deliveryManifestItem.getProduct().getName())
                                     .build();
                         }).toList();
                 double totalOrdersSaleAmount = 0.00;
@@ -427,6 +431,8 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         .paidAmount(totalOrdersSaleAmount-totalOrdersDuePayment)
                         .payableAmount(totalOrdersDuePayment)
                         .observations(deliveryManifest.getObservations())
+                        .courierPhone(deliveryManifest.getCourier().getPhone())
+                        .courierPlate(deliveryManifest.getCourier().getPlate())
                         .build();
             }).toList();
             return new PageImpl<>(deliveryManifestDTOS,deliveryManifestPage.getPageable(),deliveryManifestPage.getTotalElements());

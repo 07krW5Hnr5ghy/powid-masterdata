@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.request.RequestPdfDeliveryManifest;
 import com.proyect.masterdata.dto.request.RequestPdfOrder;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IPdfGenerator;
@@ -36,12 +37,11 @@ public class PdfController {
 
     @PostMapping("delivery-manifest")
     public ResponseEntity<InputStreamResource> generateDeliveryManifest(
-            @RequestParam("deliveryManifestId") String deliveryManifestId,
-            @RequestParam("tokenUser") String tokenUser
+            @RequestBody()RequestPdfDeliveryManifest requestPdfDeliveryManifest
             ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<InputStream> pdfStream = iPdfGenerator.generateDeliveryManifestReport(deliveryManifestId, tokenUser);
+        CompletableFuture<InputStream> pdfStream = iPdfGenerator.generateDeliveryManifestReport(requestPdfDeliveryManifest.getManifestNumberId(), requestPdfDeliveryManifest.getTokenUser());
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition","inline;filename=pedido_"+deliveryManifestId+".pdf");
+        headers.add("Content-Disposition","inline;filename=pedido_"+requestPdfDeliveryManifest.getManifestNumber()+".pdf");
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
