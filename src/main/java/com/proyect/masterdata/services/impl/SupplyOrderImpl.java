@@ -107,7 +107,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
             LocalDate localDate = LocalDate.parse(requestSupplyOrder.getDeliveryDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
             // Convert LocalDate to OffsetDateTime (Midnight at UTC)
-            OffsetDateTime offsetDateTime = localDate.atStartOfDay().atOffset(ZoneOffset.UTC);
+            OffsetDateTime offsetDateTime = localDate.atStartOfDay().atOffset(ZoneOffset.ofHours(-5));
             SupplyOrder newSupplyOrder = supplyOrderRepository.save(SupplyOrder.builder()
                             .ref(requestSupplyOrder.getRef().toUpperCase())
                             .orderNumber(orderNumber)
