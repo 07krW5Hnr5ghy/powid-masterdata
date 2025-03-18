@@ -28,6 +28,7 @@ public class DeliveryManifestController {
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody()RequestDeliveryManifest requestDeliveryManifest
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
+        //System.out.println(requestDeliveryManifest);
         CompletableFuture<ResponseSuccess> result = iDeliveryManifest.save(requestDeliveryManifest);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }

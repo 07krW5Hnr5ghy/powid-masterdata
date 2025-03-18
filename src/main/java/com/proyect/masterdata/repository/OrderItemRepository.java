@@ -21,12 +21,20 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
     OrderItem findOrderItemById(UUID orderItemId);
     List<OrderItem> findAllByOrderIdAndStatusTrue(UUID orderId);
     OrderItem findByIdAndOrderId(UUID itemId, UUID orderId);
+    OrderItem findByProductId(UUID productId);
     OrderItem findByProductIdAndOrderId(UUID productId,UUID orderId);
     OrderItem findByOrderIdAndProductId(UUID orderId,UUID productId);
     List<OrderItem> findAllByClientIdAndStatusTrue(UUID clientId);
     List<OrderItem> findAllByClientIdAndStatusTrueAndSelectOrderStatusTrue(UUID clientId);
     List<OrderItem> findAllByClientIdAndOrderIdAndStatusTrue(UUID clientId,UUID orderId);
     List<OrderItem> findAllByClientIdAndOrderIdAndStatusFalse(UUID clientId,UUID orderId);
+
+    @Query("SELECT o FROM OrderItem o " +
+            "WHERE o.orderId = :orderId " +
+            "AND o.status = true " +
+            "AND o.selectOrderStatus = true")
+    List<OrderItem> findOrderItemsForOrder(@Param("orderId") UUID orderId);
+
     @Query(value = "SELECT " +
             "o.order_id AS orderId, " +
             "o.registration_date AS registrationDate, " +

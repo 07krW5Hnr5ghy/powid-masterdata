@@ -41,11 +41,14 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
             DeliveryManifest deliveryManifest,
             Warehouse warehouse,
             User user) throws BadRequestExceptions, InterruptedException {
+        System.out.println("entroooo manifest item");
         return CompletableFuture.supplyAsync(()->{
             WarehouseStock warehouseStock;
             DeliveryManifestItem deliveryManifestItem;
             try{
+                System.out.println("entra -> id product: " + orderItem.getProduct().getId() + " warehouseId: " + warehouse.getId());
                 warehouseStock = warehouseStockRepository.findByWarehouseIdAndProductId(warehouse.getId(),orderItem.getProduct().getId());
+                System.out.println(warehouseStock);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -59,16 +62,22 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                 throw new BadRequestExceptions(Constants.ErrorDeliveryManifestItemDelivered);
             }
             if(warehouseStock.getQuantity()<orderItem.getQuantity()){
+                System.out.println("Aqui-ZZZZ cantidad en estock es mejor a llo que piden");
                 throw new BadRequestExceptions(Constants.ErrorWarehouseStockLess);
+
             }
             try{
                 DeliveryManifestItem newDeliveryManifestItem = deliveryManifestItemRepository.save(DeliveryManifestItem.builder()
                         .deliveryManifest(deliveryManifest)
                         .deliveryManifestId(deliveryManifest.getId())
                         .quantity(orderItem.getQuantity())
+                        .productId(orderItem.getProduct().getId())
+                        .product(orderItem.getProduct())
                         .collected(false)
                         .orderItem(orderItem)
                         .orderItemId(orderItem.getId())
+                        .userId(orderItem.getUser().getId())
+                        .user(orderItem.getUser())
                         .delivered(false)
                         .build());
                 iWarehouseStock.out(

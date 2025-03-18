@@ -1261,6 +1261,7 @@ public class OrderingImpl implements IOrdering {
                             }
                             String finalSku = iUtil.buildProductSku(orderItem.getProduct());
                             return OrderItemDTO.builder()
+                                    .id(orderItem.getId())
                                     .productId(orderItem.getProductId())
                                     .orderId(orderItem.getId())
                                     .status(orderItem.getStatus())
