@@ -153,6 +153,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
                 warehouse = warehouseRepository.findByNameAndStatusTrue(requestSupplyOrder.getWarehouse().toUpperCase());
                 purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(requestSupplyOrder.getPurchaseDocument());
             } catch (RuntimeException e) {
+                e.printStackTrace();
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
