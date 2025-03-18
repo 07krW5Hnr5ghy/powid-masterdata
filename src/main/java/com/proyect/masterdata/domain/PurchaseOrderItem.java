@@ -1,36 +1,26 @@
 package com.proyect.masterdata.domain;
 
-import java.time.OffsetDateTime;
-import java.util.UUID;
-
-import org.hibernate.annotations.CreationTimestamp;
-
 import com.proyect.masterdata.utils.Constants;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+
+import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Entity
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableSupplyOrderItem, schema = Constants.schemaStock)
-public class SupplyOrderItem {
-
+@Table(name = Constants.tablePurchaseOrderItem,schema = Constants.schemaStock)
+public class PurchaseOrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "supply_order_item_id")
+    @Column(name = "purchase_order_item_id")
     private UUID id;
 
     @Column(name = "quantity")
@@ -56,8 +46,8 @@ public class SupplyOrderItem {
     @Column(name = "client_id")
     private UUID clientId;
 
-    @Column(name = "purchase_id")
-    private UUID purchaseId;
+    @Column(name = "purchase_order_id")
+    private UUID purchaseOrderId;
 
     @Column(name = "user_id")
     private UUID userId;
@@ -71,11 +61,10 @@ public class SupplyOrderItem {
     private Product product;
 
     @ManyToOne
-    @JoinColumn(name = "purchase_id",columnDefinition = "purchaseId",insertable = false,updatable = false)
-    private SupplyOrder supplyOrder;
+    @JoinColumn(name = "purchase_order_id",columnDefinition = "purchaseOrderId",insertable = false,updatable = false)
+    private PurchaseOrder purchaseOrder;
 
     @ManyToOne()
     @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
     private User user;
-
 }
