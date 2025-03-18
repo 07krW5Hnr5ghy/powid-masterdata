@@ -46,6 +46,9 @@ public class SupplyOrderImpl implements ISupplyOrder {
     private final WarehouseStockRepository warehouseStockRepository;
     private final IUtil iUtil;
     private final SupplyOrderItemRepository supplyOrderItemRepository;
+    private final SupplierRepository supplierRepository;
+    private final PurchaseDocumentRepository purchaseDocumentRepository;
+    private final ProductPriceRepository productPriceRepository;
     @Override
     @Transactional
     public ResponseSuccess save(RequestSupplyOrder requestSupplyOrder, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
@@ -53,10 +56,13 @@ public class SupplyOrderImpl implements ISupplyOrder {
         User user;
         Warehouse warehouse;
         SupplyOrder supplyOrder;
+        Supplier supplier;
+        PurchaseDocument purchaseDocument;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             warehouse = warehouseRepository.findByNameAndStatusTrue(requestSupplyOrder.getWarehouse().toUpperCase());
+            purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(requestSupplyOrder.getPurchaseDocument());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -64,6 +70,8 @@ public class SupplyOrderImpl implements ISupplyOrder {
 
         if (user == null) {
             throw new BadRequestExceptions(Constants.ErrorUser);
+        }else{
+            supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(requestSupplyOrder.getSupplierRuc(), user.getClientId());
         }
 
         if (warehouse == null) {
@@ -80,6 +88,14 @@ public class SupplyOrderImpl implements ISupplyOrder {
             throw new BadRequestExceptions(Constants.ErrorPurchaseExists);
         }
 
+        if(supplier==null){
+            throw new BadRequestExceptions(Constants.ErrorSupplier);
+        }
+
+        if(purchaseDocument == null){
+            throw new BadRequestExceptions(Constants.ErrorPurchaseDocument);
+        }
+
         try{
 
             List<RequestStockTransactionItem> requestStockTransactionItemList = requestSupplyOrder.getRequestSupplyOrderItemList().stream().map(supplyOrderItem -> RequestStockTransactionItem.builder()
@@ -91,10 +107,12 @@ public class SupplyOrderImpl implements ISupplyOrder {
             LocalDate localDate = LocalDate.parse(requestSupplyOrder.getDeliveryDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
             // Convert LocalDate to OffsetDateTime (Midnight at UTC)
-            OffsetDateTime offsetDateTime = localDate.atStartOfDay().atOffset(ZoneOffset.UTC);
+            OffsetDateTime offsetDateTime = localDate.atStartOfDay().atOffset(ZoneOffset.ofHours(-5));
             SupplyOrder newSupplyOrder = supplyOrderRepository.save(SupplyOrder.builder()
                             .ref(requestSupplyOrder.getRef().toUpperCase())
                             .orderNumber(orderNumber)
+                            .supplier(supplier)
+                            .supplierId(supplier.getId())
                             .status(true)
                             .registrationDate(OffsetDateTime.now())
                             .updateDate(OffsetDateTime.now())
@@ -103,10 +121,12 @@ public class SupplyOrderImpl implements ISupplyOrder {
                             .client(user.getClient())
                             .clientId(user.getClientId())
                             .user(user).userId(user.getId())
+                            .purchaseDocument(purchaseDocument)
+                            .purchaseDocumentId(purchaseDocument.getId())
                             .deliveryDate(offsetDateTime)
                       .build());
             iStockTransaction.save("S"+newSupplyOrder.getOrderNumber(), warehouse,requestStockTransactionItemList,"INGRESO",user);
-            iAudit.save("ADD_PURCHASE","COMPRA " + newSupplyOrder.getRef() +" CREADA.", newSupplyOrder.getRef(),user.getUsername());
+            iAudit.save("ADD_PURCHASE","COMPRA " + newSupplyOrder.getOrderNumber() +" CREADA.", newSupplyOrder.getOrderNumber().toString(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -125,10 +145,13 @@ public class SupplyOrderImpl implements ISupplyOrder {
             User user;
             Warehouse warehouse;
             SupplyOrder supplyOrder;
+            Supplier supplier;
+            PurchaseDocument purchaseDocument;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 warehouse = warehouseRepository.findByNameAndStatusTrue(requestSupplyOrder.getWarehouse().toUpperCase());
+                purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(requestSupplyOrder.getPurchaseDocument());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -136,6 +159,8 @@ public class SupplyOrderImpl implements ISupplyOrder {
 
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(requestSupplyOrder.getSupplierRuc(), user.getClientId());
             }
 
             if (warehouse == null) {
@@ -152,6 +177,14 @@ public class SupplyOrderImpl implements ISupplyOrder {
                 throw new BadRequestExceptions(Constants.ErrorPurchaseExists);
             }
 
+            if(supplier==null){
+                throw new BadRequestExceptions(Constants.ErrorSupplier);
+            }
+
+            if(purchaseDocument == null){
+                throw new BadRequestExceptions(Constants.ErrorPurchaseDocument);
+            }
+
             try{
                 List<RequestStockTransactionItem> requestStockTransactionItemList = requestSupplyOrder.getRequestSupplyOrderItemList().stream().map(supplyOrderItem -> RequestStockTransactionItem.builder()
                         .quantity(supplyOrderItem.getQuantity())
@@ -161,11 +194,13 @@ public class SupplyOrderImpl implements ISupplyOrder {
                 LocalDate localDate = LocalDate.parse(requestSupplyOrder.getDeliveryDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
                 // Convert LocalDate to OffsetDateTime (Midnight at UTC)
-                OffsetDateTime offsetDateTime = localDate.atStartOfDay().atOffset(ZoneOffset.UTC);
+                OffsetDateTime offsetDateTime = localDate.atStartOfDay().atOffset(ZoneOffset.ofHours(-5));
                 Long orderNumber = supplyOrderRepository.countByClientId(user.getClientId())+1L;
                 SupplyOrder newSupplyOrder = supplyOrderRepository.save(SupplyOrder.builder()
                         .ref(requestSupplyOrder.getRef().toUpperCase())
                         .status(true)
+                        .supplier(supplier)
+                        .supplierId(supplier.getId())
                         .orderNumber(orderNumber)
                         .registrationDate(OffsetDateTime.now())
                         .updateDate(OffsetDateTime.now())
@@ -174,13 +209,15 @@ public class SupplyOrderImpl implements ISupplyOrder {
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .user(user).userId(user.getId())
+                        .purchaseDocument(purchaseDocument)
+                        .purchaseDocumentId(purchaseDocument.getId())
                         .deliveryDate(offsetDateTime)
                         .build());
                 for(RequestSupplyOrderItem requestSupplyOrderItem : requestSupplyOrder.getRequestSupplyOrderItemList()){
                     iSupplyOrderItem.save(newSupplyOrder,warehouse.getName(), requestSupplyOrderItem,user.getUsername());
                 }
                 iStockTransaction.save("S"+newSupplyOrder.getOrderNumber(), warehouse,requestStockTransactionItemList,"INGRESO",user);
-                iAudit.save("ADD_PURCHASE","COMPRA " + newSupplyOrder.getRef() +" CREADA.", newSupplyOrder.getRef(),user.getUsername());
+                iAudit.save("ADD_PURCHASE","COMPRA " + newSupplyOrder.getOrderNumber() +" CREADA.", newSupplyOrder.getOrderNumber().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -199,6 +236,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
             String ref,
             String user,
             String warehouse,
+            String supplier,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -219,6 +257,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
                         orderNumber,
                         ref,
                         warehouse,
+                        supplier,
                         registrationStartDate,
                         registrationEndDate,
                         updateStartDate,
@@ -255,6 +294,9 @@ public class SupplyOrderImpl implements ISupplyOrder {
                                 .product(supplyOrderItem.getProduct().getName())
                                 .status(supplyOrderItem.getStatus())
                                 .user(supplyOrderItem.getUser().getUsername())
+                                .supplier(supplyOrderItem.getSupplyOrder().getSupplier().getBusinessName())
+                                .observations(supplyOrderItem.getObservations())
+                                .unitPrice(productPriceRepository.findByProductIdAndStatusTrue(supplyOrderItem.getProductId()).getUnitSalePrice())
                                 .build())
                         .toList();
                 return SupplyOrderDTO.builder()
@@ -268,6 +310,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
                         .deliveryDate(supplyOrder.getDeliveryDate())
                         .user(supplyOrder.getUser().getUsername())
                         .id(supplyOrder.getId())
+                        .supplier(supplyOrder.getSupplier().getBusinessName())
                         .build();
             }).toList();
 

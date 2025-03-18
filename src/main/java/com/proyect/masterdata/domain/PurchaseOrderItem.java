@@ -16,27 +16,22 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableSupplyOrder, schema = Constants.schemaStock)
-public class SupplyOrder {
-
+@Table(name = Constants.tablePurchaseOrderItem,schema = Constants.schemaStock)
+public class PurchaseOrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "supply_order_id")
+    @Column(name = "purchase_order_item_id")
     private UUID id;
 
-    @Column(name = "ref")
-    private String ref;
+    @Column(name = "quantity")
+    private Integer quantity;
 
-    @Column(name = "order_number")
-    private Long orderNumber;
+    @Column(name = "observations",columnDefinition = "text")
+    private String observations;
 
     @Column(name = "registration_date")
     @CreationTimestamp
     private OffsetDateTime registrationDate;
-
-    @Column(name = "delivery_date")
-    @CreationTimestamp
-    private OffsetDateTime deliveryDate;
 
     @Column(name = "update_date")
     @CreationTimestamp
@@ -45,39 +40,31 @@ public class SupplyOrder {
     @Column(name = "status")
     private Boolean status;
 
+    @Column(name = "product_id")
+    private UUID productId;
+
     @Column(name = "client_id")
     private UUID clientId;
 
-    @Column(name = "warehouse_id")
-    private UUID warehouseId;
+    @Column(name = "purchase_order_id")
+    private UUID purchaseOrderId;
 
     @Column(name = "user_id")
     private UUID userId;
-
-    @Column(name = "purchase_document_id")
-    private UUID purchaseDocumentId;
-
-    @Column(name = "supplier_id")
-    private UUID supplierId;
 
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
 
     @ManyToOne
-    @JoinColumn(name = "warehouse_id", columnDefinition = "warehouseId", insertable = false, updatable = false)
-    private Warehouse warehouse;
+    @JoinColumn(name = "product_id", columnDefinition = "productId", insertable = false, updatable = false)
+    private Product product;
+
+    @ManyToOne
+    @JoinColumn(name = "purchase_order_id",columnDefinition = "purchaseOrderId",insertable = false,updatable = false)
+    private PurchaseOrder purchaseOrder;
 
     @ManyToOne()
     @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
     private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "purchase_document_id",columnDefinition = "purchaseDocumentId",insertable = false,updatable = false)
-    private PurchaseDocument purchaseDocument;
-
-    @ManyToOne
-    @JoinColumn(name = "supplier_id",columnDefinition = "supplierId", insertable = false, updatable = false)
-    private Supplier supplier;
-
 }

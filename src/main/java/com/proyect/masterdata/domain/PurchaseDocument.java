@@ -16,18 +16,15 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableSupplierType, schema = Constants.schemaLogistics)
-public class SupplierType {
+@Table(name = Constants.tablePurchaseDocument,schema = Constants.schemaMaster)
+public class PurchaseDocument {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "supplier_type_id")
+    @Column(name = "purchase_document_id")
     private UUID id;
 
     @Column(name = "name")
     private String name;
-
-    @Column(name = "status")
-    private Boolean status;
 
     @Column(name = "registration_date")
     @CreationTimestamp
@@ -36,6 +33,9 @@ public class SupplierType {
     @Column(name = "update_date")
     @CreationTimestamp
     private OffsetDateTime updateDate;
+
+    @Column(name = "status")
+    private Boolean status;
 
     @Column(name = "user_id")
     private UUID userId;

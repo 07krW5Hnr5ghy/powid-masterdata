@@ -1,9 +1,9 @@
 package com.proyect.masterdata.repository.impl;
 
 import com.proyect.masterdata.domain.Supplier;
-import com.proyect.masterdata.domain.SupplyOrder;
+import com.proyect.masterdata.domain.PurchaseOrder;
 import com.proyect.masterdata.domain.Warehouse;
-import com.proyect.masterdata.repository.SupplyOrderRepositoryCustom;
+import com.proyect.masterdata.repository.PurchaseOrderRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -21,18 +21,15 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public class SupplyOrderRepositoryCustomImpl implements SupplyOrderRepositoryCustom {
-
+public class PurchaseOrderRepositoryCustomImpl implements PurchaseOrderRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
 
     @Override
-    public Page<SupplyOrder> searchForSupplyOrder(
+    public Page<PurchaseOrder> searchForPurchaseOrder(
             UUID clientId,
             Long orderNumber,
             String ref,
-            String warehouse,
-            String supplier,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -44,11 +41,9 @@ public class SupplyOrderRepositoryCustomImpl implements SupplyOrderRepositoryCus
             Boolean status) {
 
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<SupplyOrder> criteriaQuery = criteriaBuilder.createQuery(SupplyOrder.class);
+        CriteriaQuery<PurchaseOrder> criteriaQuery = criteriaBuilder.createQuery(PurchaseOrder.class);
 
-        Root<SupplyOrder> itemRoot = criteriaQuery.from(SupplyOrder.class);
-        Join<SupplyOrder, Warehouse> purchaseWarehouseJoin = itemRoot.join("warehouse");
-        Join<SupplyOrder, Supplier> supplyOrderSupplierJoin = itemRoot.join("supplier");
+        Root<PurchaseOrder> itemRoot = criteriaQuery.from(PurchaseOrder.class);
 
         criteriaQuery.select(itemRoot);
 
@@ -56,17 +51,13 @@ public class SupplyOrderRepositoryCustomImpl implements SupplyOrderRepositoryCus
                 clientId,
                 orderNumber,
                 ref,
-                warehouse,
-                supplier,
                 status,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
                 updateEndDate,
                 criteriaBuilder,
-                itemRoot,
-                purchaseWarehouseJoin,
-                supplyOrderSupplierJoin);
+                itemRoot);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -85,7 +76,7 @@ public class SupplyOrderRepositoryCustomImpl implements SupplyOrderRepositoryCus
             criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         }
 
-        TypedQuery<SupplyOrder> orderTypedQuery = entityManager.createQuery(criteriaQuery);
+        TypedQuery<PurchaseOrder> orderTypedQuery = entityManager.createQuery(criteriaQuery);
         orderTypedQuery.setFirstResult(pageNumber * pageSize);
         orderTypedQuery.setMaxResults(pageSize);
 
@@ -94,8 +85,6 @@ public class SupplyOrderRepositoryCustomImpl implements SupplyOrderRepositoryCus
                 clientId,
                 orderNumber,
                 ref,
-                warehouse,
-                supplier,
                 status,
                 registrationStartDate,
                 registrationEndDate,
@@ -108,17 +97,13 @@ public class SupplyOrderRepositoryCustomImpl implements SupplyOrderRepositoryCus
             UUID clientId,
             Long orderNumber,
             String ref,
-            String warehouse,
-            String supplier,
             Boolean status,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
             OffsetDateTime updateEndDate,
             CriteriaBuilder criteriaBuilder,
-            Root<SupplyOrder> itemRoot,
-            Join<SupplyOrder, Warehouse> purchaseWarehouseJoin,
-            Join<SupplyOrder, Supplier> supplyOrderSupplierJoin) {
+            Root<PurchaseOrder> itemRoot) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -132,14 +117,6 @@ public class SupplyOrderRepositoryCustomImpl implements SupplyOrderRepositoryCus
 
         if(ref != null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(itemRoot.get("ref")),"%"+ref.toUpperCase()+"%"));
-        }
-
-        if(warehouse != null){
-            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(purchaseWarehouseJoin.get("name")),"%"+warehouse.toUpperCase()+"%"));
-        }
-
-        if(supplier != null){
-            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(supplyOrderSupplierJoin.get("businessName")),"%"+supplier.toUpperCase()+"%"));
         }
 
         if(registrationStartDate!=null){
@@ -185,7 +162,7 @@ public class SupplyOrderRepositoryCustomImpl implements SupplyOrderRepositoryCus
         return conditions;
     }
 
-    private List<Order> listASC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<SupplyOrder> itemRoot) {
+    private List<Order> listASC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<PurchaseOrder> itemRoot) {
 
         List<Order> purchaseList = new ArrayList<>();
 
@@ -208,7 +185,7 @@ public class SupplyOrderRepositoryCustomImpl implements SupplyOrderRepositoryCus
         return purchaseList;
     }
 
-    private List<Order> listDESC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<SupplyOrder> itemRoot) {
+    private List<Order> listDESC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<PurchaseOrder> itemRoot) {
 
         List<Order> purchaseList = new ArrayList<>();
 
@@ -235,8 +212,6 @@ public class SupplyOrderRepositoryCustomImpl implements SupplyOrderRepositoryCus
             UUID clientId,
             Long orderNumber,
             String ref,
-            String warehouse,
-            String supplier,
             Boolean status,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -244,25 +219,19 @@ public class SupplyOrderRepositoryCustomImpl implements SupplyOrderRepositoryCus
             OffsetDateTime updateEndDate) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<SupplyOrder> itemRoot = criteriaQuery.from(SupplyOrder.class);
-        Join<SupplyOrder, Warehouse> purchaseWarehouseJoin = itemRoot.join("warehouse");
-        Join<SupplyOrder, Supplier> supplyOrderSupplierJoin = itemRoot.join("supplier");
+        Root<PurchaseOrder> itemRoot = criteriaQuery.from(PurchaseOrder.class);
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
                 clientId,
                 orderNumber,
                 ref,
-                warehouse,
-                supplier,
                 status,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
                 updateEndDate,
                 criteriaBuilder,
-                itemRoot,
-                purchaseWarehouseJoin,
-                supplyOrderSupplierJoin);
+                itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

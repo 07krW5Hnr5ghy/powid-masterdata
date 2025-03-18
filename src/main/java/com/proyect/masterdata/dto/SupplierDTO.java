@@ -6,23 +6,26 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class SupplyOrderDTO {
+public class SupplierDTO {
     private UUID id;
-    private Long orderNumber;
-    private String ref;
-    private String warehouse;
-    private String supplier;
+    private String user;
     private Boolean status;
-    private List<SupplyOrderItemDTO> supplyOrderItemDTOList;
+    private String name;
+    private String ruc;
+    private String country;
+    private String location;
+    private String phone;
+    private String email;
+    private String supplierType;
+    private String department;
+    private String province;
+    private String district;
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
-    private OffsetDateTime deliveryDate;
-    private String user;
 }

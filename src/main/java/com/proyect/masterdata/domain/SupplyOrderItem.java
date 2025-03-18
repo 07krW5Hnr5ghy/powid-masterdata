@@ -30,7 +30,7 @@ public class SupplyOrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "purchase_item_id")
+    @Column(name = "supply_order_item_id")
     private UUID id;
 
     @Column(name = "quantity")

@@ -1,10 +1,10 @@
 package com.proyect.masterdata.controller;
 
-import com.proyect.masterdata.dto.SupplyOrderItemDTO;
-import com.proyect.masterdata.dto.request.RequestSupplyOrderItem;
+import com.proyect.masterdata.dto.PurchaseOrderItemDTO;
+import com.proyect.masterdata.dto.request.RequestPurchaseOrderItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
-import com.proyect.masterdata.services.ISupplyOrderItem;
+import com.proyect.masterdata.services.IPurchaseOrderItem;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -20,27 +20,25 @@ import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("supply-order-item")
+@RequestMapping("purchase-order-item")
 @AllArgsConstructor
-public class SupplyOrderItemController {
-    private final ISupplyOrderItem iSupplyOrderItem;
+public class PurchaseOrderItemController {
+    private final IPurchaseOrderItem iPurchaseOrderItem;
     @PostMapping()
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("purchaseId") UUID purchaseId,
-            @RequestBody() RequestSupplyOrderItem requestSupplyOrderItem,
+            @RequestBody() RequestPurchaseOrderItem requestPurchaseOrderItem,
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, InterruptedException, ExecutionException {
-        CompletableFuture<ResponseSuccess> result = iSupplyOrderItem.saveAsync(purchaseId, requestSupplyOrderItem,tokenUser);
-        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+        CompletableFuture<ResponseSuccess> result = iPurchaseOrderItem.saveAsync(purchaseId, requestPurchaseOrderItem,tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_ITEM_GET')")
-    public ResponseEntity<Page<SupplyOrderItemDTO>> list(
+    public ResponseEntity<Page<PurchaseOrderItemDTO>> list(
             @RequestParam(value = "user") String user,
             @RequestParam(value = "orderNumber", required = false) Long orderNumber,
             @RequestParam(value = "ref", required = false) String ref,
-            @RequestParam(value = "warehouse", required = false) String warehouse,
-            @RequestParam(value = "supplier", required = false) String supplier,
             @RequestParam(value = "quantity", required = false) Integer quantity,
             @RequestParam(value = "product", required = false) String product,
             @RequestParam(value = "model", required = false) String model,
@@ -56,12 +54,10 @@ public class SupplyOrderItemController {
             @RequestParam(value = "pageNumber") Integer pageNumber,
             @RequestParam(value = "pageSize") Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<SupplyOrderItemDTO>> result = iSupplyOrderItem.list(
+        CompletableFuture<Page<PurchaseOrderItemDTO>> result = iPurchaseOrderItem.list(
                 user,
                 orderNumber,
                 ref,
-                warehouse,
-                supplier,
                 quantity,
                 product,
                 model,
@@ -80,11 +76,11 @@ public class SupplyOrderItemController {
     }
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_ITEM_GET')")
-    public ResponseEntity<List<SupplyOrderItemDTO>> listSupplyOrderItem(
+    public ResponseEntity<List<PurchaseOrderItemDTO>> listPurchaseOrderItem(
             @RequestParam("user") String user,
             @RequestParam(value = "id", required = false) UUID id
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<List<SupplyOrderItemDTO>> result = iSupplyOrderItem.listSupplyOrderItem(user,id);
+        CompletableFuture<List<PurchaseOrderItemDTO>> result = iPurchaseOrderItem.listPurchaseOrderItem(user,id);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }
