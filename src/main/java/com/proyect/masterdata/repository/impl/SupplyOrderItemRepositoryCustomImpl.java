@@ -32,6 +32,7 @@ public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepos
             Long orderNumber,
             String ref,
             String warehouse,
+            String supplier,
             Integer quantity,
             String model,
             String product,
@@ -56,6 +57,7 @@ public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepos
         Join<Product, Model> productModelJoin = supplyOrderItemProductJoin.join("model");
         Join<Product,Color> productColorJoin = supplyOrderItemProductJoin.join("color");
         Join<Product,Size> productSizeJoin = supplyOrderItemProductJoin.join("size");
+        Join<SupplyOrder,Supplier> supplyOrderSupplierJoin = supplyOrderItemSupplyOrderJoin.join("supplier");
 
         criteriaQuery.select(itemRoot);
 
@@ -64,6 +66,7 @@ public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepos
                 orderNumber,
                 ref,
                 warehouse,
+                supplier,
                 quantity,
                 model,
                 product,
@@ -81,7 +84,8 @@ public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepos
                 supplyOrderWarehouseJoin,
                 productModelJoin,
                 productColorJoin,
-                productSizeJoin);
+                productSizeJoin,
+                supplyOrderSupplierJoin);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -110,6 +114,7 @@ public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepos
                 orderNumber,
                 ref,
                 warehouse,
+                supplier,
                 quantity,
                 model,
                 product,
@@ -128,6 +133,7 @@ public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepos
             Long orderNumber,
             String ref,
             String warehouse,
+            String supplier,
             Integer quantity,
             String model,
             String product,
@@ -145,7 +151,9 @@ public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepos
             Join<SupplyOrder, Warehouse> supplyOrderItemWarehouseJoin,
             Join<Product, Model> productModelJoin,
             Join<Product,Color> productColorJoin,
-            Join<Product,Size> productSizeJoin) {
+            Join<Product,Size> productSizeJoin,
+            Join<SupplyOrder,Supplier> supplyOrderSupplierJoin
+            ) {
 
         List<Predicate> conditions = new ArrayList<>();
         if (clientId != null) {
@@ -180,6 +188,10 @@ public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepos
 
         if(size!=null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(productSizeJoin.get("name")),"%"+size.toUpperCase()+"%"));
+        }
+
+        if(supplier!=null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(supplyOrderSupplierJoin.get("businessName")),"%"+supplier.toUpperCase()+"%"));
         }
 
         if(registrationStartDate!=null){
@@ -290,6 +302,7 @@ public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepos
             Long orderNumber,
             String ref,
             String warehouse,
+            String supplier,
             Integer quantity,
             String model,
             String product,
@@ -309,12 +322,14 @@ public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepos
         Join<Product, Model> productModelJoin = supplyOrderItemProductJoin.join("model");
         Join<Product,Color> productColorJoin = supplyOrderItemProductJoin.join("color");
         Join<Product,Size> productSizeJoin = supplyOrderItemProductJoin.join("size");
+        Join<SupplyOrder,Supplier> supplyOrderSupplierJoin = supplyOrderItemSupplyOrderJoin.join("supplier");
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
                 clientId,
                 orderNumber,
                 ref,
                 warehouse,
+                supplier,
                 quantity,
                 model,
                 product,
@@ -332,7 +347,8 @@ public class SupplyOrderItemRepositoryCustomImpl implements SupplyOrderItemRepos
                 supplyOrderItemWarehouseJoin,
                 productModelJoin,
                 productColorJoin,
-                productSizeJoin);
+                productSizeJoin,
+                supplyOrderSupplierJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

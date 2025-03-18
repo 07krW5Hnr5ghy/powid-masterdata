@@ -54,6 +54,12 @@ public class SupplyOrder {
     @Column(name = "user_id")
     private UUID userId;
 
+    @Column(name = "purchase_document_id")
+    private UUID purchaseDocumentId;
+
+    @Column(name = "supplier_id")
+    private UUID supplierId;
+
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
@@ -65,5 +71,13 @@ public class SupplyOrder {
     @ManyToOne()
     @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "purchase_document_id",columnDefinition = "purchaseDocumentId",insertable = false,updatable = false)
+    private PurchaseDocument purchaseDocument;
+
+    @ManyToOne
+    @JoinColumn(name = "supplier_id",columnDefinition = "supplierId", insertable = false, updatable = false)
+    private Supplier supplier;
 
 }

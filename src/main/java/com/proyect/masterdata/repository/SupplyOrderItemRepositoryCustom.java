@@ -14,6 +14,7 @@ public interface SupplyOrderItemRepositoryCustom {
             Long orderNumber,
             String ref,
             String warehouse,
+            String supplier,
             Integer quantity,
             String model,
             String product,

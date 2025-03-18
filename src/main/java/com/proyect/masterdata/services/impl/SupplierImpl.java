@@ -393,6 +393,9 @@ public class SupplierImpl implements ISupplier {
             }
 
             List<SupplierDTO> supplierDTOs = supplierPage.getContent().stream().map(supplier -> SupplierDTO.builder()
+                    .id(supplier.getId())
+                    .user(supplier.getUser().getUsername())
+                    .status(supplier.getStatus())
                     .name(supplier.getBusinessName())
                     .country(supplier.getCountry().getName())
                     .email(supplier.getEmail())
@@ -429,6 +432,9 @@ public class SupplierImpl implements ISupplier {
             }
 
             return suppliers.stream().map(supplier -> SupplierDTO.builder()
+                    .id(supplier.getId())
+                    .user(supplier.getUser().getUsername())
+                    .status(supplier.getStatus())
                     .name(supplier.getBusinessName())
                     .country(supplier.getCountry().getName())
                     .email(supplier.getEmail())
@@ -463,6 +469,9 @@ public class SupplierImpl implements ISupplier {
             }
 
             return suppliers.stream().map(supplier -> SupplierDTO.builder()
+                    .id(supplier.getId())
+                    .user(supplier.getUser().getUsername())
+                    .status(supplier.getStatus())
                     .name(supplier.getBusinessName())
                     .country(supplier.getCountry().getName())
                     .email(supplier.getEmail())
@@ -497,6 +506,9 @@ public class SupplierImpl implements ISupplier {
             }
 
             return suppliers.stream().map(supplier -> SupplierDTO.builder()
+                    .id(supplier.getId())
+                    .user(supplier.getUser().getUsername())
+                    .status(supplier.getStatus())
                     .name(supplier.getBusinessName())
                     .country(supplier.getCountry().getName())
                     .email(supplier.getEmail())
