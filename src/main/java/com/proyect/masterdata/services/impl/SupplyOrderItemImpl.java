@@ -37,6 +37,7 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
     private final IAudit iAudit;
     private final IUtil iUtil;
     private final ProductRepository productRepository;
+    private final ProductPriceRepository productPriceRepository;
     @Override
     public SupplyOrderItem save(SupplyOrder supplyOrder, String warehouse, RequestSupplyOrderItem requestSupplyOrderItem,
                                 String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
@@ -374,6 +375,8 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
                     .user(supplyOrderItem.getUser().getUsername())
                     .status(supplyOrderItem.getStatus())
                     .supplier(supplyOrderItem.getSupplyOrder().getSupplier().getBusinessName())
+                    .observations(supplyOrderItem.getObservations())
+                    .unitPrice(productPriceRepository.findByProductIdAndStatusTrue(supplyOrderItem.getProductId()).getUnitSalePrice())
                     .build()).toList();
 
             return new PageImpl<>(supplyOrderItemDTOS, pagePurchaseItem.getPageable(), pagePurchaseItem.getTotalElements());
@@ -418,6 +421,8 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
                     .user(supplyOrderItem.getUser().getUsername())
                     .status(supplyOrderItem.getStatus())
                     .supplier(supplyOrderItem.getSupplyOrder().getSupplier().getBusinessName())
+                    .observations(supplyOrderItem.getObservations())
+                    .unitPrice(productPriceRepository.findByProductIdAndStatusTrue(supplyOrderItem.getProductId()).getUnitSalePrice())
                     .build()).toList();
         });
     }

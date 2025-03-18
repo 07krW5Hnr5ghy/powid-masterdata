@@ -48,6 +48,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
     private final SupplyOrderItemRepository supplyOrderItemRepository;
     private final SupplierRepository supplierRepository;
     private final PurchaseDocumentRepository purchaseDocumentRepository;
+    private final ProductPriceRepository productPriceRepository;
     @Override
     @Transactional
     public ResponseSuccess save(RequestSupplyOrder requestSupplyOrder, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
@@ -294,6 +295,8 @@ public class SupplyOrderImpl implements ISupplyOrder {
                                 .status(supplyOrderItem.getStatus())
                                 .user(supplyOrderItem.getUser().getUsername())
                                 .supplier(supplyOrderItem.getSupplyOrder().getSupplier().getBusinessName())
+                                .observations(supplyOrderItem.getObservations())
+                                .unitPrice(productPriceRepository.findByProductIdAndStatusTrue(supplyOrderItem.getProductId()).getUnitSalePrice())
                                 .build())
                         .toList();
                 return SupplyOrderDTO.builder()
