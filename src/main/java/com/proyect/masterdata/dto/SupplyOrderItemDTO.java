@@ -29,4 +29,6 @@ public class SupplyOrderItemDTO {
     private OffsetDateTime updateDate;
     private String user;
     private Boolean status;
+    private String observations;
+    private Double unitPrice;
 }
