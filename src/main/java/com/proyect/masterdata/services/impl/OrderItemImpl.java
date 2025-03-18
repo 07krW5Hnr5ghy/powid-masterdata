@@ -336,7 +336,7 @@ public class OrderItemImpl implements IOrderItem {
                 //System.out.println("orderinng -> " + ordering);
                 product = productRepository.findByIdAndStatusTrue(requestOrderItem.getProductId());
                 orderItem = orderItemRepository.findByProductId(product.getId());
-                System.out.println( "order item ->" + orderItem);
+                //System.out.println( "order item ->" + orderItem);
                 discount = discountRepository.findByName(requestOrderItem.getDiscount().toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -345,8 +345,8 @@ public class OrderItemImpl implements IOrderItem {
 
             if(orderItem != null){
                 return ResponseSuccess.builder()
-                        .code(200)
-                        .message("El producto ya existe en la orden")
+                        .code(409)
+                        .message("El producto ya existe.")
                         .build();
             }
 
