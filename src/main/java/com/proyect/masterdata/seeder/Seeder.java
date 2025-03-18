@@ -81,6 +81,7 @@ public class Seeder implements CommandLineRunner {
         private final IDeliveryCompany iDeliveryCompany;
         private final DeliveryCompanyRepository deliveryCompanyRepository;
         private final CountryRepository countryRepository;
+        private final IPurchaseDocument iPurchaseDocument;
         @Override
         public void run(String... args) throws Exception {
 
@@ -1412,11 +1413,17 @@ public class Seeder implements CommandLineRunner {
                         iDeliveryPoint.save("punto scharf","punto scharft",adminUser.getUsername());
                         iDeliveryPoint.save("provincia","provincia",adminUser.getUsername());
                         iDeliveryPoint.save("recojo en tienda","recojo en tienda",adminUser.getUsername());
-                        // stock transaction types mocks
+                        // stock transaction types
                         iStockTransactionType.save("ingreso", adminUser.getUsername());
                         iStockTransactionType.save("salida", adminUser.getUsername());
                         iStockTransactionType.save("guia-courier", adminUser.getUsername());
                         iStockTransactionType.save("guia-courier-devolucion", adminUser.getUsername());
+                        // purchase documents
+                        iPurchaseDocument.save("factura electronica",adminUser.getUsername());
+                        iPurchaseDocument.save("boleta de venta",adminUser.getUsername());
+                        iPurchaseDocument.save("nota de credito",adminUser.getUsername());
+                        iPurchaseDocument.save("nota de credito",adminUser.getUsername());
+                        iPurchaseDocument.save("guia",adminUser.getUsername());
 
                         User business1 = userRepository.save(User.builder()
                                 .username("JCOILA")
