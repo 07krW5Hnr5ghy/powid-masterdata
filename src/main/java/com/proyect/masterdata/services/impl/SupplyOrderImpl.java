@@ -126,7 +126,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
                             .deliveryDate(offsetDateTime)
                       .build());
             iStockTransaction.save("S"+newSupplyOrder.getOrderNumber(), warehouse,requestStockTransactionItemList,"INGRESO",user);
-            iAudit.save("ADD_PURCHASE","COMPRA " + newSupplyOrder.getRef() +" CREADA.", newSupplyOrder.getRef(),user.getUsername());
+            iAudit.save("ADD_PURCHASE","COMPRA " + newSupplyOrder.getOrderNumber() +" CREADA.", newSupplyOrder.getOrderNumber().toString(),user.getUsername());
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -217,7 +217,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
                     iSupplyOrderItem.save(newSupplyOrder,warehouse.getName(), requestSupplyOrderItem,user.getUsername());
                 }
                 iStockTransaction.save("S"+newSupplyOrder.getOrderNumber(), warehouse,requestStockTransactionItemList,"INGRESO",user);
-                iAudit.save("ADD_PURCHASE","COMPRA " + newSupplyOrder.getRef() +" CREADA.", newSupplyOrder.getRef(),user.getUsername());
+                iAudit.save("ADD_PURCHASE","COMPRA " + newSupplyOrder.getOrderNumber() +" CREADA.", newSupplyOrder.getOrderNumber().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
