@@ -61,7 +61,6 @@ public class SupplyOrderImpl implements ISupplyOrder {
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            warehouse = warehouseRepository.findByNameAndStatusTrue(requestSupplyOrder.getWarehouse().toUpperCase());
             purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(requestSupplyOrder.getPurchaseDocument());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
@@ -72,6 +71,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }else{
             supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(requestSupplyOrder.getSupplierRuc(), user.getClientId());
+            warehouse = warehouseRepository.findByClientIdAndNameAndStatusTrue(user.getClientId(),requestSupplyOrder.getWarehouse().toUpperCase());
         }
 
         if (warehouse == null) {
@@ -150,7 +150,6 @@ public class SupplyOrderImpl implements ISupplyOrder {
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                warehouse = warehouseRepository.findByNameAndStatusTrue(requestSupplyOrder.getWarehouse().toUpperCase());
                 purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(requestSupplyOrder.getPurchaseDocument());
             } catch (RuntimeException e) {
                 e.printStackTrace();
@@ -162,6 +161,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
                 supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(requestSupplyOrder.getSupplierRuc(), user.getClientId());
+                warehouse = warehouseRepository.findByClientIdAndNameAndStatusTrue(user.getClientId(),requestSupplyOrder.getWarehouse().toUpperCase());
             }
 
             if (warehouse == null) {
