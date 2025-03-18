@@ -2,6 +2,7 @@ package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.PurchaseOrderItemDTO;
 import com.proyect.masterdata.dto.request.RequestPurchaseOrderItem;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IPurchaseOrderItem;
@@ -81,6 +82,24 @@ public class PurchaseOrderItemController {
             @RequestParam(value = "id", required = false) UUID id
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<PurchaseOrderItemDTO>> result = iPurchaseOrderItem.listPurchaseOrderItem(user,id);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+    @DeleteMapping()
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:COLOR_DELETE')")
+    public ResponseEntity<ResponseDelete> delete(
+            @RequestParam("purchaseId") UUID purchaseId,
+            @RequestParam("productId") UUID productId,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iPurchaseOrderItem.delete(purchaseId,productId,tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+    @PutMapping()
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("purchaseId") UUID purchaseId,
+            @RequestParam("productId") UUID productId,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iPurchaseOrderItem.activate(purchaseId,productId,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }
