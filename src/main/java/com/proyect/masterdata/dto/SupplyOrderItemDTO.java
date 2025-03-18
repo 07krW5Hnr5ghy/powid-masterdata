@@ -17,6 +17,7 @@ public class SupplyOrderItemDTO {
     private Long orderNumber;
     private String ref;
     private String warehouse;
+    private String supplier;
     private Integer quantity;
     private UUID productId;
     private String product;

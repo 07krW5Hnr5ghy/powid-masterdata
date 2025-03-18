@@ -6,12 +6,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 public class SupplierDTO {
+    private UUID id;
+    private String user;
+    private Boolean status;
     private String name;
     private String ruc;
     private String country;

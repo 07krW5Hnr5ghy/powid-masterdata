@@ -18,6 +18,7 @@ public class SupplyOrderDTO {
     private Long orderNumber;
     private String ref;
     private String warehouse;
+    private String supplier;
     private Boolean status;
     private List<SupplyOrderItemDTO> supplyOrderItemDTOList;
     private OffsetDateTime registrationDate;
