@@ -68,7 +68,11 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 Long deliveryManifestNumber = deliveryManifestRepository.countByClientId(user.getClientId()) + 1L;
                 List<OrderItem> orderItems = new ArrayList<>();
                 for(UUID orderId:requestDeliveryManifest.getOrderUUIDs()){
-                    orderItems = orderItemRepository.findAllByClientIdAndStatusTrueAndSelectOrderStatusTrue(orderId);
+                    orderItems = orderItemRepository.findOrderItemsForOrder(orderId);
+                    System.out.println("ordenes preparadas ->");
+                    orderItems.forEach(orderItem -> {
+                        System.out.println("orden item->" + orderItem.getProduct().getName() + " productId :" +orderItem.getProduct().getId() + " orderid :" + orderItem.getOrdering().getId() + " - " + orderItem.getQuantity());
+                    });
                     if(orderItems.isEmpty()){
                         throw new BadRequestExceptions(Constants.ErrorDeliveryManifestNotItems);
                     }
@@ -87,6 +91,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 .warehouseId(warehouse.getId())
                                 .observations(requestDeliveryManifest.getObservations())
                         .build());
+                System.out.println("delivery manifest -> " + deliveryManifest.getManifestNumber()+ " " + deliveryManifest.getWarehouse().getName());
                 List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
                 for(OrderItem orderItem:orderItems){
                     CompletableFuture<DeliveryManifestItem> deliveryManifestItem = iDeliveryManifestItem.save(orderItem,deliveryManifest,warehouse,user);
