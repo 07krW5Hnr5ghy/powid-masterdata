@@ -1433,7 +1433,7 @@ public class Seeder implements CommandLineRunner {
                         iPurchaseDocument.save("factura electronica",adminUser.getUsername());
                         iPurchaseDocument.save("boleta de venta",adminUser.getUsername());
                         iPurchaseDocument.save("nota de credito",adminUser.getUsername());
-                        iPurchaseDocument.save("nota de credito",adminUser.getUsername());
+                        iPurchaseDocument.save("nota de debito",adminUser.getUsername());
                         iPurchaseDocument.save("guia",adminUser.getUsername());
 
                         User business1 = userRepository.save(User.builder()
