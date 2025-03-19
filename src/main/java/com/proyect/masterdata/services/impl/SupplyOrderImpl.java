@@ -102,6 +102,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
                     .quantity(supplyOrderItem.getQuantity())
                     .productId(supplyOrderItem.getProductId())
                     .build()).toList();
+
             Long orderNumber = supplyOrderRepository.countByClientId(user.getClientId())+1L;
             // Parse to LocalDate
             LocalDate localDate = LocalDate.parse(requestSupplyOrder.getDeliveryDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
@@ -191,12 +192,14 @@ public class SupplyOrderImpl implements ISupplyOrder {
                         .quantity(supplyOrderItem.getQuantity())
                         .productId(supplyOrderItem.getProductId())
                         .build()).toList();
+                System.out.println("fecha original entrega => " + requestSupplyOrder.getDeliveryDate());
                 // Parse to LocalDate
                 LocalDate localDate = LocalDate.parse(requestSupplyOrder.getDeliveryDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
+                System.out.println("fecha local entrega => " + localDate);
                 // Convert LocalDate to OffsetDateTime (Midnight at UTC)
                 OffsetDateTime offsetDateTime = localDate.atStartOfDay().atOffset(ZoneOffset.ofHours(-5));
                 Long orderNumber = supplyOrderRepository.countByClientId(user.getClientId())+1L;
+                System.out.println("fecha final => " + offsetDateTime);
                 SupplyOrder newSupplyOrder = supplyOrderRepository.save(SupplyOrder.builder()
                         .ref(requestSupplyOrder.getRef().toUpperCase())
                         .status(true)
