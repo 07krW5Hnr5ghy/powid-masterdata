@@ -301,6 +301,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
                                 .build())
                         .toList();
                 return SupplyOrderDTO.builder()
+                        .purchaseDocument(supplyOrder.getPurchaseDocument().getName())
                         .ref(supplyOrder.getRef())
                         .warehouse(supplyOrder.getWarehouse().getName())
                         .registrationDate(supplyOrder.getRegistrationDate())
