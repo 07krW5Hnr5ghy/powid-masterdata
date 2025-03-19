@@ -51,7 +51,6 @@ public class SupplierImpl implements ISupplier {
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            supplierType = supplierTypeRepository.findByNameAndStatusTrue(requestSupplier.getSupplierType().toUpperCase());
             province = provinceRepository.findByNameAndStatusTrue(requestSupplier.getProvince().toUpperCase());
             country = countryRepository.findByNameAndStatusTrue(requestSupplier.getCountry().toUpperCase());
         } catch (RuntimeException e) {
@@ -64,6 +63,7 @@ public class SupplierImpl implements ISupplier {
         }else{
             supplierRuc = supplierRepository.findByRucAndClientId(requestSupplier.getRuc(), user.getClientId());
             supplierName = supplierRepository.findByBusinessNameAndClientId(requestSupplier.getBusinessName().toUpperCase(), user.getClientId());
+            supplierType = supplierTypeRepository.findByNameAndClientIdAndStatusTrue(requestSupplier.getSupplierType().toUpperCase(),user.getClientId());
         }
 
         if (supplierRuc != null) {
@@ -135,7 +135,7 @@ public class SupplierImpl implements ISupplier {
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                supplierType = supplierTypeRepository.findByNameAndStatusTrue(requestSupplier.getSupplierType().toUpperCase());
+                supplierType = supplierTypeRepository.findByNameAndClientIdAndStatusTrue(requestSupplier.getSupplierType().toUpperCase(),user.getClientId());
                 province = provinceRepository.findByNameAndStatusTrue(requestSupplier.getProvince().toUpperCase());
                 country = countryRepository.findByNameAndStatusTrue(requestSupplier.getCountry().toUpperCase());
             } catch (RuntimeException e) {
