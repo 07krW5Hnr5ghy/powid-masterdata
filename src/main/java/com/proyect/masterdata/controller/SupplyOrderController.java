@@ -81,7 +81,7 @@ public class SupplyOrderController {
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:WAREHOUSE_POST')")
     public ResponseEntity<ResponseDelete> close(
             @RequestParam("username") String username,
-            @RequestParam("warehouseOutputId") UUID supplyOrderId
+            @RequestParam("supplyOrderId") UUID supplyOrderId
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseDelete> result = iSupplyOrder.closeSupplyOrder(supplyOrderId,username);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);

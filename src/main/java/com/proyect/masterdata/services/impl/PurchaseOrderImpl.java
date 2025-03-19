@@ -56,15 +56,11 @@ public class PurchaseOrderImpl implements IPurchaseOrder {
     public ResponseSuccess save(RequestPurchaseOrder requestPurchaseOrder, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
 
         User user;
-        Warehouse warehouse;
         PurchaseOrder purchaseOrder;
         Supplier supplier;
-        PurchaseDocument purchaseDocument;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            warehouse = warehouseRepository.findByNameAndStatusTrue(requestPurchaseOrder.getWarehouse().toUpperCase());
-            purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(requestPurchaseOrder.getPurchaseDocument());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -74,16 +70,7 @@ public class PurchaseOrderImpl implements IPurchaseOrder {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }else{
             supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(requestPurchaseOrder.getSupplierRuc(), user.getClientId());
-        }
-
-        if (warehouse == null) {
-            throw new BadRequestExceptions(Constants.ErrorWarehouse);
-        }else{
             purchaseOrder = purchaseOrderRepository.findByRef(requestPurchaseOrder.getRef());
-        }
-
-        if (!Objects.equals(warehouse.getClientId(), user.getClientId())) {
-            throw new BadRequestExceptions(Constants.ErrorWarehouse);
         }
 
         if (purchaseOrder != null) {
@@ -92,10 +79,6 @@ public class PurchaseOrderImpl implements IPurchaseOrder {
 
         if(supplier==null){
             throw new BadRequestExceptions(Constants.ErrorSupplier);
-        }
-
-        if(purchaseDocument == null){
-            throw new BadRequestExceptions(Constants.ErrorPurchaseDocument);
         }
 
         try{
@@ -134,15 +117,11 @@ public class PurchaseOrderImpl implements IPurchaseOrder {
     public CompletableFuture<ResponseSuccess> saveAsync(RequestPurchaseOrder requestPurchaseOrder, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            Warehouse warehouse;
             PurchaseOrder purchaseOrder;
             Supplier supplier;
-            PurchaseDocument purchaseDocument;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                warehouse = warehouseRepository.findByNameAndStatusTrue(requestPurchaseOrder.getWarehouse().toUpperCase());
-                purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(requestPurchaseOrder.getPurchaseDocument());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -152,16 +131,7 @@ public class PurchaseOrderImpl implements IPurchaseOrder {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
                 supplier = supplierRepository.findByRucAndClientIdAndStatusTrue(requestPurchaseOrder.getSupplierRuc(), user.getClientId());
-            }
-
-            if (warehouse == null) {
-                throw new BadRequestExceptions(Constants.ErrorWarehouse);
-            }else{
                 purchaseOrder = purchaseOrderRepository.findByRef(requestPurchaseOrder.getRef());
-            }
-
-            if (!Objects.equals(warehouse.getClientId(), user.getClientId())) {
-                throw new BadRequestExceptions(Constants.ErrorWarehouse);
             }
 
             if (purchaseOrder != null) {
@@ -172,20 +142,11 @@ public class PurchaseOrderImpl implements IPurchaseOrder {
                 throw new BadRequestExceptions(Constants.ErrorSupplier);
             }
 
-            if(purchaseDocument == null){
-                throw new BadRequestExceptions(Constants.ErrorPurchaseDocument);
-            }
-
             try{
                 List<RequestStockTransactionItem> requestStockTransactionItemList = requestPurchaseOrder.getRequestPurchaseOrderItemList().stream().map(purchaseOrderItem -> RequestStockTransactionItem.builder()
                         .quantity(purchaseOrderItem.getQuantity())
                         .productId(purchaseOrderItem.getProductId())
                         .build()).toList();
-                // Parse to LocalDate
-                LocalDate localDate = LocalDate.parse(requestPurchaseOrder.getDeliveryDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-
-                // Convert LocalDate to OffsetDateTime (Midnight at UTC)
-                OffsetDateTime offsetDateTime = localDate.atStartOfDay().atOffset(ZoneOffset.UTC);
                 Long orderNumber = purchaseOrderRepository.countByClientId(user.getClientId())+1L;
                 PurchaseOrder newPurchaseOrder = purchaseOrderRepository.save(PurchaseOrder.builder()
                         .ref(requestPurchaseOrder.getRef().toUpperCase())
@@ -202,7 +163,6 @@ public class PurchaseOrderImpl implements IPurchaseOrder {
                 for(RequestPurchaseOrderItem requestPurchaseOrderItem : requestPurchaseOrder.getRequestPurchaseOrderItemList()){
                     iPurchaseOrderItem.save(newPurchaseOrder,requestPurchaseOrderItem,user.getUsername());
                 }
-                iStockTransaction.save("S"+newPurchaseOrder.getOrderNumber(), warehouse,requestStockTransactionItemList,"INGRESO",user);
                 iAudit.save("ADD_PURCHASE_ORDER","ORDEN DE COMPRA " + newPurchaseOrder.getOrderNumber() +" CREADA.", newPurchaseOrder.getOrderNumber().toString(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)

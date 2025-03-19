@@ -82,6 +82,7 @@ public class Seeder implements CommandLineRunner {
         private final DeliveryCompanyRepository deliveryCompanyRepository;
         private final CountryRepository countryRepository;
         private final IPurchaseDocument iPurchaseDocument;
+        private final ISupplierType iSupplierType;
         @Override
         public void run(String... args) throws Exception {
 
@@ -1064,6 +1065,8 @@ public class Seeder implements CommandLineRunner {
                         iCategoryProduct.save("CALZADO","CA001","CALZADO","CALZADO",adminUser.getUsername());
                         iCategoryProduct.save("COMPLEMENTOS","CO001","COMPLEMENTOS","COMPLEMENTOS",adminUser.getUsername());
                         iCategoryProduct.save("ACCESORIOS","AC001","ACCESORIOS","ACCESORIOS",adminUser.getUsername());
+                        iSupplierType.save("interno",adminUser.getUsername());
+                        iSupplierType.save("distribucion",adminUser.getUsername());
 
                         iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
                                         .categoryName("ROPA")
@@ -1430,7 +1433,7 @@ public class Seeder implements CommandLineRunner {
                         iPurchaseDocument.save("factura electronica",adminUser.getUsername());
                         iPurchaseDocument.save("boleta de venta",adminUser.getUsername());
                         iPurchaseDocument.save("nota de credito",adminUser.getUsername());
-                        iPurchaseDocument.save("nota de credito",adminUser.getUsername());
+                        iPurchaseDocument.save("nota de debito",adminUser.getUsername());
                         iPurchaseDocument.save("guia",adminUser.getUsername());
 
                         User business1 = userRepository.save(User.builder()
