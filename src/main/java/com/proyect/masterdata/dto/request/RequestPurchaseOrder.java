@@ -13,9 +13,6 @@ import java.util.List;
 @Data
 public class RequestPurchaseOrder {
     private String ref;
-    private String warehouse;
-    private String deliveryDate;
     private String supplierRuc;
-    private String purchaseDocument;
     private List<RequestPurchaseOrderItem> requestPurchaseOrderItemList;
 }

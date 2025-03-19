@@ -67,7 +67,7 @@ public class PurchaseOrderController {
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:WAREHOUSE_POST')")
     public ResponseEntity<ResponseDelete> close(
             @RequestParam("username") String username,
-            @RequestParam("warehouseOutputId") UUID purchaseOrderId
+            @RequestParam("purchaseOrderId") UUID purchaseOrderId
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseDelete> result = iPurchaseOrder.closePurchaseOrder(purchaseOrderId,username);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
