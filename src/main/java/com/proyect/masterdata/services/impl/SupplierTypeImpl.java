@@ -33,7 +33,7 @@ public class SupplierTypeImpl implements ISupplierType {
         SupplierType supplierType;
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            supplierType = supplierTypeRepository.findByNameAndStatusTrue(name.toUpperCase());
+            supplierType = supplierTypeRepository.findByNameAndClientIdAndStatusTrue(name.toUpperCase(),user.getClientId());
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -50,6 +50,10 @@ public class SupplierTypeImpl implements ISupplierType {
                     .status(true)
                     .registrationDate(OffsetDateTime.now())
                     .updateDate(OffsetDateTime.now())
+                            .user(user)
+                            .userId(user.getId())
+                            .client(user.getClient())
+                            .clientId(user.getClientId())
                     .build());
             iAudit.save("ADD_SUPPLIER_TYPE","TIPO DE PROVEEDOR "+newSupplierType.getName()+" CREADO.",newSupplierType.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -69,7 +73,7 @@ public class SupplierTypeImpl implements ISupplierType {
             SupplierType supplierType;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                supplierType = supplierTypeRepository.findByNameAndStatusTrue(name.toUpperCase());
+                supplierType = supplierTypeRepository.findByNameAndClientIdAndStatusTrue(name.toUpperCase(),user.getClientId());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -86,6 +90,10 @@ public class SupplierTypeImpl implements ISupplierType {
                         .status(true)
                         .registrationDate(OffsetDateTime.now())
                         .updateDate(OffsetDateTime.now())
+                        .user(user)
+                        .userId(user.getId())
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
                         .build());
                 iAudit.save("ADD_SUPPLIER_TYPE","TIPO DE PROVEEDOR "+newSupplierType.getName()+" CREADO.",newSupplierType.getName(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -106,7 +114,7 @@ public class SupplierTypeImpl implements ISupplierType {
             SupplierType supplierType;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                supplierType = supplierTypeRepository.findByNameAndStatusTrue(name.toUpperCase());
+                supplierType = supplierTypeRepository.findByNameAndClientIdAndStatusTrue(name.toUpperCase(),user.getClientId());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -141,13 +149,15 @@ public class SupplierTypeImpl implements ISupplierType {
             SupplierType supplierType;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                supplierType = supplierTypeRepository.findByNameAndStatusFalse(name.toUpperCase());
+
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
             if(user == null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                supplierType = supplierTypeRepository.findByNameAndClientIdAndStatusFalse(name.toUpperCase(),user.getClientId());
             }
             if(supplierType == null){
                 throw new BadRequestExceptions(Constants.ErrorSupplierType);
