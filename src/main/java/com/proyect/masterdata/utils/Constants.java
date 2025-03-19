@@ -115,6 +115,7 @@ public class Constants {
     public static final String tableWarehouseOutputItem = "warehouse_output_item";
     public static final String tablePurchaseOrder = "purchase_order";
     public static final String tablePurchaseOrderItem = "purchase_order_item";
+    public static final String tablePurchaseDiscount = "purchase_discount";
     // messages
     public static final String register = "registro exitoso";
     public static final String update = "edicion exitosa";
@@ -340,4 +341,6 @@ public class Constants {
     public static final String ErrorDeliveryManifestItemDelivered = "Item de pedido ya fue entregado";
     public static final String ErrorDeliveryManifestNotItems = "No hay items preparados";
     public static final String ErrorPurchaseOrderInactive = "Orden de compra inactiva";
+    public static final String ErrorPurchaseDiscount = "Descuento de compra no fue registrado";
+    public static final String ErrorPurchaseDiscountExists = "Descounto de compra ya fue registrado";
 }

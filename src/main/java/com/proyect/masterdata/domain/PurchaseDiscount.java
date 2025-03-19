@@ -16,15 +16,22 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableDiscount, schema = Constants.schemaMaster)
-public class Discount {
+@Table(name = Constants.tablePurchaseDiscount, schema = Constants.schemaStock)
+public class PurchaseDiscount {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "discount_id")
+    @Column(name = "purchase_discount_id")
     private UUID id;
 
     @Column(name = "name")
     private String name;
+
+    @Column(name = "value")
+    private Double value;
+
+    @Column(name = "percentage")
+    private Boolean percentage;
 
     @Column(name = "status")
     private Boolean status;
