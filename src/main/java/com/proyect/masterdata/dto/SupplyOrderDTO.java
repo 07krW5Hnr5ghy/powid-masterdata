@@ -25,4 +25,5 @@ public class SupplyOrderDTO {
     private OffsetDateTime updateDate;
     private OffsetDateTime deliveryDate;
     private String user;
+    private String purchaseDocument;
 }
