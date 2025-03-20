@@ -49,6 +49,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
     private final SupplierRepository supplierRepository;
     private final PurchaseDocumentRepository purchaseDocumentRepository;
     private final ProductPriceRepository productPriceRepository;
+    private final PurchasePaymentMethodRepository purchasePaymentMethodRepository;
     @Override
     @Transactional
     public ResponseSuccess save(RequestSupplyOrder requestSupplyOrder, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
@@ -58,10 +59,12 @@ public class SupplyOrderImpl implements ISupplyOrder {
         SupplyOrder supplyOrder;
         Supplier supplier;
         PurchaseDocument purchaseDocument;
+        PurchasePaymentMethod purchasePaymentMethod;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(requestSupplyOrder.getPurchaseDocument());
+            purchasePaymentMethod = purchasePaymentMethodRepository.findByNameAndStatusTrue(requestSupplyOrder.getPurchasePaymentMethod());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -96,6 +99,10 @@ public class SupplyOrderImpl implements ISupplyOrder {
             throw new BadRequestExceptions(Constants.ErrorPurchaseDocument);
         }
 
+        if(purchasePaymentMethod==null){
+            throw new BadRequestExceptions(Constants.ErrorPurchasePaymentMethod);
+        }
+
         try{
 
             List<RequestStockTransactionItem> requestStockTransactionItemList = requestSupplyOrder.getRequestSupplyOrderItemList().stream().map(supplyOrderItem -> RequestStockTransactionItem.builder()
@@ -124,6 +131,8 @@ public class SupplyOrderImpl implements ISupplyOrder {
                             .user(user).userId(user.getId())
                             .purchaseDocument(purchaseDocument)
                             .purchaseDocumentId(purchaseDocument.getId())
+                            .purchasePaymentMethod(purchasePaymentMethod)
+                            .purchasePaymentMethodId(purchasePaymentMethod.getId())
                             .deliveryDate(offsetDateTime)
                       .build());
             iStockTransaction.save("S"+newSupplyOrder.getOrderNumber(), warehouse,requestStockTransactionItemList,"INGRESO",user);
@@ -148,10 +157,12 @@ public class SupplyOrderImpl implements ISupplyOrder {
             SupplyOrder supplyOrder;
             Supplier supplier;
             PurchaseDocument purchaseDocument;
+            PurchasePaymentMethod purchasePaymentMethod;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(requestSupplyOrder.getPurchaseDocument());
+                purchasePaymentMethod = purchasePaymentMethodRepository.findByNameAndStatusTrue(requestSupplyOrder.getPurchasePaymentMethod());
             } catch (RuntimeException e) {
                 e.printStackTrace();
                 log.error(e.getMessage());
@@ -187,19 +198,20 @@ public class SupplyOrderImpl implements ISupplyOrder {
                 throw new BadRequestExceptions(Constants.ErrorPurchaseDocument);
             }
 
+            if(purchasePaymentMethod==null){
+                throw new BadRequestExceptions(Constants.ErrorPurchasePaymentMethod);
+            }
+
             try{
                 List<RequestStockTransactionItem> requestStockTransactionItemList = requestSupplyOrder.getRequestSupplyOrderItemList().stream().map(supplyOrderItem -> RequestStockTransactionItem.builder()
                         .quantity(supplyOrderItem.getQuantity())
                         .productId(supplyOrderItem.getProductId())
                         .build()).toList();
-                System.out.println("fecha original entrega => " + requestSupplyOrder.getDeliveryDate());
                 // Parse to LocalDate
                 LocalDate localDate = LocalDate.parse(requestSupplyOrder.getDeliveryDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                System.out.println("fecha local entrega => " + localDate);
                 // Convert LocalDate to OffsetDateTime (Midnight at UTC)
                 OffsetDateTime offsetDateTime = localDate.atStartOfDay().atOffset(ZoneOffset.ofHours(-5));
                 Long orderNumber = supplyOrderRepository.countByClientId(user.getClientId())+1L;
-                System.out.println("fecha final => " + offsetDateTime);
                 SupplyOrder newSupplyOrder = supplyOrderRepository.save(SupplyOrder.builder()
                         .ref(requestSupplyOrder.getRef().toUpperCase())
                         .status(true)
@@ -216,6 +228,8 @@ public class SupplyOrderImpl implements ISupplyOrder {
                         .purchaseDocument(purchaseDocument)
                         .purchaseDocumentId(purchaseDocument.getId())
                         .deliveryDate(offsetDateTime)
+                        .purchasePaymentMethod(purchasePaymentMethod)
+                        .purchasePaymentMethodId(purchasePaymentMethod.getId())
                         .build());
                 for(RequestSupplyOrderItem requestSupplyOrderItem : requestSupplyOrder.getRequestSupplyOrderItemList()){
                     iSupplyOrderItem.save(newSupplyOrder,warehouse.getName(), requestSupplyOrderItem,user.getUsername());

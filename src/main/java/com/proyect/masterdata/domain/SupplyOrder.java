@@ -59,6 +59,9 @@ public class SupplyOrder {
     @Column(name = "supplier_id")
     private UUID supplierId;
 
+    @Column(name = "purchase_payment_method_id")
+    private UUID purchasePaymentMethodId;
+
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
@@ -78,5 +81,9 @@ public class SupplyOrder {
     @ManyToOne
     @JoinColumn(name = "supplier_id",columnDefinition = "supplierId", insertable = false, updatable = false)
     private Supplier supplier;
+
+    @ManyToOne
+    @JoinColumn(name = "purchase_payment_method_id",columnDefinition = "purchasePaymentMethodId",insertable = false,updatable = false)
+    private PurchasePaymentMethod purchasePaymentMethod;
 
 }

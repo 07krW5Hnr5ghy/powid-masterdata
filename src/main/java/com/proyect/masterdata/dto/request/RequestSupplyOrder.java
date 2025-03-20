@@ -18,5 +18,6 @@ public class RequestSupplyOrder {
     private String deliveryDate;
     private String supplierRuc;
     private String purchaseDocument;
+    private String purchasePaymentMethod;
     private List<RequestSupplyOrderItem> requestSupplyOrderItemList;
 }

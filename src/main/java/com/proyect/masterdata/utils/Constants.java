@@ -344,4 +344,6 @@ public class Constants {
     public static final String ErrorPurchaseOrderInactive = "Orden de compra inactiva";
     public static final String ErrorPurchaseDiscount = "Descuento de compra no fue registrado";
     public static final String ErrorPurchaseDiscountExists = "Descounto de compra ya fue registrado";
+    public static final String ErrorPurchasePaymentMethod = "Metodo de pago de compra no fue registrado";
+    public static final String ErrorPurchasePaymentMethodExists = "Metodo de pago de compra ya fue registrado";
 }
