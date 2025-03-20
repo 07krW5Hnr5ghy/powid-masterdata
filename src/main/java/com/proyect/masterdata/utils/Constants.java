@@ -116,6 +116,7 @@ public class Constants {
     public static final String tablePurchaseOrder = "purchase_order";
     public static final String tablePurchaseOrderItem = "purchase_order_item";
     public static final String tablePurchaseDiscount = "purchase_discount";
+    public static final String tablePurchasePaymentMethod = "purchase_payment_method";
     // messages
     public static final String register = "registro exitoso";
     public static final String update = "edicion exitosa";
