@@ -20,7 +20,7 @@ import java.util.concurrent.ExecutionException;
 
 @RestController
 @CrossOrigin({ "*" })
-@RequestMapping("purchase-discount")
+@RequestMapping("purchase-igv")
 @AllArgsConstructor
 public class PurchaseIGVController {
     private final IPurchaseIGV iPurchaseIGV;

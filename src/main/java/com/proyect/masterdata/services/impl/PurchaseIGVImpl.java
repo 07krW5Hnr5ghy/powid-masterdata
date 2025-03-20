@@ -48,7 +48,7 @@ public class PurchaseIGVImpl implements IPurchaseIGV {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }
         if(purchaseIGV !=null){
-            throw new BadRequestExceptions(Constants.ErrorPurchaseDiscountExists);
+            throw new BadRequestExceptions(Constants.ErrorPurchaseIGVExists);
         }
         try{
             PurchaseIGV newPurchaseIGV = purchaseIGVRepository.save(PurchaseIGV.builder()
@@ -89,7 +89,7 @@ public class PurchaseIGVImpl implements IPurchaseIGV {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
             if(purchaseIGV !=null){
-                throw new BadRequestExceptions(Constants.ErrorPurchaseDiscountExists);
+                throw new BadRequestExceptions(Constants.ErrorPurchaseIGVExists);
             }
             try{
                 PurchaseIGV newPurchaseIGV = purchaseIGVRepository.save(PurchaseIGV.builder()

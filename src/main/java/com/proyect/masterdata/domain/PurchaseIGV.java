@@ -16,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tablePurchaseDiscount, schema = Constants.schemaStock)
+@Table(name = Constants.tablePurchaseIGV, schema = Constants.schemaStock)
 public class PurchaseIGV {
 
     @Id
