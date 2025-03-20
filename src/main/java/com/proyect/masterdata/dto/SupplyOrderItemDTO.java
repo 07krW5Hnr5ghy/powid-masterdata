@@ -38,4 +38,5 @@ public class SupplyOrderItemDTO {
     private Double igvAmount;
     private Boolean igvPercentage;
     private Double unitPurchasePrice;
+    private Double total;
 }

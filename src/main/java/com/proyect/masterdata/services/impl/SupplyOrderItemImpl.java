@@ -408,6 +408,7 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
                         .igvAmount(supplyOrderItem.getPurchaseIGV().getValue())
                         .igvPercentage(supplyOrderItem.getPurchaseIGV().getPercentage())
                         .unitPurchasePrice(supplyOrderItem.getUnitValue()+igvAmount)
+                        .total((supplyOrderItem.getUnitValue()+igvAmount)+supplyOrderItem.getChargesAmount()-supplyOrderItem.getDiscountsAmount())
                         .build();
             }).toList();
 
