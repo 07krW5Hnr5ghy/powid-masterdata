@@ -15,4 +15,7 @@ public class RequestSupplyOrderItem {
     private Integer quantity;
     private String observations;
     private UUID productId;
+    private Double discountsAmount;
+    private Double chargesAmount;
+    private String igv;
 }

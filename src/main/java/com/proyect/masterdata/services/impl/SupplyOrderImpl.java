@@ -314,7 +314,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
                                 .user(supplyOrderItem.getUser().getUsername())
                                 .supplier(supplyOrderItem.getSupplyOrder().getSupplier().getBusinessName())
                                 .observations(supplyOrderItem.getObservations())
-                                .unitPrice(productPriceRepository.findByProductIdAndStatusTrue(supplyOrderItem.getProductId()).getUnitSalePrice())
+                                .unitSalePrice(supplyOrderItem.getUnitSalePrice())
                                 .build())
                         .toList();
                 return SupplyOrderDTO.builder()

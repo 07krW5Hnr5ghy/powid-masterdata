@@ -30,5 +30,11 @@ public class SupplyOrderItemDTO {
     private String user;
     private Boolean status;
     private String observations;
-    private Double unitPrice;
+    private Double unitSalePrice;
+    private Double unitValue;
+    private Double discountsAmount;
+    private Double chargesAmount;
+    private String igv;
+    private Double igvAmount;
+    private Boolean igvPercentage;
 }
