@@ -83,7 +83,7 @@ public class Seeder implements CommandLineRunner {
         private final CountryRepository countryRepository;
         private final IPurchaseDocument iPurchaseDocument;
         private final ISupplierType iSupplierType;
-        private final IPurchaseDiscount iPurchaseDiscount;
+        private final IPurchaseIGV iPurchaseIGV;
         private final IPurchasePaymentMethod iPurchasePaymentMethod;
         @Override
         public void run(String... args) throws Exception {
@@ -1451,14 +1451,14 @@ public class Seeder implements CommandLineRunner {
                         iPurchaseDocument.save("nota de credito",adminUser.getUsername());
                         iPurchaseDocument.save("nota de debito",adminUser.getUsername());
                         iPurchaseDocument.save("guia",adminUser.getUsername());
-                        RequestPurchaseDiscount requestPurchaseDiscountIGV = RequestPurchaseDiscount.builder()
+                        RequestPurchaseIGV requestPurchaseIGVIGV = RequestPurchaseIGV.builder()
                                 .name("IGV STANDARD 18")
                                 .percentage(true)
                                 .username(adminUser.getUsername())
                                 .value(18.00)
                                 .build();
                         // purchase discounts
-                        iPurchaseDiscount.save(requestPurchaseDiscountIGV);
+                        iPurchaseIGV.save(requestPurchaseIGVIGV);
 
                         User business1 = userRepository.save(User.builder()
                                 .username("JCOILA")

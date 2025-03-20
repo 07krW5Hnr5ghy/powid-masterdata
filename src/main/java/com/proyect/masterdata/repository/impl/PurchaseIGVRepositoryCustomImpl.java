@@ -1,9 +1,7 @@
 package com.proyect.masterdata.repository.impl;
 
-import com.proyect.masterdata.domain.Discount;
-import com.proyect.masterdata.domain.Product;
-import com.proyect.masterdata.domain.PurchaseDiscount;
-import com.proyect.masterdata.repository.PurchaseDiscountRepositoryCustom;
+import com.proyect.masterdata.domain.PurchaseIGV;
+import com.proyect.masterdata.repository.PurchaseIGVRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -21,11 +19,11 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public class PurchaseDiscountRepositoryCustomImpl implements PurchaseDiscountRepositoryCustom {
+public class PurchaseIGVRepositoryCustomImpl implements PurchaseIGVRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<PurchaseDiscount> searchForPurchaseDiscount(
+    public Page<PurchaseIGV> searchForPurchaseIGV(
             UUID clientId,
             String name,
             Double value,
@@ -40,9 +38,9 @@ public class PurchaseDiscountRepositoryCustomImpl implements PurchaseDiscountRep
             Integer pageSize,
             Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<PurchaseDiscount> criteriaQuery = criteriaBuilder.createQuery(PurchaseDiscount.class);
+        CriteriaQuery<PurchaseIGV> criteriaQuery = criteriaBuilder.createQuery(PurchaseIGV.class);
 
-        Root<PurchaseDiscount> itemRoot = criteriaQuery.from(PurchaseDiscount.class);
+        Root<PurchaseIGV> itemRoot = criteriaQuery.from(PurchaseIGV.class);
         criteriaQuery.select(itemRoot);
         List<Predicate> conditions = predicateConditions(
                 clientId,
@@ -75,12 +73,12 @@ public class PurchaseDiscountRepositoryCustomImpl implements PurchaseDiscountRep
 
             criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         }
-        TypedQuery<PurchaseDiscount> orderTypedQuery = entityManager.createQuery(criteriaQuery);
+        TypedQuery<PurchaseIGV> orderTypedQuery = entityManager.createQuery(criteriaQuery);
         orderTypedQuery.setFirstResult(pageNumber * pageSize);
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Long count = getPurchaseDiscountCount(
+        Long count = getPurchaseIGVCount(
                 clientId,
                 name,
                 value,
@@ -104,7 +102,7 @@ public class PurchaseDiscountRepositoryCustomImpl implements PurchaseDiscountRep
             OffsetDateTime updateEndDate,
             Boolean status,
             CriteriaBuilder criteriaBuilder,
-            Root<PurchaseDiscount> itemRoot
+            Root<PurchaseIGV> itemRoot
     ){
         List<Predicate> conditions = new ArrayList<>();
 
@@ -170,7 +168,7 @@ public class PurchaseDiscountRepositoryCustomImpl implements PurchaseDiscountRep
 
         return conditions;
     }
-    private List<Order> listASC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<PurchaseDiscount> itemRoot) {
+    private List<Order> listASC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<PurchaseIGV> itemRoot) {
 
         List<Order> purchaseDiscountList = new ArrayList<>();
 
@@ -184,7 +182,7 @@ public class PurchaseDiscountRepositoryCustomImpl implements PurchaseDiscountRep
 
         return purchaseDiscountList;
     }
-    private List<Order> listDESC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<PurchaseDiscount> itemRoot) {
+    private List<Order> listDESC(String sortColumn, CriteriaBuilder criteriaBuilder, Root<PurchaseIGV> itemRoot) {
 
         List<Order> purchaseDiscountList = new ArrayList<>();
 
@@ -198,7 +196,7 @@ public class PurchaseDiscountRepositoryCustomImpl implements PurchaseDiscountRep
 
         return purchaseDiscountList;
     }
-    private Long getPurchaseDiscountCount(
+    private Long getPurchaseIGVCount(
             UUID clientId,
             String name,
             Double value,
@@ -211,7 +209,7 @@ public class PurchaseDiscountRepositoryCustomImpl implements PurchaseDiscountRep
     ){
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<PurchaseDiscount> itemRoot = criteriaQuery.from(PurchaseDiscount.class);
+        Root<PurchaseIGV> itemRoot = criteriaQuery.from(PurchaseIGV.class);
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicateConditions(
                 clientId,

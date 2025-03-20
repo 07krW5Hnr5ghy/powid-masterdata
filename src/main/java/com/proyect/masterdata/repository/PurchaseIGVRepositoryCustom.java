@@ -1,6 +1,6 @@
 package com.proyect.masterdata.repository;
 
-import com.proyect.masterdata.domain.PurchaseDiscount;
+import com.proyect.masterdata.domain.PurchaseIGV;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
@@ -8,8 +8,8 @@ import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Repository
-public interface PurchaseDiscountRepositoryCustom {
-    Page<PurchaseDiscount> searchForPurchaseDiscount(
+public interface PurchaseIGVRepositoryCustom {
+    Page<PurchaseIGV> searchForPurchaseIGV(
             UUID clientId,
             String name,
             Double value,

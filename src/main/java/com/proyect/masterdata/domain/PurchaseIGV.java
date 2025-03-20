@@ -17,7 +17,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 @Table(name = Constants.tablePurchaseDiscount, schema = Constants.schemaStock)
-public class PurchaseDiscount {
+public class PurchaseIGV {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

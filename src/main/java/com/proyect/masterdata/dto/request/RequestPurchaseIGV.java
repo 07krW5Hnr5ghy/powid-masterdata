@@ -1,21 +1,17 @@
-package com.proyect.masterdata.dto;
+package com.proyect.masterdata.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
-
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class PurchaseDiscountDTO {
-    private UUID id;
+public class RequestPurchaseIGV {
     private String name;
     private Double value;
-    private String user;
     private Boolean percentage;
-    private Boolean status;
+    private String username;
 }
