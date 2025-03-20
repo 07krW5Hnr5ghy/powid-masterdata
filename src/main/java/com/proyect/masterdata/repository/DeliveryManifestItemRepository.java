@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.UUID;
 
 @Repository
-public interface DeliveryManifestItemRepository extends JpaRepository<DeliveryManifestItem, UUID> {
+public interface    DeliveryManifestItemRepository extends JpaRepository<DeliveryManifestItem, UUID> {
     List<DeliveryManifestItem> findAllById(UUID deliveryManifestId);
     DeliveryManifestItem findByOrderItemIdAndProductIdAndDeliveredTrue(UUID orderItemId,UUID productId);
     List<DeliveryManifestItemDTOP> findAllByDeliveryManifestId(UUID deliveryManifestId);

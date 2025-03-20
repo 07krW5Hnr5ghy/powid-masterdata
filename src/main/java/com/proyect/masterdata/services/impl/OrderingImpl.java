@@ -613,6 +613,7 @@ public class OrderingImpl implements IOrdering {
                 if(Objects.equals(order.getDiscount().getName(), "NO APLICA")){
                     totalDuePayment = (saleAmount+order.getDeliveryAmount())-order.getAdvancedPayment();
                 }
+
                 return OrderDTO.builder()
                         .id(order.getId())
                         .orderNumber(order.getOrderNumber())
@@ -670,11 +671,11 @@ public class OrderingImpl implements IOrdering {
                             String finalSku = iUtil.buildProductSku(orderItem.getProduct());
                             return OrderItemDTO.builder()
                                     .id(orderItem.getId())
+                                    .productId(orderItem.getProductId())
+                                    .orderId(order.getId())
                                     .user(orderItem.getUser().getUsername())
                                     .status(orderItem.getStatus())
                                     .selectOrderStatus(orderItem.getSelectOrderStatus())
-                                    .productId(orderItem.getProductId())
-                                    .orderId(orderItem.getId())
                                     .model(orderItem.getProduct().getModel().getName())
                                     .discountAmount(orderItem.getDiscountAmount())
                                     .sku(finalSku)
@@ -745,6 +746,7 @@ public class OrderingImpl implements IOrdering {
                     totalDuePayment = (saleAmount+order.getDeliveryAmount())-order.getAdvancedPayment();
                 }
                 CancelledOrder cancelledOrder = cancelledOrderRepository.findByOrderingId(order.getId());
+
                 OrderDTO newOrderDTO = OrderDTO.builder()
                         .id(order.getId())
                         .orderNumber(order.getOrderNumber())
@@ -760,6 +762,8 @@ public class OrderingImpl implements IOrdering {
                         .instagram(order.getCustomer().getInstagram())
                         .managementType(order.getManagementType().getName())
                         .reference(order.getCustomer().getReference())
+                        .discountAmount(BigDecimal.valueOf(order.getDiscountAmount())) // revisar
+                        .discount(order.getDiscount().getName()) // aqui
                         .saleChannel(order.getSaleChannel().getName())
                         .sellerName(order.getSeller())
                         .registrationDate(order.getRegistrationDate())
@@ -800,11 +804,11 @@ public class OrderingImpl implements IOrdering {
                             String finalSku = iUtil.buildProductSku(orderItem.getProduct());
                             return OrderItemDTO.builder()
                                     .id(orderItem.getId())
+                                    .productId(orderItem.getProductId())
+                                    .orderId(order.getId())
                                     .user(orderItem.getUser().getUsername())
                                     .status(orderItem.getStatus())
                                     .selectOrderStatus(orderItem.getSelectOrderStatus())
-                                    .productId(orderItem.getProductId())
-                                    .orderId(orderItem.getId())
                                     .discountAmount(orderItem.getDiscountAmount())
                                     .sku(finalSku)
                                     .unit(orderItem.getProduct().getUnit().getName())
@@ -1263,7 +1267,7 @@ public class OrderingImpl implements IOrdering {
                             return OrderItemDTO.builder()
                                     .id(orderItem.getId())
                                     .productId(orderItem.getProductId())
-                                    .orderId(orderItem.getId())
+                                    .orderId(ordering.getId())
                                     .status(orderItem.getStatus())
                                     .selectOrderStatus(orderItem.getSelectOrderStatus())
                                     .model(orderItem.getProduct().getModel().getName())
