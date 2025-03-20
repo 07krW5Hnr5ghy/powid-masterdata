@@ -27,6 +27,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @RequiredArgsConstructor
@@ -293,11 +294,19 @@ public class SupplyOrderImpl implements ISupplyOrder {
             if(pagePurchase.isEmpty()){
                 return new PageImpl<>(Collections.emptyList());
             }
-
             List<SupplyOrderDTO> supplyOrderDTOS = pagePurchase.getContent().stream().map(supplyOrder -> {
+                double[] igvTaxedAmountTotal = {0.00};
+                double[] igvAmountTotal = {0.00};
+                double[] totalPurchase = {0.00};
                 List<SupplyOrderItemDTO> supplyOrderItemDTOS = supplyOrderItemRepository.findAllBySupplyOrderId(supplyOrder.getId()).stream()
                         .map(supplyOrderItem -> {
                             Double igvAmount = (supplyOrderItem.getUnitValue() * supplyOrderItem.getPurchaseIGV().getValue())/100;
+                            double total = (
+                                            (supplyOrderItem.getUnitValue()+igvAmount)*supplyOrderItem.getQuantity()
+                                    )+supplyOrderItem.getChargesAmount()-supplyOrderItem.getDiscountsAmount();
+                            igvTaxedAmountTotal[0] += supplyOrderItem.getUnitValue() * supplyOrderItem.getQuantity();
+                            igvAmountTotal[0] += igvAmount;
+                            totalPurchase[0] += total;
                             return SupplyOrderItemDTO.builder()
                                     .id(supplyOrderItem.getId())
                                     .ref(supplyOrderItem.getSupplyOrder().getRef())
@@ -317,13 +326,14 @@ public class SupplyOrderImpl implements ISupplyOrder {
                                     .supplier(supplyOrderItem.getSupplyOrder().getSupplier().getBusinessName())
                                     .observations(supplyOrderItem.getObservations())
                                     .unitSalePrice(supplyOrderItem.getUnitSalePrice())
+                                    .unitValue(supplyOrderItem.getUnitValue())
                                     .discountsAmount(supplyOrderItem.getDiscountsAmount())
                                     .chargesAmount(supplyOrderItem.getChargesAmount())
                                     .igv(supplyOrderItem.getPurchaseIGV().getName())
                                     .igvAmount(supplyOrderItem.getPurchaseIGV().getValue())
                                     .igvPercentage(supplyOrderItem.getPurchaseIGV().getPercentage())
                                     .unitPurchasePrice(supplyOrderItem.getUnitValue()+igvAmount)
-                                    .total((supplyOrderItem.getUnitValue()+igvAmount)+supplyOrderItem.getChargesAmount()-supplyOrderItem.getDiscountsAmount())
+                                    .total(total)
                                     .build();
                         })
                         .toList();
@@ -340,6 +350,9 @@ public class SupplyOrderImpl implements ISupplyOrder {
                         .user(supplyOrder.getUser().getUsername())
                         .id(supplyOrder.getId())
                         .supplier(supplyOrder.getSupplier().getBusinessName())
+                        .igvTaxedOperation(igvTaxedAmountTotal[0])
+                        .igvAmount(igvAmountTotal[0])
+                        .totalPurchase(totalPurchase[0])
                         .build();
             }).toList();
 
