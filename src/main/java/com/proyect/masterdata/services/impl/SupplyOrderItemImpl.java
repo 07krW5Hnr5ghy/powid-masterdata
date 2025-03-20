@@ -381,26 +381,35 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
                 return new PageImpl<>(Collections.emptyList());
             }
 
-            List<SupplyOrderItemDTO> supplyOrderItemDTOS = pagePurchaseItem.getContent().stream().map(supplyOrderItem -> SupplyOrderItemDTO.builder()
-                    .id(supplyOrderItem.getId())
-                    .ref(supplyOrderItem.getSupplyOrder().getRef())
-                    .productId(supplyOrderItem.getProductId())
-                    .product(supplyOrderItem.getProduct().getName())
-                    .productSku(iUtil.buildProductSku(supplyOrderItem.getProduct()))
-                    .orderNumber(supplyOrderItem.getSupplyOrder().getOrderNumber())
-                    .quantity(supplyOrderItem.getQuantity())
-                    .warehouse(supplyOrderItem.getSupplyOrder().getWarehouse().getName())
-                    .model(supplyOrderItem.getProduct().getModel().getName())
-                    .color(supplyOrderItem.getProduct().getColor().getName())
-                    .size(supplyOrderItem.getProduct().getSize().getName())
-                    .registrationDate(supplyOrderItem.getRegistrationDate())
-                    .updateDate(supplyOrderItem.getUpdateDate())
-                    .user(supplyOrderItem.getUser().getUsername())
-                    .status(supplyOrderItem.getStatus())
-                    .supplier(supplyOrderItem.getSupplyOrder().getSupplier().getBusinessName())
-                    .observations(supplyOrderItem.getObservations())
-                    .unitSalePrice(supplyOrderItem.getUnitSalePrice())
-                    .build()).toList();
+            List<SupplyOrderItemDTO> supplyOrderItemDTOS = pagePurchaseItem.getContent().stream().map(supplyOrderItem -> {
+                Double igvAmount = (supplyOrderItem.getUnitValue() * supplyOrderItem.getPurchaseIGV().getValue())/100;
+                return SupplyOrderItemDTO.builder()
+                        .id(supplyOrderItem.getId())
+                        .ref(supplyOrderItem.getSupplyOrder().getRef())
+                        .productId(supplyOrderItem.getProductId())
+                        .product(supplyOrderItem.getProduct().getName())
+                        .productSku(iUtil.buildProductSku(supplyOrderItem.getProduct()))
+                        .orderNumber(supplyOrderItem.getSupplyOrder().getOrderNumber())
+                        .quantity(supplyOrderItem.getQuantity())
+                        .warehouse(supplyOrderItem.getSupplyOrder().getWarehouse().getName())
+                        .model(supplyOrderItem.getProduct().getModel().getName())
+                        .color(supplyOrderItem.getProduct().getColor().getName())
+                        .size(supplyOrderItem.getProduct().getSize().getName())
+                        .registrationDate(supplyOrderItem.getRegistrationDate())
+                        .updateDate(supplyOrderItem.getUpdateDate())
+                        .user(supplyOrderItem.getUser().getUsername())
+                        .status(supplyOrderItem.getStatus())
+                        .supplier(supplyOrderItem.getSupplyOrder().getSupplier().getBusinessName())
+                        .observations(supplyOrderItem.getObservations())
+                        .unitSalePrice(supplyOrderItem.getUnitSalePrice())
+                        .discountsAmount(supplyOrderItem.getDiscountsAmount())
+                        .chargesAmount(supplyOrderItem.getChargesAmount())
+                        .igv(supplyOrderItem.getPurchaseIGV().getName())
+                        .igvAmount(supplyOrderItem.getPurchaseIGV().getValue())
+                        .igvPercentage(supplyOrderItem.getPurchaseIGV().getPercentage())
+                        .unitPurchasePrice(supplyOrderItem.getUnitValue()+igvAmount)
+                        .build();
+            }).toList();
 
             return new PageImpl<>(supplyOrderItemDTOS, pagePurchaseItem.getPageable(), pagePurchaseItem.getTotalElements());
         });

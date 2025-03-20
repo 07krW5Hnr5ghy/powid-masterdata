@@ -26,4 +26,7 @@ public class SupplyOrderDTO {
     private OffsetDateTime deliveryDate;
     private String user;
     private String purchaseDocument;
+    private Double igvTaxedOperation;
+    private Double igvAmount;
+    private Double totalPurchase;
 }
