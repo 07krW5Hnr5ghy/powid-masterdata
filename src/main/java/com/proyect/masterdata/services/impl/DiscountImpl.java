@@ -51,6 +51,8 @@ public class DiscountImpl implements IDiscount {
                             .updateDate(OffsetDateTime.now())
                             .user(user)
                             .userId(user.getId())
+                            .client(user.getClient())
+                            .clientId(user.getClientId())
                             .status(true)
                     .build());
             iAudit.save("ADD_DISCOUNT","DESCUENTO "+newDiscount.getName()+" CREADO.",newDiscount.getName(),user.getUsername());
@@ -89,6 +91,8 @@ public class DiscountImpl implements IDiscount {
                         .updateDate(OffsetDateTime.now())
                         .user(user)
                         .userId(user.getId())
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
                         .status(true)
                         .build());
                 iAudit.save("ADD_DISCOUNT","DESCUENTO "+newDiscount.getName()+" CREADO.",newDiscount.getName(),user.getUsername());

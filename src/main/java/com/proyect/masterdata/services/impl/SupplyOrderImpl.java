@@ -27,6 +27,7 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicReference;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +50,7 @@ public class SupplyOrderImpl implements ISupplyOrder {
     private final SupplierRepository supplierRepository;
     private final PurchaseDocumentRepository purchaseDocumentRepository;
     private final ProductPriceRepository productPriceRepository;
+    private final PurchasePaymentMethodRepository purchasePaymentMethodRepository;
     @Override
     @Transactional
     public ResponseSuccess save(RequestSupplyOrder requestSupplyOrder, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
@@ -58,10 +60,12 @@ public class SupplyOrderImpl implements ISupplyOrder {
         SupplyOrder supplyOrder;
         Supplier supplier;
         PurchaseDocument purchaseDocument;
+        PurchasePaymentMethod purchasePaymentMethod;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(requestSupplyOrder.getPurchaseDocument());
+            purchasePaymentMethod = purchasePaymentMethodRepository.findByNameAndStatusTrue(requestSupplyOrder.getPurchasePaymentMethod());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -96,6 +100,10 @@ public class SupplyOrderImpl implements ISupplyOrder {
             throw new BadRequestExceptions(Constants.ErrorPurchaseDocument);
         }
 
+        if(purchasePaymentMethod==null){
+            throw new BadRequestExceptions(Constants.ErrorPurchasePaymentMethod);
+        }
+
         try{
 
             List<RequestStockTransactionItem> requestStockTransactionItemList = requestSupplyOrder.getRequestSupplyOrderItemList().stream().map(supplyOrderItem -> RequestStockTransactionItem.builder()
@@ -124,6 +132,8 @@ public class SupplyOrderImpl implements ISupplyOrder {
                             .user(user).userId(user.getId())
                             .purchaseDocument(purchaseDocument)
                             .purchaseDocumentId(purchaseDocument.getId())
+                            .purchasePaymentMethod(purchasePaymentMethod)
+                            .purchasePaymentMethodId(purchasePaymentMethod.getId())
                             .deliveryDate(offsetDateTime)
                       .build());
             iStockTransaction.save("S"+newSupplyOrder.getOrderNumber(), warehouse,requestStockTransactionItemList,"INGRESO",user);
@@ -148,10 +158,12 @@ public class SupplyOrderImpl implements ISupplyOrder {
             SupplyOrder supplyOrder;
             Supplier supplier;
             PurchaseDocument purchaseDocument;
+            PurchasePaymentMethod purchasePaymentMethod;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 purchaseDocument = purchaseDocumentRepository.findByNameAndStatusTrue(requestSupplyOrder.getPurchaseDocument());
+                purchasePaymentMethod = purchasePaymentMethodRepository.findByNameAndStatusTrue(requestSupplyOrder.getPurchasePaymentMethod());
             } catch (RuntimeException e) {
                 e.printStackTrace();
                 log.error(e.getMessage());
@@ -187,19 +199,20 @@ public class SupplyOrderImpl implements ISupplyOrder {
                 throw new BadRequestExceptions(Constants.ErrorPurchaseDocument);
             }
 
+            if(purchasePaymentMethod==null){
+                throw new BadRequestExceptions(Constants.ErrorPurchasePaymentMethod);
+            }
+
             try{
                 List<RequestStockTransactionItem> requestStockTransactionItemList = requestSupplyOrder.getRequestSupplyOrderItemList().stream().map(supplyOrderItem -> RequestStockTransactionItem.builder()
                         .quantity(supplyOrderItem.getQuantity())
                         .productId(supplyOrderItem.getProductId())
                         .build()).toList();
-                System.out.println("fecha original entrega => " + requestSupplyOrder.getDeliveryDate());
                 // Parse to LocalDate
                 LocalDate localDate = LocalDate.parse(requestSupplyOrder.getDeliveryDate(), DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-                System.out.println("fecha local entrega => " + localDate);
                 // Convert LocalDate to OffsetDateTime (Midnight at UTC)
                 OffsetDateTime offsetDateTime = localDate.atStartOfDay().atOffset(ZoneOffset.ofHours(-5));
                 Long orderNumber = supplyOrderRepository.countByClientId(user.getClientId())+1L;
-                System.out.println("fecha final => " + offsetDateTime);
                 SupplyOrder newSupplyOrder = supplyOrderRepository.save(SupplyOrder.builder()
                         .ref(requestSupplyOrder.getRef().toUpperCase())
                         .status(true)
@@ -216,6 +229,8 @@ public class SupplyOrderImpl implements ISupplyOrder {
                         .purchaseDocument(purchaseDocument)
                         .purchaseDocumentId(purchaseDocument.getId())
                         .deliveryDate(offsetDateTime)
+                        .purchasePaymentMethod(purchasePaymentMethod)
+                        .purchasePaymentMethodId(purchasePaymentMethod.getId())
                         .build());
                 for(RequestSupplyOrderItem requestSupplyOrderItem : requestSupplyOrder.getRequestSupplyOrderItemList()){
                     iSupplyOrderItem.save(newSupplyOrder,warehouse.getName(), requestSupplyOrderItem,user.getUsername());
@@ -279,29 +294,48 @@ public class SupplyOrderImpl implements ISupplyOrder {
             if(pagePurchase.isEmpty()){
                 return new PageImpl<>(Collections.emptyList());
             }
-
             List<SupplyOrderDTO> supplyOrderDTOS = pagePurchase.getContent().stream().map(supplyOrder -> {
+                double[] igvTaxedAmountTotal = {0.00};
+                double[] igvAmountTotal = {0.00};
+                double[] totalPurchase = {0.00};
                 List<SupplyOrderItemDTO> supplyOrderItemDTOS = supplyOrderItemRepository.findAllBySupplyOrderId(supplyOrder.getId()).stream()
-                        .map(supplyOrderItem -> SupplyOrderItemDTO.builder()
-                                .id(supplyOrderItem.getId())
-                                .color(supplyOrderItem.getProduct().getColor().getName())
-                                .model(supplyOrderItem.getProduct().getModel().getName())
-                                .size(supplyOrderItem.getProduct().getSize().getName())
-                                .productSku(iUtil.buildProductSku(supplyOrderItem.getProduct()))
-                                .ref(supplyOrderItem.getSupplyOrder().getRef())
-                                .orderNumber(supplyOrderItem.getSupplyOrder().getOrderNumber())
-                                .productId(supplyOrderItem.getProductId())
-                                .registrationDate(supplyOrderItem.getRegistrationDate())
-                                .updateDate(supplyOrderItem.getUpdateDate())
-                                .quantity(supplyOrderItem.getQuantity())
-                                .warehouse(supplyOrderItem.getSupplyOrder().getWarehouse().getName())
-                                .product(supplyOrderItem.getProduct().getName())
-                                .status(supplyOrderItem.getStatus())
-                                .user(supplyOrderItem.getUser().getUsername())
-                                .supplier(supplyOrderItem.getSupplyOrder().getSupplier().getBusinessName())
-                                .observations(supplyOrderItem.getObservations())
-                                .unitPrice(productPriceRepository.findByProductIdAndStatusTrue(supplyOrderItem.getProductId()).getUnitSalePrice())
-                                .build())
+                        .map(supplyOrderItem -> {
+                            Double igvAmount = (supplyOrderItem.getUnitValue() * supplyOrderItem.getPurchaseIGV().getValue())/100;
+                            double total = (
+                                            (supplyOrderItem.getUnitValue()+igvAmount)*supplyOrderItem.getQuantity()
+                                    )+supplyOrderItem.getChargesAmount()-supplyOrderItem.getDiscountsAmount();
+                            igvTaxedAmountTotal[0] += supplyOrderItem.getUnitValue() * supplyOrderItem.getQuantity();
+                            igvAmountTotal[0] += igvAmount;
+                            totalPurchase[0] += total;
+                            return SupplyOrderItemDTO.builder()
+                                    .id(supplyOrderItem.getId())
+                                    .ref(supplyOrderItem.getSupplyOrder().getRef())
+                                    .productId(supplyOrderItem.getProductId())
+                                    .product(supplyOrderItem.getProduct().getName())
+                                    .productSku(iUtil.buildProductSku(supplyOrderItem.getProduct()))
+                                    .orderNumber(supplyOrderItem.getSupplyOrder().getOrderNumber())
+                                    .quantity(supplyOrderItem.getQuantity())
+                                    .warehouse(supplyOrderItem.getSupplyOrder().getWarehouse().getName())
+                                    .model(supplyOrderItem.getProduct().getModel().getName())
+                                    .color(supplyOrderItem.getProduct().getColor().getName())
+                                    .size(supplyOrderItem.getProduct().getSize().getName())
+                                    .registrationDate(supplyOrderItem.getRegistrationDate())
+                                    .updateDate(supplyOrderItem.getUpdateDate())
+                                    .user(supplyOrderItem.getUser().getUsername())
+                                    .status(supplyOrderItem.getStatus())
+                                    .supplier(supplyOrderItem.getSupplyOrder().getSupplier().getBusinessName())
+                                    .observations(supplyOrderItem.getObservations())
+                                    .unitSalePrice(supplyOrderItem.getUnitSalePrice())
+                                    .unitValue(supplyOrderItem.getUnitValue())
+                                    .discountsAmount(supplyOrderItem.getDiscountsAmount())
+                                    .chargesAmount(supplyOrderItem.getChargesAmount())
+                                    .igv(supplyOrderItem.getPurchaseIGV().getName())
+                                    .igvAmount(supplyOrderItem.getPurchaseIGV().getValue())
+                                    .igvPercentage(supplyOrderItem.getPurchaseIGV().getPercentage())
+                                    .unitPurchasePrice(supplyOrderItem.getUnitValue()+igvAmount)
+                                    .total(total)
+                                    .build();
+                        })
                         .toList();
                 return SupplyOrderDTO.builder()
                         .purchaseDocument(supplyOrder.getPurchaseDocument().getName())
@@ -316,6 +350,9 @@ public class SupplyOrderImpl implements ISupplyOrder {
                         .user(supplyOrder.getUser().getUsername())
                         .id(supplyOrder.getId())
                         .supplier(supplyOrder.getSupplier().getBusinessName())
+                        .igvTaxedOperation(igvTaxedAmountTotal[0])
+                        .igvAmount(igvAmountTotal[0])
+                        .totalPurchase(totalPurchase[0])
                         .build();
             }).toList();
 

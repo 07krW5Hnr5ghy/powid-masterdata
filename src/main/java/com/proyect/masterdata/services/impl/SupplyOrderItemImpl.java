@@ -38,6 +38,7 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
     private final IUtil iUtil;
     private final ProductRepository productRepository;
     private final ProductPriceRepository productPriceRepository;
+    private final PurchaseIGVRepository purchaseIGVRepository;
     @Override
     public SupplyOrderItem save(SupplyOrder supplyOrder, String warehouse, RequestSupplyOrderItem requestSupplyOrderItem,
                                 String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
@@ -45,10 +46,12 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
         User user;
         Product product;
         SupplyOrderItem supplyOrderItem;
+        PurchaseIGV purchaseIGV;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             product = productRepository.findByIdAndStatusTrue(requestSupplyOrderItem.getProductId());
+            purchaseIGV = purchaseIGVRepository.findByNameAndStatusTrue(requestSupplyOrderItem.getIgv());
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -68,6 +71,10 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
             throw new BadRequestExceptions(Constants.ErrorPurchaseExists);
         }
 
+        if(purchaseIGV==null){
+            throw new BadRequestExceptions(Constants.ErrorPurchaseIGV);
+        }
+
         try {
 
             SupplyOrderItem newSupplyOrderItem = supplyOrderItemRepository.save(SupplyOrderItem.builder()
@@ -84,6 +91,11 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
                             .quantity(requestSupplyOrderItem.getQuantity())
                             .user(user)
                             .userId(user.getId())
+                            .discountsAmount(requestSupplyOrderItem.getDiscountsAmount() > 0 ? requestSupplyOrderItem.getDiscountsAmount() : 0)
+                            .chargesAmount(requestSupplyOrderItem.getChargesAmount() > 0 ? requestSupplyOrderItem.getChargesAmount() : 0)
+                            .purchaseIGV(purchaseIGV)
+                            .purchaseIGVId(purchaseIGV.getId())
+                            .unitSalePrice(productPriceRepository.findByProductIdAndStatusTrue(product.getId()).getUnitSalePrice())
                     .build());
             String finalSku = iUtil.buildProductSku(product);
             iWarehouseStock.in(supplyOrder.getWarehouse(),product, requestSupplyOrderItem.getQuantity(), user);
@@ -109,11 +121,13 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
             Product product;
             SupplyOrderItem supplyOrderItem;
             SupplyOrder supplyOrder;
+            PurchaseIGV purchaseIGV;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 product = productRepository.findByIdAndStatusTrue(requestSupplyOrderItem.getProductId());
                 supplyOrder = supplyOrderRepository.findById(purchaseId).orElse(null);
+                purchaseIGV = purchaseIGVRepository.findByNameAndStatusTrue(requestSupplyOrderItem.getIgv());
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -137,6 +151,10 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
                 throw new BadRequestExceptions(Constants.ErrorPurchaseItemExists);
             }
 
+            if(purchaseIGV==null){
+                throw new BadRequestExceptions(Constants.ErrorPurchaseIGV);
+            }
+
             try {
 
                 SupplyOrderItem newSupplyOrderItem = supplyOrderItemRepository.save(SupplyOrderItem.builder()
@@ -153,6 +171,11 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
                         .quantity(requestSupplyOrderItem.getQuantity())
                         .user(user)
                         .userId(user.getId())
+                        .discountsAmount(requestSupplyOrderItem.getDiscountsAmount() > 0 ? requestSupplyOrderItem.getDiscountsAmount() : 0)
+                        .chargesAmount(requestSupplyOrderItem.getChargesAmount() > 0 ? requestSupplyOrderItem.getChargesAmount() : 0)
+                        .purchaseIGV(purchaseIGV)
+                        .purchaseIGVId(purchaseIGV.getId())
+                        .unitSalePrice(productPriceRepository.findByProductIdAndStatusTrue(product.getId()).getUnitSalePrice())
                         .build());
                 String finalSku = iUtil.buildProductSku(product);
                 iWarehouseStock.in(supplyOrder.getWarehouse(),product, requestSupplyOrderItem.getQuantity(), user);
@@ -358,26 +381,40 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
                 return new PageImpl<>(Collections.emptyList());
             }
 
-            List<SupplyOrderItemDTO> supplyOrderItemDTOS = pagePurchaseItem.getContent().stream().map(supplyOrderItem -> SupplyOrderItemDTO.builder()
-                    .id(supplyOrderItem.getId())
-                    .ref(supplyOrderItem.getSupplyOrder().getRef())
-                    .productId(supplyOrderItem.getProductId())
-                    .product(supplyOrderItem.getProduct().getName())
-                    .productSku(iUtil.buildProductSku(supplyOrderItem.getProduct()))
-                    .orderNumber(supplyOrderItem.getSupplyOrder().getOrderNumber())
-                    .quantity(supplyOrderItem.getQuantity())
-                    .warehouse(supplyOrderItem.getSupplyOrder().getWarehouse().getName())
-                    .model(supplyOrderItem.getProduct().getModel().getName())
-                    .color(supplyOrderItem.getProduct().getColor().getName())
-                    .size(supplyOrderItem.getProduct().getSize().getName())
-                    .registrationDate(supplyOrderItem.getRegistrationDate())
-                    .updateDate(supplyOrderItem.getUpdateDate())
-                    .user(supplyOrderItem.getUser().getUsername())
-                    .status(supplyOrderItem.getStatus())
-                    .supplier(supplyOrderItem.getSupplyOrder().getSupplier().getBusinessName())
-                    .observations(supplyOrderItem.getObservations())
-                    .unitPrice(productPriceRepository.findByProductIdAndStatusTrue(supplyOrderItem.getProductId()).getUnitSalePrice())
-                    .build()).toList();
+            List<SupplyOrderItemDTO> supplyOrderItemDTOS = pagePurchaseItem.getContent().stream().map(supplyOrderItem -> {
+                Double igvAmount = (supplyOrderItem.getUnitValue() * supplyOrderItem.getPurchaseIGV().getValue())/100;
+                return SupplyOrderItemDTO.builder()
+                        .id(supplyOrderItem.getId())
+                        .ref(supplyOrderItem.getSupplyOrder().getRef())
+                        .productId(supplyOrderItem.getProductId())
+                        .product(supplyOrderItem.getProduct().getName())
+                        .productSku(iUtil.buildProductSku(supplyOrderItem.getProduct()))
+                        .orderNumber(supplyOrderItem.getSupplyOrder().getOrderNumber())
+                        .quantity(supplyOrderItem.getQuantity())
+                        .warehouse(supplyOrderItem.getSupplyOrder().getWarehouse().getName())
+                        .model(supplyOrderItem.getProduct().getModel().getName())
+                        .color(supplyOrderItem.getProduct().getColor().getName())
+                        .size(supplyOrderItem.getProduct().getSize().getName())
+                        .registrationDate(supplyOrderItem.getRegistrationDate())
+                        .updateDate(supplyOrderItem.getUpdateDate())
+                        .user(supplyOrderItem.getUser().getUsername())
+                        .status(supplyOrderItem.getStatus())
+                        .supplier(supplyOrderItem.getSupplyOrder().getSupplier().getBusinessName())
+                        .observations(supplyOrderItem.getObservations())
+                        .unitSalePrice(supplyOrderItem.getUnitSalePrice())
+                        .discountsAmount(supplyOrderItem.getDiscountsAmount())
+                        .unitValue(supplyOrderItem.getUnitValue())
+                        .chargesAmount(supplyOrderItem.getChargesAmount())
+                        .igv(supplyOrderItem.getPurchaseIGV().getName())
+                        .igvAmount(supplyOrderItem.getPurchaseIGV().getValue())
+                        .igvPercentage(supplyOrderItem.getPurchaseIGV().getPercentage())
+                        .unitPurchasePrice(supplyOrderItem.getUnitValue()+igvAmount)
+                        .total(
+                                (
+                                        (supplyOrderItem.getUnitValue()+igvAmount)*supplyOrderItem.getQuantity()
+                                )+supplyOrderItem.getChargesAmount()-supplyOrderItem.getDiscountsAmount())
+                        .build();
+            }).toList();
 
             return new PageImpl<>(supplyOrderItemDTOS, pagePurchaseItem.getPageable(), pagePurchaseItem.getTotalElements());
         });
@@ -422,7 +459,7 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
                     .status(supplyOrderItem.getStatus())
                     .supplier(supplyOrderItem.getSupplyOrder().getSupplier().getBusinessName())
                     .observations(supplyOrderItem.getObservations())
-                    .unitPrice(productPriceRepository.findByProductIdAndStatusTrue(supplyOrderItem.getProductId()).getUnitSalePrice())
+                    .unitSalePrice(supplyOrderItem.getUnitSalePrice())
                     .build()).toList();
         });
     }

@@ -16,7 +16,13 @@ public interface IOrderPaymentMethod {
     CompletableFuture<ResponseDelete> delete(String name,String user) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> activate(String name,String user) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<List<OrderPaymentMethodDTO>> listPaymentMethod() throws BadRequestExceptions;
-    CompletableFuture<Page<OrderPaymentMethodDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
-    CompletableFuture<Page<OrderPaymentMethodDTO>> listStatusFalse(String name, String user, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions;
+    CompletableFuture<Page<OrderPaymentMethodDTO>> list(
+            String name,
+            String user,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions;
     CompletableFuture<List<OrderPaymentMethodDTO>> listFilter() throws BadRequestExceptions;
 }

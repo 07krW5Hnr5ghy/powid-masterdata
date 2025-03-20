@@ -16,20 +16,20 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableDiscount, schema = Constants.schemaMaster)
-public class Discount {
+@Table(name = Constants.tablePurchasePaymentMethod,schema = Constants.schemaMaster)
+public class PurchasePaymentMethod {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "discount_id")
+    @Column(name = "purchase_payment_method_id", nullable = false)
     private UUID id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "status")
+    @Column(name = "status", nullable = false)
     private Boolean status;
 
-    @Column(name = "registration_date")
+    @Column(name = "registration_date", nullable = false)
     @CreationTimestamp
     private OffsetDateTime registrationDate;
 
@@ -43,11 +43,4 @@ public class Discount {
     @ManyToOne()
     @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
     private User user;
-
-    @Column(name = "client_id")
-    private UUID clientId;
-
-    @ManyToOne()
-    @JoinColumn(name="client_id",columnDefinition = "clientId",insertable = false,updatable = false)
-    private Client client;
 }

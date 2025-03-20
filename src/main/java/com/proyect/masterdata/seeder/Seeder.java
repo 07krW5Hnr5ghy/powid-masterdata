@@ -83,6 +83,8 @@ public class Seeder implements CommandLineRunner {
         private final CountryRepository countryRepository;
         private final IPurchaseDocument iPurchaseDocument;
         private final ISupplierType iSupplierType;
+        private final IPurchaseIGV iPurchaseIGV;
+        private final IPurchasePaymentMethod iPurchasePaymentMethod;
         @Override
         public void run(String... args) throws Exception {
 
@@ -381,6 +383,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ADD_PRODUCT_PRICE",adminUser.getUsername());
                         iAuditEvent.save("ADD_PROVINCE",adminUser.getUsername());
                         iAuditEvent.save("ADD_PURCHASE",adminUser.getUsername());
+                        iAuditEvent.save("ADD_PURCHASE_DISCOUNT",adminUser.getUsername());
                         iAuditEvent.save("ADD_PURCHASE_ORDER",adminUser.getUsername());
                         iAuditEvent.save("ADD_PURCHASE_ORDER_ITEM",adminUser.getUsername());
                         iAuditEvent.save("ADD_PURCHASE_DOCUMENT",adminUser.getUsername());
@@ -1394,6 +1397,19 @@ public class Seeder implements CommandLineRunner {
                         iOrderPaymentMethod.save("canje",adminUser.getUsername());
                         iOrderPaymentMethod.save("interbank",adminUser.getUsername());
                         iOrderPaymentMethod.save("banco de la nacion",adminUser.getUsername());
+
+                        iPurchasePaymentMethod.save("yape",adminUser.getUsername());
+                        iPurchasePaymentMethod.save("pos",adminUser.getUsername());
+                        iPurchasePaymentMethod.save("efectivo",adminUser.getUsername());
+                        iPurchasePaymentMethod.save("link",adminUser.getUsername());
+                        iPurchasePaymentMethod.save("cambio",adminUser.getUsername());
+                        iPurchasePaymentMethod.save("plin",adminUser.getUsername());
+                        iPurchasePaymentMethod.save("plataforma mp/web",adminUser.getUsername());
+                        iPurchasePaymentMethod.save("bcp",adminUser.getUsername());
+                        iPurchasePaymentMethod.save("contraentrega",adminUser.getUsername());
+                        iPurchasePaymentMethod.save("canje",adminUser.getUsername());
+                        iPurchasePaymentMethod.save("interbank",adminUser.getUsername());
+                        iPurchasePaymentMethod.save("banco de la nacion",adminUser.getUsername());
                         // cancellation reason
                         iCancellationReason.save("No hay stock",adminUser.getUsername());
                         iCancellationReason.save("Demora en entrega",adminUser.getUsername());
@@ -1435,6 +1451,14 @@ public class Seeder implements CommandLineRunner {
                         iPurchaseDocument.save("nota de credito",adminUser.getUsername());
                         iPurchaseDocument.save("nota de debito",adminUser.getUsername());
                         iPurchaseDocument.save("guia",adminUser.getUsername());
+                        RequestPurchaseIGV requestPurchaseIGVIGV = RequestPurchaseIGV.builder()
+                                .name("IGV STANDARD 18")
+                                .percentage(true)
+                                .username(adminUser.getUsername())
+                                .value(18.00)
+                                .build();
+                        // purchase discounts
+                        iPurchaseIGV.save(requestPurchaseIGVIGV);
 
                         User business1 = userRepository.save(User.builder()
                                 .username("JCOILA")

@@ -115,6 +115,8 @@ public class Constants {
     public static final String tableWarehouseOutputItem = "warehouse_output_item";
     public static final String tablePurchaseOrder = "purchase_order";
     public static final String tablePurchaseOrderItem = "purchase_order_item";
+    public static final String tablePurchaseIGV = "purchase_igv";
+    public static final String tablePurchasePaymentMethod = "purchase_payment_method";
     // messages
     public static final String register = "registro exitoso";
     public static final String update = "edicion exitosa";
@@ -340,4 +342,8 @@ public class Constants {
     public static final String ErrorDeliveryManifestItemDelivered = "Item de pedido ya fue entregado";
     public static final String ErrorDeliveryManifestNotItems = "No hay items preparados";
     public static final String ErrorPurchaseOrderInactive = "Orden de compra inactiva";
+    public static final String ErrorPurchaseIGV = "IGV de compra no fue registrado";
+    public static final String ErrorPurchaseIGVExists = "IGV de compra ya fue registrado";
+    public static final String ErrorPurchasePaymentMethod = "Metodo de pago de compra no fue registrado";
+    public static final String ErrorPurchasePaymentMethodExists = "Metodo de pago de compra ya fue registrado";
 }
