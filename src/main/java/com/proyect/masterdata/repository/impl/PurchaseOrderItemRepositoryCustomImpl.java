@@ -46,7 +46,7 @@ public class PurchaseOrderItemRepositoryCustomImpl implements PurchaseOrderItemR
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<PurchaseOrderItem> criteriaQuery = criteriaBuilder.createQuery(PurchaseOrderItem.class);
         Root<PurchaseOrderItem> itemRoot = criteriaQuery.from(PurchaseOrderItem.class);
-        Join<PurchaseOrderItem, SupplyOrder> purchaseOrderItemSupplyOrderJoin = itemRoot.join("supplyOrder");
+        Join<PurchaseOrderItem, PurchaseOrder> purchaseOrderItemPurchaseOrderJoin = itemRoot.join("purchaseOrder");
         Join<PurchaseOrderItem, Product> purchaseOrderItemProductJoin = itemRoot.join("product");
         Join<Product, Model> productModelJoin = purchaseOrderItemProductJoin.join("model");
         Join<Product,Color> productColorJoin = purchaseOrderItemProductJoin.join("color");
@@ -70,7 +70,7 @@ public class PurchaseOrderItemRepositoryCustomImpl implements PurchaseOrderItemR
                 updateEndDate,
                 criteriaBuilder,
                 itemRoot,
-                purchaseOrderItemSupplyOrderJoin,
+                purchaseOrderItemPurchaseOrderJoin,
                 purchaseOrderItemProductJoin,
                 productModelJoin,
                 productColorJoin,
@@ -131,7 +131,7 @@ public class PurchaseOrderItemRepositoryCustomImpl implements PurchaseOrderItemR
             OffsetDateTime updateEndDate,
             CriteriaBuilder criteriaBuilder,
             Root<PurchaseOrderItem> itemRoot,
-            Join<PurchaseOrderItem, SupplyOrder> purchaseOrderItemSupplyOrderJoin,
+            Join<PurchaseOrderItem, PurchaseOrder> purchaseOrderItemPurchaseOrderJoin,
             Join<PurchaseOrderItem, Product> purchaseOrderItemProductJoin,
             Join<Product, Model> productModelJoin,
             Join<Product,Color> productColorJoin,
@@ -143,10 +143,10 @@ public class PurchaseOrderItemRepositoryCustomImpl implements PurchaseOrderItemR
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"), clientId)));
         }
         if(orderNumber!=null){
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(purchaseOrderItemSupplyOrderJoin.get("orderNumber"), orderNumber)));
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(purchaseOrderItemPurchaseOrderJoin.get("orderNumber"), orderNumber)));
         }
         if(ref != null){
-            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(purchaseOrderItemSupplyOrderJoin.get("ref")),"%"+ref.toUpperCase()+"%"));
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(purchaseOrderItemPurchaseOrderJoin.get("ref")),"%"+ref.toUpperCase()+"%"));
         }
 
         if(quantity!=null){
@@ -289,7 +289,7 @@ public class PurchaseOrderItemRepositoryCustomImpl implements PurchaseOrderItemR
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
         Root<PurchaseOrderItem> itemRoot = criteriaQuery.from(PurchaseOrderItem.class);
-        Join<PurchaseOrderItem, SupplyOrder> purchaseOrderItemSupplyOrderJoin = itemRoot.join("supplyOrder");
+        Join<PurchaseOrderItem, PurchaseOrder> purchaseOrderItemPurchaseOrderJoin = itemRoot.join("purchaseOrder");
         Join<PurchaseOrderItem, Product> purchaseOrderItemProductJoin = itemRoot.join("product");
         Join<Product, Model> productModelJoin = purchaseOrderItemProductJoin.join("model");
         Join<Product,Color> productColorJoin = purchaseOrderItemProductJoin.join("color");
@@ -311,7 +311,7 @@ public class PurchaseOrderItemRepositoryCustomImpl implements PurchaseOrderItemR
                 updateEndDate,
                 criteriaBuilder,
                 itemRoot,
-                purchaseOrderItemSupplyOrderJoin,
+                purchaseOrderItemPurchaseOrderJoin,
                 purchaseOrderItemProductJoin,
                 productModelJoin,
                 productColorJoin,
