@@ -1467,7 +1467,7 @@ public class Seeder implements CommandLineRunner {
                                 .value(0.00)
                                 .build();
                         // purchase discounts
-                        iPurchaseIGV.save(requestPurchaseIGVIGV);
+                        iPurchaseIGV.save(requestPurchaseIGVNo);
 
                         User business1 = userRepository.save(User.builder()
                                 .username("JCOILA")
