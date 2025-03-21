@@ -18,4 +18,5 @@ public class RequestSupplyOrderItem {
     private Double discountsAmount;
     private Double chargesAmount;
     private String igv;
+    private Double unitValue;
 }
