@@ -1452,13 +1452,22 @@ public class Seeder implements CommandLineRunner {
                         iPurchaseDocument.save("nota de debito",adminUser.getUsername());
                         iPurchaseDocument.save("guia",adminUser.getUsername());
                         RequestPurchaseIGV requestPurchaseIGVIGV = RequestPurchaseIGV.builder()
-                                .name("IGV STANDARD 18")
+                                .name("IGV 18%")
                                 .percentage(true)
                                 .username(adminUser.getUsername())
                                 .value(18.00)
                                 .build();
                         // purchase discounts
                         iPurchaseIGV.save(requestPurchaseIGVIGV);
+
+                        RequestPurchaseIGV requestPurchaseIGVNo = RequestPurchaseIGV.builder()
+                                .name("IGV 0%")
+                                .percentage(true)
+                                .username(adminUser.getUsername())
+                                .value(0.00)
+                                .build();
+                        // purchase discounts
+                        iPurchaseIGV.save(requestPurchaseIGVNo);
 
                         User business1 = userRepository.save(User.builder()
                                 .username("JCOILA")
