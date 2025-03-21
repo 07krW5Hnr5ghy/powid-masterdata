@@ -61,6 +61,7 @@ public class PurchaseIGVImpl implements IPurchaseIGV {
                     .status(true)
                     .client(user.getClient())
                     .clientId(user.getClientId())
+                            .value(requestPurchaseIGV.getValue())
                     .build());
             iAudit.save("ADD_PURCHASE_DISCOUNT","DESCUENTO DE COMPRA "+ newPurchaseIGV.getName()+" CREADO.", newPurchaseIGV.getName(),user.getUsername());
             return ResponseSuccess.builder()
@@ -101,6 +102,7 @@ public class PurchaseIGVImpl implements IPurchaseIGV {
                         .percentage(requestPurchaseIGV.getPercentage())
                         .client(user.getClient())
                         .clientId(user.getClientId())
+                        .value(requestPurchaseIGV.getValue())
                         .status(true)
                         .build());
                 iAudit.save("ADD_PURCHASE_DISCOUNT","DESCUENTO DE COMPRA "+ newPurchaseIGV.getName()+" CREADO.", newPurchaseIGV.getName(),user.getUsername());
