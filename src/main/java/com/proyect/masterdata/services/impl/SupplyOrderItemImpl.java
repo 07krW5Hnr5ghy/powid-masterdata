@@ -96,6 +96,7 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
                             .purchaseIGV(purchaseIGV)
                             .purchaseIGVId(purchaseIGV.getId())
                             .unitSalePrice(productPriceRepository.findByProductIdAndStatusTrue(product.getId()).getUnitSalePrice())
+                            .unitValue(requestSupplyOrderItem.getUnitValue())
                     .build());
             String finalSku = iUtil.buildProductSku(product);
             iWarehouseStock.in(supplyOrder.getWarehouse(),product, requestSupplyOrderItem.getQuantity(), user);
@@ -176,6 +177,7 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
                         .purchaseIGV(purchaseIGV)
                         .purchaseIGVId(purchaseIGV.getId())
                         .unitSalePrice(productPriceRepository.findByProductIdAndStatusTrue(product.getId()).getUnitSalePrice())
+                        .unitValue(requestSupplyOrderItem.getUnitValue())
                         .build());
                 String finalSku = iUtil.buildProductSku(product);
                 iWarehouseStock.in(supplyOrder.getWarehouse(),product, requestSupplyOrderItem.getQuantity(), user);
