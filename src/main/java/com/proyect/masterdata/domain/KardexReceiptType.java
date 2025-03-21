@@ -16,41 +16,41 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableKardexOuput, schema = Constants.schemaStock)
-public class KardexOutput {
+@Table(name = Constants.tableKardexReceiptType, schema = Constants.schemaStock)
+public class KardexReceiptType {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "kardex_output_id")
+    @Column(name = "kardex_receipt_type_id")
     private UUID id;
 
-    @Column(name = "quantity")
-    private Integer quantity;
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "status")
+    private Boolean status;
+
+    @Column(name = "sku")
+    private String sku;
 
     @Column(name = "registration_date")
     @CreationTimestamp
     private OffsetDateTime registrationDate;
 
-    @Column(name = "kardex_input_id")
-    private UUID kardexInputId;
-
-    @Column(name = "lot_number")
-    private Long lotNumber;
-
-    @Column(name = "client_id")
-    private UUID clientId;
+    @Column(name = "update_date")
+    @CreationTimestamp
+    private OffsetDateTime updateDate;
 
     @Column(name = "user_id")
     private UUID userId;
 
-    @ManyToOne
-    @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
-    private Client client;
+    @Column(name = "client_id")
+    private UUID clientId;
 
     @ManyToOne()
     @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name="kardex_input_id",columnDefinition = "kardexInputId",insertable = false,updatable = false)
-    private KardexInput kardexInput;
+    @ManyToOne()
+    @JoinColumn(name="client_id",columnDefinition = "clientId",insertable = false,updatable = false)
+    private Client client;
 }

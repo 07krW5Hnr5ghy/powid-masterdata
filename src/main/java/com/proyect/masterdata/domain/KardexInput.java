@@ -30,6 +30,9 @@ public class KardexInput {
     @Column(name = "supply_order_item_id")
     private UUID supplyOrderItemId;
 
+    @Column(name = "lot_number")
+    private Long lotNumber;
+
     @Column(name = "client_id")
     private UUID clientId;
 
