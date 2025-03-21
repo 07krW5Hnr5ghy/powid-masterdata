@@ -117,6 +117,8 @@ public class Constants {
     public static final String tablePurchaseOrderItem = "purchase_order_item";
     public static final String tablePurchaseIGV = "purchase_igv";
     public static final String tablePurchasePaymentMethod = "purchase_payment_method";
+    public static final String tableKardexInput = "kardex_input";
+    public static final String tableKardexOuput = "kardex_output";
     // messages
     public static final String register = "registro exitoso";
     public static final String update = "edicion exitosa";
