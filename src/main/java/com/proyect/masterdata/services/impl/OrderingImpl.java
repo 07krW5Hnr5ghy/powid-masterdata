@@ -1137,8 +1137,8 @@ public class OrderingImpl implements IOrdering {
                     });
                 }
 
-                System.out.println("order state ---> " + orderState.getName());
-
+//                System.out.println("order state ---> " + orderState.getName());
+//
                 if(orderState.getName().equals("PREPARADO")){
                     iOrderContact.save(
                             orderId,

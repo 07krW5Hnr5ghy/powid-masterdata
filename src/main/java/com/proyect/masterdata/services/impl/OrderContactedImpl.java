@@ -18,6 +18,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -112,6 +113,7 @@ public class OrderContactedImpl implements IOrderContacted {
         });
     }
 
+    @Transactional
     @Override
     public CompletableFuture<ResponseSuccess> markContacted(UUID orderId, String username,String observations) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -121,6 +123,7 @@ public class OrderContactedImpl implements IOrderContacted {
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 orderContacted = orderContactedRepository.findByOrderId(orderId);
+
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -138,17 +141,24 @@ public class OrderContactedImpl implements IOrderContacted {
             }
             try{
                 orderingRepository.save(ordering);
-                orderContacted.setContacted(true);
-                orderContacted.setUpdateDate(OffsetDateTime.now());
-                orderContacted.setUser(user);
-                orderContacted.setUserId(user.getId());
-                orderContacted.setClient(user.getClient());
-                orderContacted.setClientId(user.getClientId());
+//                orderContacted.setContacted(true);
+//                orderContacted.setUpdateDate(OffsetDateTime.now());
+//                orderContacted.setUser(user);
+//                orderContacted.setUserId(user.getId());
+//                orderContacted.setClient(user.getClient());
+//                orderContacted.setClientId(user.getClientId());
 
-                if(observations != null){
-                    orderContacted.setObservations(orderContacted.getObservations() + " " + observations);
-                }
-                orderContactedRepository.save(orderContacted);
+//                if(observations != null){
+//                    orderContacted.setObservations(orderContacted.getObservations() + " " + observations);
+//                }
+                orderContactedRepository.markContacted(
+                        true,
+                        OffsetDateTime.now(),
+                        user.getId(),
+                        user.getClientId(),
+                        orderContacted.getObservations() + " " + observations,
+                        orderId
+                );
 
                 iOrderLog.save(
                         user,
@@ -255,6 +265,7 @@ public class OrderContactedImpl implements IOrderContacted {
                         .province(orderContacted.getOrdering().getCustomer().getDistrict().getProvince().getName())
                         .district(orderContacted.getOrdering().getCustomer().getDistrict().getName())
                         .address(orderContacted.getOrdering().getCustomer().getAddress())
+                        .customerAddress(orderContacted.getOrdering().getCustomer().getAddress())
                         .instagram(orderContacted.getOrdering().getCustomer().getInstagram())
                         .managementType(orderContacted.getOrdering().getManagementType().getName())
                         .reference(orderContacted.getOrdering().getCustomer().getReference())
@@ -301,9 +312,10 @@ public class OrderContactedImpl implements IOrderContacted {
                             String finalSku = iUtil.buildProductSku(orderItem.getProduct());
                             return OrderItemDTO.builder()
                                     .id(orderItem.getId())
+                                    .orderId(orderContacted.getOrderId())
+                                    .productId(orderItem.getProductId())
                                     .user(orderItem.getUser().getUsername())
                                     .status(orderItem.getStatus())
-                                    .orderId(orderItem.getOrderId())
                                     .model(orderItem.getProduct().getModel().getName())
                                     .discountAmount(orderItem.getDiscountAmount())
                                     .sku(finalSku)
@@ -312,6 +324,7 @@ public class OrderContactedImpl implements IOrderContacted {
                                     .quantity(orderItem.getQuantity())
                                     .size(orderItem.getProduct().getSize().getName())
                                     .discount(orderItem.getDiscount().getName())
+                                    .selectOrderStatus(orderItem.getStatus())
                                     .pictures(productPictures.stream().map(ProductPicture::getProductPictureUrl).toList())
                                     .unitPrice(productPrice.getUnitSalePrice())
                                     .totalPrice(totalPrice)
@@ -330,6 +343,7 @@ public class OrderContactedImpl implements IOrderContacted {
             });
     }
 
+    @Transactional
     @Override
     public CompletableFuture<ResponseSuccess> selectAgent(UUID orderId, String username, String agentUsername, String observations) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -368,15 +382,25 @@ public class OrderContactedImpl implements IOrderContacted {
                 ordering.setOrderState(orderState);
                 ordering.setOrderStateId(orderState.getId());
                 orderingRepository.save(ordering);
-                orderContacted.setUpdateDate(OffsetDateTime.now());
-                orderContacted.setUser(user);
-                orderContacted.setUserId(user.getId());
-                orderContacted.setAgent(agent);
-                orderContacted.setAgentId(agent.getId());
-                if(observations != null){
-                    orderContacted.setObservations(orderContacted.getObservations() + " " + observations);
-                }
-                orderContactedRepository.save(orderContacted);
+//                orderContacted.setUpdateDate(OffsetDateTime.now());
+//                orderContacted.setUser(user);
+//                orderContacted.setUserId(user.getId());
+//                orderContacted.setAgent(agent);
+//                orderContacted.setAgentId(agent.getId());
+
+//                if(observations != null){
+//                    orderContacted.setObservations(orderContacted.getObservations() + " " + observations);
+//                }
+
+                //orderContactedRepository.save(orderContacted);
+
+                orderContactedRepository.selectAgentOrderContact(
+                        orderId,
+                        user.getId(),
+                        agent.getId(),
+                        OffsetDateTime.now(),
+                        orderContacted.getObservations() + " " + observations
+                );
                 iAudit.save(
                         "ADD_ORDER_CONTACTED",
                         "PEDIDO "+
@@ -395,6 +419,7 @@ public class OrderContactedImpl implements IOrderContacted {
         });
     }
 
+    @Transactional
     @Override
     public CompletableFuture<ResponseSuccess> selectCourier(UUID orderId, String username, String courierName, String observations) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -435,13 +460,18 @@ public class OrderContactedImpl implements IOrderContacted {
                 ordering.setCourier(courier);
                 ordering.setCourierId(courier.getId());
                 orderingRepository.save(ordering);
-                orderContacted.setUpdateDate(OffsetDateTime.now());
-                orderContacted.setUser(user);
-                orderContacted.setUserId(user.getId());
-                if(observations != null){
-                    orderContacted.setObservations(orderContacted.getObservations() + " " + observations);
-                }
-                orderContactedRepository.save(orderContacted);
+//                orderContacted.setUpdateDate(OffsetDateTime.now());
+//                orderContacted.setUser(user);
+//                orderContacted.setUserId(user.getId());
+//                if(observations != null){
+//                    orderContacted.setObservations(orderContacted.getObservations() + " " + observations);
+//                }
+                orderContactedRepository.selectCourierQuery(
+                        OffsetDateTime.now(),
+                        user.getId(),
+                        orderContacted.getObservations() + " " + observations,
+                        orderId
+                );
                 iOrderLog.save(user,ordering,
                         OffsetDateTime.now()+
                                 " - "+
