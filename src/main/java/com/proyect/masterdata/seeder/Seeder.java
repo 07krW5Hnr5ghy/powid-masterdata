@@ -85,6 +85,7 @@ public class Seeder implements CommandLineRunner {
         private final ISupplierType iSupplierType;
         private final IPurchaseIGV iPurchaseIGV;
         private final IPurchasePaymentMethod iPurchasePaymentMethod;
+        private final IDeliveryZone iDeliveryZone;
         @Override
         public void run(String... args) throws Exception {
 
@@ -1024,6 +1025,14 @@ public class Seeder implements CommandLineRunner {
                         iColor.save("ACERO", "ACE",adminUser.getUsername());
                         iColor.save("JADE", "JAD",adminUser.getUsername());
                         iColor.save("COMBINADO", "COM",adminUser.getUsername());
+
+                        // delivery zones
+                        iDeliveryZone.save("CENTRO",adminUser.getUsername());
+                        iDeliveryZone.save("SUR",adminUser.getUsername());
+                        iDeliveryZone.save("NORTE",adminUser.getUsername());
+                        iDeliveryZone.save("CALLAO",adminUser.getUsername());
+                        iDeliveryZone.save("ESTE 1",adminUser.getUsername());
+                        iDeliveryZone.save("PERIFERICA",adminUser.getUsername());
 
                         // mock size type
                         iSizeType.save("ROPA", adminUser.getUsername());
