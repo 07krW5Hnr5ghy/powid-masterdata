@@ -117,6 +117,7 @@ public class Constants {
     public static final String tablePurchaseOrderItem = "purchase_order_item";
     public static final String tablePurchaseIGV = "purchase_igv";
     public static final String tablePurchasePaymentMethod = "purchase_payment_method";
+    public static final String tableDeliveryZone = "delivery_zone";
     // messages
     public static final String register = "registro exitoso";
     public static final String update = "edicion exitosa";
@@ -346,4 +347,6 @@ public class Constants {
     public static final String ErrorPurchaseIGVExists = "IGV de compra ya fue registrado";
     public static final String ErrorPurchasePaymentMethod = "Metodo de pago de compra no fue registrado";
     public static final String ErrorPurchasePaymentMethodExists = "Metodo de pago de compra ya fue registrado";
+    public static final String ErrorDeliveryZoneExists = "Zona de entrega ya fue registrada";
+    public static final String ErrorDeliveryZone = "Zona de entrega no esta registrado";
 }
