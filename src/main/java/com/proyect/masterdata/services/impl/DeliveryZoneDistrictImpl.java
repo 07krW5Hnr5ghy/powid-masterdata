@@ -339,7 +339,7 @@ public class DeliveryZoneDistrictImpl implements IDeliveryZoneDistrict {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);
             }
-            if (deliveryZone.isEmpty()) {
+            if (deliveryZoneDistrictPage.isEmpty()) {
                 return new PageImpl<>(Collections.emptyList());
             }
             List<DeliveryZoneDistrictDTO> deliveryZoneDistrictDTOS = deliveryZoneDistrictPage.getContent().stream().map(deliveryZoneDistrict -> DeliveryZoneDistrictDTO.builder()
