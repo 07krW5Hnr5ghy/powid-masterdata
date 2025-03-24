@@ -86,6 +86,7 @@ public class Seeder implements CommandLineRunner {
         private final IPurchaseIGV iPurchaseIGV;
         private final IPurchasePaymentMethod iPurchasePaymentMethod;
         private final IDeliveryZone iDeliveryZone;
+        private final IDeliveryZoneDistrict iDeliveryZoneDistrict;
         @Override
         public void run(String... args) throws Exception {
 
@@ -298,6 +299,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ACTIVATE_MEMBERSHIP_STATE",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_MODEL",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_MODULE",adminUser.getUsername());
+                        iAuditEvent.save("ACTIVATE_ORDER_ITEM","JROMERO");
                         iAuditEvent.save("ACTIVATE_ORDER_PAYMENT_METHOD",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_ORDER_PAYMENT_STATE",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_ORDER_RETURN_ITEM",adminUser.getUsername());
@@ -1559,7 +1561,6 @@ public class Seeder implements CommandLineRunner {
                         iColor.save("ROSADO","ROS","JROMERO");
                         iColor.save("PLATA QUEMADA","PLAQ","JROMERO");
                         iColor.save("LACRE","LAC","JROMERO");
-                        iAuditEvent.save("ACTIVATE_ORDER_ITEM","JROMERO");
                         iColor.save("CELESTE","CEL","JROMERO");
                         iColor.save("LILA","LIL","JROMERO");
                         iColor.save("PLATA","PLA","JROMERO");
@@ -1571,6 +1572,58 @@ public class Seeder implements CommandLineRunner {
                         iColor.save("VERDE LORO","VERL","JROMERO");
                         iColor.save("VERDE PERA","VERP","JROMERO");
                         iColor.save("AZUL ELECTRICO","AZUL","JROMERO");
+                        iDistrict.save("CERCADO DE LIMA",adminUser.getUsername(),"LIMA");
+                        iDistrict.save("ATE 2",adminUser.getUsername(),"LIMA");
+                        iDistrict.save("COMAS 2",adminUser.getUsername(),"LIMA");
+                        iDistrict.save("SAN JUAN DE LURIGANCHO 2",adminUser.getUsername(),"LIMA");
+                        iDistrict.save("CHOSICA",adminUser.getUsername(),"LIMA");
+
+                        iDeliveryZoneDistrict.save("CENTRO","CERCADO DE LIMA","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("CENTRO","BREÑA","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("CENTRO","PUEBLO LIBRE","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("CENTRO","JESUS MARIA","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("CENTRO","LA VICTORIA","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("CENTRO","LINCE","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("CENTRO","SAN LUIS","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("CENTRO","MAGDALENA DEL MAR","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("CENTRO","BARRANCO","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("CENTRO","SAN MIGUEL","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("CENTRO","SAN BORJA","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("CENTRO","SURQUILLO","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("CENTRO","SAN ISIDRO","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("CENTRO","MIRAFLORES","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("SUR","SANTIAGO DE SURCO","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("SUR","CHORRILLOS","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("SUR","SAN JUAN DE MIRAFLORES","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("SUR","VILLA MARIA DEL TRIUNFO","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("SUR","VILLA EL SALVADOR","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("NORTE","COMAS","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("NORTE","SAN MARTIN DE PORRES","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("NORTE","INDEPENDENCIA","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("NORTE","LOS OLIVOS","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("NORTE","RIMAC","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("CALLAO","BELLAVISTA","CALLAO",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("CALLAO","CALLAO","CALLAO",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("CALLAO","CARMEN DE LA LEGUA REYNOSO","CALLAO",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("CALLAO","LA PERLA","CALLAO",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("CALLAO","LA PUNTA","CALLAO",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("ESTE 1","SAN JUAN DE LURIGANCHO","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("ESTE 1","EL AGUSTINO","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("ESTE 1","SANTA ANITA","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("ESTE 1","LA MOLINA","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("ESTE 1","ATE","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("ESTE 1","LURIGANCHO","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("PERIFERICA","COMAS 2","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("PERIFERICA","LURIN","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("PERIFERICA","VENTANILLA","CALLAO",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("PERIFERICA","CIENEGUILLA","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("PERIFERICA","ATE 2","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("PERIFERICA","SAN JUAN DE LURIGANCHO 2","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("PERIFERICA","PUENTE PIEDRA","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("PERIFERICA","CHOSICA","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("PERIFERICA","CHACLACAYO","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("PERIFERICA","ANCON","LIMA",adminUser.getUsername());
+                        iDeliveryZoneDistrict.save("PERIFERICA","PACHACAMAC","LIMA",adminUser.getUsername());
 
                         //moock Brand
                         iBrand.save("ADIDAS",adminUser.getUsername(),"Ax001");
