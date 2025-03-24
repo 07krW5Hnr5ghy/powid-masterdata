@@ -289,6 +289,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ACTIVATE_DELIVERY_STATUS",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_DELIVERY_MANIFEST_STATUS",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_DELIVERY_ZONE",adminUser.getUsername());
+                        iAuditEvent.save("ACTIVATE_DELIVERY_ZONE_DISTRICT",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_DEPARTMENT",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_DISTRICT",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_DEMO_ACCOUNT",adminUser.getUsername());
@@ -353,6 +354,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("ADD_DELIVERY_STATUS",adminUser.getUsername());
                         iAuditEvent.save("ADD_DELIVERY_MANIFEST_STATUS",adminUser.getUsername());
                         iAuditEvent.save("ADD_DELIVERY_ZONE",adminUser.getUsername());
+                        iAuditEvent.save("ADD_DELIVERY_ZONE_DISTRICT",adminUser.getUsername());
                         iAuditEvent.save("ADD_DEPARTMENT",adminUser.getUsername());
                         iAuditEvent.save("ADD_DISCOUNT",adminUser.getUsername());
                         iAuditEvent.save("ADD_DISTRICT",adminUser.getUsername());
@@ -443,6 +445,7 @@ public class Seeder implements CommandLineRunner {
                         iAuditEvent.save("DELETE_DELIVERY_STATUS",adminUser.getUsername());
                         iAuditEvent.save("DELETE_DELIVERY_MANIFEST_STATUS",adminUser.getUsername());
                         iAuditEvent.save("DELETE_DELIVERY_ZONE",adminUser.getUsername());
+                        iAuditEvent.save("DELETE_DELIVERY_ZONE_DISTRICT",adminUser.getUsername());
                         iAuditEvent.save("DELETE_DEPARTMENT",adminUser.getUsername());
                         iAuditEvent.save("DELETE_DISTRICT",adminUser.getUsername());
                         iAuditEvent.save("DELETE_ENTRY_CHANNEL",adminUser.getUsername());
