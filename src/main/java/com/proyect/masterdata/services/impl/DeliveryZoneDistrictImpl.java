@@ -26,14 +26,16 @@ public class DeliveryZoneDistrictImpl implements IDeliveryZoneDistrict {
     private final DistrictRepository districtRepository;
     private final DeliveryZoneDistrictRepository deliveryZoneDistrictRepository;
     private final IAudit iAudit;
+    private final ProvinceRepository provinceRepository;
     @Override
-    public ResponseSuccess save(String deliveryZoneName, String districtName, String tokenUser)
+    public ResponseSuccess save(String deliveryZoneName, String districtName, String provinceName, String tokenUser)
             throws InternalErrorExceptions, BadRequestExceptions {
 
         User user;
         DeliveryZone deliveryZone;
         District district;
         DeliveryZoneDistrict deliveryZoneDistrict;
+        Province province;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -46,15 +48,21 @@ public class DeliveryZoneDistrictImpl implements IDeliveryZoneDistrict {
             throw new BadRequestExceptions(Constants.ErrorUser);
         }else{
             deliveryZone = deliveryZoneRepository.findByNameAndClientId(deliveryZoneName.toUpperCase(),user.getClientId());
-            district = districtRepository.findByNameAndStatusTrue(districtName.toUpperCase());
+            province = provinceRepository.findByNameAndStatusTrue(provinceName.toUpperCase());
         }
 
         if (deliveryZone == null) {
             throw new BadRequestExceptions(Constants.ErrorDeliveryZone);
         }
 
-        if (district == null) {
-            throw new BadRequestExceptions(Constants.ErrorRole);
+        if (province == null) {
+            throw new BadRequestExceptions(Constants.ErrorProvince);
+        }else{
+            district = districtRepository.findByNameAndProvinceIdAndStatusTrue(districtName.toUpperCase(),province.getId());
+        }
+
+        if(district==null){
+            throw new BadRequestExceptions(Constants.ErrorDistrict);
         }else{
             deliveryZoneDistrict = deliveryZoneDistrictRepository.findByDeliveryZoneIdAndDistrictId(deliveryZone.getId(),district.getId());
         }
@@ -95,12 +103,13 @@ public class DeliveryZoneDistrictImpl implements IDeliveryZoneDistrict {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> saveAsync(String deliveryZoneName, String districtName, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> saveAsync(String deliveryZoneName, String districtName, String provinceName, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             DeliveryZone deliveryZone;
             District district;
             DeliveryZoneDistrict deliveryZoneDistrict;
+            Province province;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -113,15 +122,21 @@ public class DeliveryZoneDistrictImpl implements IDeliveryZoneDistrict {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
                 deliveryZone = deliveryZoneRepository.findByNameAndClientId(deliveryZoneName.toUpperCase(),user.getClientId());
-                district = districtRepository.findByNameAndStatusTrue(districtName.toUpperCase());
+                province = provinceRepository.findByNameAndStatusTrue(provinceName.toUpperCase());
             }
 
             if (deliveryZone == null) {
                 throw new BadRequestExceptions(Constants.ErrorDeliveryZone);
             }
 
-            if (district == null) {
-                throw new BadRequestExceptions(Constants.ErrorRole);
+            if (province == null) {
+                throw new BadRequestExceptions(Constants.ErrorProvince);
+            }else{
+                district = districtRepository.findByNameAndProvinceIdAndStatusTrue(districtName.toUpperCase(),province.getId());
+            }
+
+            if(district==null){
+                throw new BadRequestExceptions(Constants.ErrorDistrict);
             }else{
                 deliveryZoneDistrict = deliveryZoneDistrictRepository.findByDeliveryZoneIdAndDistrictId(deliveryZone.getId(),district.getId());
             }
@@ -163,12 +178,13 @@ public class DeliveryZoneDistrictImpl implements IDeliveryZoneDistrict {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(String deliveryZoneName, String districtName, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseDelete> delete(String deliveryZoneName, String districtName,String provinceName, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             DeliveryZone deliveryZone;
             District district;
             DeliveryZoneDistrict deliveryZoneDistrict;
+            Province province;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -181,14 +197,20 @@ public class DeliveryZoneDistrictImpl implements IDeliveryZoneDistrict {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
                 deliveryZone = deliveryZoneRepository.findByNameAndClientId(deliveryZoneName.toUpperCase(),user.getClientId());
-                district = districtRepository.findByNameAndStatusTrue(districtName.toUpperCase());
+                province = provinceRepository.findByNameAndStatusTrue(provinceName.toUpperCase());
             }
 
             if (deliveryZone == null) {
                 throw new BadRequestExceptions(Constants.ErrorDeliveryZone);
             }
 
-            if (district == null) {
+            if (province == null) {
+                throw new BadRequestExceptions(Constants.ErrorProvince);
+            }else{
+                district = districtRepository.findByNameAndProvinceIdAndStatusTrue(districtName.toUpperCase(),province.getId());
+            }
+
+            if(district==null){
                 throw new BadRequestExceptions(Constants.ErrorDistrict);
             }else{
                 deliveryZoneDistrict = deliveryZoneDistrictRepository.findByDeliveryZoneIdAndDistrictIdAndStatusTrue(deliveryZone.getId(),district.getId());
@@ -224,12 +246,13 @@ public class DeliveryZoneDistrictImpl implements IDeliveryZoneDistrict {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> activate(String deliveryZoneName, String districtName, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> activate(String deliveryZoneName, String districtName, String provinceName, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             DeliveryZone deliveryZone;
             District district;
             DeliveryZoneDistrict deliveryZoneDistrict;
+            Province province;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -242,14 +265,20 @@ public class DeliveryZoneDistrictImpl implements IDeliveryZoneDistrict {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
                 deliveryZone = deliveryZoneRepository.findByNameAndClientId(deliveryZoneName.toUpperCase(),user.getClientId());
-                district = districtRepository.findByNameAndStatusTrue(districtName.toUpperCase());
+                province = provinceRepository.findByNameAndStatusTrue(provinceName.toUpperCase());
             }
 
             if (deliveryZone == null) {
                 throw new BadRequestExceptions(Constants.ErrorDeliveryZone);
             }
 
-            if (district == null) {
+            if (province == null) {
+                throw new BadRequestExceptions(Constants.ErrorProvince);
+            }else{
+                district = districtRepository.findByNameAndProvinceIdAndStatusTrue(districtName.toUpperCase(),province.getId());
+            }
+
+            if(district==null){
                 throw new BadRequestExceptions(Constants.ErrorDistrict);
             }else{
                 deliveryZoneDistrict = deliveryZoneDistrictRepository.findByDeliveryZoneIdAndDistrictIdAndStatusFalse(deliveryZone.getId(),district.getId());
