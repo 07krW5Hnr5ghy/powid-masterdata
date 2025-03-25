@@ -271,9 +271,9 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                 throw new BadRequestExceptions(Constants.ErrorCourier);
             }
             try {
-                List<Object[]> results = deliveryManifestItemRepository.countDeliveredAndCollectedOrders(courier.getId(),startDate,endDate);
+                List<Object[]> deliveredOrders = deliveryManifestItemRepository.countDeliveredOrders(courier.getId(),startDate,endDate);
                 List<DeliveredOrdersCountDTO> deliveredOrdersCountDTOS = new ArrayList<>();
-                for(Object[] result : results){
+                for(Object[] result : deliveredOrders){
                     UUID deliveryManifestId = (UUID) result[0];
                     UUID orderId = (UUID) result[1];
                     Long deliveredCount = (Long) result[2];
@@ -287,8 +287,27 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                 for(DeliveredOrdersCountDTO deliveredOrdersCountDTO:deliveredOrdersCountDTOS){
                     deliveredOrderCount += deliveredOrdersCountDTO.getDeliveredCount();
                 }
+                List<DeliveryManifestItem> deliveredAndUnCollectedOrders = deliveryManifestItemRepository.findDeliveredAndUnCollectedOrders(courier.getId(),startDate,endDate);
+                Double unCollectedAmount = 0.00;
+                for(DeliveryManifestItem deliveryManifestItem:deliveredAndUnCollectedOrders){
+                    ProductPrice productPrice = productPriceRepository.findByProductId(deliveryManifestItem.getProductId());
+                    Double totalPrice = null;
+                    if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "PORCENTAJE")){
+                        totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity())-((productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity())*(deliveryManifestItem.getOrderItem().getDiscountAmount()/100));
+                    }
+
+                    if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "MONTO")){
+                        totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity())-(deliveryManifestItem.getOrderItem().getDiscountAmount());
+                    }
+
+                    if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "NO APLICA")){
+                        totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity());
+                    }
+                    unCollectedAmount+=totalPrice;
+                }
                 return CourierProfileDTO.builder()
                         .deliveredOrders(deliveredOrderCount)
+                        .payableAmount(unCollectedAmount)
                         .build();
             }catch (RuntimeException e){
                 log.error(e.getMessage());

@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.CourierProfileDTO;
 import com.proyect.masterdata.dto.DeliveryManifestItemDTO;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -81,4 +82,14 @@ public class DeliveryManifestItemController {
         );
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+    @GetMapping("profile")
+    public ResponseEntity<CourierProfileDTO> courierProfile(
+            @RequestParam(value = "registrationStartDate") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
+            @RequestParam(value = "registrationEndDate") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
+            @RequestParam(value = "user") String username
+    ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<CourierProfileDTO> result = iDeliveryManifestItem.courierProfile(registrationStartDate,registrationEndDate,username);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
 }
