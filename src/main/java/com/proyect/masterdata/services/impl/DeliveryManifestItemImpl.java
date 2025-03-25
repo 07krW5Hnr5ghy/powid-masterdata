@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.dto.CourierProfileDTO;
 import com.proyect.masterdata.dto.DeliveryManifestItemDTO;
 import com.proyect.masterdata.dto.projections.DeliveryManifestItemDTOP;
 import com.proyect.masterdata.dto.request.RequestDeliveryManifestItem;
@@ -36,6 +37,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
     private final DeliveryManifestItemRepositoryCustom deliveryManifestItemRepositoryCustom;
     private final IUtil iUtil;
     private final ProductPriceRepository productPriceRepository;
+    private final CourierRepository courierRepository;
     @Override
     public CompletableFuture<DeliveryManifestItem> save(
             OrderItem orderItem,
@@ -79,6 +81,8 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                         .orderItemId(orderItem.getId())
                         .userId(orderItem.getUser().getId())
                         .user(orderItem.getUser())
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
                         .delivered(false)
                         .build());
                 iWarehouseStock.out(
@@ -134,6 +138,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                 deliveryManifestItem.setUser(user);
                 deliveryManifestItem.setUserId(user.getId());
                 deliveryManifestItem.setCollected(delivered);
+                deliveryManifestItem.setUpdateDate(OffsetDateTime.now());
                 deliveryManifestItemRepository.save(deliveryManifestItem);
                 iAudit.save(
                         "UPDATE_DELIVERY_MANIFEST_ITEM",
@@ -242,6 +247,31 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                         .build();
             }).toList();
             return new PageImpl<>(deliveryManifestItemDTOS,deliveryManifestItemPage.getPageable(),deliveryManifestItemPage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<CourierProfileDTO> courierProfile(OffsetDateTime startDate, OffsetDateTime endDate, String username) {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Courier courier;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+
+            }
+            try {
+                return CourierProfileDTO.builder().build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
         });
     }
 

@@ -77,8 +77,8 @@ public class OrderContactedImpl implements IOrderContacted {
                                 .orderId(ordering.getId())
                                 .ordering(ordering)
                                 .contacted(false)
-                                .agent(user)
-                                .agentId(user.getId())
+                                .agentUser(user)
+                                .agentUserId(user.getId())
                                 .registrationDate(OffsetDateTime.now())
                                 .updateDate(OffsetDateTime.now())
                                 .user(user)
@@ -386,8 +386,8 @@ public class OrderContactedImpl implements IOrderContacted {
                 orderContacted.setUpdateDate(OffsetDateTime.now());
                 orderContacted.setUser(user);
                 orderContacted.setUserId(user.getId());
-                orderContacted.setAgent(agent);
-                orderContacted.setAgentId(agent.getId());
+                orderContacted.setAgentUser(agent);
+                orderContacted.setAgentUserId(agent.getId());
                 if(observations != null){
                     orderContacted.setObservations(orderContacted.getObservations() + " " + observations);
                 }
@@ -421,7 +421,7 @@ public class OrderContactedImpl implements IOrderContacted {
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 orderContacted = orderContactedRepository.findByOrderId(orderId);
-                courier = courierRepository.findByNameAndStatusTrue(courierName.toUpperCase());
+
                 orderState = orderStateRepository.findByNameAndStatusTrue("EN RUTA");
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -429,6 +429,8 @@ public class OrderContactedImpl implements IOrderContacted {
             }
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                courier = courierRepository.findByNameAndClientIdAndStatusTrue(courierName.toUpperCase(),user.getClientId());
             }
             if(orderContacted==null){
                 throw new BadRequestExceptions(Constants.ErrorOrderContacted);

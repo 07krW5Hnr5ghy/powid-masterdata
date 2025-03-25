@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -16,4 +17,22 @@ public interface    DeliveryManifestItemRepository extends JpaRepository<Deliver
     List<DeliveryManifestItem> findAllById(UUID deliveryManifestId);
     DeliveryManifestItem findByOrderItemIdAndProductIdAndDeliveredTrue(UUID orderItemId,UUID productId);
     List<DeliveryManifestItemDTOP> findAllByDeliveryManifestId(UUID deliveryManifestId);
+
+    @Query("""
+    SELECT dmi.deliveryManifest.id, oi.orderId, 
+           COUNT(CASE WHEN dmi.delivered = true THEN 1 END) AS deliveredCount,
+           COUNT(CASE WHEN dmi.delivered = true AND dmi.collected = false THEN 1 END) AS collectedCount
+    FROM DeliveryManifestItem dmi
+    JOIN dmi.deliveryManifest dm
+    JOIN dmi.orderItem oi
+    WHERE dm.courier.id = :courierId
+    AND dmi.registrationDate BETWEEN :startDate AND :endDate
+    GROUP BY dmi.deliveryManifest.id, oi.orderId
+    """)
+    List<Object[]> countDeliveredAndCollectedOrders(
+            @Param("courierId") UUID courierId,
+            @Param("startDate") OffsetDateTime startDate,
+            @Param("endDate") OffsetDateTime endDate
+    );
+
 }
