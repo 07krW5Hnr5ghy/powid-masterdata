@@ -13,6 +13,7 @@ public interface CourierRepositoryCustom {
     Page<Courier> searchForCourier(
             UUID clientId,
             String name,
+            String dni,
             String company,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,

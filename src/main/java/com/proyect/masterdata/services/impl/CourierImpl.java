@@ -200,14 +200,13 @@ public class CourierImpl implements ICourier {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseDelete> delete(String dni, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Courier courier;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                courier = courierRepository.findByNameAndStatusTrue(name.toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -215,6 +214,8 @@ public class CourierImpl implements ICourier {
 
             if(user == null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                courier = courierRepository.findByDniAndClientIdAndStatusTrue(dni.toUpperCase(),user.getClientId());
             }
 
             if(courier == null){
@@ -238,7 +239,7 @@ public class CourierImpl implements ICourier {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> activate(String dni, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Courier courier;
@@ -253,7 +254,7 @@ public class CourierImpl implements ICourier {
             if(user == null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
-                courier = courierRepository.findByNameAndClientIdAndStatusTrue(name.toUpperCase(),user.getClientId());
+                courier = courierRepository.findByDniAndClientIdAndStatusFalse(dni.toUpperCase(),user.getClientId());
             }
 
             if(courier == null){
@@ -280,6 +281,7 @@ public class CourierImpl implements ICourier {
     public CompletableFuture<Page<CourierDTO>> list(
             String user,
             String name,
+            String dni,
             String company,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -288,7 +290,8 @@ public class CourierImpl implements ICourier {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions {
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Courier> pageCourier;
             UUID clientId;
@@ -297,6 +300,7 @@ public class CourierImpl implements ICourier {
                 pageCourier = courierRepositoryCustom.searchForCourier(
                         clientId,
                         name,
+                        dni,
                         company,
                         registrationStartDate,
                         registrationEndDate,
@@ -306,7 +310,7 @@ public class CourierImpl implements ICourier {
                         sortColumn,
                         pageNumber,
                         pageSize,
-                        true);
+                        status);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -333,66 +337,6 @@ public class CourierImpl implements ICourier {
             return new PageImpl<>(courierDTOS,pageCourier.getPageable(),pageCourier.getTotalElements());
         });
     }
-
-    @Override
-    public CompletableFuture<Page<CourierDTO>> listFalse(
-            String user,
-            String name,
-            String company,
-            OffsetDateTime registrationStartDate,
-            OffsetDateTime registrationEndDate,
-            OffsetDateTime updateStartDate,
-            OffsetDateTime updateEndDate,
-            String sort,
-            String sortColumn,
-            Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            Page<Courier> pageCourier;
-            UUID clientId;
-
-            try {
-                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
-                pageCourier = courierRepositoryCustom.searchForCourier(
-                        clientId,
-                        name,
-                        company,
-                        registrationStartDate,
-                        registrationEndDate,
-                        updateStartDate,
-                        updateEndDate,
-                        sort,
-                        sortColumn,
-                        pageNumber,
-                        pageSize,
-                        false);
-            }catch (RuntimeException e){
-                log.error(e.getMessage());
-                throw new BadRequestExceptions(Constants.ResultsFound);
-            }
-
-            if(pageCourier.isEmpty()){
-                return new PageImpl<>(Collections.emptyList());
-            }
-
-            List<CourierDTO> courierDTOS = pageCourier.getContent().stream().map(courier -> CourierDTO.builder()
-                    .status(courier.getStatus())
-                    .id(courier.getId())
-                    .user(courier.getUser().getUsername())
-                    .name(courier.getName())
-                    .phone(courier.getPhone())
-                    .address(courier.getAddress())
-                    .plate(courier.getPlate())
-                    .registrationDate(courier.getRegistrationDate())
-                    .updateDate(courier.getUpdateDate())
-                    .company(courier.getDeliveryCompany().getName())
-                    .dni(courier.getDni())
-                    .build()).toList();
-
-            return new PageImpl<>(courierDTOS,pageCourier.getPageable(),pageCourier.getTotalElements());
-        });
-    }
-
     @Override
     public CompletableFuture<ResponseSuccess> updateOrder(UUID orderId, RequestCourierOrder requestCourierOrder, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(() -> {
