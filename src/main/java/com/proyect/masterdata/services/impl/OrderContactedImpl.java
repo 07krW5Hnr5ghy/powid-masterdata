@@ -190,6 +190,7 @@ public class OrderContactedImpl implements IOrderContacted {
     public CompletableFuture<Page<OrderContactedDTO>> list(
             String username,
             Long orderNumber,
+            String deliveryZone,
             Boolean contacted,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -207,6 +208,7 @@ public class OrderContactedImpl implements IOrderContacted {
                 orderContactedPage = orderContactedRepositoryCustom.searchForContactedOrder(
                         clientId,
                         orderNumber,
+                        deliveryZone,
                         contacted,
                         registrationStartDate,
                         registrationEndDate,

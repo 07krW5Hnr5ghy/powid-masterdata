@@ -17,6 +17,7 @@ public interface IOrderContacted {
     CompletableFuture<Page<OrderContactedDTO>> list(
             String username,
             Long orderNumber,
+            String deliveryZone,
             Boolean contacted,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
