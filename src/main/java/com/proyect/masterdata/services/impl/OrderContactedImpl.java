@@ -22,11 +22,9 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.OffsetDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,6 +44,9 @@ public class OrderContactedImpl implements IOrderContacted {
     private final IOrderLog iOrderLog;
     private final OrderStateRepository orderStateRepository;
     private final CourierRepository courierRepository;
+    private final DeliveryZoneDistrictRepository deliveryZoneDistrictRepository;
+    private final DistrictRepository districtRepository;
+    private final DeliveryZoneRepository deliveryZoneRepository;
     @Override
     public CompletableFuture<ResponseSuccess> save(UUID orderId, String username,String observations) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -70,7 +71,9 @@ public class OrderContactedImpl implements IOrderContacted {
                 throw new BadRequestExceptions(Constants.ErrorOrderContactedExists);
             }
             try{
-                OrderContacted newOrderContacted = orderContactedRepository.save(OrderContacted.builder()
+                District district = districtRepository.findByNameAndProvinceId(ordering.getCustomer().getDistrict().getName(),ordering.getCustomer().getDistrict().getProvinceId());
+                DeliveryZoneDistrict deliveryZoneDistrict = deliveryZoneDistrictRepository.findByDistrictId(district.getId());
+                OrderContacted newOrderContacted = OrderContacted.builder()
                                 .orderId(ordering.getId())
                                 .ordering(ordering)
                                 .contacted(false)
@@ -82,10 +85,17 @@ public class OrderContactedImpl implements IOrderContacted {
                                 .userId(user.getId())
                                 .client(user.getClient())
                                 .clientId(user.getClientId())
-                        .build());
-
+                        .build();
+                if(deliveryZoneDistrict==null){
+                    DeliveryZone deliveryZone = deliveryZoneRepository.findByNameAndClientId("PROVINCIA",user.getClientId());
+                    newOrderContacted.setDeliveryZone(deliveryZone);
+                    newOrderContacted.setDeliveryZoneId(deliveryZone.getId());
+                }else{
+                    newOrderContacted.setDeliveryZone(deliveryZoneDistrict.getDeliveryZone());
+                    newOrderContacted.setDeliveryZoneId(deliveryZoneDistrict.getDeliveryZoneId());
+                }
+                orderContactedRepository.save(newOrderContacted);
                 newOrderContacted.setObservations(Objects.requireNonNullElse(observations, "sin observaciones"));
-
                 iOrderLog.save(
                         user,
                         newOrderContacted.getOrdering(),
