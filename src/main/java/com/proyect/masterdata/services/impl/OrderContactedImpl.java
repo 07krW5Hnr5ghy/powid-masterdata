@@ -223,33 +223,33 @@ public class OrderContactedImpl implements IOrderContacted {
             if (orderContactedPage.isEmpty()) {
                 return new PageImpl<>(Collections.emptyList());
             }
-            List<OrderContactedDTO> orderContactedDTOS = orderContactedPage.stream().map(orderContacted -> {
+            List<OrderContactedDTO> orderContactedDTOS = new ArrayList<>(orderContactedPage.stream().map(orderContacted -> {
                 List<String> paymentReceipts = orderPaymentReceiptRepository.findAllByOrderId(orderContacted.getOrderId()).stream().map(OrderPaymentReceipt::getPaymentReceiptUrl).toList();
                 List<String> courierPictures = courierPictureRepository.findAllByOrderId(orderContacted.getOrderId()).stream().map(CourierPicture::getPictureUrl).toList();
                 List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndStatusTrue(orderContacted.getOrderId());
 
                 double saleAmount = 0.00;
-                for(OrderItem orderItem : orderItems){
+                for (OrderItem orderItem : orderItems) {
                     ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
-                    if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
+                    if (Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
                         saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - ((productPrice.getUnitSalePrice() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
                     }
-                    if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                    if (Objects.equals(orderItem.getDiscount().getName(), "MONTO")) {
                         saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
                     }
-                    if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                    if (Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")) {
                         saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity());
                     }
                 }
-                double totalDuePayment=0;
-                if(Objects.equals(orderContacted.getOrdering().getDiscount().getName(), "PORCENTAJE")){
-                    totalDuePayment = (saleAmount-((saleAmount)*(orderContacted.getOrdering().getDiscountAmount()/100))+orderContacted.getOrdering().getDeliveryAmount())-orderContacted.getOrdering().getAdvancedPayment();
+                double totalDuePayment = 0;
+                if (Objects.equals(orderContacted.getOrdering().getDiscount().getName(), "PORCENTAJE")) {
+                    totalDuePayment = (saleAmount - ((saleAmount) * (orderContacted.getOrdering().getDiscountAmount() / 100)) + orderContacted.getOrdering().getDeliveryAmount()) - orderContacted.getOrdering().getAdvancedPayment();
                 }
-                if(Objects.equals(orderContacted.getOrdering().getDiscount().getName(), "MONTO")){
-                    totalDuePayment = (saleAmount-orderContacted.getOrdering().getDiscountAmount()+orderContacted.getOrdering().getDeliveryAmount())-orderContacted.getOrdering().getAdvancedPayment();
+                if (Objects.equals(orderContacted.getOrdering().getDiscount().getName(), "MONTO")) {
+                    totalDuePayment = (saleAmount - orderContacted.getOrdering().getDiscountAmount() + orderContacted.getOrdering().getDeliveryAmount()) - orderContacted.getOrdering().getAdvancedPayment();
                 }
-                if(Objects.equals(orderContacted.getOrdering().getDiscount().getName(), "NO APLICA")){
-                    totalDuePayment = (saleAmount+orderContacted.getOrdering().getDeliveryAmount())-orderContacted.getOrdering().getAdvancedPayment();
+                if (Objects.equals(orderContacted.getOrdering().getDiscount().getName(), "NO APLICA")) {
+                    totalDuePayment = (saleAmount + orderContacted.getOrdering().getDeliveryAmount()) - orderContacted.getOrdering().getAdvancedPayment();
                 }
                 return OrderContactedDTO.builder()
                         .user(orderContacted.getUser().getUsername())
@@ -282,8 +282,8 @@ public class OrderContactedImpl implements IOrderContacted {
                         .observations(orderContacted.getOrdering().getObservations())
                         .saleAmount(BigDecimal.valueOf(saleAmount).setScale(2, RoundingMode.HALF_EVEN))
                         .advancedPayment(BigDecimal.valueOf(orderContacted.getOrdering().getAdvancedPayment()).setScale(2, RoundingMode.HALF_EVEN))
-                        .duePayment(BigDecimal.valueOf(totalDuePayment).setScale(2,RoundingMode.HALF_EVEN))
-                        .deliveryAmount(BigDecimal.valueOf(orderContacted.getOrdering().getDeliveryAmount()).setScale(2,RoundingMode.HALF_EVEN))
+                        .duePayment(BigDecimal.valueOf(totalDuePayment).setScale(2, RoundingMode.HALF_EVEN))
+                        .deliveryAmount(BigDecimal.valueOf(orderContacted.getOrdering().getDeliveryAmount()).setScale(2, RoundingMode.HALF_EVEN))
                         .deliveryPoint(orderContacted.getOrdering().getDeliveryPoint().getName())
                         .discount(orderContacted.getOrdering().getDiscount().getName())
                         .discountAmount(BigDecimal.valueOf(orderContacted.getOrdering().getDiscountAmount()))
@@ -295,17 +295,17 @@ public class OrderContactedImpl implements IOrderContacted {
                         .contacted(orderContacted.getContacted())
                         .orderItemDTOS(orderItems.stream().map(orderItem -> {
                             ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
-                            List<ProductPicture> productPictures = productPictureRepository.findAlByClientIdAndProductId(clientId,orderItem.getProductId());
+                            List<ProductPicture> productPictures = productPictureRepository.findAlByClientIdAndProductId(clientId, orderItem.getProductId());
                             Double totalPrice = null;
-                            if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
-                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
+                            if (Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
+                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - ((productPrice.getUnitSalePrice() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
                             }
 
-                            if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
+                            if (Objects.equals(orderItem.getDiscount().getName(), "MONTO")) {
+                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - (orderItem.getDiscountAmount());
                             }
 
-                            if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                            if (Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")) {
                                 totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
                             }
                             String finalSku = iUtil.buildProductSku(orderItem.getProduct());
@@ -333,8 +333,11 @@ public class OrderContactedImpl implements IOrderContacted {
                                     .build();
                         }).toList())
                         .orderLogs(iOrderLog.listLogByOrder(orderContacted.getOrderId()))
+                        .deliveryZone(orderContacted.getDeliveryZone().getName())
                         .build();
-            }).toList();
+            }).toList());
+            List<String> zoneOrder = List.of("CENTRO", "SUR", "NORTE", "CALLAO", "ESTE 1", "PERIFERICA", "PROVINCIA");
+            orderContactedDTOS.sort(Comparator.comparing(dto -> zoneOrder.indexOf(dto.getDeliveryZone())));
             return new PageImpl<>(orderContactedDTOS,
                     orderContactedPage.getPageable(), orderContactedPage.getTotalElements());
             });
