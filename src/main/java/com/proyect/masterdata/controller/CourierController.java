@@ -3,6 +3,7 @@ package com.proyect.masterdata.controller;
 import com.proyect.masterdata.dto.CourierDTO;
 import com.proyect.masterdata.dto.request.RequestCourier;
 import com.proyect.masterdata.dto.request.RequestCourierOrder;
+import com.proyect.masterdata.dto.request.RequestCourierUser;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -37,6 +38,14 @@ public class CourierController {
             ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseSuccess> result = iCourier.save(requestCourier,tokenUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+    @PostMapping("user-to-courier")
+    public ResponseEntity<ResponseSuccess> saveToCourier(
+            @RequestBody()RequestCourierUser requestCourierUser,
+            @RequestParam("tokenUser") String tokenUser
+            )throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iCourier.saveCourierToUser(requestCourierUser,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
     @PutMapping(value = "order")
     //@PreAuthorize("hasAuthority('ROLE:COURIER') and hasAuthority('ACCESS:COURIER_PUT')")

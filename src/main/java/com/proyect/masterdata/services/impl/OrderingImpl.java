@@ -269,8 +269,10 @@ public class OrderingImpl implements IOrdering {
             Customer customer;
             DeliveryPoint deliveryPoint;
             Discount discount;
+            System.out.println( "user token recivido" + tokenUser.toUpperCase());
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                System.out.println("usuarios de referencia desde venta -> " + user.getUsername() + " - " + user.getClient().getName());
                 orderState = orderStateRepository.findByNameAndStatusTrue("PENDIENTE");
                 courier = courierRepository.findByNameAndStatusTrue("SIN COURIER");
                 orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue("POR RECAUDAR");
