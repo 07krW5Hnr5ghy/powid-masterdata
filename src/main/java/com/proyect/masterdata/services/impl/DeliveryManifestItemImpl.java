@@ -113,10 +113,8 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
         });
     }
     @Override
-    public CompletableFuture<ResponseSuccess> updateDeliveryManifestItem(
+    public CompletableFuture<ResponseSuccess> markDeliveredDeliveryManifestItem(
             UUID deliveryManifestItemId,
-            Boolean collected,
-            Boolean delivered,
             String username) {
         return CompletableFuture.supplyAsync(()->{
             User user;
@@ -135,10 +133,52 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                 throw new BadRequestExceptions(Constants.ErrorDeliveryManifestItem);
             }
             try{
-                deliveryManifestItem.setDelivered(collected);
+                deliveryManifestItem.setDelivered(true);
                 deliveryManifestItem.setUser(user);
                 deliveryManifestItem.setUserId(user.getId());
-                deliveryManifestItem.setCollected(delivered);
+                deliveryManifestItem.setUpdateDate(OffsetDateTime.now());
+                deliveryManifestItemRepository.save(deliveryManifestItem);
+                iAudit.save(
+                        "UPDATE_DELIVERY_MANIFEST_ITEM",
+                        "ITEM DE GUIA "+
+                                deliveryManifestItem.getId()+
+                                "PARA PEDIDO " +
+                                deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber() +
+                                " ACTUALIZADO.",
+                        deliveryManifestItem.getId().toString(),user.getUsername());
+                return ResponseSuccess.builder()
+                        .message(Constants.update)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> markCollectedDeliveryManifestItem(UUID deliveryManifestItemId, String username) {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            DeliveryManifestItem deliveryManifestItem;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                deliveryManifestItem = deliveryManifestItemRepository.findById(deliveryManifestItemId).orElse(null);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(deliveryManifestItem==null){
+                throw new BadRequestExceptions(Constants.ErrorDeliveryManifestItem);
+            }
+            try{
+                deliveryManifestItem.setCollected(true);
+                deliveryManifestItem.setUser(user);
+                deliveryManifestItem.setUserId(user.getId());
                 deliveryManifestItem.setUpdateDate(OffsetDateTime.now());
                 deliveryManifestItemRepository.save(deliveryManifestItem);
                 iAudit.save(
