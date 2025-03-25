@@ -60,10 +60,10 @@ public class CourierController {
     @DeleteMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION') and hasAuthority('ACCESS:COURIER_DELETE')")
     public ResponseEntity<ResponseDelete> delete(
-            @RequestParam("name") String name,
+            @RequestParam("dni") String dni,
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseDelete> result = iCourier.delete(name,tokenUser);
+        CompletableFuture<ResponseDelete> result = iCourier.delete(dni,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
     @GetMapping("pagination")
@@ -71,6 +71,7 @@ public class CourierController {
     public ResponseEntity<Page<CourierDTO>> list(
             @RequestParam(value = "user") String user,
             @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "dni",required = false) String dni,
             @RequestParam(value = "company", required = false) String company,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
             @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
@@ -79,11 +80,13 @@ public class CourierController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,
-            @RequestParam(value = "pageSize") Integer pageSize
+            @RequestParam(value = "pageSize") Integer pageSize,
+            @RequestParam(value = "status",required = false) Boolean status
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<CourierDTO>> result = iCourier.list(
                 user,
                 name,
+                dni,
                 company,
                 registrationStartDate,
                 registrationEndDate,
@@ -92,36 +95,8 @@ public class CourierController {
                 sort,
                 sortColumn,
                 pageNumber,
-                pageSize);
-        return new ResponseEntity<>(result.get(),HttpStatus.OK);
-    }
-    @GetMapping("pagination/status-false")
-    //@PreAuthorize("hasAnyAuthority('ROLE:BUSINESS','ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:COURIER_GET')")
-    public ResponseEntity<Page<CourierDTO>> listFalse(
-            @RequestParam(value = "user") String user,
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "company", required = false) String company,
-            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
-            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
-            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateStartDate,
-            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateEndDate,
-            @RequestParam(value = "sort", required = false) String sort,
-            @RequestParam(value = "sortColumn", required = false) String sortColumn,
-            @RequestParam(value = "pageNumber") Integer pageNumber,
-            @RequestParam(value = "pageSize") Integer pageSize
-    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<CourierDTO>> result = iCourier.listFalse(
-                user,
-                name,
-                company,
-                registrationStartDate,
-                registrationEndDate,
-                updateStartDate,
-                updateEndDate,
-                sort,
-                sortColumn,
-                pageNumber,
-                pageSize);
+                pageSize,
+                status);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
@@ -145,10 +120,10 @@ public class CourierController {
 
     @PostMapping("activate")
     public ResponseEntity<ResponseSuccess> activate(
-            @RequestParam("name") String name,
+            @RequestParam("dni") String dni,
             @RequestParam("tokenUser") String tokenUser
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iCourier.activate(name, tokenUser);
+        CompletableFuture<ResponseSuccess> result = iCourier.activate(dni, tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 

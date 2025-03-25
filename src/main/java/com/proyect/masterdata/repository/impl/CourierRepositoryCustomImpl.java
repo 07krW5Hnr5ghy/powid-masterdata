@@ -28,6 +28,7 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
     public Page<Courier> searchForCourier(
             UUID clientId,
             String name,
+            String dni,
             String company,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -47,6 +48,7 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
         List<Predicate> conditions = predicateConditions(
                 clientId,
                 name,
+                dni,
                 company,
                 registrationStartDate,
                 registrationEndDate,
@@ -81,6 +83,7 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
         Long count = getOrderCount(
                 clientId,
                 name,
+                dni,
                 company,
                 registrationStartDate,
                 registrationEndDate,
@@ -93,6 +96,7 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
     public List<Predicate> predicateConditions(
             UUID clientId,
             String name,
+            String dni,
             String company,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -107,6 +111,10 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
 
         if(name!=null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(itemRoot.get("name")),"%"+name.toUpperCase()+"%"));
+        }
+
+        if(dni!=null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(itemRoot.get("dni")),"%"+dni+"%"));
         }
 
         if(company!=null){
@@ -225,6 +233,7 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
     private Long getOrderCount(
             UUID clientId,
             String name,
+            String dni,
             String company,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -240,6 +249,7 @@ public class CourierRepositoryCustomImpl implements CourierRepositoryCustom {
         List<Predicate> conditions = predicateConditions(
                 clientId,
                 name,
+                dni,
                 company,
                 registrationStartDate,
                 registrationEndDate,
