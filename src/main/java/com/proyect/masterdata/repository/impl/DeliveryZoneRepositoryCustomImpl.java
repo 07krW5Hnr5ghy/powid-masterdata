@@ -1,9 +1,7 @@
 package com.proyect.masterdata.repository.impl;
 
 import com.proyect.masterdata.domain.DeliveryZone;
-import com.proyect.masterdata.domain.OrderContacted;
-import com.proyect.masterdata.domain.Ordering;
-import com.proyect.masterdata.repository.OrderContactedRepositoryCustom;
+import com.proyect.masterdata.repository.DeliveryZoneRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
@@ -18,104 +16,71 @@ import org.springframework.stereotype.Repository;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
+
 @Repository
-public class OrderContactedCustomImpl implements OrderContactedRepositoryCustom {
+public class DeliveryZoneRepositoryCustomImpl implements DeliveryZoneRepositoryCustom {
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<OrderContacted> searchForContactedOrder(
-            UUID clientId,
-            Long orderNumber,
-            String deliveryZone,
-            Boolean contacted,
-            OffsetDateTime registrationStartDate,
-            OffsetDateTime registrationEndDate,
-            OffsetDateTime updateStartDate,
-            OffsetDateTime updateEndDate,
-            String sort,
-            String sortColumn,
-            Integer pageNumber,
-            Integer pageSize) {
+    public Page<DeliveryZone> searchForDeliveryZone(String name, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize, Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<OrderContacted> criteriaQuery = criteriaBuilder.createQuery(OrderContacted.class);
-        Root<OrderContacted> itemRoot = criteriaQuery.from(OrderContacted.class);
-        Join<OrderContacted, Ordering> orderContactedOrderingJoin = itemRoot.join("ordering");
-        Join<OrderContacted, DeliveryZone> orderContactedDeliveryZoneJoin = itemRoot.join("deliveryZone");
+        CriteriaQuery<DeliveryZone> criteriaQuery = criteriaBuilder.createQuery(DeliveryZone.class);
+        Root<DeliveryZone> itemRoot = criteriaQuery.from(DeliveryZone.class);
 
         criteriaQuery.select(itemRoot);
-
-        List<Predicate> conditions = predicate(
-                orderNumber,
-                contacted,
-                deliveryZone,
-                clientId,
+        List<Predicate> conditions = predicateConditions(
+                name,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
                 updateEndDate,
+                status,
                 criteriaBuilder,
-                itemRoot,
-                orderContactedOrderingJoin
-        );
+                itemRoot);
 
-        //System.out.println(conditions.get(0));
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
-            List<Order> orderContactedList = new ArrayList<>();
+            List<Order> deliveryZoneList = new ArrayList<>();
             if (sort.equalsIgnoreCase("ASC")) {
-                orderContactedList = listASC(sortColumn, criteriaBuilder, itemRoot);
+                deliveryZoneList = listASC(sortColumn, criteriaBuilder, itemRoot);
             }
             if (sort.equalsIgnoreCase("DESC")) {
-                orderContactedList = listDESC(sortColumn, criteriaBuilder, itemRoot);
+                deliveryZoneList = listDESC(sortColumn, criteriaBuilder, itemRoot);
             }
-            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(orderContactedList);
+            criteriaQuery.where(conditions.toArray(new Predicate[] {})).orderBy(deliveryZoneList);
         } else {
             criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         }
-        TypedQuery<OrderContacted> orderTypedQuery = entityManager.createQuery(criteriaQuery);
+
+        TypedQuery<DeliveryZone> orderTypedQuery = entityManager.createQuery(criteriaQuery);
         orderTypedQuery.setFirstResult(pageNumber * pageSize);
         orderTypedQuery.setMaxResults(pageSize);
 
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        long count = getOrderContactedCount(
-                orderNumber,
-                contacted,
-                deliveryZone,
-                clientId,
+        long count = getOrderCount(
+                name,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
-                updateEndDate);
+                updateEndDate,
+                status);
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
-    private List<Predicate> predicate(
-            Long orderNumber,
-            Boolean contacted,
-            String deliveryZone,
-            UUID clientId,
+    public List<Predicate> predicateConditions(
+            String name,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
             OffsetDateTime updateEndDate,
+            Boolean status,
             CriteriaBuilder criteriaBuilder,
-            Root<OrderContacted> itemRoot,
-            Join<OrderContacted,Ordering> orderContactedOrderingJoin
-    ){
+            Root<DeliveryZone> itemRoot) {
         List<Predicate> conditions = new ArrayList<>();
 
-        if(deliveryZone != null){
-            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(orderContactedOrderingJoin.get("name")),"%"+deliveryZone.toUpperCase()+"%"));
-        }
-
-        if(clientId != null){
-            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"),clientId)));
-        }
-
-        if (orderNumber != null) {
+        if (name != null) {
             conditions.add(
                     criteriaBuilder.and(
                             criteriaBuilder.equal(
-                                    orderContactedOrderingJoin.get("orderNumber"), orderNumber)));
+                                    criteriaBuilder.upper(itemRoot.get("name")), name.toUpperCase())));
         }
 
         if(registrationStartDate!=null){
@@ -150,88 +115,87 @@ public class OrderContactedCustomImpl implements OrderContactedRepositoryCustom 
             );
         }
 
-        if (Boolean.TRUE.equals(contacted)) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.isTrue(itemRoot.get("contacted"))));
+        if(Boolean.TRUE.equals(status)) {
+            conditions.add(criteriaBuilder.and(criteriaBuilder.isTrue(itemRoot.get("status"))));
         }
 
-        if (Boolean.FALSE.equals(contacted)) {
-            conditions.add(criteriaBuilder.and(criteriaBuilder.isFalse(itemRoot.get("contacted"))));
+        if(Boolean.FALSE.equals(status)) {
+            conditions.add(criteriaBuilder.and(criteriaBuilder.isFalse(itemRoot.get("status"))));
         }
-
 
         return conditions;
     }
+
     List<Order> listASC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
-            Root<OrderContacted> itemRoot) {
-        List<Order> orderContactedList = new ArrayList<>();
+            Root<DeliveryZone> itemRoot) {
+        List<Order> colorList = new ArrayList<>();
+        if (sortColumn.equalsIgnoreCase("NAME")) {
+            colorList.add(criteriaBuilder.asc(itemRoot.get("name")));
+        }
         if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
-            orderContactedList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+            colorList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
         }
 
         if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
-            orderContactedList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
+            colorList.add(criteriaBuilder.asc(itemRoot.get("registrationDate")));
         }
 
         if (sortColumn.equalsIgnoreCase("updateStartDate")) {
-            orderContactedList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+            colorList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
         }
 
         if (sortColumn.equalsIgnoreCase("updateEndDate")) {
-            orderContactedList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
+            colorList.add(criteriaBuilder.asc(itemRoot.get("updateDate")));
         }
-        return orderContactedList;
+        return colorList;
     }
+
     List<Order> listDESC(
             String sortColumn,
             CriteriaBuilder criteriaBuilder,
-            Root<OrderContacted> itemRoot) {
-        List<Order> orderContactedList = new ArrayList<>();
+            Root<DeliveryZone> itemRoot) {
+        List<Order> colorList = new ArrayList<>();
+        if (sortColumn.equalsIgnoreCase("NAME")) {
+            colorList.add(criteriaBuilder.desc(itemRoot.get("name")));
+        }
         if (sortColumn.equalsIgnoreCase("registrationStartDate")) {
-            orderContactedList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+            colorList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
         }
-
         if (sortColumn.equalsIgnoreCase("registrationEndDate")) {
-            orderContactedList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
+            colorList.add(criteriaBuilder.desc(itemRoot.get("registrationDate")));
         }
-
         if (sortColumn.equalsIgnoreCase("updateStartDate")) {
-            orderContactedList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+            colorList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
         }
-
         if (sortColumn.equalsIgnoreCase("updateEndDate")) {
-            orderContactedList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
+            colorList.add(criteriaBuilder.desc(itemRoot.get("updateDate")));
         }
-        return orderContactedList;
+        return colorList;
     }
-    private long getOrderContactedCount(
-            Long orderNumber,
-            Boolean contacted,
-            String deliveryZone,
-            UUID clientId,
+
+    private long getOrderCount(
+            String name,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
-            OffsetDateTime updateEndDate) {
+            OffsetDateTime updateEndDate,
+            Boolean status) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaQuery = criteriaBuilder.createQuery(Long.class);
-        Root<OrderContacted> itemRoot = criteriaQuery.from(OrderContacted.class);
-        Join<OrderContacted, Ordering> orderContactedOrderingJoin = itemRoot.join("ordering");
+        Root<DeliveryZone> itemRoot = criteriaQuery.from(DeliveryZone.class);
 
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
-        List<Predicate> conditions = predicate(
-                orderNumber,
-                contacted,
-                deliveryZone,
-                clientId,
+        List<Predicate> conditions = predicateConditions(
+                name,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
                 updateEndDate,
+                status,
                 criteriaBuilder,
-                itemRoot,
-                orderContactedOrderingJoin);
+                itemRoot);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

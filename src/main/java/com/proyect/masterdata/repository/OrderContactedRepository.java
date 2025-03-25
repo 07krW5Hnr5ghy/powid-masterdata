@@ -19,14 +19,14 @@ public interface OrderContactedRepository extends JpaRepository<OrderContacted, 
     @Transactional
     @Query("UPDATE OrderContacted o SET " +
             "o.userId = :userId, " +
-            "o.agentId = :agentId, " +
+            "o.agentUserId = :agentUserId, " +
             "o.updateDate = :updateDate," +
             "o.observations = :observations " +
             "WHERE o.orderId = :orderId")
     void selectAgentOrderContact(
             @Param("orderId") UUID orderId,
             @Param("userId") UUID userId,
-            @Param("agentId") UUID agentId,
+            @Param("agentUserId") UUID agentId,
             @Param("updateDate") OffsetDateTime updateDate,
             @Param("observations") String observations
     );

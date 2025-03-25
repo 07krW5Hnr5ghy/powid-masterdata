@@ -1,19 +1,16 @@
 package com.proyect.masterdata.repository;
 
-import com.proyect.masterdata.domain.OrderContacted;
+import com.proyect.masterdata.domain.DeliveryZoneDistrict;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Repository
-public interface OrderContactedRepositoryCustom {
-    Page<OrderContacted> searchForContactedOrder(
-            UUID clientId,
-            Long orderNumber,
+public interface DeliveryZoneDistrictRepositoryCustom {
+    Page<DeliveryZoneDistrict> searchForDeliveryZoneDistrict(
             String deliveryZone,
-            Boolean contacted,
+            String district,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -21,6 +18,7 @@ public interface OrderContactedRepositoryCustom {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize
+            Integer pageSize,
+            Boolean status
     );
 }

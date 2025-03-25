@@ -1,20 +1,19 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.Color;
+import com.proyect.masterdata.domain.DeliveryZone;
 import com.proyect.masterdata.domain.User;
-import com.proyect.masterdata.dto.ColorDTO;
+import com.proyect.masterdata.dto.DeliveryZoneDTO;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.mapper.ColorMapper;
-import com.proyect.masterdata.repository.ColorRepository;
-import com.proyect.masterdata.repository.ColorRepositoryCustom;
+import com.proyect.masterdata.repository.DeliveryZoneRepository;
+import com.proyect.masterdata.repository.DeliveryZoneRepositoryCustom;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IAudit;
-import com.proyect.masterdata.services.IColor;
+import com.proyect.masterdata.services.IDeliveryZone;
 import com.proyect.masterdata.utils.Constants;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -27,18 +26,18 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Log4j2
-public class ColorImpl implements IColor {
-    private final ColorRepository colorRepository;
+public class DeliveryZoneImpl implements IDeliveryZone {
     private final UserRepository userRepository;
-    private final ColorRepositoryCustom colorRepositoryCustom;
+    private final DeliveryZoneRepository deliveryZoneRepository;
     private final IAudit iAudit;
+    private final DeliveryZoneRepositoryCustom deliveryZoneRepositoryCustom;
     @Override
-    public CompletableFuture<ResponseSuccess> save(String name,String sku, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<ResponseSuccess> save(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            Color color;
+            DeliveryZone deliveryZone;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -50,24 +49,23 @@ public class ColorImpl implements IColor {
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }else{
-                color = colorRepository.findByNameOrSkuAndClientId(name.toUpperCase(),sku.toUpperCase(),user.getClientId());
+                deliveryZone = deliveryZoneRepository.findByNameAndClientId(name.toUpperCase(),user.getClientId());
             }
-            if (color != null) {
-                throw new BadRequestExceptions(Constants.ErrorColorExists.toUpperCase());
+            if (deliveryZone != null) {
+                throw new BadRequestExceptions(Constants.ErrorDeliveryZoneExists.toUpperCase());
             }
 
             try {
-                Color newColor = colorRepository.save(Color.builder()
+                DeliveryZone newDeliveryZone = deliveryZoneRepository.save(DeliveryZone.builder()
                         .name(name.toUpperCase())
-                        .sku(sku.toUpperCase())
                         .registrationDate(OffsetDateTime.now())
                         .status(true)
-                                .user(user)
-                                .userId(user.getId())
-                                .client(user.getClient())
-                                .clientId(user.getClientId())
+                        .user(user)
+                        .userId(user.getId())
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
                         .build());
-                iAudit.save("ADD_COLOR","COLOR "+newColor.getName()+" CREADO.",newColor.getName(),user.getUsername());
+                iAudit.save("ADD_COLOR","COLOR "+newDeliveryZone.getName()+" CREADO.",newDeliveryZone.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -84,7 +82,7 @@ public class ColorImpl implements IColor {
     public CompletableFuture<ResponseDelete> delete(String name, String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            Color color;
+            DeliveryZone deliveryZone;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
@@ -96,19 +94,19 @@ public class ColorImpl implements IColor {
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }else{
-                color = colorRepository.findByNameAndClientIdAndStatusTrue(name.toUpperCase(),user.getClientId());
+                deliveryZone = deliveryZoneRepository.findByNameAndClientIdAndStatusTrue(name.toUpperCase(),user.getClientId());
             }
-            if (color == null) {
-                throw new BadRequestExceptions(Constants.ErrorColor.toUpperCase());
+            if (deliveryZone == null) {
+                throw new BadRequestExceptions(Constants.ErrorDeliveryZone.toUpperCase());
             }
 
             try {
-                color.setStatus(false);
-                color.setUpdateDate(OffsetDateTime.now());
-                color.setUser(user);
-                color.setUserId(user.getId());
-                colorRepository.save(color);
-                iAudit.save("DELETE_COLOR","COLOR "+color.getName()+" DESACTIVADO.", color.getName(), user.getUsername());
+                deliveryZone.setStatus(false);
+                deliveryZone.setUpdateDate(OffsetDateTime.now());
+                deliveryZone.setUser(user);
+                deliveryZone.setUserId(user.getId());
+                deliveryZoneRepository.save(deliveryZone);
+                iAudit.save("DELETE_COLOR","COLOR "+deliveryZone.getName()+" DESACTIVADO.", deliveryZone.getName(), user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)
                         .message(Constants.delete)
@@ -124,7 +122,7 @@ public class ColorImpl implements IColor {
     public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            Color color;
+            DeliveryZone deliveryZone;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -136,19 +134,19 @@ public class ColorImpl implements IColor {
             if (user == null) {
                 throw new BadRequestExceptions(Constants.ErrorUser.toUpperCase());
             }else{
-                color = colorRepository.findByNameAndClientIdAndStatusFalse(name.toUpperCase(),user.getClientId());
+                deliveryZone = deliveryZoneRepository.findByNameAndClientIdAndStatusFalse(name.toUpperCase(),user.getClientId());
             }
-            if (color == null) {
-                throw new BadRequestExceptions(Constants.ErrorColor.toUpperCase());
+            if (deliveryZone == null) {
+                throw new BadRequestExceptions(Constants.ErrorDeliveryZone.toUpperCase());
             }
 
             try {
-                color.setStatus(true);
-                color.setUpdateDate(OffsetDateTime.now());
-                color.setUser(user);
-                color.setUserId(user.getId());
-                colorRepository.save(color);
-                iAudit.save("ACTIVATE_COLOR","COLOR "+color.getName()+" ACTIVADO.",color.getName(),user.getUsername());
+                deliveryZone.setStatus(true);
+                deliveryZone.setUpdateDate(OffsetDateTime.now());
+                deliveryZone.setUser(user);
+                deliveryZone.setUserId(user.getId());
+                deliveryZoneRepository.save(deliveryZone);
+                iAudit.save("ACTIVATE_COLOR","COLOR "+deliveryZone.getName()+" ACTIVADO.",deliveryZone.getName(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.update)
@@ -161,9 +159,9 @@ public class ColorImpl implements IColor {
     }
 
     @Override
-    public CompletableFuture<List<ColorDTO>> listColor(String username) throws BadRequestExceptions {
+    public CompletableFuture<List<DeliveryZoneDTO>> listDeliveryZone(String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            List<Color> colors;
+            List<DeliveryZone> deliveryZones;
             User user;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
@@ -174,25 +172,24 @@ public class ColorImpl implements IColor {
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
-                colors = colorRepository.findAllByStatusTrueAndClientId(user.getClientId());
+                deliveryZones = deliveryZoneRepository.findAllByStatusTrueAndClientId(user.getClientId());
             }
-            if (colors.isEmpty()) {
+            if (deliveryZones.isEmpty()) {
                 return Collections.emptyList();
             }
-            return colors.stream().map(color -> ColorDTO.builder()
-                    .id(color.getId())
-                    .sku(color.getSku())
-                    .updateDate(color.getUpdateDate())
-                    .name(color.getName())
-                    .registrationDate(color.getRegistrationDate())
-                    .user(color.getUser().getUsername())
-                    .status(color.getStatus())
+            return deliveryZones.stream().map(deliveryZone -> DeliveryZoneDTO.builder()
+                    .id(deliveryZone.getId())
+                    .updateDate(deliveryZone.getUpdateDate())
+                    .name(deliveryZone.getName())
+                    .registrationDate(deliveryZone.getRegistrationDate())
+                    .user(deliveryZone.getUser().getUsername())
+                    .status(deliveryZone.getStatus())
                     .build()).toList();
         });
     }
 
     @Override
-    public CompletableFuture<Page<ColorDTO>> list(
+    public CompletableFuture<Page<DeliveryZoneDTO>> list(
             String name,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -204,9 +201,9 @@ public class ColorImpl implements IColor {
             Integer pageSize,
             Boolean status) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            Page<Color> colorPage;
+            Page<DeliveryZone> deliveryZonePage;
             try {
-                colorPage = colorRepositoryCustom.searchForColor(
+                deliveryZonePage = deliveryZoneRepositoryCustom.searchForDeliveryZone(
                         name,
                         registrationStartDate,
                         registrationEndDate,
@@ -221,26 +218,25 @@ public class ColorImpl implements IColor {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);
             }
-            if (colorPage.isEmpty()) {
+            if (deliveryZonePage.isEmpty()) {
                 return new PageImpl<>(Collections.emptyList());
             }
-            List<ColorDTO> colorDTOS = colorPage.getContent().stream().map(color -> ColorDTO.builder()
-                    .id(color.getId())
-                    .sku(color.getSku())
-                    .updateDate(color.getUpdateDate())
-                    .name(color.getName())
-                    .registrationDate(color.getRegistrationDate())
-                    .user(color.getUser().getUsername())
-                    .status(color.getStatus())
+            List<DeliveryZoneDTO> deliveryZoneDTOS = deliveryZonePage.getContent().stream().map(deliveryZone -> DeliveryZoneDTO.builder()
+                    .id(deliveryZone.getId())
+                    .updateDate(deliveryZone.getUpdateDate())
+                    .name(deliveryZone.getName())
+                    .registrationDate(deliveryZone.getRegistrationDate())
+                    .user(deliveryZone.getUser().getUsername())
+                    .status(deliveryZone.getStatus())
                     .build()).toList();
-            return new PageImpl<>(colorDTOS,
-                    colorPage.getPageable(), colorPage.getTotalElements());
+            return new PageImpl<>(deliveryZoneDTOS,
+                    deliveryZonePage.getPageable(), deliveryZonePage.getTotalElements());
         });
     }
     @Override
-    public CompletableFuture<List<ColorDTO>> listFilter(String username) throws BadRequestExceptions {
+    public CompletableFuture<List<DeliveryZoneDTO>> listFilter(String username) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
-            List<Color> colors;
+            List<DeliveryZone> deliveryZones;
             User user;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
@@ -251,19 +247,18 @@ public class ColorImpl implements IColor {
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
-                colors = colorRepository.findAllByClientId(user.getClientId());
+                deliveryZones = deliveryZoneRepository.findAllByClientId(user.getClientId());
             }
-            if (colors.isEmpty()) {
+            if (deliveryZones.isEmpty()) {
                 return Collections.emptyList();
             }
-            return colors.stream().map(color -> ColorDTO.builder()
-                    .id(color.getId())
-                    .sku(color.getSku())
-                    .updateDate(color.getUpdateDate())
-                    .name(color.getName())
-                    .registrationDate(color.getRegistrationDate())
-                    .user(color.getUser().getUsername())
-                    .status(color.getStatus())
+            return deliveryZones.stream().map(deliveryZone -> DeliveryZoneDTO.builder()
+                    .id(deliveryZone.getId())
+                    .updateDate(deliveryZone.getUpdateDate())
+                    .name(deliveryZone.getName())
+                    .registrationDate(deliveryZone.getRegistrationDate())
+                    .user(deliveryZone.getUser().getUsername())
+                    .status(deliveryZone.getStatus())
                     .build()).toList();
         });
     }

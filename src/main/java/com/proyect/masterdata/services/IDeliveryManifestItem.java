@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services;
 
 import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.dto.CourierProfileDTO;
 import com.proyect.masterdata.dto.DeliveryManifestItemDTO;
 import com.proyect.masterdata.dto.request.RequestDeliveryManifestItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -45,5 +46,10 @@ public interface IDeliveryManifestItem {
             String sortColumn,
             Integer pageNumber,
             Integer pageSize
+    );
+    CompletableFuture<CourierProfileDTO> courierProfile(
+            OffsetDateTime startDate,
+            OffsetDateTime endDate,
+            String username
     );
 }

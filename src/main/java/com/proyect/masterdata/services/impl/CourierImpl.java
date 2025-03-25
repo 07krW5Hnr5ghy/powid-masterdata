@@ -54,7 +54,6 @@ public class CourierImpl implements ICourier {
             DeliveryCompany deliveryCompany;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                courier = courierRepository.findByName(requestCourier.getCourier().toUpperCase());
                 deliveryCompany = deliveryCompanyRepository.findByName(requestCourier.getCompany().toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -63,6 +62,8 @@ public class CourierImpl implements ICourier {
 
             if(user == null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                courier = courierRepository.findByNameAndClientIdAndStatusTrue(requestCourier.getCourier().toUpperCase(),user.getClientId());
             }
 
             if(deliveryCompany==null){
@@ -241,7 +242,6 @@ public class CourierImpl implements ICourier {
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                courier = courierRepository.findByNameAndStatusFalse(name.toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -249,6 +249,8 @@ public class CourierImpl implements ICourier {
 
             if(user == null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                courier = courierRepository.findByNameAndClientIdAndStatusTrue(name.toUpperCase(),user.getClientId());
             }
 
             if(courier == null){

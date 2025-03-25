@@ -16,21 +16,18 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableOrderContacted,schema = Constants.schemaOrder)
-public class OrderContacted {
+@Table(name = Constants.tableDeliveryZone,schema = Constants.schemaLogistics)
+public class DeliveryZone {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "order_contacted_id")
+    @Column(name = "delivery_zone_id")
     private UUID id;
 
-    @Column(name = "order_id", nullable = false)
-    private UUID orderId;
+    @Column(name = "name")
+    private String name;
 
-    @Column(name = "contacted")
-    private Boolean contacted;
-
-    @Column(name = "observations",columnDefinition = "text")
-    private String observations;
+    @Column(name = "status")
+    private Boolean status;
 
     @Column(name = "registration_date")
     @CreationTimestamp
@@ -46,16 +43,6 @@ public class OrderContacted {
     @Column(name = "client_id")
     private UUID clientId;
 
-    @Column(name = "agent_user_id")
-    private UUID agentUserId;
-
-    @Column(name = "delivery_zone_id")
-    private UUID deliveryZoneId;
-
-    @OneToOne
-    @JoinColumn(name = "order_id",columnDefinition = "orderId",insertable = false,updatable = false)
-    private Ordering ordering;
-
     @ManyToOne()
     @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
     private User user;
@@ -63,12 +50,4 @@ public class OrderContacted {
     @ManyToOne()
     @JoinColumn(name="client_id",columnDefinition = "clientId",insertable = false,updatable = false)
     private Client client;
-
-    @ManyToOne()
-    @JoinColumn(name="agent_user_id",columnDefinition = "agentUserId",insertable = false,updatable = false)
-    private User agentUser;
-
-    @ManyToOne()
-    @JoinColumn(name="delivery_zone_id",columnDefinition = "deliveryZoneId",insertable = false,updatable = false)
-    private DeliveryZone deliveryZone;
 }
