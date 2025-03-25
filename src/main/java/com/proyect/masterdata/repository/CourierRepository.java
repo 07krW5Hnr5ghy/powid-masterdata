@@ -11,6 +11,7 @@ import java.util.UUID;
 public interface CourierRepository extends JpaRepository<Courier, UUID> {
     Courier findByNameAndClientId(String name,UUID clientId);
     Courier findByNameAndClientIdAndStatusTrue(String name,UUID clientId);
+    Courier findByDniAndClientIdAndStatusTrue(String dni,UUID clientId);
     Courier findByNameAndStatusTrue(String name);
     Courier findByNameAndClientIdAndStatusFalse(String name,UUID clientId);
     List<Courier> findAllByClientIdAndStatusTrue(UUID clientId);

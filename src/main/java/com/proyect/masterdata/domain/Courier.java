@@ -29,6 +29,9 @@ public class Courier {
     @Column(name = "phone")
     private String phone;
 
+    @Column(name = "dni")
+    private String dni;
+
     @Column(name = "status")
     private Boolean status;
 

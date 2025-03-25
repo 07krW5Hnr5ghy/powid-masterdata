@@ -84,6 +84,7 @@ public class CourierImpl implements ICourier {
                         .updateDate(OffsetDateTime.now())
                         .client(user.getClient())
                         .clientId(user.getClientId())
+                                .dni(requestCourier.getDni())
                         .status(true)
                                 .user(user)
                                 .userId(user.getId())
@@ -152,6 +153,7 @@ public class CourierImpl implements ICourier {
                         .status(true)
                         .user(userUpper)
                         .userId(userUpper.getId())
+                        .dni(requestCourierUser.getDni())
                         .deliveryCompany(deliveryCompany)
                         .deliveryCompanyId(deliveryCompany.getId())
                         .build());
@@ -324,6 +326,7 @@ public class CourierImpl implements ICourier {
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
                     .company(courier.getDeliveryCompany().getName())
+                    .dni(courier.getDni())
                     .build()).toList();
 
             return new PageImpl<>(courierDTOS,pageCourier.getPageable(),pageCourier.getTotalElements());
@@ -382,6 +385,7 @@ public class CourierImpl implements ICourier {
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
                     .company(courier.getDeliveryCompany().getName())
+                    .dni(courier.getDni())
                     .build()).toList();
 
             return new PageImpl<>(courierDTOS,pageCourier.getPageable(),pageCourier.getTotalElements());
@@ -484,6 +488,7 @@ public class CourierImpl implements ICourier {
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
                     .company(courier.getDeliveryCompany().getName())
+                    .dni(courier.getDni())
                     .build()).toList();
         });
     }
@@ -514,6 +519,7 @@ public class CourierImpl implements ICourier {
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
                     .company(courier.getDeliveryCompany().getName())
+                    .dni(courier.getDni())
                     .build()).toList();
         });
     }
@@ -544,6 +550,7 @@ public class CourierImpl implements ICourier {
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
                     .company(courier.getDeliveryCompany().getName())
+                    .dni(courier.getDni())
                     .build()).toList());
             Courier defaultNoCourier = courierRepository.findByNameAndStatusTrue("SIN COURIER");
             CourierDTO dtoNoCourier = CourierDTO.builder()
