@@ -305,7 +305,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
-                courier = courierRepository.findByNameAndClientIdAndStatusTrue(user.getName(),user.getClientId());
+                courier = courierRepository.findByDniAndClientIdAndStatusTrue(user.getDni(),user.getClientId());
             }
             if(courier==null){
                 throw new BadRequestExceptions(Constants.ErrorCourier);
