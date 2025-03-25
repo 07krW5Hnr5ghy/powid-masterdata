@@ -30,4 +30,5 @@ public class DeliveryManifestDTO {
     private Double paidAmount;
     private Double payableAmount;
     private String observations;
+    private Double productValue;
 }
