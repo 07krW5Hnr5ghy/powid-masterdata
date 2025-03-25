@@ -23,11 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.OffsetDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +45,9 @@ public class OrderContactedImpl implements IOrderContacted {
     private final IOrderLog iOrderLog;
     private final OrderStateRepository orderStateRepository;
     private final CourierRepository courierRepository;
+    private final DeliveryZoneDistrictRepository deliveryZoneDistrictRepository;
+    private final DistrictRepository districtRepository;
+    private final DeliveryZoneRepository deliveryZoneRepository;
     @Override
     public CompletableFuture<ResponseSuccess> save(UUID orderId, String username,String observations) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -71,7 +72,9 @@ public class OrderContactedImpl implements IOrderContacted {
                 throw new BadRequestExceptions(Constants.ErrorOrderContactedExists);
             }
             try{
-                OrderContacted newOrderContacted = orderContactedRepository.save(OrderContacted.builder()
+                District district = districtRepository.findByNameAndProvinceId(ordering.getCustomer().getDistrict().getName(),ordering.getCustomer().getDistrict().getProvinceId());
+                DeliveryZoneDistrict deliveryZoneDistrict = deliveryZoneDistrictRepository.findByDistrictId(district.getId());
+                OrderContacted newOrderContacted = OrderContacted.builder()
                                 .orderId(ordering.getId())
                                 .ordering(ordering)
                                 .contacted(false)
@@ -83,10 +86,17 @@ public class OrderContactedImpl implements IOrderContacted {
                                 .userId(user.getId())
                                 .client(user.getClient())
                                 .clientId(user.getClientId())
-                        .build());
-
+                        .build();
+                if(deliveryZoneDistrict==null){
+                    DeliveryZone deliveryZone = deliveryZoneRepository.findByNameAndClientId("PROVINCIA",user.getClientId());
+                    newOrderContacted.setDeliveryZone(deliveryZone);
+                    newOrderContacted.setDeliveryZoneId(deliveryZone.getId());
+                }else{
+                    newOrderContacted.setDeliveryZone(deliveryZoneDistrict.getDeliveryZone());
+                    newOrderContacted.setDeliveryZoneId(deliveryZoneDistrict.getDeliveryZoneId());
+                }
+                orderContactedRepository.save(newOrderContacted);
                 newOrderContacted.setObservations(Objects.requireNonNullElse(observations, "sin observaciones"));
-
                 iOrderLog.save(
                         user,
                         newOrderContacted.getOrdering(),
@@ -190,6 +200,7 @@ public class OrderContactedImpl implements IOrderContacted {
     public CompletableFuture<Page<OrderContactedDTO>> list(
             String username,
             Long orderNumber,
+            String deliveryZone,
             Boolean contacted,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -207,6 +218,7 @@ public class OrderContactedImpl implements IOrderContacted {
                 orderContactedPage = orderContactedRepositoryCustom.searchForContactedOrder(
                         clientId,
                         orderNumber,
+                        deliveryZone,
                         contacted,
                         registrationStartDate,
                         registrationEndDate,
@@ -223,33 +235,33 @@ public class OrderContactedImpl implements IOrderContacted {
             if (orderContactedPage.isEmpty()) {
                 return new PageImpl<>(Collections.emptyList());
             }
-            List<OrderContactedDTO> orderContactedDTOS = orderContactedPage.stream().map(orderContacted -> {
+            List<OrderContactedDTO> orderContactedDTOS = new ArrayList<>(orderContactedPage.stream().map(orderContacted -> {
                 List<String> paymentReceipts = orderPaymentReceiptRepository.findAllByOrderId(orderContacted.getOrderId()).stream().map(OrderPaymentReceipt::getPaymentReceiptUrl).toList();
                 List<String> courierPictures = courierPictureRepository.findAllByOrderId(orderContacted.getOrderId()).stream().map(CourierPicture::getPictureUrl).toList();
                 List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndStatusTrue(orderContacted.getOrderId());
 
                 double saleAmount = 0.00;
-                for(OrderItem orderItem : orderItems){
+                for (OrderItem orderItem : orderItems) {
                     ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
-                    if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
+                    if (Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
                         saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - ((productPrice.getUnitSalePrice() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
                     }
-                    if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                    if (Objects.equals(orderItem.getDiscount().getName(), "MONTO")) {
                         saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
                     }
-                    if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                    if (Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")) {
                         saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity());
                     }
                 }
-                double totalDuePayment=0;
-                if(Objects.equals(orderContacted.getOrdering().getDiscount().getName(), "PORCENTAJE")){
-                    totalDuePayment = (saleAmount-((saleAmount)*(orderContacted.getOrdering().getDiscountAmount()/100))+orderContacted.getOrdering().getDeliveryAmount())-orderContacted.getOrdering().getAdvancedPayment();
+                double totalDuePayment = 0;
+                if (Objects.equals(orderContacted.getOrdering().getDiscount().getName(), "PORCENTAJE")) {
+                    totalDuePayment = (saleAmount - ((saleAmount) * (orderContacted.getOrdering().getDiscountAmount() / 100)) + orderContacted.getOrdering().getDeliveryAmount()) - orderContacted.getOrdering().getAdvancedPayment();
                 }
-                if(Objects.equals(orderContacted.getOrdering().getDiscount().getName(), "MONTO")){
-                    totalDuePayment = (saleAmount-orderContacted.getOrdering().getDiscountAmount()+orderContacted.getOrdering().getDeliveryAmount())-orderContacted.getOrdering().getAdvancedPayment();
+                if (Objects.equals(orderContacted.getOrdering().getDiscount().getName(), "MONTO")) {
+                    totalDuePayment = (saleAmount - orderContacted.getOrdering().getDiscountAmount() + orderContacted.getOrdering().getDeliveryAmount()) - orderContacted.getOrdering().getAdvancedPayment();
                 }
-                if(Objects.equals(orderContacted.getOrdering().getDiscount().getName(), "NO APLICA")){
-                    totalDuePayment = (saleAmount+orderContacted.getOrdering().getDeliveryAmount())-orderContacted.getOrdering().getAdvancedPayment();
+                if (Objects.equals(orderContacted.getOrdering().getDiscount().getName(), "NO APLICA")) {
+                    totalDuePayment = (saleAmount + orderContacted.getOrdering().getDeliveryAmount()) - orderContacted.getOrdering().getAdvancedPayment();
                 }
                 return OrderContactedDTO.builder()
                         .user(orderContacted.getUser().getUsername())
@@ -283,8 +295,8 @@ public class OrderContactedImpl implements IOrderContacted {
                         .observations(orderContacted.getOrdering().getObservations())
                         .saleAmount(BigDecimal.valueOf(saleAmount).setScale(2, RoundingMode.HALF_EVEN))
                         .advancedPayment(BigDecimal.valueOf(orderContacted.getOrdering().getAdvancedPayment()).setScale(2, RoundingMode.HALF_EVEN))
-                        .duePayment(BigDecimal.valueOf(totalDuePayment).setScale(2,RoundingMode.HALF_EVEN))
-                        .deliveryAmount(BigDecimal.valueOf(orderContacted.getOrdering().getDeliveryAmount()).setScale(2,RoundingMode.HALF_EVEN))
+                        .duePayment(BigDecimal.valueOf(totalDuePayment).setScale(2, RoundingMode.HALF_EVEN))
+                        .deliveryAmount(BigDecimal.valueOf(orderContacted.getOrdering().getDeliveryAmount()).setScale(2, RoundingMode.HALF_EVEN))
                         .deliveryPoint(orderContacted.getOrdering().getDeliveryPoint().getName())
                         .discount(orderContacted.getOrdering().getDiscount().getName())
                         .discountAmount(BigDecimal.valueOf(orderContacted.getOrdering().getDiscountAmount()))
@@ -296,17 +308,17 @@ public class OrderContactedImpl implements IOrderContacted {
                         .contacted(orderContacted.getContacted())
                         .orderItemDTOS(orderItems.stream().map(orderItem -> {
                             ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
-                            List<ProductPicture> productPictures = productPictureRepository.findAlByClientIdAndProductId(clientId,orderItem.getProductId());
+                            List<ProductPicture> productPictures = productPictureRepository.findAlByClientIdAndProductId(clientId, orderItem.getProductId());
                             Double totalPrice = null;
-                            if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
-                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
+                            if (Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
+                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - ((productPrice.getUnitSalePrice() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
                             }
 
-                            if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
+                            if (Objects.equals(orderItem.getDiscount().getName(), "MONTO")) {
+                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - (orderItem.getDiscountAmount());
                             }
 
-                            if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                            if (Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")) {
                                 totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
                             }
                             String finalSku = iUtil.buildProductSku(orderItem.getProduct());
@@ -336,8 +348,11 @@ public class OrderContactedImpl implements IOrderContacted {
                                     .build();
                         }).toList())
                         .orderLogs(iOrderLog.listLogByOrder(orderContacted.getOrderId()))
+                        .deliveryZone(orderContacted.getDeliveryZone().getName())
                         .build();
-            }).toList();
+            }).toList());
+            List<String> zoneOrder = List.of("CENTRO", "SUR", "NORTE", "CALLAO", "ESTE 1", "PERIFERICA", "PROVINCIA");
+            orderContactedDTOS.sort(Comparator.comparing(dto -> zoneOrder.indexOf(dto.getDeliveryZone())));
             return new PageImpl<>(orderContactedDTOS,
                     orderContactedPage.getPageable(), orderContactedPage.getTotalElements());
             });

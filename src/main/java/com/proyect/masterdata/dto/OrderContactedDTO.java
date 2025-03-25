@@ -60,4 +60,5 @@ public class OrderContactedDTO {
     private String cancellationReason;
     private List<OrderLogDTO> orderLogs;
     private String user;
+    private String deliveryZone;
 }

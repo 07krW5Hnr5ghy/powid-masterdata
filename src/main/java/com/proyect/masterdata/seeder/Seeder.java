@@ -1038,6 +1038,7 @@ public class Seeder implements CommandLineRunner {
                         iDeliveryZone.save("CALLAO",adminUser.getUsername());
                         iDeliveryZone.save("ESTE 1",adminUser.getUsername());
                         iDeliveryZone.save("PERIFERICA",adminUser.getUsername());
+                        iDeliveryZone.save("PROVINCIA",adminUser.getUsername());
 
                         // mock size type
                         iSizeType.save("ROPA", adminUser.getUsername());

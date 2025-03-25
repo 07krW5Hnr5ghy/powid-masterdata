@@ -1,5 +1,6 @@
 package com.proyect.masterdata.repository.impl;
 
+import com.proyect.masterdata.domain.DeliveryZone;
 import com.proyect.masterdata.domain.OrderContacted;
 import com.proyect.masterdata.domain.Ordering;
 import com.proyect.masterdata.repository.OrderContactedRepositoryCustom;
@@ -26,6 +27,7 @@ public class OrderContactedCustomImpl implements OrderContactedRepositoryCustom 
     public Page<OrderContacted> searchForContactedOrder(
             UUID clientId,
             Long orderNumber,
+            String deliveryZone,
             Boolean contacted,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -37,20 +39,16 @@ public class OrderContactedCustomImpl implements OrderContactedRepositoryCustom 
             Integer pageSize) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<OrderContacted> criteriaQuery = criteriaBuilder.createQuery(OrderContacted.class);
-
-
         Root<OrderContacted> itemRoot = criteriaQuery.from(OrderContacted.class);
-
-
         Join<OrderContacted, Ordering> orderContactedOrderingJoin = itemRoot.join("ordering");
-
+        Join<OrderContacted, DeliveryZone> orderContactedDeliveryZoneJoin = itemRoot.join("deliveryZone");
 
         criteriaQuery.select(itemRoot);
 
-
         List<Predicate> conditions = predicate(
                 orderNumber,
-                    contacted,
+                contacted,
+                deliveryZone,
                 clientId,
                 registrationStartDate,
                 registrationEndDate,
@@ -82,6 +80,7 @@ public class OrderContactedCustomImpl implements OrderContactedRepositoryCustom 
         long count = getOrderContactedCount(
                 orderNumber,
                 contacted,
+                deliveryZone,
                 clientId,
                 registrationStartDate,
                 registrationEndDate,
@@ -92,6 +91,7 @@ public class OrderContactedCustomImpl implements OrderContactedRepositoryCustom 
     private List<Predicate> predicate(
             Long orderNumber,
             Boolean contacted,
+            String deliveryZone,
             UUID clientId,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -102,6 +102,10 @@ public class OrderContactedCustomImpl implements OrderContactedRepositoryCustom 
             Join<OrderContacted,Ordering> orderContactedOrderingJoin
     ){
         List<Predicate> conditions = new ArrayList<>();
+
+        if(deliveryZone != null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(orderContactedOrderingJoin.get("name")),"%"+deliveryZone.toUpperCase()+"%"));
+        }
 
         if(clientId != null){
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("clientId"),clientId)));
@@ -204,6 +208,7 @@ public class OrderContactedCustomImpl implements OrderContactedRepositoryCustom 
     private long getOrderContactedCount(
             Long orderNumber,
             Boolean contacted,
+            String deliveryZone,
             UUID clientId,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -218,6 +223,7 @@ public class OrderContactedCustomImpl implements OrderContactedRepositoryCustom 
         List<Predicate> conditions = predicate(
                 orderNumber,
                 contacted,
+                deliveryZone,
                 clientId,
                 registrationStartDate,
                 registrationEndDate,

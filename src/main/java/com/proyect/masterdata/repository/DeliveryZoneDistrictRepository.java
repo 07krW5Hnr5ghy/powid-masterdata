@@ -13,4 +13,5 @@ public interface DeliveryZoneDistrictRepository extends JpaRepository<DeliveryZo
     DeliveryZoneDistrict findByDeliveryZoneIdAndDistrictId(UUID deliveryZoneId,UUID districtId);
     DeliveryZoneDistrict findByDeliveryZoneIdAndDistrictIdAndStatusTrue(UUID deliveryZoneId,UUID districtId);
     DeliveryZoneDistrict findByDeliveryZoneIdAndDistrictIdAndStatusFalse(UUID deliveryZoneId,UUID districtId);
+    DeliveryZoneDistrict findByDistrictId(UUID districtId);
 }
