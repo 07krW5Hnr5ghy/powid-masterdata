@@ -350,7 +350,9 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
             }
             List<Ordering> orders = new ArrayList<>();
             Set<Long> uniqueOrderNumbers = new HashSet<>();
+            double[] totalProductAmountPerManifest = {0.00};
             List<DeliveryManifestDTO> deliveryManifestDTOS = deliveryManifestPage.getContent().stream().map(deliveryManifest -> {
+                double[] productAmountPerManifest = {0.00};
                 List<DeliveryManifestItemDTO> deliveryManifestItemDTOS = deliveryManifestItemRepository.findAllByDeliveryManifestId(deliveryManifest.getId())
                         .stream().map(deliveryManifestItem -> {
                             if(!uniqueOrderNumbers.contains(deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber())){
@@ -370,6 +372,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                             if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "NO APLICA")){
                                 totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity());
                             }
+                            productAmountPerManifest[0] += (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity());
                             return DeliveryManifestItemDTO.builder()
                                     .id(deliveryManifestItem.getId())
                                     .user(deliveryManifestItem.getUser().getUsername())
@@ -388,13 +391,14 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                     .product(deliveryManifestItem.getProduct().getName())
                                     .build();
                         }).toList();
+                totalProductAmountPerManifest[0]+=productAmountPerManifest[0];
                 double totalOrdersSaleAmount = 0.00;
                 double totalOrdersDuePayment = 0.00;
-                double totalProductAmount = 0.00;
+
                 for(Ordering order:orders){
                     List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndStatusTrue(order.getId());
                     double saleAmount = 0.00;
-                    double productAmount = 0.00;
+
                     for(OrderItem orderItem : orderItems){
                         ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
                         if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
@@ -406,7 +410,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
                             saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity());
                         }
-                        productAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+
                     }
                     double totalDuePayment=0;
                     if(Objects.equals(order.getDiscount().getName(), "PORCENTAJE")){
@@ -420,7 +424,6 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                     }
                     totalOrdersSaleAmount+=saleAmount;
                     totalOrdersDuePayment+=totalDuePayment;
-                    totalProductAmount+=productAmount;
                 }
                 return DeliveryManifestDTO.builder()
                         .id(deliveryManifest.getId())
@@ -440,7 +443,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         .observations(deliveryManifest.getObservations())
                         .courierPhone(deliveryManifest.getCourier().getPhone())
                         .courierPlate(deliveryManifest.getCourier().getPlate())
-                        .productValue(totalProductAmount)
+                        .productValue(totalProductAmountPerManifest[0])
                         .build();
             }).toList();
             return new PageImpl<>(deliveryManifestDTOS,deliveryManifestPage.getPageable(),deliveryManifestPage.getTotalElements());
