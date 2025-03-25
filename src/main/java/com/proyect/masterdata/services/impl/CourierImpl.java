@@ -4,6 +4,7 @@ import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.CourierDTO;
 import com.proyect.masterdata.dto.request.RequestCourier;
 import com.proyect.masterdata.dto.request.RequestCourierOrder;
+import com.proyect.masterdata.dto.request.RequestCourierUser;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -39,6 +41,11 @@ public class CourierImpl implements ICourier {
     private final IAudit iAudit;
     private final IOrderLog iOrderLog;
     private final DeliveryCompanyRepository deliveryCompanyRepository;
+    private final DistrictRepository districtRepository;
+    private final UserRoleRepository userRoleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
+
     @Override
     public CompletableFuture<ResponseSuccess> save(RequestCourier requestCourier, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -83,6 +90,100 @@ public class CourierImpl implements ICourier {
                                 .deliveryCompanyId(deliveryCompany.getId())
                         .build());
                 iAudit.save("ADD_COURIER","COURIER "+newCourier.getName()+" CREADO.",newCourier.getName(),user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> saveCourierToUser(RequestCourierUser requestCourierUser, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            final String ROL_NAME = "COURIER";
+            User userUpper, newUser;
+            Courier courier;
+            DeliveryCompany deliveryCompany;
+            District district;
+            Role role;
+            try {
+                userUpper = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                courier = courierRepository.findByNameAndStatusTrue(requestCourierUser.getName() + requestCourierUser.getSurname());
+                deliveryCompany = deliveryCompanyRepository.findByName(requestCourierUser.getCompany().toUpperCase());
+                newUser = userRepository.findByUsernameAndStatusTrue(requestCourierUser.getUsername().toUpperCase());
+                district = districtRepository.findByNameAndStatusTrue(requestCourierUser.getDistrict().toUpperCase());
+                role = roleRepository.findByNameAndStatusTrue(ROL_NAME);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(userUpper == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(courier != null){
+                throw new BadRequestExceptions(Constants.ErrorCourierExists);
+            }
+            if(deliveryCompany == null){
+                throw new BadRequestExceptions(Constants.ErrorDeliveryCompany);
+            }
+            if(newUser != null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(district == null){
+                throw new BadRequestExceptions(Constants.ErrorDistrict);
+            }
+            try {
+                Courier newCourier = courierRepository.save(Courier.builder()
+                        .name(requestCourierUser.getName().toUpperCase() +" "+ requestCourierUser.getSurname().toUpperCase())
+                        .phone(requestCourierUser.getMobile())
+                        .address(requestCourierUser.getAddress())
+                        .plate(requestCourierUser.getPlate())
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
+                        .client(userUpper.getClient())
+                        .clientId(userUpper.getClientId())
+                        .status(true)
+                        .user(userUpper)
+                        .userId(userUpper.getId())
+                        .deliveryCompany(deliveryCompany)
+                        .deliveryCompanyId(deliveryCompany.getId())
+                        .build());
+
+                User savedUserCouier = userRepository.save(User.builder()
+                        .username(requestCourierUser.getUsername().toUpperCase())
+                        .name(requestCourierUser.getName().toUpperCase())
+                        .surname(requestCourierUser.getSurname().toUpperCase())
+                        .dni(requestCourierUser.getDni())
+                        .address(requestCourierUser.getAddress().toUpperCase())
+                        .district(district)
+                        .districtId(district.getId())
+                        .email(requestCourierUser.getEmail())
+                        .mobile(requestCourierUser.getMobile())
+                        .gender(requestCourierUser.getGender().toUpperCase())
+                        .password(passwordEncoder.encode(requestCourierUser.getPassword()))
+                        .registrationDate(OffsetDateTime.now())
+                        .clientId(userUpper.getClientId())
+                        .client(userUpper.getClient())
+                        .status(true)
+                        .build());
+
+                userRoleRepository.save(UserRole.builder()
+                        .registrationDate(OffsetDateTime.now())
+                        .userId(savedUserCouier.getId())
+                        .roleId(role.getId())
+                        .user(savedUserCouier)
+                        .status(true)
+                        .build());
+
+                iAudit.save("ADD_COURIER","COURIER "+newCourier.getName()+" CREADO.",newCourier.getName(),userUpper.getUsername());
+                iAudit.save("ADD_USER","USUARIO "+savedUserCouier.getUsername()+" CREADO.",savedUserCouier.getUsername(),userUpper.getUsername());
+
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

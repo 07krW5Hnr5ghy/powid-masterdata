@@ -69,10 +69,6 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 List<OrderItem> orderItems = new ArrayList<>();
                 for(UUID orderId:requestDeliveryManifest.getOrderUUIDs()){
                     orderItems = orderItemRepository.findOrderItemsForOrder(orderId);
-                    System.out.println("ordenes preparadas ->");
-                    orderItems.forEach(orderItem -> {
-                        System.out.println("orden item->" + orderItem.getProduct().getName() + " productId :" +orderItem.getProduct().getId() + " orderid :" + orderItem.getOrdering().getId() + " - " + orderItem.getQuantity());
-                    });
                     if(orderItems.isEmpty()){
                         throw new BadRequestExceptions(Constants.ErrorDeliveryManifestNotItems);
                     }

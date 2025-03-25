@@ -18,4 +18,5 @@ public interface ClientRepository extends JpaRepository<Client, UUID> {
     List<Client> findByRucIn(List<String> rucList);
     Client findByRuc(String ruc);
     Client findByRucAndStatusFalse(String ruc);
+    Client save(Client client);
 }

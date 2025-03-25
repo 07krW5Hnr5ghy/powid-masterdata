@@ -3,6 +3,7 @@ package com.proyect.masterdata.services;
 import com.proyect.masterdata.dto.CourierDTO;
 import com.proyect.masterdata.dto.request.RequestCourier;
 import com.proyect.masterdata.dto.request.RequestCourierOrder;
+import com.proyect.masterdata.dto.request.RequestCourierUser;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -17,6 +18,7 @@ import java.util.concurrent.CompletableFuture;
 
 public interface ICourier {
     CompletableFuture<ResponseSuccess> save(RequestCourier requestCourier, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> saveCourierToUser(RequestCourierUser requestCourierUser, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ResponseDelete> delete(String name,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<ResponseSuccess> activate(String name,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<Page<CourierDTO>> list(

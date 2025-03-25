@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.DeliveryManifestCourierDTO;
 import com.proyect.masterdata.dto.DeliveryManifestDTO;
 import com.proyect.masterdata.dto.request.RequestDeliveryManifest;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -40,6 +41,12 @@ public class DeliveryManifestController {
         CompletableFuture<DeliveryManifestDTO> result = iDeliveryManifest.getById(deliveryManifestId,user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+
+    @GetMapping("/{courierId}")
+    public ResponseEntity<DeliveryManifestCourierDTO> getAll(){
+        return null;
+    }
+
     @PutMapping("/{deliveryManifestId}")
     public ResponseEntity<ResponseSuccess> closeManifest(
             @PathVariable UUID deliveryManifestId,
