@@ -63,7 +63,7 @@ public class CourierImpl implements ICourier {
             if(user == null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
-                courier = courierRepository.findByNameAndClientIdAndStatusTrue(requestCourier.getCourier().toUpperCase(),user.getClientId());
+                courier = courierRepository.findByNameOrDniAndClientId(requestCourier.getCourier().toUpperCase(), requestCourier.getDni(), user.getClientId());
             }
 
             if(deliveryCompany==null){
@@ -114,7 +114,6 @@ public class CourierImpl implements ICourier {
             Role role;
             try {
                 userUpper = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                courier = courierRepository.findByNameAndStatusTrue(requestCourierUser.getName() + requestCourierUser.getSurname());
                 deliveryCompany = deliveryCompanyRepository.findByName(requestCourierUser.getCompany().toUpperCase());
                 newUser = userRepository.findByUsernameAndStatusTrue(requestCourierUser.getUsername().toUpperCase());
                 district = districtRepository.findByNameAndStatusTrue(requestCourierUser.getDistrict().toUpperCase());
@@ -126,6 +125,8 @@ public class CourierImpl implements ICourier {
 
             if(userUpper == null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                courier = courierRepository.findByNameOrDniAndClientId(requestCourierUser.getName() + requestCourierUser.getSurname(), requestCourierUser.getDni(), userUpper.getClientId());
             }
             if(courier != null){
                 throw new BadRequestExceptions(Constants.ErrorCourierExists);
