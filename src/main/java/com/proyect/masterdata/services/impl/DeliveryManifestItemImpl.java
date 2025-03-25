@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.CourierProfileDTO;
+import com.proyect.masterdata.dto.DeliveredOrdersCountDTO;
 import com.proyect.masterdata.dto.DeliveryManifestItemDTO;
 import com.proyect.masterdata.dto.projections.DeliveryManifestItemDTOP;
 import com.proyect.masterdata.dto.request.RequestDeliveryManifestItem;
@@ -264,10 +265,31 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
-
+                courier = courierRepository.findByNameAndClientIdAndStatusTrue(user.getName(),user.getClientId());
+            }
+            if(courier==null){
+                throw new BadRequestExceptions(Constants.ErrorCourier);
             }
             try {
-                return CourierProfileDTO.builder().build();
+                List<Object[]> results = deliveryManifestItemRepository.countDeliveredAndCollectedOrders(courier.getId(),startDate,endDate);
+                List<DeliveredOrdersCountDTO> deliveredOrdersCountDTOS = new ArrayList<>();
+                for(Object[] result : results){
+                    UUID deliveryManifestId = (UUID) result[0];
+                    UUID orderId = (UUID) result[1];
+                    Long deliveredCount = (Long) result[2];
+                    deliveredOrdersCountDTOS.add(DeliveredOrdersCountDTO.builder()
+                                    .deliveredCount(deliveredCount)
+                                    .orderId(orderId)
+                                    .deliveredManifestId(deliveryManifestId)
+                            .build());
+                }
+                Long deliveredOrderCount = 0L;
+                for(DeliveredOrdersCountDTO deliveredOrdersCountDTO:deliveredOrdersCountDTOS){
+                    deliveredOrderCount += deliveredOrdersCountDTO.getDeliveredCount();
+                }
+                return CourierProfileDTO.builder()
+                        .deliveredOrders(deliveredOrderCount)
+                        .build();
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

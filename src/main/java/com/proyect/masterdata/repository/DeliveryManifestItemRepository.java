@@ -20,8 +20,7 @@ public interface    DeliveryManifestItemRepository extends JpaRepository<Deliver
 
     @Query("""
     SELECT dmi.deliveryManifest.id, oi.orderId, 
-           COUNT(CASE WHEN dmi.delivered = true THEN 1 END) AS deliveredCount,
-           COUNT(CASE WHEN dmi.delivered = true AND dmi.collected = false THEN 1 END) AS collectedCount
+           COUNT(CASE WHEN dmi.delivered = true THEN 1 END) AS deliveredCount
     FROM DeliveryManifestItem dmi
     JOIN dmi.deliveryManifest dm
     JOIN dmi.orderItem oi
