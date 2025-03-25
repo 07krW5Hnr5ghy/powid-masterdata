@@ -78,8 +78,8 @@ public class OrderContactedImpl implements IOrderContacted {
                                 .orderId(ordering.getId())
                                 .ordering(ordering)
                                 .contacted(false)
-                                .agent(user)
-                                .agentId(user.getId())
+                                .agentUser(user)
+                                .agentUserId(user.getId())
                                 .registrationDate(OffsetDateTime.now())
                                 .updateDate(OffsetDateTime.now())
                                 .user(user)
@@ -416,6 +416,7 @@ public class OrderContactedImpl implements IOrderContacted {
                         OffsetDateTime.now(),
                         orderContacted.getObservations() + " " + observations
                 );
+
                 iAudit.save(
                         "ADD_ORDER_CONTACTED",
                         "PEDIDO "+
@@ -446,7 +447,7 @@ public class OrderContactedImpl implements IOrderContacted {
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 orderContacted = orderContactedRepository.findByOrderId(orderId);
-                courier = courierRepository.findByNameAndStatusTrue(courierName.toUpperCase());
+
                 orderState = orderStateRepository.findByNameAndStatusTrue("EN RUTA");
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -454,6 +455,8 @@ public class OrderContactedImpl implements IOrderContacted {
             }
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                courier = courierRepository.findByNameAndClientIdAndStatusTrue(courierName.toUpperCase(),user.getClientId());
             }
             if(orderContacted==null){
                 throw new BadRequestExceptions(Constants.ErrorOrderContacted);

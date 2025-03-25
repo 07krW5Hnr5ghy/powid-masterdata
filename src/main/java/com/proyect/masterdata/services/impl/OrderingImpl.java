@@ -519,14 +519,6 @@ public class OrderingImpl implements IOrdering {
                 orderStateIds = new ArrayList<>();
             }
 
-            if(couriers != null && !couriers.isEmpty()){
-                courierIds = courierRepository.findByNameIn(
-                        couriers.stream().map(String::toUpperCase).toList()
-                ).stream().map(Courier::getId).toList();
-            }else{
-                courierIds = new ArrayList<>();
-            }
-
             if(paymentState != null){
                 paymentStateId = orderPaymentStateRepository.findByName(paymentState.toUpperCase()).getId();
             }else {
@@ -553,6 +545,14 @@ public class OrderingImpl implements IOrdering {
 
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
+                if(couriers != null && !couriers.isEmpty()){
+                    courierIds = courierRepository.findByClientIdAndNameIn(
+                            clientId,
+                            couriers.stream().map(String::toUpperCase).toList()
+                    ).stream().map(Courier::getId).toList();
+                }else{
+                    courierIds = new ArrayList<>();
+                }
                 pageOrdering = orderingRepositoryCustom.searchForOrdering(
                         orderId,
                         clientId,
@@ -856,7 +856,6 @@ public class OrderingImpl implements IOrdering {
             orderState = orderStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getOrderState().toUpperCase());
             orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentMethod().toUpperCase());
             orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentState().toUpperCase());
-            courier = courierRepository.findByNameAndStatusTrue(requestOrderUpdate.getCourier().toUpperCase());
         }catch (RuntimeException e){
             e.printStackTrace();
             log.error(e.getMessage());
@@ -865,6 +864,8 @@ public class OrderingImpl implements IOrdering {
 
         if(user == null){
             throw new BadRequestExceptions(Constants.ErrorUser);
+        }else{
+            courier = courierRepository.findByNameAndClientIdAndStatusTrue(requestOrderUpdate.getCourier().toUpperCase(),user.getClientId());
         }
 
         if(courier == null){
@@ -997,7 +998,6 @@ public class OrderingImpl implements IOrdering {
                 orderState = orderStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getOrderState().toUpperCase());
                 orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentMethod().toUpperCase());
                 orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentState().toUpperCase());
-                courier = courierRepository.findByNameAndStatusTrue(requestOrderUpdate.getCourier().toUpperCase());
             }catch (RuntimeException e){
                 e.printStackTrace();
                 log.error(e.getMessage());
@@ -1006,6 +1006,8 @@ public class OrderingImpl implements IOrdering {
 
             if(user == null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                courier = courierRepository.findByNameAndClientIdAndStatusTrue(requestOrderUpdate.getCourier().toUpperCase(),user.getClientId());
             }
 
             if(courier == null){
