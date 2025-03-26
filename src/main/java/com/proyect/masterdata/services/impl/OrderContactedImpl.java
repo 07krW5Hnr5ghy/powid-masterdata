@@ -4,6 +4,7 @@ import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.OrderContactedDTO;
 import com.proyect.masterdata.dto.OrderDTO;
 import com.proyect.masterdata.dto.OrderItemDTO;
+import com.proyect.masterdata.dto.UserDTO;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -356,6 +357,15 @@ public class OrderContactedImpl implements IOrderContacted {
             return new PageImpl<>(orderContactedDTOS,
                     orderContactedPage.getPageable(), orderContactedPage.getTotalElements());
             });
+    }
+
+    @Override
+    public CompletableFuture<UserDTO> lisUserAgent(String userName) throws BadRequestExceptions {
+        return null;
+                //CompletableFuture.supplyAsync(()->{
+//            UUID clientId;
+//            List<User> usersAgent;
+        //});
     }
 
     @Transactional

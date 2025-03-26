@@ -2,6 +2,7 @@ package com.proyect.masterdata.services;
 
 import com.proyect.masterdata.domain.OrderContacted;
 import com.proyect.masterdata.dto.OrderContactedDTO;
+import com.proyect.masterdata.dto.UserDTO;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -28,6 +29,7 @@ public interface IOrderContacted {
             Integer pageNumber,
             Integer pageSize
     );
+    CompletableFuture<UserDTO> lisUserAgent(String userName) throws BadRequestExceptions;
     CompletableFuture<ResponseSuccess> selectAgent(UUID orderId, String username, String agentUsername,String observations) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> selectCourier(UUID orderId,String username,String courier,String observations) throws BadRequestExceptions,InternalErrorExceptions;
 }

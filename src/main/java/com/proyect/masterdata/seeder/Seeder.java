@@ -1597,12 +1597,11 @@ public class Seeder implements CommandLineRunner {
                         //iUserRole.save(business1.getUsername(),"NEGOCIO", adminUser.getUsername());
 
                         // mock stores
-//                        RequestStoreSave requestStoreSave1 = RequestStoreSave.builder()
-//                                .url("https://shopify.com")
-//                                .storeType("SHOPIFY")
-//                                .name("SHOPIFY")
-//                                .build();
-
+                        RequestStoreSave requestStoreSave1 = RequestStoreSave.builder()
+                                .url("https://shopify.com")
+                                .storeType("SHOPIFY")
+                                .name("SHOPIFY")
+                                .build();
                         //iStore.save(requestStoreSave1,business1.getUsername());
 
                         iDeliveryCompany.save("SIN EMPRESA", adminUser.getUsername());
@@ -1862,7 +1861,7 @@ public class Seeder implements CommandLineRunner {
                                         .mobile("929417416")
                                         .gender("M")
                                         .status(true)
-                                .build(), "JOELC");
+                                .build(), adminUser.getUsername());
 
                         iUser.save(RequestUser.builder()
                                 .address("asasa")
@@ -1877,7 +1876,7 @@ public class Seeder implements CommandLineRunner {
                                 .roleName("VENTAS")
                                 .surname("carrillo")
                                 .user("pedroc")
-                                .tokenUser("JOELC")
+                                .tokenUser(adminUser.getUsername())
                                 .build()).getCode();
 
                         iUser.save(RequestUser.builder()
@@ -1893,7 +1892,7 @@ public class Seeder implements CommandLineRunner {
                                 .roleName("AGENTE")
                                 .surname("villegas")
                                 .user("SANDROV")
-                                .tokenUser("JOELC")
+                                .tokenUser(adminUser.getUsername())
                                 .build()).getCode();
 
                         iUser.save(RequestUser.builder()
@@ -1909,7 +1908,7 @@ public class Seeder implements CommandLineRunner {
                                 .roleName("OPERACIONES")
                                 .surname("rojas")
                                 .user("kevinr")
-                                .tokenUser("JOELC")
+                                .tokenUser(adminUser.getUsername())
                                 .build()).getCode();
 
 
@@ -1919,14 +1918,14 @@ public class Seeder implements CommandLineRunner {
                                 .url("https://www.aranni.com.pe")
                                 .storeType("otro")
                                 .build();
-                        iStore.save(requestStore1, "JOELC");
+                        iStore.save(requestStore1, adminUser.getUsername());
 
                         RequestStoreSave requestStore2 = RequestStoreSave.builder()
                                 .name("kunca")
                                 .url("https://kunca.pe")
                                 .storeType("otro")
                                 .build();
-                        iStore.save(requestStore2, "JOELC");
+                        iStore.save(requestStore2, adminUser.getUsername());
 
                         iCustomer.save(RequestCustomer.builder()
                                 .address("quepepampa")
@@ -1947,9 +1946,9 @@ public class Seeder implements CommandLineRunner {
                                 .phone("934764345")
                                 .contact("joel coila")
                                 .reference("cerca del estadio")
-                                .build(), "JOELC");
+                                .build(), adminUser.getUsername());
 
-                        iSupplierType.save("TELA","JOELC");
+                        iSupplierType.save("TELA",adminUser.getUsername());
 
                         iSupplier.save(RequestSupplier.builder()
                                         .businessName("aranni busines")
@@ -1961,9 +1960,580 @@ public class Seeder implements CommandLineRunner {
                                         .supplierType("TELA")
                                         .province("LIMA")
                                         .district("LIMA")
-                                .build(), "JOELC");
+                                .build(), adminUser.getUsername());
 
-                        System.out.println("################## USUARIOS ###################");
+                        iColor.save("BLANCO", "BLA", "JOELC");
+                        iColor.save("NEGRO", "NEG", "JOELC");
+                        iColor.save("HUESO", "HUE", "JOELC");
+                        iColor.save("PERLA", "PER", "JOELC");
+                        iColor.save("BEIGE", "BEI", "JOELC");
+                        iColor.save("CAMEL", "CAM", "JOELC");
+                        iColor.save("VERDE", "VER", "JOELC");
+                        iColor.save("VINO", "VIN", "JOELC");
+                        iColor.save("ROJO", "ROJ", "JOELC");
+                        iColor.save("NUDE", "NUD", "JOELC");
+                        iColor.save("GRIS", "GRI", "JOELC");
+                        iColor.save("MORADO", "MOR", "JOELC");
+                        iColor.save("AZUL", "AZU", "JOELC");
+                        iColor.save("AMARILLO", "AMA", "JOELC");
+                        iColor.save("NARANJA", "NAR", "JOELC");
+                        iColor.save("ACERO", "ACE", "JOELC");
+                        iColor.save("JADE", "JAD", "JOELC");
+                        iColor.save("COMBINADO", "COM", "JOELC");
+
+                        iDeliveryZone.save("CENTRO","JOELC");
+                        iDeliveryZone.save("SUR","JOELC");
+                        iDeliveryZone.save("NORTE","JOELC");
+                        iDeliveryZone.save("CALLAO","JOELC");
+                        iDeliveryZone.save("ESTE 1","JOELC");
+                        iDeliveryZone.save("PERIFERICA","JOELC");
+                        iDeliveryZone.save("PROVINCIA","JOELC");
+//
+//                        iSizeType.save("ROPA", "JOELC");
+//                        iSizeType.save("CALZADO", "JOELC");
+//                        iSizeType.save("COMPLEMENTOS", "JOELC");
+//                        iSizeType.save("ACCESORIOS", "JOELC");
+
+                        //unit type
+//                        iUnitType.save("ropa", "JOELC");
+//                        iUnitType.save("calzado", "JOELC");
+//                        iUnitType.save("ACCESORIOS", "JOELC");
+//                        iUnitType.save("COMPLEMENTOS", "JOELC");
+
+                        // unit
+                        RequestUnit requestUnit610 = RequestUnit.builder()
+                                .name("UND")
+                                .unitType("ROPA")
+                                .build();
+
+                        iUnit.save(requestUnit610, "JOELC");
+
+                        RequestUnit requestUnit11 = RequestUnit.builder()
+                                .name("PAR")
+                                .unitType("CALZADO")
+                                .build();
+
+                        iUnit.save(requestUnit11, "JOELC");
+
+                        RequestUnit requestUnit13 = RequestUnit.builder()
+                                .name("UND")
+                                .unitType("ACCESORIOS")
+                                .build();
+
+                        iUnit.save(requestUnit13, "JOELC");
+
+                        RequestUnit requestUnit14 = RequestUnit.builder()
+                                .name("UND")
+                                .unitType("COMPLEMENTOS")
+                                .build();
+
+                        iUnit.save(requestUnit14, "JOELC");
+
+                        // mock category products
+//                        iCategoryProduct.save("ROPA", "RP001", "ROPA", "ROPA", "JOELC");
+//                        iCategoryProduct.save("CALZADO", "CA001", "CALZADO", "CALZADO", "JOELC");
+//                        iCategoryProduct.save("COMPLEMENTOS", "CO001", "COMPLEMENTOS", "COMPLEMENTOS", "JOELC");
+//                        iCategoryProduct.save("ACCESORIOS", "AC001", "ACCESORIOS", "ACCESORIOS", "JOELC");
+//                        iSupplierType.save("interno", "JOELC");
+//                        iSupplierType.save("distribucion", "JOELC");
+
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("ROPA")
+//                                .sku("BLS")
+//                                .name("BLUSA")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("ROPA")
+//                                .sku("CS")
+//                                .name("CAMISA")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("ROPA")
+//                                .sku("VT")
+//                                .name("VESTIDO")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("ROPA")
+//                                .sku("SC")
+//                                .name("SACO")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("ROPA")
+//                                .sku("SH")
+//                                .name("SHORT")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("ROPA")
+//                                .sku("PST")
+//                                .name("PANTALON_SASTRE")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("ROPA")
+//                                .sku("BLZ")
+//                                .name("BLAZER")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("ROPA")
+//                                .sku("CHA")
+//                                .name("CHALECO")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("ROPA")
+//                                .sku("POL")
+//                                .name("POLO")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("ROPA")
+//                                .sku("VTS")
+//                                .name("VESTIDO_SHORT")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("ROPA")
+//                                .sku("FAL")
+//                                .name("FALDA")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("ROPA")
+//                                .sku("HOO")
+//                                .name("HOODIES")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("ROPA")
+//                                .sku("CHO")
+//                                .name("CHOMPAS")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("ROPA")
+//                                .sku("PTD")
+//                                .name("PANTALON_DENIM")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("ROPA")
+//                                .sku("PA")
+//                                .name("PANTALONES")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("ROPA")
+//                                .sku("TO")
+//                                .name("TOPS")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("ROPA")
+//                                .sku("EN")
+//                                .name("ENTERIZOS")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("COMPLEMENTOS")
+//                                .sku("BOL")
+//                                .name("BOLSOS")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("COMPLEMENTOS")
+//                                .sku("CAR")
+//                                .name("CARTERAS")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("COMPLEMENTOS")
+//                                .sku("GOR")
+//                                .name("GORRAS")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("COMPLEMENTOS")
+//                                .sku("MOCH")
+//                                .name("MOCHILAS")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("COMPLEMENTOS")
+//                                .sku("BIL")
+//                                .name("BILLETERAS")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("CALZADO")
+//                                .sku("BOA")
+//                                .name("BOTIN_ALTO")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("CALZADO")
+//                                .sku("BOB")
+//                                .name("BOTIN_BAJO")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("CALZADO")
+//                                .sku("ZA")
+//                                .name("ZAPATILLAS")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("CALZADO")
+//                                .sku("OXF")
+//                                .name("OXFORD")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("CALZADO")
+//                                .sku("BAL")
+//                                .name("BALERINAS")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("CALZADO")
+//                                .sku("SAP")
+//                                .name("SANDALIAS_PLANAS")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("CALZADO")
+//                                .sku("PLA")
+//                                .name("PLATAFORMAS")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("CALZADO")
+//                                .sku("SA")
+//                                .name("SANDALIAS")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("CALZADO")
+//                                .sku("SAT")
+//                                .name("SANDALIAS_CON_TACO")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("CALZADO")
+//                                .sku("CHU")
+//                                .name("CHUNKIS")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("CALZADO")
+//                                .sku("ALP")
+//                                .name("ALPAGARTAS")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("CALZADO")
+//                                .sku("MUL")
+//                                .name("MULES")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("CALZADO")
+//                                .sku("BAB")
+//                                .name("BABUCHA")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("CALZADO")
+//                                .sku("BOT")
+//                                .name("BOTAS")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("CALZADO")
+//                                .sku("STI")
+//                                .name("STILETTO")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("CALZADO")
+//                                .sku("SUE")
+//                                .name("SUECOS")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("CALZADO")
+//                                .sku("MOC")
+//                                .name("MOCASIN")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("CALZADO")
+//                                .sku("ZAU")
+//                                .name("ZAPATILLAS_URBANAS")
+//                                .tokenUser("JOELC")
+//                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("ACCESORIOS")
+//                                .sku("ACC")
+//                                .name("ACCESORIOS")
+//                                .tokenUser("JOELC")
+//                                .build());
+
+                        //iBrand.save("ADIDAS","JOELC");
+
+                        // mock size
+                        iSize.save("XS", "ropa", "JOELC");
+                        iSize.save("S", "ropa", "JOELC");
+                        iSize.save("L", "ropa", "JOELC");
+                        iSize.save("M", "ropa", "JOELC");
+                        iSize.save("XL", "ropa", "JOELC");
+                        iSize.save("XXL", "ropa", "JOELC");
+
+                        iSize.save("35", "calzado", "JOELC");
+                        iSize.save("36", "calzado", "JOELC");
+                        iSize.save("37", "calzado", "JOELC");
+                        iSize.save("38", "calzado", "JOELC");
+                        iSize.save("39", "calzado", "JOELC");
+                        iSize.save("40", "calzado", "JOELC");
+
+                        iSize.save("A", "accesorios", "JOELC");
+                        iSize.save("C", "complementos", "JOELC");
+
+                        // order state
+                        iOrderState.save("pendiente", "#f2433d", "JOELC");
+                        iOrderState.save("entregado", "#52c41a", "JOELC");
+                        iOrderState.save("preparado", "#00FF00", "JOELC");
+                        iOrderState.save("pendiente de stock", "#faad14", "JOELC");
+                        iOrderState.save("pagado", "#FFA500", "JOELC");
+                        iOrderState.save("reservado", "#2f54eb", "JOELC");
+                        iOrderState.save("fallido", "#f5222d", "JOELC");
+                        iOrderState.save("por recoger", "#1890ff", "JOELC");
+                        iOrderState.save("no hay stock", "#d9d9d9", "JOELC");
+                        iOrderState.save("llamar", "#722ed1", "JOELC");
+                        iOrderState.save("devolucion", "#ad8b00", "JOELC");
+                        iOrderState.save("agendado", "#13c2c2", "JOELC");
+                        iOrderState.save("en ruta", "#004d80", "JOELC");
+                        iOrderState.save("llamado", "#008080", "JOELC");
+                        iOrderState.save("cancelado", "#f5222d", "JOELC");
+
+                        // payment state
+                        iOrderPaymentState.save("por recaudar", "JOELC");
+                        iOrderPaymentState.save("recaudado", "JOELC");
+                        iOrderPaymentState.save("perdida", "JOELC");
+
+                        // sale channel
+//                        iSaleChannel.save("MP FALLABELA", "JOELC");
+//                        iSaleChannel.save("IG ARANNI", "JOELC");
+//                        iSaleChannel.save("IG KUNCA", "JOELC");
+//                        iSaleChannel.save("TIENDA OP", "JOELC");
+//                        iSaleChannel.save("VENTA B2B", "JOELC");
+//                        iSaleChannel.save("WEB KUNCA.PE", "JOELC");
+//                        iSaleChannel.save("MP RIPLEY", "JOELC");
+//                        iSaleChannel.save("WEB KUNCA.SHOP", "JOELC");
+//                        iSaleChannel.save("MERCADO LIBRE", "JOELC");
+//                        iSaleChannel.save("MP YAPE", "JOELC");
+//                        iSaleChannel.save("MP PLATANITOS", "JOELC");
+//                        iSaleChannel.save("WEB ARANNI.PE", "JOELC");
+//                        iSaleChannel.save("LIVE SHOPPING ARANNI", "JOELC");
+//                        iSaleChannel.save("LIVE SHOPPING KUNCA", "JOELC");
+
+                        // management type
+                        iManagementType.save("canje", "JOELC");
+                        iManagementType.save("venta", "JOELC");
+                        iManagementType.save("reserva", "JOELC");
+                        iManagementType.save("cambio", "JOELC");
+                        iManagementType.save("preventa", "JOELC");
+                        iManagementType.save("recupero", "JOELC");
+
+                        // payment type
+                        iOrderPaymentMethod.save("yape", "JOELC");
+                        iOrderPaymentMethod.save("pos", "JOELC");
+                        iOrderPaymentMethod.save("efectivo", "JOELC");
+                        iOrderPaymentMethod.save("link", "JOELC");
+                        iOrderPaymentMethod.save("cambio", "JOELC");
+                        iOrderPaymentMethod.save("plin", "JOELC");
+                        iOrderPaymentMethod.save("plataforma mp/web", "JOELC");
+                        iOrderPaymentMethod.save("bcp", "JOELC");
+                        iOrderPaymentMethod.save("contraentrega", "JOELC");
+                        iOrderPaymentMethod.save("canje", "JOELC");
+                        iOrderPaymentMethod.save("interbank", "JOELC");
+                        iOrderPaymentMethod.save("banco de la nacion", "JOELC");
+
+                        iPurchasePaymentMethod.save("yape", "JOELC");
+                        iPurchasePaymentMethod.save("pos", "JOELC");
+                        iPurchasePaymentMethod.save("efectivo", "JOELC");
+                        iPurchasePaymentMethod.save("link", "JOELC");
+                        iPurchasePaymentMethod.save("cambio", "JOELC");
+                        iPurchasePaymentMethod.save("plin", "JOELC");
+                        iPurchasePaymentMethod.save("plataforma mp/web", "JOELC");
+                        iPurchasePaymentMethod.save("bcp", "JOELC");
+                        iPurchasePaymentMethod.save("contraentrega", "JOELC");
+                        iPurchasePaymentMethod.save("canje", "JOELC");
+                        iPurchasePaymentMethod.save("interbank", "JOELC");
+                        iPurchasePaymentMethod.save("banco de la nacion", "JOELC");
+                        // cancellation reason
+//                        iCancellationReason.save("No hay stock", "JOELC");
+//                        iCancellationReason.save("Demora en entrega", "JOELC");
+//                        iCancellationReason.save("Mala calidad", "JOELC");
+//                        iCancellationReason.save("Se le daño el producto - 30 dias", "JOELC");
+//                        iCancellationReason.save("Otros motivos", "JOELC");
+//                        iCancellationReason.save("Muy caro el envio", "JOELC");
+//                        iCancellationReason.save("Zona peligrosa", "JOELC");
+//                        iCancellationReason.save("Cliente no confiable para contraentrega", "JOELC");
+//                        iCancellationReason.save("Robo por motorizado", "JOELC");
+//                        iCancellationReason.save("No le gusto producto", "JOELC");
+                        // payment gateway
+                        iPaymentGateway.save("mercado pago", "JOELC");
+                        iPaymentGateway.save("demo", "JOELC");
+                        // membership states
+                        iMembershipState.save("activa", "JOELC");
+                        iMembershipState.save("pagada", "JOELC");
+                        iMembershipState.save("expirada", "JOELC");
+                        // customer types
+                        iCustomerType.save("tradicional", "JOELC");
+                        iCustomerType.save("mayorista", "JOELC");
+                        // discounts
+//                        iDiscount.save("monto", "JOELC");
+//                        iDiscount.save("porcentaje", "JOELC");
+//                        iDiscount.save("no aplica", "JOELC");
+                        // delivery points
+//                        iDeliveryPoint.save("lima", "limna", "JOELC");
+//                        iDeliveryPoint.save("punto scharf", "punto scharft", "JOELC");
+//                        iDeliveryPoint.save("provincia", "provincia", "JOELC");
+//                        iDeliveryPoint.save("recojo en tienda", "recojo en tienda", "JOELC");
+                        // stock transaction types
+//                        iStockTransactionType.save("ingreso", "JOELC");
+//                        iStockTransactionType.save("salida", "JOELC");
+//                        iStockTransactionType.save("guia-courier", "JOELC");
+//                        iStockTransactionType.save("guia-courier-devolucion", "JOELC");
+                        // purchase documents
+                        iPurchaseDocument.save("factura electronica", "JOELC");
+                        iPurchaseDocument.save("boleta de venta", "JOELC");
+                        iPurchaseDocument.save("nota de credito", "JOELC");
+                        iPurchaseDocument.save("nota de debito", "JOELC");
+                        iPurchaseDocument.save("guia", "JOELC");
+                        RequestPurchaseIGV requestPurchaseIGVIGV1 = RequestPurchaseIGV.builder()
+                                .name("IGV 18%")
+                                .percentage(true)
+                                .username("JOELC")
+                                .value(18.00)
+                                .build();
+                        // purchase discounts
+//                        iPurchaseIGV.save(requestPurchaseIGVIGV1);
+//
+//                        RequestPurchaseIGV requestPurchaseIGVNo1 = RequestPurchaseIGV.builder()
+//                                .name("IGV 0%")
+//                                .percentage(true)
+//                                .username("JOELC")
+//                                .value(0.00)
+//                                .build();
+//                        // purchase discounts
+//                        iPurchaseIGV.save(requestPurchaseIGVNo1);
+
+                        iDeliveryCompany.save("SIN EMPRESA", "JOELC");
+
+
+                        iSize.save("STD", "ROPA", "JOELC");
+                        iSize.save("PSZ", "ROPA", "JOELC");
+
+//                        iSaleChannel.save("WHATSAPP", "JOELC");
+
+//                        iDistrict.save("BELLAVISTA","JOELC","CALLAO");
+//                        iDistrict.save("COMAS","JOELC","LIMA");
+//                        iDistrict.save("INDEPENDENCIA","JOELC","LIMA");
+//                        iDistrict.save("LA VICTORIA","JOELC","LIMA");
+//                        iDistrict.save("MIRAFLORES","JOELC","LIMA");
+//                        iDistrict.save("PUEBLO LIBRE","JOELC","LIMA");
+//                        iDistrict.save("SAN ISIDRO","JOELC","LIMA");
+//                        iDistrict.save("SAN LUIS","JOELC","LIMA");
+//                        iDistrict.save("SAN MIGUEL","JOELC","LIMA");
+//                        iDistrict.save("SANTA ROSA","JOELC","LIMA");
+                        iColor.save("FUCSIA","FUC","JOELC");
+                        iColor.save("MARRON","MAR","JOELC");
+                        iColor.save("DORADO","DOR","JOELC");
+                        iColor.save("ROSADO","ROS","JOELC");
+                        iColor.save("PLATA QUEMADA","PLAQ","JOELC");
+                        iColor.save("LACRE","LAC","JOELC");
+                        iColor.save("CELESTE","CEL","JOELC");
+                        iColor.save("LILA","LIL","JOELC");
+                        iColor.save("PLATA","PLA","JOELC");
+                        iColor.save("PRINT","PRI","JOELC");
+                        iColor.save("MELON","MEL","JOELC");
+                        iColor.save("CHOCOLATE","CHO","JOELC");
+                        iColor.save("MOSTAZA","MOS","JOELC");
+//                        iDistrict.save("SALAMANCA","JOELC","LIMA");
+                        iColor.save("VERDE LORO","VERL","JOELC");
+                        iColor.save("VERDE PERA","VERP","JOELC");
+                        iColor.save("AZUL ELECTRICO","AZUL","JOELC");
+//                        iDistrict.save("CERCADO DE LIMA","JOELC","LIMA");
+//                        iDistrict.save("ATE 2","JOELC","LIMA");
+//                        iDistrict.save("COMAS 2","JOELC","LIMA");
+//                        iDistrict.save("SAN JUAN DE LURIGANCHO 2","JOELC","LIMA");
+//                        iDistrict.save("CHOSICA","JOELC","LIMA");
+
+                        iDeliveryZoneDistrict.save("CENTRO","CERCADO DE LIMA","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("CENTRO","BREÑA","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("CENTRO","PUEBLO LIBRE","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("CENTRO","JESUS MARIA","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("CENTRO","LA VICTORIA","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("CENTRO","LINCE","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("CENTRO","SAN LUIS","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("CENTRO","MAGDALENA DEL MAR","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("CENTRO","BARRANCO","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("CENTRO","SAN MIGUEL","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("CENTRO","SAN BORJA","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("CENTRO","SURQUILLO","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("CENTRO","SAN ISIDRO","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("CENTRO","MIRAFLORES","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("SUR","SANTIAGO DE SURCO","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("SUR","CHORRILLOS","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("SUR","SAN JUAN DE MIRAFLORES","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("SUR","VILLA MARIA DEL TRIUNFO","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("SUR","VILLA EL SALVADOR","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("NORTE","COMAS","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("NORTE","SAN MARTIN DE PORRES","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("NORTE","INDEPENDENCIA","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("NORTE","LOS OLIVOS","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("NORTE","RIMAC","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("CALLAO","BELLAVISTA","CALLAO","JOELC");
+                        iDeliveryZoneDistrict.save("CALLAO","CALLAO","CALLAO","JOELC");
+                        iDeliveryZoneDistrict.save("CALLAO","CARMEN DE LA LEGUA REYNOSO","CALLAO","JOELC");
+                        iDeliveryZoneDistrict.save("CALLAO","LA PERLA","CALLAO","JOELC");
+                        iDeliveryZoneDistrict.save("CALLAO","LA PUNTA","CALLAO","JOELC");
+                        iDeliveryZoneDistrict.save("ESTE 1","SAN JUAN DE LURIGANCHO","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("ESTE 1","EL AGUSTINO","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("ESTE 1","SANTA ANITA","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("ESTE 1","LA MOLINA","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("ESTE 1","ATE","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("ESTE 1","LURIGANCHO","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("PERIFERICA","COMAS 2","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("PERIFERICA","LURIN","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("PERIFERICA","VENTANILLA","CALLAO","JOELC");
+                        iDeliveryZoneDistrict.save("PERIFERICA","CIENEGUILLA","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("PERIFERICA","ATE 2","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("PERIFERICA","SAN JUAN DE LURIGANCHO 2","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("PERIFERICA","PUENTE PIEDRA","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("PERIFERICA","CHOSICA","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("PERIFERICA","CHACLACAYO","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("PERIFERICA","ANCON","LIMA","JOELC");
+                        iDeliveryZoneDistrict.save("PERIFERICA","PACHACAMAC","LIMA","JOELC");
+
+                        //moock Brand
+//                        iBrand.save("ADIDAS", "JOELC", "Ax001");
+//                        iBrand.save("NIKE", "JOELC", "Nx001");
+//                        iBrand.save("GUCCI", "JOELC", "Gx001");
+//                        iBrand.save("ZARA", "JOELC", "Zx001");
+
+                        //MOOK MODELS
+                        iModel.save(new RequestModel("Air Force 1", "ADIDAS", "AR001Z", "JOELC"));
+                        iModel.save(new RequestModel("Superstar", "NIKE", "NC001CS", "JOELC"));
+
+                        System.out.println("################## USUARIOS  NEGOCIO TEST ###################");
                         userRepository.findAll().forEach(u -> {
                                 System.out.println( "username : " + u.getUsername());
                                 userRoleRepository.findByUserIdAndStatusTrue(u.getId()).stream().toList().forEach(r -> {

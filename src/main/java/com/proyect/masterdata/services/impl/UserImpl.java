@@ -495,6 +495,7 @@ public class UserImpl implements IUser {
         });
     }
 
+    //listado
     @Override
     public CompletableFuture<List<UserQueryDTO>> listFilter(String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
