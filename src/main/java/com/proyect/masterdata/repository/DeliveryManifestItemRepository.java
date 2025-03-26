@@ -28,7 +28,23 @@ public interface    DeliveryManifestItemRepository extends JpaRepository<Deliver
     AND dmi.registrationDate BETWEEN :startDate AND :endDate
     GROUP BY dmi.deliveryManifest.id, oi.orderId
     """)
-    List<Object[]> countDeliveredAndCollectedOrders(
+    List<Object[]> countDeliveredOrders(
+            @Param("courierId") UUID courierId,
+            @Param("startDate") OffsetDateTime startDate,
+            @Param("endDate") OffsetDateTime endDate
+    );
+
+    @Query("""
+        SELECT dmi 
+        FROM DeliveryManifestItem dmi
+        JOIN dmi.deliveryManifest dm
+        JOIN dmi.orderItem oi
+        WHERE dmi.delivered = TRUE
+          AND dmi.collected = FALSE
+          AND dm.courierId = :courierId
+          AND dmi.registrationDate BETWEEN :startDate AND :endDate
+    """)
+    List<DeliveryManifestItem> findDeliveredAndUnCollectedOrders(
             @Param("courierId") UUID courierId,
             @Param("startDate") OffsetDateTime startDate,
             @Param("endDate") OffsetDateTime endDate

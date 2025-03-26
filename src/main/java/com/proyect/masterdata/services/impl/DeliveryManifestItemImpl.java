@@ -113,10 +113,8 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
         });
     }
     @Override
-    public CompletableFuture<ResponseSuccess> updateDeliveryManifestItem(
+    public CompletableFuture<ResponseSuccess> markDeliveredDeliveryManifestItem(
             UUID deliveryManifestItemId,
-            Boolean collected,
-            Boolean delivered,
             String username) {
         return CompletableFuture.supplyAsync(()->{
             User user;
@@ -135,10 +133,52 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                 throw new BadRequestExceptions(Constants.ErrorDeliveryManifestItem);
             }
             try{
-                deliveryManifestItem.setDelivered(collected);
+                deliveryManifestItem.setDelivered(true);
                 deliveryManifestItem.setUser(user);
                 deliveryManifestItem.setUserId(user.getId());
-                deliveryManifestItem.setCollected(delivered);
+                deliveryManifestItem.setUpdateDate(OffsetDateTime.now());
+                deliveryManifestItemRepository.save(deliveryManifestItem);
+                iAudit.save(
+                        "UPDATE_DELIVERY_MANIFEST_ITEM",
+                        "ITEM DE GUIA "+
+                                deliveryManifestItem.getId()+
+                                "PARA PEDIDO " +
+                                deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber() +
+                                " ACTUALIZADO.",
+                        deliveryManifestItem.getId().toString(),user.getUsername());
+                return ResponseSuccess.builder()
+                        .message(Constants.update)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> markCollectedDeliveryManifestItem(UUID deliveryManifestItemId, String username) {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            DeliveryManifestItem deliveryManifestItem;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                deliveryManifestItem = deliveryManifestItemRepository.findById(deliveryManifestItemId).orElse(null);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            if(deliveryManifestItem==null){
+                throw new BadRequestExceptions(Constants.ErrorDeliveryManifestItem);
+            }
+            try{
+                deliveryManifestItem.setCollected(true);
+                deliveryManifestItem.setUser(user);
+                deliveryManifestItem.setUserId(user.getId());
                 deliveryManifestItem.setUpdateDate(OffsetDateTime.now());
                 deliveryManifestItemRepository.save(deliveryManifestItem);
                 iAudit.save(
@@ -265,15 +305,15 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
-                courier = courierRepository.findByNameAndClientIdAndStatusTrue(user.getName(),user.getClientId());
+                courier = courierRepository.findByDniAndClientIdAndStatusTrue(user.getDni(),user.getClientId());
             }
             if(courier==null){
                 throw new BadRequestExceptions(Constants.ErrorCourier);
             }
             try {
-                List<Object[]> results = deliveryManifestItemRepository.countDeliveredAndCollectedOrders(courier.getId(),startDate,endDate);
+                List<Object[]> deliveredOrders = deliveryManifestItemRepository.countDeliveredOrders(courier.getId(),startDate,endDate);
                 List<DeliveredOrdersCountDTO> deliveredOrdersCountDTOS = new ArrayList<>();
-                for(Object[] result : results){
+                for(Object[] result : deliveredOrders){
                     UUID deliveryManifestId = (UUID) result[0];
                     UUID orderId = (UUID) result[1];
                     Long deliveredCount = (Long) result[2];
@@ -287,8 +327,27 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                 for(DeliveredOrdersCountDTO deliveredOrdersCountDTO:deliveredOrdersCountDTOS){
                     deliveredOrderCount += deliveredOrdersCountDTO.getDeliveredCount();
                 }
+                List<DeliveryManifestItem> deliveredAndUnCollectedOrders = deliveryManifestItemRepository.findDeliveredAndUnCollectedOrders(courier.getId(),startDate,endDate);
+                Double unCollectedAmount = 0.00;
+                for(DeliveryManifestItem deliveryManifestItem:deliveredAndUnCollectedOrders){
+                    ProductPrice productPrice = productPriceRepository.findByProductId(deliveryManifestItem.getProductId());
+                    Double totalPrice = null;
+                    if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "PORCENTAJE")){
+                        totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity())-((productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity())*(deliveryManifestItem.getOrderItem().getDiscountAmount()/100));
+                    }
+
+                    if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "MONTO")){
+                        totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity())-(deliveryManifestItem.getOrderItem().getDiscountAmount());
+                    }
+
+                    if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "NO APLICA")){
+                        totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity());
+                    }
+                    unCollectedAmount+=totalPrice;
+                }
                 return CourierProfileDTO.builder()
                         .deliveredOrders(deliveredOrderCount)
+                        .payableAmount(unCollectedAmount)
                         .build();
             }catch (RuntimeException e){
                 log.error(e.getMessage());

@@ -15,4 +15,5 @@ public class RequestCourier {
     private String phone;
     private String address;
     private String plate;
+    private String dni;
 }

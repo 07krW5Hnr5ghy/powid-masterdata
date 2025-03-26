@@ -19,11 +19,12 @@ import java.util.concurrent.CompletableFuture;
 public interface ICourier {
     CompletableFuture<ResponseSuccess> save(RequestCourier requestCourier, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<ResponseSuccess> saveCourierToUser(RequestCourierUser requestCourierUser, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
-    CompletableFuture<ResponseDelete> delete(String name,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
-    CompletableFuture<ResponseSuccess> activate(String name,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<ResponseDelete> delete(String dni,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> activate(String dni,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<Page<CourierDTO>> list(
             String user,
             String name,
+            String dni,
             String company,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -32,19 +33,8 @@ public interface ICourier {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions;
-    CompletableFuture<Page<CourierDTO>> listFalse(
-            String user,
-            String name,
-            String company,
-            OffsetDateTime registrationStartDate,
-            OffsetDateTime registrationEndDate,
-            OffsetDateTime updateStartDate,
-            OffsetDateTime updateEndDate,
-            String sort,
-            String sortColumn,
-            Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions;
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions;
     CompletableFuture<ResponseSuccess> updateOrder(UUID orderId, RequestCourierOrder requestCourierOrder, String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<List<CourierDTO>> listCouriers(String user) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<CourierDTO>> listCouriersFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;

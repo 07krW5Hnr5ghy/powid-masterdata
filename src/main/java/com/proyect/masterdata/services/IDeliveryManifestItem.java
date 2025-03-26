@@ -19,10 +19,12 @@ public interface IDeliveryManifestItem {
             DeliveryManifest deliveryManifest,
             Warehouse warehouse,
             User user) throws BadRequestExceptions,InterruptedException;
-    CompletableFuture<ResponseSuccess> updateDeliveryManifestItem(
+    CompletableFuture<ResponseSuccess> markDeliveredDeliveryManifestItem(
             UUID deliveryManifestItemId,
-            Boolean collected,
-            Boolean delivered,
+            String user
+    );
+    CompletableFuture<ResponseSuccess> markCollectedDeliveryManifestItem(
+            UUID deliveryManifestItemId,
             String user
     );
     CompletableFuture<Page<DeliveryManifestItemDTO>> list(
