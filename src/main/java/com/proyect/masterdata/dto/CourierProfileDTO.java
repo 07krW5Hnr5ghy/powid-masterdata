@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class CourierProfileDTO {
     private Long deliveredOrders;
     private Double payableAmount;
+    private CourierDTO courierInfo;
 }

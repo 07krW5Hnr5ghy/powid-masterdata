@@ -216,6 +216,7 @@ public class PurchaseOrderItemImpl implements IPurchaseOrderItem {
                 purchaseOrderItem.setUser(user);
                 purchaseOrderItem.setUserId(user.getId());
                 String finalSku = iUtil.buildProductSku(product);
+                purchaseOrderItemRepository.save(purchaseOrderItem);
                 iAudit.save(
                         "DELETE_PURCHASE_ORDER_ITEM",
                         "PRODUCTO DE INVENTARIO "+
@@ -278,6 +279,7 @@ public class PurchaseOrderItemImpl implements IPurchaseOrderItem {
                 purchaseOrderItem.setUser(user);
                 purchaseOrderItem.setUserId(user.getId());
                 String finalSku = iUtil.buildProductSku(product);
+                purchaseOrderItemRepository.save(purchaseOrderItem);
                 iAudit.save(
                         "ACTIVATE_PURCHASE_ORDER_ITEM",
                         "PRODUCTO DE INVENTARIO "+

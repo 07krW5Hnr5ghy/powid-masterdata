@@ -21,6 +21,7 @@ public interface IDeliveryManifest {
             Long manifestNumber,
             String warehouse,
             String courier,
+            String courierDni,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,

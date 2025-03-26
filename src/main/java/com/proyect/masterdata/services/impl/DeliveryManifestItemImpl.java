@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.dto.CourierDTO;
 import com.proyect.masterdata.dto.CourierProfileDTO;
 import com.proyect.masterdata.dto.DeliveredOrdersCountDTO;
 import com.proyect.masterdata.dto.DeliveryManifestItemDTO;
@@ -213,6 +214,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
             String brand,
             Boolean delivered,
             String courier,
+            String courierDni,
             String warehouse,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -239,6 +241,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                         brand,
                         delivered,
                         courier,
+                        courierDni,
                         warehouse,
                         registrationStartDate,
                         registrationEndDate,
@@ -384,6 +387,19 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                 return CourierProfileDTO.builder()
                         .deliveredOrders(deliveredOrderCount)
                         .payableAmount(unCollectedAmount)
+                        .courierInfo(CourierDTO.builder()
+                                .id(courier.getId())
+                                .user(courier.getUser().getUsername())
+                                .status(courier.getStatus())
+                                .name(courier.getName())
+                                .phone(courier.getPhone())
+                                .address(courier.getAddress())
+                                .plate(courier.getPlate())
+                                .registrationDate(courier.getRegistrationDate())
+                                .updateDate(courier.getUpdateDate())
+                                .company(courier.getDeliveryCompany().getName())
+                                .dni(courier.getDni())
+                                .build())
                         .build();
             }catch (RuntimeException e){
                 log.error(e.getMessage());
