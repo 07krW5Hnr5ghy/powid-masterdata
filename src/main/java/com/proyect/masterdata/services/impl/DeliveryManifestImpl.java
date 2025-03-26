@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.dto.DeliveryManifestCourierDTO;
 import com.proyect.masterdata.dto.DeliveryManifestDTO;
 import com.proyect.masterdata.dto.DeliveryManifestItemDTO;
 import com.proyect.masterdata.dto.request.RequestDeliveryManifest;
@@ -450,6 +451,78 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         .build();
             }).toList();
             return new PageImpl<>(deliveryManifestDTOS,deliveryManifestPage.getPageable(),deliveryManifestPage.getTotalElements());
+        });
+    }
+
+    @Override
+    public CompletableFuture<DeliveryManifestCourierDTO> checkCourierToDeliveryManifest(UUID courierId) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            Courier courier;
+            DeliveryManifest deliveryManifest = null;
+            User user;
+            Integer paid,receivable;
+            Integer delivered = 0;
+            Integer quantityOrders = 0;
+
+            List<DeliveryManifestItem> deliveryManifestItemLis = new ArrayList<>();
+            try{
+                courier = courierRepository.findById(courierId).get();
+                user = userRepository.findByDni(courier.getDni());
+
+                deliveryManifest = deliveryManifestRepository.findByCourierId(courierId);
+                if(deliveryManifest==null){
+                    return DeliveryManifestCourierDTO.builder()
+                            .warehouse("Not found warehouse")
+                            .courierId(courierId)
+                            .manifestNumber(0L)
+                            .open(false)
+                            .paid(0)
+                            .receivable(0)
+                            .quantityOrders(0)
+                            .delivered(0)
+                            .observations("Not found observations")
+                            .registrationDate(courier.getRegistrationDate())
+                            .updateDate(courier.getUpdateDate())
+                            .isExists(false)
+                            .build();
+                }
+
+                deliveryManifestItemLis = deliveryManifestItemRepository.findAllById(deliveryManifest.getId());
+            }catch (RuntimeException e){
+                e.printStackTrace();
+                throw new InternalErrorExceptions(e.getMessage());
+            }
+
+            if(courier==null){
+                throw new InternalErrorExceptions("Courier not found");
+            }
+
+            if(user==null){
+                throw new InternalErrorExceptions("User not found");
+            }
+
+            for(DeliveryManifestItem deliveryManifestItem : deliveryManifestItemLis){
+                if(deliveryManifestItem.getDelivered())
+                    delivered++;
+            }
+
+            quantityOrders = deliveryManifestItemLis.size();
+
+            return DeliveryManifestCourierDTO.builder()
+                    .deliveryManifestId(deliveryManifest.getId())
+                    .courierId(courier.getId())
+                    .manifestNumber(deliveryManifest.getManifestNumber())
+                    .warehouse(deliveryManifest.getWarehouse().getName())
+                    .open(deliveryManifest.getOpen())
+                    .isExists(true)
+                    .paid(0)
+                    .quantityOrders(quantityOrders)
+                    .receivable(0)
+                    .delivered(delivered)
+                    .observations(deliveryManifest.getObservations())
+                    .registrationDate(deliveryManifest.getRegistrationDate())
+                    .updateDate(deliveryManifest.getUpdateDate())
+                    .build();
         });
     }
 }

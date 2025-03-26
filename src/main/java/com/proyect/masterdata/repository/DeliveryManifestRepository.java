@@ -9,4 +9,6 @@ import java.util.UUID;
 @Repository
 public interface DeliveryManifestRepository extends JpaRepository<DeliveryManifest, UUID> {
     Long countByClientId(UUID clientId);
+    DeliveryManifest findByUserId(UUID userId);
+    DeliveryManifest findByCourierId(UUID courierId);
 }
