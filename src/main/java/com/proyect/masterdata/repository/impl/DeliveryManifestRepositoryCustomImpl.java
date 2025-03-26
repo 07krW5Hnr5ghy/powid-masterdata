@@ -30,6 +30,7 @@ public class DeliveryManifestRepositoryCustomImpl implements DeliveryManifestRep
             Long manifestNumber,
             String warehouse,
             String courier,
+            String courierDni,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -51,6 +52,7 @@ public class DeliveryManifestRepositoryCustomImpl implements DeliveryManifestRep
                 manifestNumber,
                 warehouse,
                 courier,
+                courierDni,
                 open,
                 registrationStartDate,
                 registrationEndDate,
@@ -88,6 +90,7 @@ public class DeliveryManifestRepositoryCustomImpl implements DeliveryManifestRep
                 manifestNumber,
                 warehouse,
                 courier,
+                courierDni,
                 open,
                 registrationStartDate,
                 registrationEndDate,
@@ -102,6 +105,7 @@ public class DeliveryManifestRepositoryCustomImpl implements DeliveryManifestRep
             Long manifestNumber,
             String warehouse,
             String courier,
+            String courierDni,
             Boolean open,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -125,6 +129,10 @@ public class DeliveryManifestRepositoryCustomImpl implements DeliveryManifestRep
 
         if(courier != null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(deliveryManifestCourierJoin.get("name")),"%"+courier.toUpperCase()+"%"));
+        }
+
+        if(courierDni != null){
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(deliveryManifestCourierJoin.get("dni"), courierDni)));
         }
 
         if(manifestNumber != null){
@@ -234,6 +242,7 @@ public class DeliveryManifestRepositoryCustomImpl implements DeliveryManifestRep
             Long manifestNumber,
             String warehouse,
             String courier,
+            String courierDni,
             Boolean open,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -252,6 +261,7 @@ public class DeliveryManifestRepositoryCustomImpl implements DeliveryManifestRep
                 manifestNumber,
                 warehouse,
                 courier,
+                courierDni,
                 open,
                 registrationStartDate,
                 registrationEndDate,
