@@ -351,33 +351,35 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                     }
                 }
                 for(Ordering order:orders){
-                    List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndStatusTrue(order.getId());
-                    double saleAmount = 0.00;
+                   if(!Objects.equals(order.getOrderPaymentState().getName(), "POR RECAUDAR")){
+                       List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndStatusTrue(order.getId());
+                       double saleAmount = 0.00;
 
-                    for(OrderItem orderItem : orderItems){
-                        ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
-                        if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
-                            saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - ((productPrice.getUnitSalePrice() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
-                        }
-                        if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-                            saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
-                        }
-                        if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
-                            saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity());
-                        }
+                       for(OrderItem orderItem : orderItems){
+                           ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
+                           if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
+                               saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - ((productPrice.getUnitSalePrice() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
+                           }
+                           if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                               saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
+                           }
+                           if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                               saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                           }
 
-                    }
-                    double totalDuePayment=0;
-                    if(Objects.equals(order.getDiscount().getName(), "PORCENTAJE")){
-                        totalDuePayment = (saleAmount-((saleAmount)*(order.getDiscountAmount()/100))+order.getDeliveryAmount())-order.getAdvancedPayment();
-                    }
-                    if(Objects.equals(order.getDiscount().getName(), "MONTO")){
-                        totalDuePayment = (saleAmount-order.getDiscountAmount()+order.getDeliveryAmount())-order.getAdvancedPayment();
-                    }
-                    if(Objects.equals(order.getDiscount().getName(), "NO APLICA")){
-                        totalDuePayment = (saleAmount+order.getDeliveryAmount())-order.getAdvancedPayment();
-                    }
-                    unCollectedAmount+=totalDuePayment;
+                       }
+                       double totalDuePayment=0;
+                       if(Objects.equals(order.getDiscount().getName(), "PORCENTAJE")){
+                           totalDuePayment = (saleAmount-((saleAmount)*(order.getDiscountAmount()/100))+order.getDeliveryAmount())-order.getAdvancedPayment();
+                       }
+                       if(Objects.equals(order.getDiscount().getName(), "MONTO")){
+                           totalDuePayment = (saleAmount-order.getDiscountAmount()+order.getDeliveryAmount())-order.getAdvancedPayment();
+                       }
+                       if(Objects.equals(order.getDiscount().getName(), "NO APLICA")){
+                           totalDuePayment = (saleAmount+order.getDeliveryAmount())-order.getAdvancedPayment();
+                       }
+                       unCollectedAmount+=totalDuePayment;
+                   }
                 }
                 return CourierProfileDTO.builder()
                         .deliveredOrders(deliveredOrderCount)
