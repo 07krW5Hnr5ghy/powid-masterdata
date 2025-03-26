@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services;
 
+import com.proyect.masterdata.dto.DeliveryManifestCourierDTO;
 import com.proyect.masterdata.dto.DeliveryManifestDTO;
 import com.proyect.masterdata.dto.request.RequestDeliveryManifest;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -30,4 +31,5 @@ public interface IDeliveryManifest {
             Integer pageSize,
             Boolean open
     ) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<DeliveryManifestCourierDTO> checkCourierToDeliveryManifest(UUID courierId) throws InternalErrorExceptions,BadRequestExceptions;
 }

@@ -19,4 +19,7 @@ public interface CourierRepository extends JpaRepository<Courier, UUID> {
     List<Courier> findAllByClientIdAndStatusFalse(UUID clientId);
     List<Courier> findAllByClientId(UUID clientId);
     List<Courier> findByClientIdAndNameIn(UUID clientId,List<String> names);
+
+
+    Courier findByDni(String dni);
 }

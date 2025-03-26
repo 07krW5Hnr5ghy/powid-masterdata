@@ -1936,7 +1936,7 @@ public class Seeder implements CommandLineRunner {
                                 .phone("987654234")
                                 .province("HUARAL")
                                 .reference("colegio")
-                                .tokenUser("JOELC")
+                                .tokenUser(adminUser.getUsername())
                                 .dni("23465476")
                                 .build());
 

@@ -19,9 +19,10 @@ public class DeliveryManifestCourierDTO {
     private String warehouse;
     private Boolean open;
     private Boolean isExists;
-    private Double paid;
-    private Double receivable;
-    private Double delivered;
+    private Integer paid;
+    private Integer quantityOrders;
+    private Integer receivable;
+    private Integer delivered;
     private String observations;
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;

@@ -42,9 +42,12 @@ public class DeliveryManifestController {
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
-    @GetMapping("/{courierId}")
-    public ResponseEntity<DeliveryManifestCourierDTO> getAll(){
-        return null;
+    @GetMapping("/check/{courierId}")
+    public ResponseEntity<DeliveryManifestCourierDTO> checkCourierToDeliveryManifest(
+            @PathVariable UUID courierId
+    ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<DeliveryManifestCourierDTO> result = iDeliveryManifest.checkCourierToDeliveryManifest(courierId);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
     @PutMapping("/{deliveryManifestId}")
