@@ -352,4 +352,5 @@ public class Constants {
     public static final String ErrorDeliveryZone = "Zona de entrega no esta registrado";
     public static final String ErrorDeliveryZoneDistrict = "Distrito de zona de entrega no esta registrado";
     public static final String ErrorDeliveryZoneDistrictExists = "Distrito de zona de entrega ya fue registrado";
+    public static final String ErrorDeliveryManifestNoResults = "No se encontraron guias de motorizado";
 }
