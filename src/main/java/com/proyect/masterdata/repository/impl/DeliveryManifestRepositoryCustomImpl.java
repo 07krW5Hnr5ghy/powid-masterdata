@@ -123,7 +123,7 @@ public class DeliveryManifestRepositoryCustomImpl implements DeliveryManifestRep
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(deliveryManifestWarehouseJoin.get("name")),"%"+warehouse.toUpperCase()+"%"));
         }
 
-        if(warehouse != null){
+        if(courier != null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(deliveryManifestCourierJoin.get("name")),"%"+courier.toUpperCase()+"%"));
         }
 
