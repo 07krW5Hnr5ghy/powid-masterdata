@@ -33,4 +33,5 @@ public interface IDeliveryManifest {
             Boolean open
     ) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<DeliveryManifestCourierDTO> checkCourierToDeliveryManifest(UUID courierId) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<DeliveryManifestDTO> getLastDeliveryManifestByCourier(String username) throws BadRequestExceptions,InternalErrorExceptions;
 }

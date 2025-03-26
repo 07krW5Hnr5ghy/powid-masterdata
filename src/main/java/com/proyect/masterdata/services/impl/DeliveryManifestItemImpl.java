@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -40,6 +41,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
     private final IUtil iUtil;
     private final ProductPriceRepository productPriceRepository;
     private final CourierRepository courierRepository;
+    private final DeliveryManifestRepository deliveryManifestRepository;
     @Override
     public CompletableFuture<DeliveryManifestItem> save(
             OrderItem orderItem,
