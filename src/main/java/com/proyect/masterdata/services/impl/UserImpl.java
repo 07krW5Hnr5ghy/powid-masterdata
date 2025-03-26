@@ -15,6 +15,7 @@ import com.proyect.masterdata.services.IUser;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.mapstruct.control.MappingControl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +27,7 @@ import java.util.UUID;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -529,6 +531,49 @@ public class UserImpl implements IUser {
                     }).toList())
                     .build();
             }).toList();
+        });
+    }
+
+    @Override
+    public CompletableFuture<List<UserQueryDTO>> listFilterListToRole(String tokenUser, String roleName) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(() -> {
+            List<User> dataUsers;
+            UUID clientId;
+
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClientId();
+                dataUsers = userRepository.findAllByClientId(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(dataUsers.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            List<UserQueryDTO> usersMap = dataUsers.stream().map(user -> {
+                List<UserRole> userRoles = userRoleRepository.findByUserIdAndStatusTrue(user.getId());
+                return UserQueryDTO.builder()
+                        .address(user.getAddress())
+                        .district(user.getDistrict().getName())
+                        .dni(user.getDni())
+                        .email(user.getEmail())
+                        .gender(user.getGender())
+                        .mobile(user.getMobile())
+                        .name(user.getName())
+                        .surname(user.getSurname())
+                        .user(user.getUsername())
+                        .roleNames(userRoles.stream().map(userRole -> {
+                            Role role = roleRepository.findById(userRole.getRoleId()).orElse(null);
+                            return role.getName();
+                        }).toList())
+                        .build();
+            }).toList();
+
+            return usersMap.stream().filter(user -> user.getRoleNames()
+                    .stream().anyMatch((role -> role.equals(roleName))))
+                    .collect(Collectors.toList());
         });
     }
 
