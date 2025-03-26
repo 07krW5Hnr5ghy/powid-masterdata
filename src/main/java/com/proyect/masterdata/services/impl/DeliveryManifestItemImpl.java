@@ -87,6 +87,8 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                         .user(orderItem.getUser())
                         .registrationDate(OffsetDateTime.now())
                         .updateDate(OffsetDateTime.now())
+                                .clientId(user.getClientId())
+                                .client(user.getClient())
                         .delivered(false)
                         .build());
                 iWarehouseStock.out(
