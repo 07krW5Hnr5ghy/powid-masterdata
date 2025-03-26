@@ -1908,7 +1908,7 @@ public class Seeder implements CommandLineRunner {
                                 .roleName("OPERACIONES")
                                 .surname("rojas")
                                 .user("kevinr")
-                                .tokenUser("JOELC")
+                                .tokenUser(adminUser.getUsername())
                                 .build()).getCode();
 
 
@@ -1918,14 +1918,14 @@ public class Seeder implements CommandLineRunner {
                                 .url("https://www.aranni.com.pe")
                                 .storeType("otro")
                                 .build();
-                        iStore.save(requestStore1, "JOELC");
+                        iStore.save(requestStore1, adminUser.getUsername());
 
                         RequestStoreSave requestStore2 = RequestStoreSave.builder()
                                 .name("kunca")
                                 .url("https://kunca.pe")
                                 .storeType("otro")
                                 .build();
-                        iStore.save(requestStore2, "JOELC");
+                        iStore.save(requestStore2, adminUser.getUsername());
 
                         iCustomer.save(RequestCustomer.builder()
                                 .address("quepepampa")
@@ -1946,9 +1946,9 @@ public class Seeder implements CommandLineRunner {
                                 .phone("934764345")
                                 .contact("joel coila")
                                 .reference("cerca del estadio")
-                                .build(), "JOELC");
+                                .build(), adminUser.getUsername());
 
-                        iSupplierType.save("TELA","JOELC");
+                        iSupplierType.save("TELA",adminUser.getUsername());
 
                         iSupplier.save(RequestSupplier.builder()
                                         .businessName("aranni busines")
@@ -1960,7 +1960,7 @@ public class Seeder implements CommandLineRunner {
                                         .supplierType("TELA")
                                         .province("LIMA")
                                         .district("LIMA")
-                                .build(), "JOELC");
+                                .build(), adminUser.getUsername());
 
                         iColor.save("BLANCO", "BLA", "JOELC");
                         iColor.save("NEGRO", "NEG", "JOELC");
