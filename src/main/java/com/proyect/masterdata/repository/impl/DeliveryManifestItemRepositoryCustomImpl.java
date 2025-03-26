@@ -57,7 +57,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
         Join<Product,Size> productSizeJoin = deliveryManifestItemProductJoin.join("size");
         Join<Product,Model> productModelJoin = deliveryManifestItemProductJoin.join("model");
         Join<Model,Brand> modelBrandJoin = productModelJoin.join("brand");
-        Join<OrderItem,Ordering> orderItemOrderingJoin = deliveryManifestItemOrderItemJoin.join("orderNumber");
+        Join<OrderItem,Ordering> orderItemOrderingJoin = deliveryManifestItemOrderItemJoin.join("ordering");
         Join<DeliveryManifest,Courier> deliveryManifestCourierJoin = deliveryManifestItemDeliveryManifestJoin.join("courier");
         Join<DeliveryManifest,Warehouse> deliveryManifestWarehouseJoin = deliveryManifestItemDeliveryManifestJoin.join("warehouse");
         criteriaQuery.select(itemRoot);
@@ -324,7 +324,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
         Join<Product,Size> productSizeJoin = deliveryManifestItemProductJoin.join("size");
         Join<Product,Model> productModelJoin = deliveryManifestItemProductJoin.join("model");
         Join<Model,Brand> modelBrandJoin = productModelJoin.join("brand");
-        Join<OrderItem,Ordering> orderItemOrderingJoin = deliveryManifestItemOrderItemJoin.join("orderNumber");
+        Join<OrderItem,Ordering> orderItemOrderingJoin = deliveryManifestItemOrderItemJoin.join("ordering");
         Join<DeliveryManifest,Courier> deliveryManifestCourierJoin = deliveryManifestItemDeliveryManifestJoin.join("courier");
         Join<DeliveryManifest,Warehouse> deliveryManifestWarehouseJoin = deliveryManifestItemDeliveryManifestJoin.join("warehouse");
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
