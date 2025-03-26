@@ -36,6 +36,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
             String brand,
             Boolean delivered,
             String courier,
+            String courierDni,
             String warehouse,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -72,6 +73,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
               brand,
               delivered,
               courier,
+              courierDni,
               warehouse,
               registrationStartDate,
               registrationEndDate,
@@ -121,6 +123,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
                 brand,
                 delivered,
                 courier,
+                courierDni,
                 warehouse,
                 registrationStartDate,
                 registrationEndDate,
@@ -141,6 +144,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
             String brand,
             Boolean delivered,
             String courier,
+            String courierDni,
             String warehouse,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -192,8 +196,11 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
         if(Boolean.FALSE.equals(delivered)){
             conditions.add(criteriaBuilder.and(criteriaBuilder.isFalse(itemRoot.get("delivered"))));
         }
-        if(courier!=null){
+        if(courier != null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(deliveryManifestCourierJoin.get("name")),"%"+courier.toUpperCase()+"%"));
+        }
+        if(courierDni != null){
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(deliveryManifestCourierJoin.get("dni"), courierDni)));
         }
         if(warehouse!=null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(deliveryManifestWarehouseJoin.get("name")),"%"+warehouse.toUpperCase()+"%"));
@@ -299,6 +306,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
             String brand,
             Boolean delivered,
             String courier,
+            String courierDni,
             String warehouse,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -332,6 +340,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
                 brand,
                 delivered,
                 courier,
+                courierDni,
                 warehouse,
                 registrationStartDate,
                 registrationEndDate,
