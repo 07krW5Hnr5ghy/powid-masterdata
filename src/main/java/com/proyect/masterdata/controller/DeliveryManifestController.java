@@ -93,4 +93,11 @@ public class DeliveryManifestController {
         );
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+    @GetMapping("last")
+    public ResponseEntity<DeliveryManifestDTO> getLast(
+            @RequestParam(value = "user", required = true) String user
+    ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<DeliveryManifestDTO> result = iDeliveryManifest.getLastDeliveryManifestByCourier(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
 }

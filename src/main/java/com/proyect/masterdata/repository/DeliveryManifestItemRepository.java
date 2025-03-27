@@ -17,7 +17,7 @@ public interface    DeliveryManifestItemRepository extends JpaRepository<Deliver
     List<DeliveryManifestItem> findAllById(UUID deliveryManifestId);
     DeliveryManifestItem findByOrderItemIdAndProductIdAndDeliveredTrue(UUID orderItemId,UUID productId);
     List<DeliveryManifestItemDTOP> findAllByDeliveryManifestId(UUID deliveryManifestId);
-
+    List<DeliveryManifestItem> findAllByDeliveryManifestIdAndClientId(UUID deliveryManifestId,UUID clientId);
     @Query("""
     SELECT dmi.deliveryManifest.id, oi.orderId, 
            COUNT(CASE WHEN dmi.delivered = true THEN 1 END) AS deliveredCount
