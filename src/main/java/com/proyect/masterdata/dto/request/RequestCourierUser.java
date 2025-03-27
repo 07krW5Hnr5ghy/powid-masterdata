@@ -27,7 +27,8 @@ public class RequestCourierUser {
     private String password;
     private String district;
     private String address;
+    private String province;
     private String mobile;
     private String gender;
-    private Boolean status;
+    //private Boolean status;
 }

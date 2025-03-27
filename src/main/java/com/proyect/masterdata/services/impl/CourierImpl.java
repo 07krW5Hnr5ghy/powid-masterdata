@@ -45,6 +45,7 @@ public class CourierImpl implements ICourier {
     private final UserRoleRepository userRoleRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final ProvinceRepository provinceRepository;
 
     @Override
     public CompletableFuture<ResponseSuccess> save(RequestCourier requestCourier, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
@@ -111,12 +112,14 @@ public class CourierImpl implements ICourier {
             Courier courier;
             DeliveryCompany deliveryCompany;
             District district;
+            Province province;
             Role role;
             try {
                 userUpper = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 deliveryCompany = deliveryCompanyRepository.findByName(requestCourierUser.getCompany().toUpperCase());
                 newUser = userRepository.findByUsernameAndStatusTrue(requestCourierUser.getUsername().toUpperCase());
-                district = districtRepository.findByNameAndStatusTrue(requestCourierUser.getDistrict().toUpperCase());
+                //district = districtRepository.findByNameAndStatusTrue(requestCourierUser.getDistrict().toUpperCase());
+                province = provinceRepository.findByNameAndStatusTrue(requestCourierUser.getProvince().toUpperCase());
                 role = roleRepository.findByNameAndStatusTrue(ROL_NAME);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -138,8 +141,14 @@ public class CourierImpl implements ICourier {
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
 
-            if(district == null){
-                throw new BadRequestExceptions(Constants.ErrorDistrict);
+//            if(district == null){
+//                throw new BadRequestExceptions(Constants.ErrorDistrict);
+//            }
+
+            if(province==null){
+                throw new BadRequestExceptions(Constants.ErrorProvince);
+            }else{
+                district = districtRepository.findByNameAndProvinceIdAndStatusTrue(requestCourierUser.getDistrict().toUpperCase(),province.getId());
             }
             try {
                 Courier newCourier = courierRepository.save(Courier.builder()
