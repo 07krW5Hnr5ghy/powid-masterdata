@@ -66,7 +66,6 @@ public class ProductImpl implements IProduct {
         SubCategoryProduct subCategoryProduct;
         Color color;
         Unit unit;
-        Product productName;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -113,12 +112,6 @@ public class ProductImpl implements IProduct {
         }
 
         if (product != null) {
-            throw new BadRequestExceptions(Constants.ErrorProductExists);
-        }else{
-            productName = productRepository.findByNameAndClientId(requestProductSave.getName().toUpperCase(),user.getClientId());
-        }
-
-        if(productName != null){
             throw new BadRequestExceptions(Constants.ErrorProductExists);
         }
 
@@ -173,7 +166,6 @@ public class ProductImpl implements IProduct {
             SubCategoryProduct subCategoryProduct;
             Color color;
             Unit unit;
-            Product productName;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -227,12 +219,6 @@ public class ProductImpl implements IProduct {
             }
 
             if (product != null) {
-                throw new BadRequestExceptions(Constants.ErrorProductExists);
-            }else{
-                productName = productRepository.findByNameAndClientId(requestProductSave.getName().toUpperCase(),user.getClientId());
-            }
-
-            if(productName!=null){
                 throw new BadRequestExceptions(Constants.ErrorProductExists);
             }
 

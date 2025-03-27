@@ -22,6 +22,7 @@ public interface ISupplyOrder {
             String ref,
             String user,
             String warehouse,
+            String supplier,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,

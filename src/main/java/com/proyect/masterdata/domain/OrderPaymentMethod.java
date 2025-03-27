@@ -21,7 +21,7 @@ public class OrderPaymentMethod {
 
         @Id
         @GeneratedValue(strategy = GenerationType.UUID)
-        @Column(name = "payment_method_id", nullable = false)
+        @Column(name = "order_payment_method_id", nullable = false)
         private UUID id;
 
         @Column(name = "name", nullable = false)

@@ -269,8 +269,10 @@ public class OrderingImpl implements IOrdering {
             Customer customer;
             DeliveryPoint deliveryPoint;
             Discount discount;
+            System.out.println( "user token recivido" + tokenUser.toUpperCase());
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                System.out.println("usuarios de referencia desde venta -> " + user.getUsername() + " - " + user.getClient().getName());
                 orderState = orderStateRepository.findByNameAndStatusTrue("PENDIENTE");
                 courier = courierRepository.findByNameAndStatusTrue("SIN COURIER");
                 orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue("POR RECAUDAR");
@@ -519,14 +521,6 @@ public class OrderingImpl implements IOrdering {
                 orderStateIds = new ArrayList<>();
             }
 
-            if(couriers != null && !couriers.isEmpty()){
-                courierIds = courierRepository.findByNameIn(
-                        couriers.stream().map(String::toUpperCase).toList()
-                ).stream().map(Courier::getId).toList();
-            }else{
-                courierIds = new ArrayList<>();
-            }
-
             if(paymentState != null){
                 paymentStateId = orderPaymentStateRepository.findByName(paymentState.toUpperCase()).getId();
             }else {
@@ -553,6 +547,14 @@ public class OrderingImpl implements IOrdering {
 
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
+                if(couriers != null && !couriers.isEmpty()){
+                    courierIds = courierRepository.findByClientIdAndNameIn(
+                            clientId,
+                            couriers.stream().map(String::toUpperCase).toList()
+                    ).stream().map(Courier::getId).toList();
+                }else{
+                    courierIds = new ArrayList<>();
+                }
                 pageOrdering = orderingRepositoryCustom.searchForOrdering(
                         orderId,
                         clientId,
@@ -613,6 +615,7 @@ public class OrderingImpl implements IOrdering {
                 if(Objects.equals(order.getDiscount().getName(), "NO APLICA")){
                     totalDuePayment = (saleAmount+order.getDeliveryAmount())-order.getAdvancedPayment();
                 }
+
                 return OrderDTO.builder()
                         .id(order.getId())
                         .orderNumber(order.getOrderNumber())
@@ -670,11 +673,11 @@ public class OrderingImpl implements IOrdering {
                             String finalSku = iUtil.buildProductSku(orderItem.getProduct());
                             return OrderItemDTO.builder()
                                     .id(orderItem.getId())
+                                    .productId(orderItem.getProductId())
+                                    .orderId(order.getId())
                                     .user(orderItem.getUser().getUsername())
                                     .status(orderItem.getStatus())
                                     .selectOrderStatus(orderItem.getSelectOrderStatus())
-                                    .productId(orderItem.getProductId())
-                                    .orderId(orderItem.getId())
                                     .model(orderItem.getProduct().getModel().getName())
                                     .discountAmount(orderItem.getDiscountAmount())
                                     .sku(finalSku)
@@ -745,6 +748,7 @@ public class OrderingImpl implements IOrdering {
                     totalDuePayment = (saleAmount+order.getDeliveryAmount())-order.getAdvancedPayment();
                 }
                 CancelledOrder cancelledOrder = cancelledOrderRepository.findByOrderingId(order.getId());
+
                 OrderDTO newOrderDTO = OrderDTO.builder()
                         .id(order.getId())
                         .orderNumber(order.getOrderNumber())
@@ -760,6 +764,8 @@ public class OrderingImpl implements IOrdering {
                         .instagram(order.getCustomer().getInstagram())
                         .managementType(order.getManagementType().getName())
                         .reference(order.getCustomer().getReference())
+                        .discountAmount(BigDecimal.valueOf(order.getDiscountAmount())) // revisar
+                        .discount(order.getDiscount().getName()) // aqui
                         .saleChannel(order.getSaleChannel().getName())
                         .sellerName(order.getSeller())
                         .registrationDate(order.getRegistrationDate())
@@ -800,11 +806,11 @@ public class OrderingImpl implements IOrdering {
                             String finalSku = iUtil.buildProductSku(orderItem.getProduct());
                             return OrderItemDTO.builder()
                                     .id(orderItem.getId())
+                                    .productId(orderItem.getProductId())
+                                    .orderId(order.getId())
                                     .user(orderItem.getUser().getUsername())
                                     .status(orderItem.getStatus())
                                     .selectOrderStatus(orderItem.getSelectOrderStatus())
-                                    .productId(orderItem.getProductId())
-                                    .orderId(orderItem.getId())
                                     .discountAmount(orderItem.getDiscountAmount())
                                     .sku(finalSku)
                                     .unit(orderItem.getProduct().getUnit().getName())
@@ -852,7 +858,6 @@ public class OrderingImpl implements IOrdering {
             orderState = orderStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getOrderState().toUpperCase());
             orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentMethod().toUpperCase());
             orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentState().toUpperCase());
-            courier = courierRepository.findByNameAndStatusTrue(requestOrderUpdate.getCourier().toUpperCase());
         }catch (RuntimeException e){
             e.printStackTrace();
             log.error(e.getMessage());
@@ -861,6 +866,8 @@ public class OrderingImpl implements IOrdering {
 
         if(user == null){
             throw new BadRequestExceptions(Constants.ErrorUser);
+        }else{
+            courier = courierRepository.findByNameAndClientIdAndStatusTrue(requestOrderUpdate.getCourier().toUpperCase(),user.getClientId());
         }
 
         if(courier == null){
@@ -993,7 +1000,6 @@ public class OrderingImpl implements IOrdering {
                 orderState = orderStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getOrderState().toUpperCase());
                 orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentMethod().toUpperCase());
                 orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentState().toUpperCase());
-                courier = courierRepository.findByNameAndStatusTrue(requestOrderUpdate.getCourier().toUpperCase());
             }catch (RuntimeException e){
                 e.printStackTrace();
                 log.error(e.getMessage());
@@ -1002,6 +1008,8 @@ public class OrderingImpl implements IOrdering {
 
             if(user == null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                courier = courierRepository.findByNameAndClientIdAndStatusTrue(requestOrderUpdate.getCourier().toUpperCase(),user.getClientId());
             }
 
             if(courier == null){
@@ -1133,8 +1141,8 @@ public class OrderingImpl implements IOrdering {
                     });
                 }
 
-                System.out.println("order state ---> " + orderState.getName());
-
+//                System.out.println("order state ---> " + orderState.getName());
+//
                 if(orderState.getName().equals("PREPARADO")){
                     iOrderContact.save(
                             orderId,
@@ -1261,8 +1269,9 @@ public class OrderingImpl implements IOrdering {
                             }
                             String finalSku = iUtil.buildProductSku(orderItem.getProduct());
                             return OrderItemDTO.builder()
+                                    .id(orderItem.getId())
                                     .productId(orderItem.getProductId())
-                                    .orderId(orderItem.getId())
+                                    .orderId(ordering.getId())
                                     .status(orderItem.getStatus())
                                     .selectOrderStatus(orderItem.getSelectOrderStatus())
                                     .model(orderItem.getProduct().getModel().getName())

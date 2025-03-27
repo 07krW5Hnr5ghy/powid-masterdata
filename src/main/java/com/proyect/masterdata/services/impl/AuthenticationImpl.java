@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
+import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -8,12 +9,14 @@ import java.util.concurrent.ExecutionException;
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.domain.Module;
 import com.proyect.masterdata.dto.LoginDTO;
+import com.proyect.masterdata.dto.projections.ProvinceDTOP;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.*;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.proyect.masterdata.dto.request.RequestClientSave;
@@ -43,6 +46,7 @@ public class AuthenticationImpl implements IAuthentication {
     private final DistrictRepository districtRepository;
     private final IClient iClient;
     private final IOnboard iOnboard;
+    private final OnboardRepository onboardRepository;
     private final ClosingChannelRepository closingChannelRepository;
     private final IOnboardChannel iOnboardChannel;
     private final IStore iStore;
@@ -57,6 +61,11 @@ public class AuthenticationImpl implements IAuthentication {
     private final IAudit iAudit;
     private final UserRoleRepository userRoleRepository;
     private final ProvinceRepository provinceRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleAccessRepository roleAccessRepository;
+    private final RoleRepository roleRepository;
+    private final AccessRepository accessRepository;
+    private final UserRoleRepository userRoleUserRepository;
 
     public CompletableFuture<LoginDTO> loginUser(String username, String password) {
         return CompletableFuture.supplyAsync(() -> {
@@ -66,13 +75,12 @@ public class AuthenticationImpl implements IAuthentication {
                 Membership activeMembership;
                 Membership payedMembership;
                 MembershipState activeState;
-
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+                List<User> users = userRepository.findAll();
                 activeState = membershipStateRepository.findByNameAndStatusTrue("ACTIVA");
                 Date currentDate = new Date(System.currentTimeMillis());
                 MembershipState payedState = membershipStateRepository.findByNameAndStatusTrue("PAGADA");
                 MembershipState expiredState = membershipStateRepository.findByNameAndStatusTrue("EXPIRADA");
-
                 if (user == null) {
                     throw new BadRequestExceptions(Constants.ErrorAuthentication);
                 }else {
@@ -93,7 +101,9 @@ public class AuthenticationImpl implements IAuthentication {
 
                 Authentication auth = authenticationManager.authenticate(
                         new UsernamePasswordAuthenticationToken(username.toUpperCase(), password));
+
                 String token = iToken.generateJwt(auth);
+
                 iAudit.save("LOG_IN","USUARIO " + user.getUsername() + " INICIO SESION.",user.getUsername(),user.getUsername());
                 User userData = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 List<UserRole> userRoles = userRoleRepository.findByUserIdAndStatusTrue(userData.getId());
@@ -116,6 +126,8 @@ public class AuthenticationImpl implements IAuthentication {
     public CompletableFuture<ResponseSuccess> registerNewClient(RequestOnboarding requestOnboarding)
             throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(() -> {
+            String roleName = "NEGOCIO";
+            String accesName = "USER_GET";
             boolean existsUser = false;
             boolean existsUserDni = false;
             boolean existsUserEmail = false;
@@ -127,9 +139,11 @@ public class AuthenticationImpl implements IAuthentication {
             boolean category = false;
             District district = null;
             Province province;
+            ProvinceDTOP provinceDTOP;
+            Role role;
+            Access access;
             List<ClosingChannel> closingChannels;
             List<Module> modules;
-
             try {
                 existsUser = userRepository.existsByUsername(requestOnboarding.getUsername().toUpperCase());
                 existsUserDni = userRepository.existsByDni(requestOnboarding.getDni());
@@ -139,6 +153,9 @@ public class AuthenticationImpl implements IAuthentication {
                 existsClientDni = clientRepository.existsByDni(requestOnboarding.getDni());
                 existsClientEmail = clientRepository.existsByEmail(requestOnboarding.getEmail());
                 existsClientMobile = clientRepository.existsByMobile(requestOnboarding.getMobile());
+                role = roleRepository.findByName(roleName);
+                access = accessRepository.findByName(accesName);
+                //provinceDTOP = provinceRepository.findByName(requestOnboarding.getProvince());
                 province = provinceRepository.findByNameAndStatusTrue(requestOnboarding.getProvince().toUpperCase());
                 closingChannels = closingChannelRepository.findByNameInAndStatusTrue(
                         requestOnboarding.getClosingChannels().stream().map(name -> name.toUpperCase()).toList());
@@ -151,6 +168,7 @@ public class AuthenticationImpl implements IAuthentication {
             }
 
             if (existsUser) {
+
                 throw new BadRequestExceptions(Constants.ErrorUserExist);
             }
 
@@ -206,36 +224,118 @@ public class AuthenticationImpl implements IAuthentication {
 
             try {
 
-                RequestClientSave requestClientSave = RequestClientSave.builder()
+//                RequestClientSave requestClientSave = RequestClientSave.builder()
+//                        .name(requestOnboarding.getName().toUpperCase())
+//                        .surname(requestOnboarding.getSurname().toUpperCase())
+//                        .business(requestOnboarding.getBusinessName().toUpperCase())
+//                        .address(requestOnboarding.getAddress().toUpperCase())
+//                        .dni(requestOnboarding.getDni())
+//                        .email(requestOnboarding.getEmail())
+//                        .mobile(requestOnboarding.getMobile())
+//                        .district(requestOnboarding.getDistrict().toUpperCase())
+//                        .ruc(requestOnboarding.getBusinessRuc())
+//                        .build();
+//
+//                iClient.save(requestClientSave);
+
+                //implementacion que sirve, pero que no almacena al cliente con el admiin
+//                Client saveClient = clientRepository.save(Client.builder()
+//                                .name(requestOnboarding.getName().toUpperCase())
+//                                .surname(requestOnboarding.getSurname().toUpperCase())
+//                                .ruc(requestOnboarding.getBusinessRuc())
+//                                .dni(requestOnboarding.getDni())
+//                                .business(requestOnboarding.getBusinessName().toUpperCase())
+//                                .mobile(requestOnboarding.getMobile())
+//                                .address(requestOnboarding.getAddress().toUpperCase())
+//                                .email(requestOnboarding.getEmail())
+//                                .status(true)
+//                                .district(district)
+//                                .districtId(district.getId())
+//                                .registrationDate(OffsetDateTime.now())
+//                                .updateDate(OffsetDateTime.now())
+//                        .build()
+//                );
+
+                //nueva implementacion
+                Client newClient = clientRepository.save(Client.builder()
                         .name(requestOnboarding.getName().toUpperCase())
                         .surname(requestOnboarding.getSurname().toUpperCase())
-                        .business(requestOnboarding.getBusinessName().toUpperCase())
-                        .address(requestOnboarding.getAddress().toUpperCase())
-                        .dni(requestOnboarding.getDni())
-                        .email(requestOnboarding.getEmail())
-                        .mobile(requestOnboarding.getMobile())
-                        .district(requestOnboarding.getDistrict().toUpperCase())
                         .ruc(requestOnboarding.getBusinessRuc())
-                        .build();
-
-                iClient.save(requestClientSave);
-
-                RequestUser requestUser = RequestUser.builder()
-                        .user(requestOnboarding.getUsername().toUpperCase())
-                        .name(requestOnboarding.getName().toUpperCase())
-                        .surname(requestOnboarding.getSurname().toUpperCase())
-                        .address(requestOnboarding.getAddress().toUpperCase())
                         .dni(requestOnboarding.getDni())
-                        .gender(requestOnboarding.getGender().toUpperCase())
+                        .business(requestOnboarding.getBusinessName().toUpperCase())
                         .mobile(requestOnboarding.getMobile())
-                        .password(requestOnboarding.getPassword())
+                        .address(requestOnboarding.getAddress().toUpperCase())
                         .email(requestOnboarding.getEmail())
-                        .district(requestOnboarding.getDistrict().toUpperCase())
-                        .roleName("BUSINESS")
-                        .tokenUser("REGISTER")
-                        .build();
+                        .status(true)
+                        .district(district)
+                        .districtId(district.getId())
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
+                        .build());
 
-                iUser.save(requestUser);
+                System.out.println("Client saved: " + newClient);
+
+                // antigua implementacion
+//                RequestUser requestUser = RequestUser.builder()
+//                        .user(requestOnboarding.getUsername().toUpperCase())
+//                        .name(requestOnboarding.getName().toUpperCase())
+//                        .surname(requestOnboarding.getSurname().toUpperCase())
+//                        .address(requestOnboarding.getAddress().toUpperCase())
+//                        .dni(requestOnboarding.getDni())
+//                        .gender(requestOnboarding.getGender().toUpperCase())
+//                        .mobile(requestOnboarding.getMobile())
+//                        .password(requestOnboarding.getPassword())
+//                        .email(requestOnboarding.getEmail())
+//                        .province(requestOnboarding.getProvince())
+//                        .district(requestOnboarding.getDistrict().toUpperCase())
+//                        .roleName("NEGOCIO")
+//                        .tokenUser("JROMERO")
+//                        .build();
+
+                //crear un metodo para asignar el cliente al usuario
+
+                //forma de como agregar un cliente a un usuario
+                        User newUser = userRepository.save(User.builder()
+                                .username(requestOnboarding.getUsername())
+                                .name(requestOnboarding.getName())
+                                .surname(requestOnboarding.getSurname())
+                                .dni(requestOnboarding.getDni())
+                                .email(requestOnboarding.getEmail())
+                                .address(requestOnboarding.getAddress())
+                                .gender(requestOnboarding.getGender())
+                                .district(district)
+                                .districtId(district.getId())
+                                .client(newClient)
+                                .clientId(newClient.getId())
+                                .mobile(requestOnboarding.getMobile())
+                                .password(passwordEncoder.encode(requestOnboarding.getPassword()))
+                                .status(true)
+                                .registrationDate(OffsetDateTime.now())
+                                .updateDate(OffsetDateTime.now())
+                                .build());
+
+                roleAccessRepository.save(RoleAccess.builder()
+                                .userId(newUser.getId())
+                                .user(newUser)
+                                .role(role)
+                                .roleId(role.getId())
+                                .status(true)
+                                .access(access)
+                                .accessId(access.getId())
+                                .registrationDate(OffsetDateTime.now())
+                                .updateDate(OffsetDateTime.now())
+                        .build());
+
+                userRoleRepository.save(UserRole.builder()
+                                .userId(newUser.getId())
+                                .user(newUser)
+                                .role(role)
+                                .roleId(role.getId())
+                                .status(true)
+                                .registrationDate(OffsetDateTime.now())
+                        .build());
+                //iUser.save(requestUser);
+                System.out.println("Save user -> " + newUser);
 
                 Onboard onboard = iOnboard.save(RequestOnboard.builder()
                         .businessRuc(requestOnboarding.getBusinessRuc())
@@ -243,11 +343,12 @@ public class AuthenticationImpl implements IAuthentication {
                         .ecommerce(requestOnboarding.getEcommerce())
                         .category(requestOnboarding.getCategory().toUpperCase())
                         .entryChannel(requestOnboarding.getEntryChannel())
-                        .users(requestOnboarding.getUsers())
+                        .users(requestOnboarding.getUsers().toUpperCase())
                         .comments(requestOnboarding.getComment())
                         .demo(requestOnboarding.getDemo())
                         .build()).get();
 
+                System.out.println(onboard);
                 for (ClosingChannel closingChannel : closingChannels) {
                     iOnboardChannel.save(onboard, closingChannel);
                 }
@@ -263,14 +364,15 @@ public class AuthenticationImpl implements IAuthentication {
                             .url(requestOnboarding.getStoreUrl())
                             .build();
 
-                    iStore.save(requestStoreSave, "REGISTER");
+                    iStore.save(requestStoreSave, requestOnboarding.getUsername().toUpperCase());
 
                     Store store = storeRepository.findByNameAndStatusTrue(requestOnboarding.getStore().toUpperCase());
 
                     iOnboardStore.save(store, onboard);
 
                 }
-                iAudit.save("REGISTER_CLIENT","NUEVO CLIENTE REGISTRADO CON EL RUC : " + requestClientSave.getRuc() + " .",requestClientSave.getRuc(),requestUser.getUser());
+                iAudit.save("REGISTER_CLIENT","NUEVO CLIENTE REGISTRADO CON EL RUC : " + newClient.getRuc() + " .",newClient.getRuc(), newUser.getUsername());
+
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)

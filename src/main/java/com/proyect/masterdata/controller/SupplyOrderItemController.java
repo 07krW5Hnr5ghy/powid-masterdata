@@ -2,6 +2,7 @@ package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.SupplyOrderItemDTO;
 import com.proyect.masterdata.dto.request.RequestSupplyOrderItem;
+import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.ISupplyOrderItem;
@@ -33,6 +34,15 @@ public class SupplyOrderItemController {
         CompletableFuture<ResponseSuccess> result = iSupplyOrderItem.saveAsync(purchaseId, requestSupplyOrderItem,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+    @DeleteMapping()
+    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:COLOR_DELETE')")
+    public ResponseEntity<ResponseDelete> delete(
+            @RequestParam("purchaseId") UUID purchaseId,
+            @RequestParam("productId") UUID productId,
+            @RequestParam("tokenUser") String tokenUser) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseDelete> result = iSupplyOrderItem.delete(purchaseId,productId,tokenUser);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
     @GetMapping("pagination")
     //@PreAuthorize("hasAnyAuthority('ROLE:STOCK','ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:PURCHASE_ITEM_GET')")
     public ResponseEntity<Page<SupplyOrderItemDTO>> list(
@@ -40,6 +50,7 @@ public class SupplyOrderItemController {
             @RequestParam(value = "orderNumber", required = false) Long orderNumber,
             @RequestParam(value = "ref", required = false) String ref,
             @RequestParam(value = "warehouse", required = false) String warehouse,
+            @RequestParam(value = "supplier", required = false) String supplier,
             @RequestParam(value = "quantity", required = false) Integer quantity,
             @RequestParam(value = "product", required = false) String product,
             @RequestParam(value = "model", required = false) String model,
@@ -60,6 +71,7 @@ public class SupplyOrderItemController {
                 orderNumber,
                 ref,
                 warehouse,
+                supplier,
                 quantity,
                 product,
                 model,
@@ -83,6 +95,15 @@ public class SupplyOrderItemController {
             @RequestParam(value = "id", required = false) UUID id
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<SupplyOrderItemDTO>> result = iSupplyOrderItem.listSupplyOrderItem(user,id);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+    @PutMapping()
+    public ResponseEntity<ResponseSuccess> activate(
+            @RequestParam("purchaseId") UUID purchaseId,
+            @RequestParam("productId") UUID productId,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iSupplyOrderItem.activate(purchaseId,productId,tokenUser);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

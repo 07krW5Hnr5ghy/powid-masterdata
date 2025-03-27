@@ -17,6 +17,7 @@ public class SupplyOrderItemDTO {
     private Long orderNumber;
     private String ref;
     private String warehouse;
+    private String supplier;
     private Integer quantity;
     private UUID productId;
     private String product;
@@ -28,4 +29,14 @@ public class SupplyOrderItemDTO {
     private OffsetDateTime updateDate;
     private String user;
     private Boolean status;
+    private String observations;
+    private Double unitSalePrice;
+    private Double unitValue;
+    private Double discountsAmount;
+    private Double chargesAmount;
+    private String igv;
+    private Double igvAmount;
+    private Boolean igvPercentage;
+    private Double unitPurchasePrice;
+    private Double total;
 }

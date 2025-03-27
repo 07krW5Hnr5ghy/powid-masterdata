@@ -12,6 +12,7 @@ public interface OrderContactedRepositoryCustom {
     Page<OrderContacted> searchForContactedOrder(
             UUID clientId,
             Long orderNumber,
+            String deliveryZone,
             Boolean contacted,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,

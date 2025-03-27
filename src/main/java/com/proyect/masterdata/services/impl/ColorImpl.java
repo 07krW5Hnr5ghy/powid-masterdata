@@ -31,7 +31,6 @@ import java.util.concurrent.CompletableFuture;
 @Log4j2
 public class ColorImpl implements IColor {
     private final ColorRepository colorRepository;
-    private final ColorMapper colorMapper;
     private final UserRepository userRepository;
     private final ColorRepositoryCustom colorRepositoryCustom;
     private final IAudit iAudit;

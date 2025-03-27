@@ -173,7 +173,7 @@ public class RoleImpl implements IRole {
                     .id(role.getId())
                     .name(role.getName())
                     .status(role.getStatus())
-                    .user(role.getName())
+                    .user(role.getUser().getUsername())
                     .registrationDate(role.getRegistrationDate())
                     .updateDate(role.getUpdateDate())
                     .build()).toList();
@@ -206,7 +206,7 @@ public class RoleImpl implements IRole {
                     .id(role.getId())
                     .name(role.getName())
                     .status(role.getStatus())
-                    .user(role.getName())
+                    .user(role.getUser().getUsername())
                     .registrationDate(role.getRegistrationDate())
                     .updateDate(role.getUpdateDate())
                     .build()).toList();
@@ -269,7 +269,7 @@ public class RoleImpl implements IRole {
                     .id(role.getId())
                     .name(role.getName())
                     .status(role.getStatus())
-                    .user(role.getName())
+                    .user(role.getUser().getUsername())
                     .registrationDate(role.getRegistrationDate())
                     .updateDate(role.getUpdateDate())
                     .build()).toList();

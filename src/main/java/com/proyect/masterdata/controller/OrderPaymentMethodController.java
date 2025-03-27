@@ -44,7 +44,7 @@ public class OrderPaymentMethodController {
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 
-    @PostMapping("activate")
+    @PutMapping()
     public ResponseEntity<ResponseSuccess> activate(
             @RequestParam("name") String name,
             @RequestParam("tokenUser") String tokenUser
@@ -68,22 +68,9 @@ public class OrderPaymentMethodController {
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<OrderPaymentMethodDTO>> result = iOrderPaymentMethod.list(name, user, sort, sortColumn, pageNumber, pageSize);
-        return new ResponseEntity<>(result.get(), HttpStatus.OK);
-    }
-
-    @GetMapping(value = "pagination/status-false")
-    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:SALES','ROLE:CUSTOMER_SERVICE','ROLE:BUSINESS') and hasAuthority('ACCESS:ORDER_PAYMENT_METHOD_GET')")
-    public ResponseEntity<Page<OrderPaymentMethodDTO>> listStatusFalse(
-            @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "user", required = false) String user,
-            @RequestParam(value = "sort", required = false) String sort,
-            @RequestParam(value = "sortColumn", required = false) String sortColumn,
-            @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<OrderPaymentMethodDTO>> result = iOrderPaymentMethod.listStatusFalse(name, user, sort, sortColumn, pageNumber,
-                pageSize);
+            @RequestParam("pageSize") Integer pageSize,
+            @RequestParam(value = "status",required = false) Boolean status) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<Page<OrderPaymentMethodDTO>> result = iOrderPaymentMethod.list(name, user, sort, sortColumn, pageNumber, pageSize,status);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 

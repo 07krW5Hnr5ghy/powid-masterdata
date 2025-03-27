@@ -41,6 +41,7 @@ public class SupplyOrderController {
             @RequestParam(value = "ref", required = false) String ref,
             @RequestParam(value = "user", required = true) String user,
             @RequestParam(value = "warehouse", required = false) String warehouse,
+            @RequestParam(value = "supplier", required = false) String supplier,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
             @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
             @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateStartDate,
@@ -56,6 +57,7 @@ public class SupplyOrderController {
                 ref,
                 user,
                 warehouse,
+                supplier,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -79,7 +81,7 @@ public class SupplyOrderController {
     //@PreAuthorize("hasAuthority('ROLE:STOCK') and hasAuthority('ACCESS:WAREHOUSE_POST')")
     public ResponseEntity<ResponseDelete> close(
             @RequestParam("username") String username,
-            @RequestParam("warehouseOutputId") UUID supplyOrderId
+            @RequestParam("supplyOrderId") UUID supplyOrderId
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseDelete> result = iSupplyOrder.closeSupplyOrder(supplyOrderId,username);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);

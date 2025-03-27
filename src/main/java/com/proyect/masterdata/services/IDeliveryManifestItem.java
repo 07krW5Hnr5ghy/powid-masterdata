@@ -1,6 +1,7 @@
 package com.proyect.masterdata.services;
 
 import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.dto.CourierProfileDTO;
 import com.proyect.masterdata.dto.DeliveryManifestItemDTO;
 import com.proyect.masterdata.dto.request.RequestDeliveryManifestItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -18,10 +19,12 @@ public interface IDeliveryManifestItem {
             DeliveryManifest deliveryManifest,
             Warehouse warehouse,
             User user) throws BadRequestExceptions,InterruptedException;
-    CompletableFuture<ResponseSuccess> updateDeliveryManifestItem(
+    CompletableFuture<ResponseSuccess> markDeliveredDeliveryManifestItem(
             UUID deliveryManifestItemId,
-            Boolean collected,
-            Boolean delivered,
+            String user
+    );
+    CompletableFuture<ResponseSuccess> markCollectedDeliveryManifestItem(
+            UUID deliveryManifestItemId,
             String user
     );
     CompletableFuture<Page<DeliveryManifestItemDTO>> list(
@@ -36,6 +39,7 @@ public interface IDeliveryManifestItem {
             String brand,
             Boolean delivered,
             String courier,
+            String courierDni,
             String warehouse,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -45,5 +49,10 @@ public interface IDeliveryManifestItem {
             String sortColumn,
             Integer pageNumber,
             Integer pageSize
+    );
+    CompletableFuture<CourierProfileDTO> courierProfile(
+            OffsetDateTime startDate,
+            OffsetDateTime endDate,
+            String username
     );
 }

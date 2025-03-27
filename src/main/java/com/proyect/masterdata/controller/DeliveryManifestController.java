@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.DeliveryManifestCourierDTO;
 import com.proyect.masterdata.dto.DeliveryManifestDTO;
 import com.proyect.masterdata.dto.request.RequestDeliveryManifest;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -28,6 +29,7 @@ public class DeliveryManifestController {
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody()RequestDeliveryManifest requestDeliveryManifest
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
+        //System.out.println(requestDeliveryManifest);
         CompletableFuture<ResponseSuccess> result = iDeliveryManifest.save(requestDeliveryManifest);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
@@ -39,6 +41,15 @@ public class DeliveryManifestController {
         CompletableFuture<DeliveryManifestDTO> result = iDeliveryManifest.getById(deliveryManifestId,user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+
+    @GetMapping("/check/{courierId}")
+    public ResponseEntity<DeliveryManifestCourierDTO> checkCourierToDeliveryManifest(
+            @PathVariable UUID courierId
+    ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<DeliveryManifestCourierDTO> result = iDeliveryManifest.checkCourierToDeliveryManifest(courierId);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
     @PutMapping("/{deliveryManifestId}")
     public ResponseEntity<ResponseSuccess> closeManifest(
             @PathVariable UUID deliveryManifestId,
@@ -53,6 +64,7 @@ public class DeliveryManifestController {
             @RequestParam(value = "manifestNumber",required = false) Long manifestNumber,
             @RequestParam(value = "warehouse",required = false) String warehouse,
             @RequestParam(value = "courier",required = false) String courier,
+            @RequestParam(value = "courierDni",required = false) String courierDni,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
             @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
             @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateStartDate,
@@ -68,6 +80,7 @@ public class DeliveryManifestController {
                 manifestNumber,
                 warehouse,
                 courier,
+                courierDni,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -78,6 +91,13 @@ public class DeliveryManifestController {
                 pageSize,
                 open
         );
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+    @GetMapping("last")
+    public ResponseEntity<DeliveryManifestDTO> getLast(
+            @RequestParam(value = "user", required = true) String user
+    ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<DeliveryManifestDTO> result = iDeliveryManifest.getLastDeliveryManifestByCourier(user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

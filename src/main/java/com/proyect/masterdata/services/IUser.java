@@ -8,6 +8,7 @@ import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
+import org.mapstruct.control.MappingControl;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
@@ -37,4 +38,5 @@ public interface IUser {
     ) throws BadRequestExceptions;
     CompletableFuture<ResponseSuccess> activate(String username,String tokenUser) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<List<UserQueryDTO>> listFilter(String user) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<List<UserQueryDTO>> listFilterListToRole(String tokenUser, String roleName) throws BadRequestExceptions,InternalErrorExceptions;
 }

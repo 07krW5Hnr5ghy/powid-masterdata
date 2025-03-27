@@ -39,7 +39,7 @@ public class UserRoleImpl implements IUserRole {
         User user;
         User userData;
         Role roleData;
-
+        System.out.println("save");
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             userData = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
@@ -89,6 +89,7 @@ public class UserRoleImpl implements IUserRole {
             User user;
             User userData;
             Role roleData;
+            System.out.println("save role asunc");
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 userData = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
@@ -114,13 +115,14 @@ public class UserRoleImpl implements IUserRole {
 
                 UserRole newUserRole = userRoleRepository.save(UserRole.builder()
                         .userId(userData.getId())
-                                .user(userData)
+                        .user(userData)
                         .roleId(roleData.getId())
-                                .role(roleData)
+                        .role(roleData)
                         .registrationDate(OffsetDateTime.now())
-                                .status(true)
+                        .status(true)
                         .user(user).userId(user.getId())
                         .build());
+                System.out.println(newUserRole);
                 iAudit.save("ADD_USER_ROLE","ROL "+newUserRole.getRole().getName()+" PARA USUARIO "+newUserRole.getUser().getUsername()+" CREADO.",newUserRole.getUser().getUsername(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)

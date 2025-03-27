@@ -27,7 +27,7 @@ public class Discount {
     private String name;
 
     @Column(name = "status")
-    private boolean status;
+    private Boolean status;
 
     @Column(name = "registration_date")
     @CreationTimestamp
@@ -43,4 +43,11 @@ public class Discount {
     @ManyToOne()
     @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
     private User user;
+
+    @Column(name = "client_id")
+    private UUID clientId;
+
+    @ManyToOne()
+    @JoinColumn(name="client_id",columnDefinition = "clientId",insertable = false,updatable = false)
+    private Client client;
 }

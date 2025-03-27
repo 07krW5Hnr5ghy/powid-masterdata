@@ -24,4 +24,5 @@ public class CourierDTO {
     private UUID id;
     private String user;
     private Boolean status;
+    private String dni;
 }

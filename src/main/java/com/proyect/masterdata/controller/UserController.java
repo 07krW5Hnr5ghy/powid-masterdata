@@ -97,4 +97,13 @@ public class UserController {
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
+    @GetMapping("list/to-role")
+    public ResponseEntity<List<UserQueryDTO>> listToRole(
+            @RequestParam("userToken") String userToken,
+            @RequestParam("roleName") String roleName
+    ) throws BadRequestExceptions, InterruptedException, ExecutionException {
+        CompletableFuture<List<UserQueryDTO>> result = iUser.listFilterListToRole(userToken, roleName);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
 }

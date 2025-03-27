@@ -14,6 +14,7 @@ public interface SupplyOrderRepositoryCustom {
             Long orderNumber,
             String ref,
             String warehouse,
+            String supplier,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,

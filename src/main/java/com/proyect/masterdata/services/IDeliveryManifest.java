@@ -1,5 +1,6 @@
 package com.proyect.masterdata.services;
 
+import com.proyect.masterdata.dto.DeliveryManifestCourierDTO;
 import com.proyect.masterdata.dto.DeliveryManifestDTO;
 import com.proyect.masterdata.dto.request.RequestDeliveryManifest;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -20,6 +21,7 @@ public interface IDeliveryManifest {
             Long manifestNumber,
             String warehouse,
             String courier,
+            String courierDni,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -30,4 +32,6 @@ public interface IDeliveryManifest {
             Integer pageSize,
             Boolean open
     ) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<DeliveryManifestCourierDTO> checkCourierToDeliveryManifest(UUID courierId) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<DeliveryManifestDTO> getLastDeliveryManifestByCourier(String username) throws BadRequestExceptions,InternalErrorExceptions;
 }

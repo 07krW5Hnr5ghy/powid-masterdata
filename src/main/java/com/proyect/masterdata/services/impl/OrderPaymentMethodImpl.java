@@ -34,9 +34,7 @@ import java.util.concurrent.CompletableFuture;
 @RequiredArgsConstructor
 @Log4j2
 public class OrderPaymentMethodImpl implements IOrderPaymentMethod {
-
     private final OrderPaymentMethodRepository orderPaymentMethodRepository;
-    private final PaymentMethodMapper paymentMethodMapper;
     private final UserRepository userRepository;
     private final OrderPaymentMethodRepositoryCustom orderPaymentMethodRepositoryCustom;
     private final IAudit iAudit;
@@ -183,13 +181,25 @@ public class OrderPaymentMethodImpl implements IOrderPaymentMethod {
     }
 
     @Override
-    public CompletableFuture<Page<OrderPaymentMethodDTO>> list(String name, String user, String sort, String sortColumn, Integer pageNumber,
-                                            Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<OrderPaymentMethodDTO>> list(
+            String name,
+            String user,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<OrderPaymentMethod> orderPaymentMethodPage;
             try {
-                orderPaymentMethodPage = orderPaymentMethodRepositoryCustom.searchForPaymentMethod(name, user, sort, sortColumn,
-                        pageNumber, pageSize, true);
+                orderPaymentMethodPage = orderPaymentMethodRepositoryCustom.searchForPaymentMethod(
+                        name,
+                        user,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        status);
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -211,37 +221,6 @@ public class OrderPaymentMethodImpl implements IOrderPaymentMethod {
                     orderPaymentMethodPage.getPageable(), orderPaymentMethodPage.getTotalElements());
         });
     }
-
-    @Override
-    public CompletableFuture<Page<OrderPaymentMethodDTO>> listStatusFalse(String name, String user, String sort, String sortColumn,
-                                                       Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            Page<OrderPaymentMethod> orderPaymentMethodPage;
-            try {
-                orderPaymentMethodPage = orderPaymentMethodRepositoryCustom.searchForPaymentMethod(name, user, sort, sortColumn,
-                        pageNumber, pageSize, false);
-            } catch (RuntimeException e) {
-                log.error(e);
-                throw new BadRequestExceptions(Constants.ResultsFound);
-            }
-
-            if (orderPaymentMethodPage.isEmpty()) {
-                return new PageImpl<>(Collections.emptyList());
-            }
-
-            List<OrderPaymentMethodDTO> orderPaymentMethodDTOS = orderPaymentMethodPage.getContent().stream().map(orderPaymentMethod -> OrderPaymentMethodDTO.builder()
-                    .id(orderPaymentMethod.getId())
-                    .name(orderPaymentMethod.getName())
-                    .user(orderPaymentMethod.getUser().getUsername())
-                    .status(orderPaymentMethod.getStatus())
-                    .build()).toList();
-
-            return new PageImpl<>(
-                    orderPaymentMethodDTOS,
-                    orderPaymentMethodPage.getPageable(), orderPaymentMethodPage.getTotalElements());
-        });
-    }
-
     @Override
     public CompletableFuture<List<OrderPaymentMethodDTO>> listFilter() throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{

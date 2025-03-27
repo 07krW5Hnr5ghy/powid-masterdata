@@ -30,11 +30,23 @@ public class SupplyOrderItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "purchase_item_id")
+    @Column(name = "supply_order_item_id")
     private UUID id;
 
     @Column(name = "quantity")
     private Integer quantity;
+
+    @Column(name = "unit_value")
+    private Double unitValue;
+
+    @Column(name = "discounts_amount")
+    private Double discountsAmount;
+
+    @Column(name = "charges_amount")
+    private Double chargesAmount;
+
+    @Column(name = "unit_sale_price")
+    private Double unitSalePrice;
 
     @Column(name = "observations",columnDefinition = "text")
     private String observations;
@@ -52,6 +64,9 @@ public class SupplyOrderItem {
 
     @Column(name = "product_id")
     private UUID productId;
+
+    @Column(name = "purchase_igv_id")
+    private UUID purchaseIGVId;
 
     @Column(name = "client_id")
     private UUID clientId;
@@ -73,6 +88,10 @@ public class SupplyOrderItem {
     @ManyToOne
     @JoinColumn(name = "purchase_id",columnDefinition = "purchaseId",insertable = false,updatable = false)
     private SupplyOrder supplyOrder;
+
+    @ManyToOne
+    @JoinColumn(name = "purchase_igv_id",columnDefinition = "purchaseIGVId",insertable = false,updatable = false)
+    private PurchaseIGV purchaseIGV;
 
     @ManyToOne()
     @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)

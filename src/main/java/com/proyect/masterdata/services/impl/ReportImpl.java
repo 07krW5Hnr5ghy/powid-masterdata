@@ -75,7 +75,7 @@ public class ReportImpl implements IReport {
                 Row headerRow = sheet.createRow(0);
 
                 Cell cell = headerRow.createCell(0);
-                cell.setCellValue("SKU INVENTARIO");
+                cell.setCellValue("SKU PRODUCTO");
                 cell.setCellStyle(headerStyle);
 
                 cell = headerRow.createCell(1);
@@ -91,15 +91,15 @@ public class ReportImpl implements IReport {
                 cell.setCellStyle(headerStyle);
 
                 cell = headerRow.createCell(4);
-                cell.setCellValue("COLOR");
+                cell.setCellValue("SUB CATEGORIA");
                 cell.setCellStyle(headerStyle);
 
                 cell = headerRow.createCell(5);
-                cell.setCellValue("TALLA");
+                cell.setCellValue("COLOR");
                 cell.setCellStyle(headerStyle);
 
                 cell = headerRow.createCell(6);
-                cell.setCellValue("PROVEEDOR");
+                cell.setCellValue("TALLA");
                 cell.setCellStyle(headerStyle);
 
                 cell = headerRow.createCell(7);
@@ -109,13 +109,13 @@ public class ReportImpl implements IReport {
                 int currentRow = 1;
                 for(GeneralStock generalStock:generalStockList){
                     Row row = sheet.createRow(currentRow);
-                    //row.createCell(0).setCellValue(generalStock.getSupplierProduct().getSerial());
-                    //row.createCell(1).setCellValue(generalStock.getSupplierProduct().getProduct().getSku());
-                    //row.createCell(2).setCellValue(generalStock.getSupplierProduct().getProduct().getModel().getName());
-                    //row.createCell(3).setCellValue(generalStock.getSupplierProduct().getProduct().getCategoryProduct().getName());
-//                    row.createCell(4).setCellValue(generalStock.getSupplierProduct().getProduct().getColor().getName());
-//                    row.createCell(5).setCellValue(generalStock.getSupplierProduct().getProduct().getSize().getName());
-//                    row.createCell(6).setCellValue(generalStock.getSupplierProduct().getSupplier().getBusinessName());
+                    row.createCell(0).setCellValue(iUtil.buildProductSku(generalStock.getProduct()));
+                    row.createCell(1).setCellValue(generalStock.getProduct().getName());
+                    row.createCell(2).setCellValue(generalStock.getProduct().getModel().getName());
+                    row.createCell(3).setCellValue(generalStock.getProduct().getSubCategoryProduct().getCategoryProduct().getName());
+                    row.createCell(4).setCellValue(generalStock.getProduct().getSubCategoryProduct().getName());
+                    row.createCell(5).setCellValue(generalStock.getProduct().getColor().getName());
+                    row.createCell(6).setCellValue(generalStock.getProduct().getSize().getName());
                     row.createCell(7).setCellValue(generalStock.getQuantity());
                     currentRow++;
                 }
@@ -160,7 +160,7 @@ public class ReportImpl implements IReport {
                 Row headerRow = sheet.createRow(0);
 
                 Cell cell = headerRow.createCell(0);
-                cell.setCellValue("SKU INVENTARIO");
+                cell.setCellValue("SKU");
                 cell.setCellStyle(headerStyle);
 
                 cell = headerRow.createCell(1);
@@ -180,15 +180,15 @@ public class ReportImpl implements IReport {
                 cell.setCellStyle(headerStyle);
 
                 cell = headerRow.createCell(5);
-                cell.setCellValue("COLOR");
+                cell.setCellValue("SUB CATEGORIA");
                 cell.setCellStyle(headerStyle);
 
                 cell = headerRow.createCell(6);
-                cell.setCellValue("TALLA");
+                cell.setCellValue("COLOR");
                 cell.setCellStyle(headerStyle);
 
                 cell = headerRow.createCell(7);
-                cell.setCellValue("PROVEEDOR");
+                cell.setCellValue("TALLA");
                 cell.setCellStyle(headerStyle);
 
                 cell = headerRow.createCell(8);
@@ -198,14 +198,14 @@ public class ReportImpl implements IReport {
                 int currentRow = 1;
                 for(WarehouseStock warehouseStock:warehouseStockList){
                     Row row = sheet.createRow(currentRow);
-                    //row.createCell(0).setCellValue(warehouseStock.getSupplierProduct().getSerial());
-                    //row.createCell(1).setCellValue(warehouseStock.getSupplierProduct().getProduct().getSku());
+                    row.createCell(0).setCellValue(iUtil.buildProductSku(warehouseStock.getProduct()));
+                    row.createCell(1).setCellValue(warehouseStock.getProduct().getName());
                     row.createCell(2).setCellValue(warehouseStock.getWarehouse().getName());
-                    //row.createCell(3).setCellValue(warehouseStock.getSupplierProduct().getProduct().getModel().getName());
-                    //row.createCell(4).setCellValue(warehouseStock.getSupplierProduct().getProduct().getCategoryProduct().getName());
-//                    row.createCell(5).setCellValue(warehouseStock.getSupplierProduct().getProduct().getColor().getName());
-//                    row.createCell(6).setCellValue(warehouseStock.getSupplierProduct().getProduct().getSize().getName());
-//                    row.createCell(7).setCellValue(warehouseStock.getSupplierProduct().getSupplier().getBusinessName());
+                    row.createCell(3).setCellValue(warehouseStock.getProduct().getModel().getName());
+                    row.createCell(4).setCellValue(warehouseStock.getProduct().getSubCategoryProduct().getCategoryProduct().getName());
+                    row.createCell(5).setCellValue(warehouseStock.getProduct().getSubCategoryProduct().getName());
+                    row.createCell(6).setCellValue(warehouseStock.getProduct().getColor().getName());
+                    row.createCell(7).setCellValue(warehouseStock.getProduct().getSize().getName());
                     row.createCell(8).setCellValue(warehouseStock.getQuantity());
                     currentRow++;
                 }

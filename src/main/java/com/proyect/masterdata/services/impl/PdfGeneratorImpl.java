@@ -1,12 +1,17 @@
 package com.proyect.masterdata.services.impl;
 
+import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.colors.DeviceGray;
+import com.itextpdf.kernel.font.PdfFont;
+import com.itextpdf.kernel.font.PdfFontFactory;
 import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.kernel.pdf.canvas.draw.ILineDrawer;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.Style;
+import com.itextpdf.layout.borders.Border;
 import com.itextpdf.layout.element.Cell;
 import com.itextpdf.layout.element.LineSeparator;
 import com.itextpdf.layout.element.Paragraph;
@@ -28,6 +33,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -35,6 +41,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -234,6 +241,7 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                                     .paymentMethod(deliveryManifestItem.getOrderItem().getOrdering().getOrderPaymentMethod().getName())
                                     .paymentState(deliveryManifestItem.getOrderItem().getOrdering().getOrderPaymentState().getName())
                                     .orderItemAmount(totalPrice)
+                                    .product(deliveryManifestItem.getProduct().getName())
                                     .build();
                         }).toList();
                 double totalOrdersSaleAmount = 0.00;
@@ -282,56 +290,168 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                         .paidAmount(totalOrdersSaleAmount-totalOrdersDuePayment)
                         .payableAmount(totalOrdersDuePayment)
                         .observations(deliveryManifest.getObservations())
+                        .courierPhone(deliveryManifest.getCourier().getPhone())
+                        .courierPlate(deliveryManifest.getCourier().getPlate())
                         .build();
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 PdfWriter writer = new PdfWriter(out);
                 PdfDocument pdfDoc = new PdfDocument(writer);
-                pdfDoc.setDefaultPageSize(PageSize.A4);
 
                 Document document = new Document(pdfDoc);
-                document.setMargins(2,2,2,2);
-                // Title
-                Paragraph title = new Paragraph("Guia Motorizado")
-                        .setBold()
-                        .setFontSize(18)
-                        .setTextAlignment(TextAlignment.CENTER);
-                document.add(title);
+                // Fonts
+                PdfFont boldFont = PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD);
+                PdfFont regularFont = PdfFontFactory.createFont(StandardFonts.HELVETICA);
 
-                // Manifest Details
-                document.add(new Paragraph("Guia Numero : " + deliveryManifestDTO.getManifestNumber()));
+                // Add Company Header
+                document.add(new Paragraph("ARANNI®")
+                        .setFont(boldFont)
+                        .setFontSize(24)
+                        .setTextAlignment(TextAlignment.CENTER));
+
+                document.add(new Paragraph("IQUIQUE No.\nCel: 970334874\nCORPORACIÓN ARANNI SAC\nR.U.C: 20609605601")
+                        .setFont(regularFont)
+                        .setFontSize(10)
+                        .setTextAlignment(TextAlignment.CENTER));
+
                 document.add(new Paragraph("\n"));
-//                // Table Header
-                Table table = new Table(4);
-                table.addCell("# Pedido").setBold();
-                table.addCell("Descripcion").setBold();
-                table.addCell("Telefono").setBold();
-                table.addCell("Producto").setBold();
-                table.addCell("Distrito").setBold();
-                table.addCell("Importe").setBold();
-                table.addCell("Gestion").setBold();
 
-                for(DeliveryManifestItemDTO deliveryManifestItemDTO:deliveryManifestItemDTOS){
-                    table.addCell(deliveryManifestItemDTO.getOrderNumber().toString());
-                    table.addCell(deliveryManifestItemDTO.getCustomer());
-                    table.addCell(deliveryManifestItemDTO.getPhone());
-                    table.addCell(deliveryManifestItemDTO.getSkuProduct());
-                    table.addCell(deliveryManifestItemDTO.getDistrict());
-                    table.addCell(deliveryManifestItemDTO.getOrderItemAmount().toString());
-                    table.addCell(deliveryManifestItemDTO.getManagement());
+                // Guide Number and Date Section
+                Table guideTable = new Table(new float[]{2, 1});
+                guideTable.setWidth(UnitValue.createPercentValue(100));
+
+                guideTable.addCell(new Cell(1, 2)
+                        .add(new Paragraph("GUIA DE SALIDA").setFont(boldFont).setTextAlignment(TextAlignment.CENTER))
+                        .setBackgroundColor(new DeviceGray(0.85f))
+                        .setPadding(5));
+
+                guideTable.addCell(new Cell().add(new Paragraph("Número: #" + deliveryManifestDTO.getManifestNumber()))
+                        .setFont(boldFont)
+                        .setBorder(Border.NO_BORDER));
+
+                guideTable.addCell(new Cell().add(new Paragraph("Fecha: " + deliveryManifestDTO.getRegistrationDate()))
+                        .setFont(regularFont)
+                        .setBorder(Border.NO_BORDER));
+
+                document.add(guideTable);
+                document.add(new Paragraph("\n"));
+
+                // Driver Information
+                document.add(new Paragraph("Placa: " + deliveryManifestDTO.getCourierPlate() + "    Cel: " + deliveryManifestDTO.getCourierPhone())
+                        .setFont(regularFont)
+                        .setFontSize(10));
+
+                document.add(new Paragraph("\n"));
+
+                // Paid Orders Table
+                document.add(new Paragraph("PAGADOS").setFont(boldFont).setFontSize(12));
+
+                Table paidTable = new Table(new float[]{1, 2, 3, 2, 2, 2});
+                paidTable.setWidth(UnitValue.createPercentValue(100));
+
+                paidTable.addCell("No. Pedido").setBold();
+                paidTable.addCell("Producto").setBold();
+                paidTable.addCell("Descripción").setBold();
+                paidTable.addCell("Teléfono").setBold();
+                paidTable.addCell("Distrito").setBold();
+                paidTable.addCell("Importe").setBold();
+
+                List<DeliveryManifestItemDTO> paidItems = new ArrayList<>();
+                double paidItemsAmount = 0;
+                for(DeliveryManifestItemDTO deliveryManifestItemDTO:deliveryManifestDTO.getDeliveryManifestItemDTOS()){
+                    if(!Objects.equals(deliveryManifestItemDTO.getPaymentMethod(), "CONTRAENTREGA")){
+                        paidTable.addCell(deliveryManifestItemDTO.getOrderNumber().toString());
+                        paidTable.addCell(deliveryManifestItemDTO.getProduct());
+                        paidTable.addCell(deliveryManifestItemDTO.getCustomer());
+                        paidTable.addCell(deliveryManifestItemDTO.getPhone());
+                        paidTable.addCell(deliveryManifestItemDTO.getDistrict());
+                        paidTable.addCell("S/ " + deliveryManifestItemDTO.getOrderItemAmount());
+                        paidItems.add(deliveryManifestItemDTO);
+                        paidItemsAmount+=deliveryManifestItemDTO.getOrderItemAmount();
+                    }
                 }
-//
-//                // Populate Table with Items
-//                for (DeliveryItem item : items) {
-//                    table.addCell(item.getItemCode());
-//                    table.addCell(item.getDescription());
-//                    table.addCell(String.valueOf(item.getQuantity()));
-//                    table.addCell(item.getDestination());
-//                }
+
+                document.add(paidTable);
+                document.add(new Paragraph("\n"));
+
+                // COD Orders Table
+                document.add(new Paragraph("CONTRAENTREGA").setFont(boldFont).setFontSize(12));
+
+                Table cashOnDeliveryTable = new Table(new float[]{1, 2, 3, 2, 2, 2});
+                cashOnDeliveryTable.setWidth(UnitValue.createPercentValue(100));
+
+                cashOnDeliveryTable.addCell("No. Pedido").setBold();
+                cashOnDeliveryTable.addCell("Producto").setBold();
+                cashOnDeliveryTable.addCell("Descripción").setBold();
+                cashOnDeliveryTable.addCell("Teléfono").setBold();
+                cashOnDeliveryTable.addCell("Distrito").setBold();
+                cashOnDeliveryTable.addCell("Importe").setBold();
+
+                List<DeliveryManifestItemDTO> cashOnDeliveryItems = new ArrayList<>();
+                double cashOnDeliveryItemsAmount = 0;
+                for(DeliveryManifestItemDTO deliveryManifestItemDTO:deliveryManifestDTO.getDeliveryManifestItemDTOS()){
+                    if(Objects.equals(deliveryManifestItemDTO.getPaymentMethod(), "CONTRAENTREGA")){
+                        cashOnDeliveryTable.addCell(deliveryManifestItemDTO.getOrderNumber().toString());
+                        cashOnDeliveryTable.addCell(deliveryManifestItemDTO.getProduct());
+                        cashOnDeliveryTable.addCell(deliveryManifestItemDTO.getCustomer());
+                        cashOnDeliveryTable.addCell(deliveryManifestItemDTO.getPhone());
+                        cashOnDeliveryTable.addCell(deliveryManifestItemDTO.getDistrict());
+                        cashOnDeliveryTable.addCell("S/ " + deliveryManifestItemDTO.getOrderItemAmount());
+                        cashOnDeliveryItems.add(deliveryManifestItemDTO);
+                        cashOnDeliveryItemsAmount+=deliveryManifestItemDTO.getOrderItemAmount();
+                    }
+                }
+
+                document.add(cashOnDeliveryTable);
+
+                document.add(new Paragraph("\n"));
+
+                Map<Long, Long> paidOrderCount = paidItems.stream()
+                        .collect(Collectors.groupingBy(DeliveryManifestItemDTO::getOrderNumber, Collectors.counting()));
+
+                Map<Long, Long> cashOnDeliveryOrderCount = cashOnDeliveryItems.stream()
+                        .collect(Collectors.groupingBy(DeliveryManifestItemDTO::getOrderNumber, Collectors.counting()));
+
+                // Summary Section
+                Table summaryTable = new Table(new float[]{3, 1,3,1});
+                summaryTable.setWidth(UnitValue.createPercentValue(100));
+
+                summaryTable.addCell("No. PEDIDOS").setFont(boldFont);
+                summaryTable.addCell(String.valueOf(paidOrderCount.size())).setTextAlignment(TextAlignment.RIGHT);
+
+                summaryTable.addCell("TOTAL PAGADO").setFont(boldFont);
+                summaryTable.addCell("S/ " + paidItemsAmount).setTextAlignment(TextAlignment.RIGHT);
+
+                summaryTable.addCell("No. PEDIDOS").setFont(boldFont);
+                summaryTable.addCell(String.valueOf(cashOnDeliveryOrderCount.size())).setTextAlignment(TextAlignment.RIGHT);
+
+                summaryTable.addCell("TOTAL POR COBRAR").setFont(boldFont);
+                summaryTable.addCell("S/ " + cashOnDeliveryItemsAmount).setTextAlignment(TextAlignment.RIGHT);
+
+                document.add(summaryTable);
+
+                document.add(new Paragraph("\n"));
+
+                // Bank Details
+                document.add(new Paragraph("BCP\nCta Cte: 191985539036\nCCI: 0021910098553903658\nYAPE ó PLIN: 970 334 874\nObservaciones:")
+                        .setFont(regularFont)
+                        .setFontSize(10));
+
+                document.add(new Paragraph("\n"));
+
+                // Signature Section
+                Table signatureTable = new Table(3);
+                signatureTable.setWidth(UnitValue.createPercentValue(100));
+
+                signatureTable.addCell(new Cell().add(new Paragraph("DESPACHADO POR")).setBackgroundColor(new DeviceGray(0.85f)).setTextAlignment(TextAlignment.CENTER));
+                signatureTable.addCell(new Cell().add(new Paragraph("RECIBIDO POR")).setBackgroundColor(new DeviceGray(0.85f)).setTextAlignment(TextAlignment.CENTER));
+                signatureTable.addCell(new Cell().add(new Paragraph("VALIDADO POR")).setBackgroundColor(new DeviceGray(0.85f)).setTextAlignment(TextAlignment.CENTER));
+
+                document.add(signatureTable);
 
                 document.close();
 
                 return new ByteArrayInputStream(out.toByteArray());
-            }catch (RuntimeException e){
+            }catch (RuntimeException | IOException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }

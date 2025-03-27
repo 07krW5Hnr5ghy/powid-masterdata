@@ -328,15 +328,28 @@ public class OrderItemImpl implements IOrderItem {
             Product product;
             OrderItem orderItem;
             Discount discount;
+            //System.out.println(orderId);
+            //System.out.println(requestOrderItem);
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 ordering = orderingRepository.findById(orderId).orElse(null);
+                //System.out.println("orderinng -> " + ordering);
                 product = productRepository.findByIdAndStatusTrue(requestOrderItem.getProductId());
+                orderItem = orderItemRepository.findByProductId(product.getId());
+                //System.out.println( "order item ->" + orderItem);
                 discount = discountRepository.findByName(requestOrderItem.getDiscount().toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.InternalErrorExceptions);
             }
+
+            if(orderItem != null){
+                return ResponseSuccess.builder()
+                        .code(409)
+                        .message("El producto ya existe.")
+                        .build();
+            }
+
 
             if(user == null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
@@ -348,24 +361,38 @@ public class OrderItemImpl implements IOrderItem {
 
             if(product == null){
                 throw new BadRequestExceptions(Constants.ErrorProduct);
-            }else {
-                orderItem  = orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());
+//            }else {
+//                orderItem  = orderItemRepository.findOrderItemById(ordering.getId());
+            //orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());
             }
+            /*
+            * orderItem.getId(),
+                        requestOrderItem.getQuantity(),
+                        requestOrderItem.getDiscountAmount(),
+                        requestOrderItem.getObservations().toUpperCase(),
+                        discount.getId(),
+                        OffsetDateTime.now() */
 
-            if(orderItem != null ){
-                throw new BadRequestExceptions(Constants.ErrorOrderItemExists);
-            }
+
+//            System.out.println("order item -> "  + orderItem);
+
+//            if(orderItem != null ){
+//                throw new BadRequestExceptions(Constants.ErrorOrderItemExists);
+//            }
 
             if(discount==null){
                 throw new BadRequestExceptions(Constants.ErrorDiscount);
             }
+
+
+
 
             try{
                 OrderItem newOrderItem = orderItemRepository.save(OrderItem.builder()
                         .ordering(ordering)
                         .orderId(ordering.getId())
                         .status(true)
-                        .selectOrderStatus(orderItem.getSelectOrderStatus())
+                        .selectOrderStatus(false)
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .discount(discount)
