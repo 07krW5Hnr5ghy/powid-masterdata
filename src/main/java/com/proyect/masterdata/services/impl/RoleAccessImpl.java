@@ -80,7 +80,8 @@ public class RoleAccessImpl implements IRoleAccess {
                             .access(access)
                             .registrationDate(OffsetDateTime.now())
                             .updateDate(OffsetDateTime.now())
-                            .user(user).userId(user.getId())
+                            .user(user)
+                            .userId(user.getId())
                             .status(true)
                     .build());
             iAudit.save("ADD_ROLE_ACCESS","ROL "+newRoleAccess.getRole().getName()+" AGREGA ACCESO "+newRoleAccess.getAccess().getName()+".",newRoleAccess.getRole().getName(),user.getUsername());
@@ -133,11 +134,12 @@ public class RoleAccessImpl implements IRoleAccess {
                 RoleAccess newRoleAccess = roleAccessRepository.save(RoleAccess.builder()
                         .accessId(access.getId())
                         .roleId(role.getId())
-                                .role(role)
-                                .access(access)
+                        .role(role)
+                        .access(access)
                         .registrationDate(OffsetDateTime.now())
                         .updateDate(OffsetDateTime.now())
-                        .user(user).userId(user.getId())
+                        .user(user)
+                        .userId(user.getId())
                         .status(true)
                         .build());
                 iAudit.save("ADD_ROLE_ACCESS","ROL "+newRoleAccess.getRole().getName()+" AGREGA ACCESO "+newRoleAccess.getAccess().getName()+".",newRoleAccess.getRole().getName(),user.getUsername());

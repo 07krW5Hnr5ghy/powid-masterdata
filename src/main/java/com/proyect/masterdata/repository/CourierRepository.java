@@ -9,11 +9,18 @@ import java.util.UUID;
 
 @Repository
 public interface CourierRepository extends JpaRepository<Courier, UUID> {
-    Courier findByName(String name);
+    Courier findByNameOrDniAndClientId(String name,String dni,UUID clientId);
+    Courier findByNameAndClientIdAndStatusTrue(String name,UUID clientId);
+    Courier findByDniAndClientIdAndStatusTrue(String dni,UUID clientId);
+    Courier findByDniAndClientIdAndStatusFalse(String dni,UUID clientId);
+    Courier findByDniAndClientId(String dni,UUID clientId);
     Courier findByNameAndStatusTrue(String name);
-    Courier findByNameAndStatusFalse(String name);
+    Courier findByNameAndClientIdAndStatusFalse(String name,UUID clientId);
     List<Courier> findAllByClientIdAndStatusTrue(UUID clientId);
     List<Courier> findAllByClientIdAndStatusFalse(UUID clientId);
     List<Courier> findAllByClientId(UUID clientId);
-    List<Courier> findByNameIn(List<String> names);
+    List<Courier> findByClientIdAndNameIn(UUID clientId,List<String> names);
+
+
+    Courier findByDni(String dni);
 }

@@ -46,8 +46,11 @@ public class OrderContacted {
     @Column(name = "client_id")
     private UUID clientId;
 
-    @Column(name = "agent_id")
-    private UUID agentId;
+    @Column(name = "agent_user_id")
+    private UUID agentUserId;
+
+    @Column(name = "delivery_zone_id")
+    private UUID deliveryZoneId;
 
     @OneToOne
     @JoinColumn(name = "order_id",columnDefinition = "orderId",insertable = false,updatable = false)
@@ -62,6 +65,10 @@ public class OrderContacted {
     private Client client;
 
     @ManyToOne()
-    @JoinColumn(name="agent_id",columnDefinition = "agentId",insertable = false,updatable = false)
-    private User agent;
+    @JoinColumn(name="agent_user_id",columnDefinition = "agentUserId",insertable = false,updatable = false)
+    private User agentUser;
+
+    @ManyToOne()
+    @JoinColumn(name="delivery_zone_id",columnDefinition = "deliveryZoneId",insertable = false,updatable = false)
+    private DeliveryZone deliveryZone;
 }

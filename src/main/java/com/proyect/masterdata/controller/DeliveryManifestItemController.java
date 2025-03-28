@@ -1,5 +1,6 @@
 package com.proyect.masterdata.controller;
 
+import com.proyect.masterdata.dto.CourierProfileDTO;
 import com.proyect.masterdata.dto.DeliveryManifestItemDTO;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -23,14 +24,20 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class DeliveryManifestItemController {
     private final IDeliveryManifestItem iDeliveryManifestItem;
-    @PutMapping("/{deliveryManifestItemId}")
-    public ResponseEntity<ResponseSuccess> updateManifestItem(
+    @PutMapping("/delivered/{deliveryManifestItemId}")
+    public ResponseEntity<ResponseSuccess> markDeliveredItem(
             @PathVariable UUID deliveryManifestItemId,
-            @RequestParam("collected") Boolean collected,
-            @RequestParam("delivered") Boolean delivered,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iDeliveryManifestItem.updateDeliveryManifestItem(deliveryManifestItemId,collected,delivered,user);
+        CompletableFuture<ResponseSuccess> result = iDeliveryManifestItem.markDeliveredDeliveryManifestItem(deliveryManifestItemId,user);
+        return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+    @PutMapping("/collected/{deliveryManifestItemId}")
+    public ResponseEntity<ResponseSuccess> markCollectedItem(
+            @PathVariable UUID deliveryManifestItemId,
+            @RequestParam("user") String user
+    ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iDeliveryManifestItem.markDeliveredDeliveryManifestItem(deliveryManifestItemId,user);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping()
@@ -44,8 +51,8 @@ public class DeliveryManifestItemController {
             @RequestParam(value = "size",required = false) String size,
             @RequestParam(value = "model",required = false) String model,
             @RequestParam(value = "brand",required = false) String brand,
-            @RequestParam(value = "deliveryStatus",required = false) String deliveryStatus,
             @RequestParam(value = "courier",required = false) String courier,
+            @RequestParam(value = "courierDni",required = false) String courierDni,
             @RequestParam(value = "warehouse",required = false) String warehouse,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
             @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
@@ -69,6 +76,7 @@ public class DeliveryManifestItemController {
                 brand,
                 delivered,
                 courier,
+                courierDni,
                 warehouse,
                 registrationStartDate,
                 registrationEndDate,
@@ -81,4 +89,14 @@ public class DeliveryManifestItemController {
         );
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+    @GetMapping("profile")
+    public ResponseEntity<CourierProfileDTO> courierProfile(
+            @RequestParam(value = "registrationStartDate") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
+            @RequestParam(value = "registrationEndDate") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
+            @RequestParam(value = "user") String username
+    ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<CourierProfileDTO> result = iDeliveryManifestItem.courierProfile(registrationStartDate,registrationEndDate,username);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
 }

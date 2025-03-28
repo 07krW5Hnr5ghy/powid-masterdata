@@ -4,6 +4,7 @@ import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.CourierDTO;
 import com.proyect.masterdata.dto.request.RequestCourier;
 import com.proyect.masterdata.dto.request.RequestCourierOrder;
+import com.proyect.masterdata.dto.request.RequestCourierUser;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
@@ -39,6 +41,12 @@ public class CourierImpl implements ICourier {
     private final IAudit iAudit;
     private final IOrderLog iOrderLog;
     private final DeliveryCompanyRepository deliveryCompanyRepository;
+    private final DistrictRepository districtRepository;
+    private final UserRoleRepository userRoleRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final RoleRepository roleRepository;
+    private final ProvinceRepository provinceRepository;
+
     @Override
     public CompletableFuture<ResponseSuccess> save(RequestCourier requestCourier, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -47,7 +55,6 @@ public class CourierImpl implements ICourier {
             DeliveryCompany deliveryCompany;
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                courier = courierRepository.findByName(requestCourier.getCourier().toUpperCase());
                 deliveryCompany = deliveryCompanyRepository.findByName(requestCourier.getCompany().toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -56,6 +63,8 @@ public class CourierImpl implements ICourier {
 
             if(user == null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                courier = courierRepository.findByNameOrDniAndClientId(requestCourier.getCourier().toUpperCase(), requestCourier.getDni(), user.getClientId());
             }
 
             if(deliveryCompany==null){
@@ -76,6 +85,7 @@ public class CourierImpl implements ICourier {
                         .updateDate(OffsetDateTime.now())
                         .client(user.getClient())
                         .clientId(user.getClientId())
+                                .dni(requestCourier.getDni())
                         .status(true)
                                 .user(user)
                                 .userId(user.getId())
@@ -95,14 +105,117 @@ public class CourierImpl implements ICourier {
     }
 
     @Override
-    public CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> saveCourierToUser(RequestCourierUser requestCourierUser, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            final String ROL_NAME = "COURIER";
+            User userUpper, newUser;
+            Courier courier;
+            DeliveryCompany deliveryCompany;
+            District district;
+            Province province;
+            Role role;
+            try {
+                userUpper = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                deliveryCompany = deliveryCompanyRepository.findByName(requestCourierUser.getCompany().toUpperCase());
+                newUser = userRepository.findByUsernameAndStatusTrue(requestCourierUser.getUsername().toUpperCase());
+                //district = districtRepository.findByNameAndStatusTrue(requestCourierUser.getDistrict().toUpperCase());
+                province = provinceRepository.findByNameAndStatusTrue(requestCourierUser.getProvince().toUpperCase());
+                role = roleRepository.findByNameAndStatusTrue(ROL_NAME);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(userUpper == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                courier = courierRepository.findByNameOrDniAndClientId(requestCourierUser.getName() + requestCourierUser.getSurname(), requestCourierUser.getDni(), userUpper.getClientId());
+            }
+            if(courier != null){
+                throw new BadRequestExceptions(Constants.ErrorCourierExists);
+            }
+            if(deliveryCompany == null){
+                throw new BadRequestExceptions(Constants.ErrorDeliveryCompany);
+            }
+            if(newUser != null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+//            if(district == null){
+//                throw new BadRequestExceptions(Constants.ErrorDistrict);
+//            }
+
+            if(province==null){
+                throw new BadRequestExceptions(Constants.ErrorProvince);
+            }else{
+                district = districtRepository.findByNameAndProvinceIdAndStatusTrue(requestCourierUser.getDistrict().toUpperCase(),province.getId());
+            }
+            try {
+                Courier newCourier = courierRepository.save(Courier.builder()
+                        .name(requestCourierUser.getName().toUpperCase() +" "+ requestCourierUser.getSurname().toUpperCase())
+                        .phone(requestCourierUser.getMobile())
+                        .address(requestCourierUser.getAddress())
+                        .plate(requestCourierUser.getPlate())
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
+                        .client(userUpper.getClient())
+                        .clientId(userUpper.getClientId())
+                        .status(true)
+                        .user(userUpper)
+                        .userId(userUpper.getId())
+                        .dni(requestCourierUser.getDni())
+                        .deliveryCompany(deliveryCompany)
+                        .deliveryCompanyId(deliveryCompany.getId())
+                        .build());
+
+                User savedUserCouier = userRepository.save(User.builder()
+                        .username(requestCourierUser.getUsername().toUpperCase())
+                        .name(requestCourierUser.getName().toUpperCase())
+                        .surname(requestCourierUser.getSurname().toUpperCase())
+                        .dni(requestCourierUser.getDni())
+                        .address(requestCourierUser.getAddress().toUpperCase())
+                        .district(district)
+                        .districtId(district.getId())
+                        .email(requestCourierUser.getEmail())
+                        .mobile(requestCourierUser.getMobile())
+                        .gender(requestCourierUser.getGender().toUpperCase())
+                        .password(passwordEncoder.encode(requestCourierUser.getPassword()))
+                        .registrationDate(OffsetDateTime.now())
+                        .clientId(userUpper.getClientId())
+                        .client(userUpper.getClient())
+                        .status(true)
+                        .build());
+
+                userRoleRepository.save(UserRole.builder()
+                        .registrationDate(OffsetDateTime.now())
+                        .userId(savedUserCouier.getId())
+                        .roleId(role.getId())
+                        .user(savedUserCouier)
+                        .status(true)
+                        .build());
+
+                iAudit.save("ADD_COURIER","COURIER "+newCourier.getName()+" CREADO.",newCourier.getName(),userUpper.getUsername());
+                iAudit.save("ADD_USER","USUARIO "+savedUserCouier.getUsername()+" CREADO.",savedUserCouier.getUsername(),userUpper.getUsername());
+
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.register)
+                        .build();
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseDelete> delete(String dni, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Courier courier;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                courier = courierRepository.findByNameAndStatusTrue(name.toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -110,6 +223,8 @@ public class CourierImpl implements ICourier {
 
             if(user == null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                courier = courierRepository.findByDniAndClientIdAndStatusTrue(dni.toUpperCase(),user.getClientId());
             }
 
             if(courier == null){
@@ -133,14 +248,13 @@ public class CourierImpl implements ICourier {
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> activate(String dni, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Courier courier;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                courier = courierRepository.findByNameAndStatusFalse(name.toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -148,6 +262,8 @@ public class CourierImpl implements ICourier {
 
             if(user == null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                courier = courierRepository.findByDniAndClientIdAndStatusFalse(dni.toUpperCase(),user.getClientId());
             }
 
             if(courier == null){
@@ -174,6 +290,7 @@ public class CourierImpl implements ICourier {
     public CompletableFuture<Page<CourierDTO>> list(
             String user,
             String name,
+            String dni,
             String company,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -182,7 +299,8 @@ public class CourierImpl implements ICourier {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions {
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Courier> pageCourier;
             UUID clientId;
@@ -191,6 +309,7 @@ public class CourierImpl implements ICourier {
                 pageCourier = courierRepositoryCustom.searchForCourier(
                         clientId,
                         name,
+                        dni,
                         company,
                         registrationStartDate,
                         registrationEndDate,
@@ -200,7 +319,7 @@ public class CourierImpl implements ICourier {
                         sortColumn,
                         pageNumber,
                         pageSize,
-                        true);
+                        status);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -221,70 +340,12 @@ public class CourierImpl implements ICourier {
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
                     .company(courier.getDeliveryCompany().getName())
+                    .dni(courier.getDni())
                     .build()).toList();
 
             return new PageImpl<>(courierDTOS,pageCourier.getPageable(),pageCourier.getTotalElements());
         });
     }
-
-    @Override
-    public CompletableFuture<Page<CourierDTO>> listFalse(
-            String user,
-            String name,
-            String company,
-            OffsetDateTime registrationStartDate,
-            OffsetDateTime registrationEndDate,
-            OffsetDateTime updateStartDate,
-            OffsetDateTime updateEndDate,
-            String sort,
-            String sortColumn,
-            Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            Page<Courier> pageCourier;
-            UUID clientId;
-
-            try {
-                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
-                pageCourier = courierRepositoryCustom.searchForCourier(
-                        clientId,
-                        name,
-                        company,
-                        registrationStartDate,
-                        registrationEndDate,
-                        updateStartDate,
-                        updateEndDate,
-                        sort,
-                        sortColumn,
-                        pageNumber,
-                        pageSize,
-                        false);
-            }catch (RuntimeException e){
-                log.error(e.getMessage());
-                throw new BadRequestExceptions(Constants.ResultsFound);
-            }
-
-            if(pageCourier.isEmpty()){
-                return new PageImpl<>(Collections.emptyList());
-            }
-
-            List<CourierDTO> courierDTOS = pageCourier.getContent().stream().map(courier -> CourierDTO.builder()
-                    .status(courier.getStatus())
-                    .id(courier.getId())
-                    .user(courier.getUser().getUsername())
-                    .name(courier.getName())
-                    .phone(courier.getPhone())
-                    .address(courier.getAddress())
-                    .plate(courier.getPlate())
-                    .registrationDate(courier.getRegistrationDate())
-                    .updateDate(courier.getUpdateDate())
-                    .company(courier.getDeliveryCompany().getName())
-                    .build()).toList();
-
-            return new PageImpl<>(courierDTOS,pageCourier.getPageable(),pageCourier.getTotalElements());
-        });
-    }
-
     @Override
     public CompletableFuture<ResponseSuccess> updateOrder(UUID orderId, RequestCourierOrder requestCourierOrder, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(() -> {
@@ -381,6 +442,7 @@ public class CourierImpl implements ICourier {
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
                     .company(courier.getDeliveryCompany().getName())
+                    .dni(courier.getDni())
                     .build()).toList();
         });
     }
@@ -411,6 +473,7 @@ public class CourierImpl implements ICourier {
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
                     .company(courier.getDeliveryCompany().getName())
+                    .dni(courier.getDni())
                     .build()).toList();
         });
     }
@@ -441,6 +504,7 @@ public class CourierImpl implements ICourier {
                     .registrationDate(courier.getRegistrationDate())
                     .updateDate(courier.getUpdateDate())
                     .company(courier.getDeliveryCompany().getName())
+                    .dni(courier.getDni())
                     .build()).toList());
             Courier defaultNoCourier = courierRepository.findByNameAndStatusTrue("SIN COURIER");
             CourierDTO dtoNoCourier = CourierDTO.builder()

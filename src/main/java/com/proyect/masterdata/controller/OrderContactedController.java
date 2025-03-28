@@ -65,6 +65,7 @@ public class OrderContactedController {
     public ResponseEntity<Page<OrderContactedDTO>> list(
             @RequestParam(value = "user") String user,
             @RequestParam(value = "orderNumber", required = false) Long orderNumber,
+            @RequestParam(value = "deliveryZone",required = false) String deliveryZone,
             @RequestParam(value = "contacted", required = false) Boolean contacted,
             @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
             @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
@@ -77,6 +78,7 @@ public class OrderContactedController {
         CompletableFuture<Page<OrderContactedDTO>> result = iOrderContacted.list(
                 user,
                 orderNumber,
+                deliveryZone,
                 contacted,
                 registrationStartDate,
                 registrationEndDate,

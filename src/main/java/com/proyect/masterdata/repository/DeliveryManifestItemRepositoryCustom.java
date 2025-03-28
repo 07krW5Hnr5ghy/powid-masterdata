@@ -21,6 +21,7 @@ public interface DeliveryManifestItemRepositoryCustom {
             String brand,
             Boolean delivered,
             String courier,
+            String courierDni,
             String warehouse,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,

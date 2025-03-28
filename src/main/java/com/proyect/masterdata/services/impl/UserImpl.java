@@ -15,6 +15,7 @@ import com.proyect.masterdata.services.IUser;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.mapstruct.control.MappingControl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,6 +27,7 @@ import java.util.UUID;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +45,6 @@ public class UserImpl implements IUser {
     private final IAudit iAudit;
     @Override
     public ResponseSuccess save(RequestUser requestUser) throws BadRequestExceptions, InternalErrorExceptions {
-
         User user;
         User tokenUser;
         boolean existsDni;
@@ -52,7 +53,6 @@ public class UserImpl implements IUser {
         District district;
         Province province;
         Role role;
-
         try {
             user = userRepository.findByUsername(requestUser.getUser().toUpperCase());
             tokenUser = userRepository.findByUsernameAndStatusTrue(requestUser.getTokenUser().toUpperCase());
@@ -107,8 +107,8 @@ public class UserImpl implements IUser {
                     .surname(requestUser.getSurname().toUpperCase())
                     .dni(requestUser.getDni())
                     .address(requestUser.getAddress().toUpperCase())
-                            .district(district)
-                            .districtId(district.getId())
+                    .district(district)
+                    .districtId(district.getId())
                     .email(requestUser.getEmail())
                     .mobile(requestUser.getMobile())
                     .gender(requestUser.getGender().toUpperCase())
@@ -147,7 +147,6 @@ public class UserImpl implements IUser {
             Province province;
             District district;
             Role role;
-
             try {
                 user = userRepository.findByUsername(requestUser.getUser().toUpperCase());
                 tokenUser = userRepository.findByUsernameAndStatusTrue(requestUser.getTokenUser().toUpperCase());
@@ -216,8 +215,9 @@ public class UserImpl implements IUser {
                 userRoleRepository.save(UserRole.builder()
                         .registrationDate(OffsetDateTime.now())
                         .userId(newUser.getId())
+                        .status(true)
                         .roleId(role.getId())
-                                .user(newUser)
+                        .user(newUser)
                         .build());
                 iAudit.save("ADD_USER","USUARIO "+newUser.getUsername()+" CREADO.",newUser.getUsername(),tokenUser.getUsername());
                 return ResponseSuccess.builder()
@@ -231,6 +231,7 @@ public class UserImpl implements IUser {
             }
         });
     }
+
 
     @Override
     public CompletableFuture<UserDTO> update(RequestUserSave requestUserSave, String tokenUser)
@@ -496,6 +497,7 @@ public class UserImpl implements IUser {
         });
     }
 
+    //listado
     @Override
     public CompletableFuture<List<UserQueryDTO>> listFilter(String username) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -531,4 +533,48 @@ public class UserImpl implements IUser {
             }).toList();
         });
     }
+
+    @Override
+    public CompletableFuture<List<UserQueryDTO>> listFilterListToRole(String tokenUser, String roleName) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(() -> {
+            List<User> dataUsers;
+            UUID clientId;
+
+            try {
+                clientId = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase()).getClientId();
+                dataUsers = userRepository.findAllByClientId(clientId);
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(dataUsers.isEmpty()){
+                return Collections.emptyList();
+            }
+
+            List<UserQueryDTO> usersMap = dataUsers.stream().map(user -> {
+                List<UserRole> userRoles = userRoleRepository.findByUserIdAndStatusTrue(user.getId());
+                return UserQueryDTO.builder()
+                        .address(user.getAddress())
+                        .district(user.getDistrict().getName())
+                        .dni(user.getDni())
+                        .email(user.getEmail())
+                        .gender(user.getGender())
+                        .mobile(user.getMobile())
+                        .name(user.getName())
+                        .surname(user.getSurname())
+                        .user(user.getUsername())
+                        .roleNames(userRoles.stream().map(userRole -> {
+                            Role role = roleRepository.findById(userRole.getRoleId()).orElse(null);
+                            return role.getName();
+                        }).toList())
+                        .build();
+            }).toList();
+
+            return usersMap.stream().filter(user -> user.getRoleNames()
+                    .stream().anyMatch((role -> role.equals(roleName))))
+                    .collect(Collectors.toList());
+        });
+    }
+
 }
