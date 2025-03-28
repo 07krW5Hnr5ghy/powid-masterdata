@@ -16,41 +16,42 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableKardexReceiptType, schema = Constants.schemaStock)
-public class KardexReceiptType {
+@Table(name = Constants.tableKardexBalance, schema = Constants.schemaStock)
+public class KardexBalance {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "kardex_receipt_type_id")
+    @Column(name = "kardex_balance_id")
     private UUID id;
 
-    @Column(name = "name")
-    private String name;
-
-    @Column(name = "status")
-    private Boolean status;
-
-    @Column(name = "sku")
-    private String sku;
+    @Column(name = "quantity")
+    private Integer quantity;
 
     @Column(name = "registration_date")
     @CreationTimestamp
     private OffsetDateTime registrationDate;
 
-    @Column(name = "update_date")
-    @CreationTimestamp
-    private OffsetDateTime updateDate;
+    @Column(name = "kardex_input_id")
+    private UUID kardexInputId;
+
+    @Column(name = "lot_number")
+    private Long lotNumber;
+
+    @Column(name = "client_id")
+    private UUID clientId;
 
     @Column(name = "user_id")
     private UUID userId;
 
-    @Column(name = "client_id")
-    private UUID clientId;
+    @ManyToOne()
+    @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
+    private Client client;
 
     @ManyToOne()
     @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
     private User user;
 
     @ManyToOne()
-    @JoinColumn(name="client_id",columnDefinition = "clientId",insertable = false,updatable = false)
-    private Client client;
+    @JoinColumn(name="kardex_input_id",columnDefinition = "kardexInputId",insertable = false,updatable = false)
+    private KardexInput kardexInput;
+
 }

@@ -33,6 +33,9 @@ public class KardexInput {
     @Column(name = "lot_number")
     private Long lotNumber;
 
+    @Column(name = "kardex_operation_type_id")
+    private UUID kardexOperationTypeId;
+
     @Column(name = "client_id")
     private UUID clientId;
 
@@ -50,4 +53,8 @@ public class KardexInput {
     @ManyToOne
     @JoinColumn(name="supply_order_item_id",columnDefinition = "supplyOrderItemId",insertable = false,updatable = false)
     private SupplyOrderItem supplyOrderItem;
+
+    @ManyToOne()
+    @JoinColumn(name="kardex_operation_type_id",columnDefinition = "kardexOperationTypeId",insertable = false,updatable = false)
+    private KardexOperationType kardexOperationType;
 }
