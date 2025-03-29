@@ -77,6 +77,8 @@ public class OrderingImpl implements IOrdering {
     private final IOrderLog iOrderLog;
     private final IOrderContacted iOrderContacted;
     private final IOrderContacted iOrderContact;
+    private final DeliveryZoneDistrictRepository deliveryZoneDistrictRepository;
+    private final DeliveryZoneRepository deliveryZoneRepository;
 
     @Value("${storage.path.server}")
     private String urlPathServer ;
@@ -956,12 +958,35 @@ public class OrderingImpl implements IOrdering {
             }
 
             if(orderState.getName().equals("PREPARADO")){
-                iOrderContact.save(
-                        orderId,
-                        user.getUsername(),
-                        ""
-                );
+//                iOrderContact.save(
+//                        orderId,
+//                        user.getUsername(),
+//                        ""
+//                );
                 System.out.println("Order Contacted -----------");
+                District district = districtRepository.findByNameAndProvinceId(ordering.getCustomer().getDistrict().getName(),ordering.getCustomer().getDistrict().getProvinceId());
+                DeliveryZoneDistrict deliveryZoneDistrict = deliveryZoneDistrictRepository.findByDistrictId(district.getId());
+                OrderContacted newOrderContacted = OrderContacted.builder()
+                        .orderId(ordering.getId())
+                        .ordering(ordering)
+                        .contacted(false)
+//                        .agentUser(user)
+//                        .agentUserId(user.getId())
+                        .registrationDate(OffsetDateTime.now())
+                        .updateDate(OffsetDateTime.now())
+                        .user(user)
+                        .userId(user.getId())
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
+                        .build();
+                if(deliveryZoneDistrict==null){
+                    DeliveryZone deliveryZone = deliveryZoneRepository.findByNameAndClientId("PROVINCIA",user.getClientId());
+                    newOrderContacted.setDeliveryZone(deliveryZone);
+                    newOrderContacted.setDeliveryZoneId(deliveryZone.getId());
+                }else{
+                    newOrderContacted.setDeliveryZone(deliveryZoneDistrict.getDeliveryZone());
+                    newOrderContacted.setDeliveryZoneId(deliveryZoneDistrict.getDeliveryZoneId());
+                }
             }
 
             iOrderLog.save(user,updatedOrder,

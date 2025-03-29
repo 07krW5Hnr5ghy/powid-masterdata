@@ -12,4 +12,5 @@ public interface StockTransactionRepository extends JpaRepository<StockTransacti
     StockTransaction findBySerial(String serial);
     List<StockTransaction> findBySerialIn(List<String> serials);
     List<StockTransaction> findAllByClientId(UUID clientId);
+    StockTransaction findByWarehouseId(UUID warehouseId);
 }
