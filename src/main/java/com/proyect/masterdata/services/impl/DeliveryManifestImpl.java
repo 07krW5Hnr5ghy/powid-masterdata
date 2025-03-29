@@ -1,10 +1,11 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
-import com.proyect.masterdata.dto.*;
+import com.proyect.masterdata.dto.DeliveryManifestCourierDTO;
+import com.proyect.masterdata.dto.DeliveryManifestDTO;
+import com.proyect.masterdata.dto.DeliveryManifestItemDTO;
 import com.proyect.masterdata.dto.projections.DeliveryManifestItemProjection;
 import com.proyect.masterdata.dto.request.RequestDeliveryManifest;
-import com.proyect.masterdata.dto.request.RequestDeliveryManifestItem;
 import com.proyect.masterdata.dto.request.RequestStockTransactionItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -45,6 +46,9 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
     private final ProductRepository productRepository;
     private final OrderingRepository orderingRepository;
     private final CustomerRepository customerRepository;
+    private final StockTransactionRepository stockTransactionRepository;
+    private final StockTransactionItemRepository stockTransactionItemRepository;
+    private final IStockTransactionItem iStockTransactionItem;
     @Override
     public CompletableFuture<ResponseSuccess> save(RequestDeliveryManifest requestDeliveryManifest) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -121,6 +125,72 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
             }catch (RuntimeException | InterruptedException | ExecutionException e){
                 log.error(e.getMessage());
                 e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> addOrderDeliveryManifest(RequestDeliveryManifest requestDeliveryManifest, UUID deliveryManifestId,Long manifestNumber) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(() -> {
+            User user;
+            DeliveryManifest deliveryManifest;
+            Warehouse warehouse;
+            StockTransaction stockTransaction;
+            StockTransactionItem stockTransactionItem;
+
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(requestDeliveryManifest.getUsername().toUpperCase());
+                deliveryManifest = deliveryManifestRepository.findById(deliveryManifestId).orElse(null);
+                warehouse = warehouseRepository.findByNameAndStatusTrue(requestDeliveryManifest.getWarehouse().toUpperCase());
+
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            try {
+                System.out.println("Iterando en item de pedidos");
+                List<OrderItem> orderItems = new ArrayList<>();
+                for (UUID orderId:requestDeliveryManifest.getOrderUUIDs()){
+                    orderItems = orderItemRepository.findOrderItemsForOrder(orderId);
+                    if(orderItems.isEmpty()){
+                        throw new BadRequestExceptions(Constants.ErrorDeliveryManifestNotItems);
+                    }
+                }
+
+                List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
+                for(OrderItem orderItem:orderItems){
+                    CompletableFuture<DeliveryManifestItem> deliveryManifestItem = iDeliveryManifestItem.save(orderItem,deliveryManifest,warehouse,user);
+                    stockTransactionList.add(RequestStockTransactionItem.builder()
+                            .productId(deliveryManifestItem.get().getProductId())
+                            .quantity(deliveryManifestItem.get().getQuantity())
+                            .build());
+                }
+
+                System.out.println("Stock item -> " + stockTransactionList);
+
+                //iStockTransactionItem.save(stockTransaction,RequestStockTransactionItem.builder().build(),requestDeliveryManifest.getUsername() );
+                System.out.println("Pasa el guardado de items en manifest");
+//                iStockTransaction.save(
+//                        "DM"+deliveryManifest.getManifestNumber(),
+//                        deliveryManifest.getWarehouse(),
+//                        stockTransactionList,
+//                        "GUIA-COURIER",
+//                        user);
+//                System.out.println("pasa stock transaction");
+                iAudit.save(
+                        "ADD_DELIVERY_MANIFEST",
+                        "GUIA "+
+                                deliveryManifest.getManifestNumber()+
+                                " CREADO.",
+                        deliveryManifest.getManifestNumber().toString(),user.getUsername());
+                return ResponseSuccess.builder()
+                        .message(Constants.register)
+                        .code(200)
+                        .build();
+            }catch (RuntimeException | InterruptedException | ExecutionException e){
+                log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
         });
@@ -476,6 +546,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
             Integer paid,receivable;
             Integer delivered = 0;
             Integer quantityOrders = 0;
+            StockTransaction stockTransaction;
 
             List<DeliveryManifestItem> deliveryManifestItemLis = new ArrayList<>();
             try{
@@ -483,6 +554,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 user = userRepository.findByDni(courier.getDni());
 
                 deliveryManifest = deliveryManifestRepository.findByCourierId(courierId);
+
                 if(deliveryManifest==null){
                     return DeliveryManifestCourierDTO.builder()
                             .warehouse("Not found warehouse")
@@ -501,6 +573,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 }
 
                 deliveryManifestItemLis = deliveryManifestItemRepository.findAllById(deliveryManifest.getId());
+                //stockTransaction = stockTransactionRepository.findByWarehouseId(deliveryManifest.getWarehouse().getId());
             }catch (RuntimeException e){
                 e.printStackTrace();
                 throw new InternalErrorExceptions(e.getMessage());
@@ -524,6 +597,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
             return DeliveryManifestCourierDTO.builder()
                     .deliveryManifestId(deliveryManifest.getId())
                     .courierId(courier.getId())
+                    //.stockTransactionId(stockTransaction.getId())
                     .manifestNumber(deliveryManifest.getManifestNumber())
                     .warehouse(deliveryManifest.getWarehouse().getName())
                     .open(deliveryManifest.getOpen())

@@ -257,6 +257,8 @@ public class Seeder implements CommandLineRunner {
                                 iDistrict.save(locationDistrict.getDistrict(), adminUser.getUsername(), locationDistrict.getProvince());
                         }
 
+
+
                         iDistrict.save("NO APLICA", adminUser.getUsername(), "NO APLICA");
 
                         District districtB = districtRepository.findByNameAndStatusTrue("BREÑA");
@@ -278,7 +280,8 @@ public class Seeder implements CommandLineRunner {
 //                                .build());
 
 
-                        // audit
+                    // data por revisar
+                    // audit
                         iAuditEvent.save("ACTIVATE_ACCESS",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_BRAND",adminUser.getUsername());
                         iAuditEvent.save("ACTIVATE_CANCELLATION_REASON",adminUser.getUsername());
@@ -1534,6 +1537,8 @@ public class Seeder implements CommandLineRunner {
                         // purchase discounts
                         iPurchaseIGV.save(requestPurchaseIGVNo);
 
+
+
 //                        User business1 = userRepository.save(User.builder()
 //                                .username("JCOILA")
 //                                .name("COILA")
@@ -1712,6 +1717,7 @@ public class Seeder implements CommandLineRunner {
                                 .address("calle 0")
                                 .plate("000-000")
                                 .phone("000000000")
+                                .dni("00000000")
                                 .company("SIN EMPRESA")
                                 .build();
 
@@ -1942,6 +1948,34 @@ public class Seeder implements CommandLineRunner {
                                 .tokenUser(adminUser.getUsername())
                                 .dni("23465476")
                                 .build());
+
+                        iCustomer.save(RequestCustomer.builder()
+                                .address("quepepampa")
+                                .customerType("TRADICIONAL")
+                                .province("HUARAL")
+                                .district("HUARAL")
+                                .instagram("Jhondhc")
+                                .name("jhon")
+                                .phone("993634234")
+                                .province("HUARAL")
+                                .reference("caserio julio")
+                                .tokenUser(adminUser.getUsername())
+                                .dni("64435276")
+                                .build());
+
+                    iCustomer.save(RequestCustomer.builder()
+                            .address("quepepampa")
+                            .customerType("TRADICIONAL")
+                            .province("HUARAL")
+                            .district("HUARAL")
+                            .instagram("loloyfs")
+                            .name("loloy")
+                            .phone("912644234")
+                            .province("HUARAL")
+                            .reference("por adsd")
+                            .tokenUser(adminUser.getUsername())
+                            .dni("23527634")
+                            .build());
 
                         iWarehouse.save(RequestWarehouse.builder()
                                 .name("almacen aranni")

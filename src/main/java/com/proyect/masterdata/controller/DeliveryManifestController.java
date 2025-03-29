@@ -42,6 +42,15 @@ public class DeliveryManifestController {
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
+    @PutMapping("/add/{deliveryManifestId}")
+    public ResponseEntity<ResponseSuccess> addOrderDeliveryManifest(
+            @PathVariable UUID deliveryManifestId,
+            @RequestBody() RequestDeliveryManifest requestDeliveryManifest
+    ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iDeliveryManifest.addOrderDeliveryManifest(requestDeliveryManifest,deliveryManifestId, 1L);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
     @GetMapping("/check/{courierId}")
     public ResponseEntity<DeliveryManifestCourierDTO> checkCourierToDeliveryManifest(
             @PathVariable UUID courierId
@@ -100,4 +109,6 @@ public class DeliveryManifestController {
         CompletableFuture<DeliveryManifestDTO> result = iDeliveryManifest.getLastDeliveryManifestByCourier(user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+
+
 }
