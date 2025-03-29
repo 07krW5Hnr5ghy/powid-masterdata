@@ -104,7 +104,7 @@ public class Constants {
     public static final String tableSubCategoryProduct = "sub_category_product";
     public static final String tablePurchasePaymentType = "purchase_payment_type";
     public static final String tableDeliveryManifest = "delivery_manifest";
-    public static final String tableDeliveryManifestItems = "delivery_manifest_items";
+    public static final String tableDeliveryManifestItems = "delivery_manifest_item";
     public static final String tableDeliveryStatus = "delivery_status";
     public static final String tableOrderLog = "order_log";
     public static final String tableDeliveryCompany = "delivery_company";
