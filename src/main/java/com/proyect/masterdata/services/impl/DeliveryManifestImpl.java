@@ -372,21 +372,25 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 orders.add(ordering);
                             }
                             ProductPrice productPrice = productPriceRepository.findByProductId((UUID) deliveryManifestItem[6]);
-                            OrderItem orderItem = orderItemRepository.findById((UUID) deliveryManifestItem[13]).orElse(null);
+                            List<Object[]> orderItems = orderItemRepository.findOrderItemDetailsByIdAndClientId((UUID) deliveryManifestItem[13],clientId);
                             Double totalPrice = null;
-                            assert orderItem != null;
-                            if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
-                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
-                            }
+                            for(Object[] orderItem:orderItems){
+                                System.out.println(orderItem[0]);
+                                System.out.println(orderItem[1]);
+                                System.out.println(orderItem[2]);
+                                if(Objects.equals(orderItem[2], "PORCENTAJE")){
+                                    totalPrice = (productPrice.getUnitSalePrice() * (Integer) orderItem[0])-((productPrice.getUnitSalePrice() * (Integer) orderItem[0])*((Double) orderItem[1]/100));
+                                }
 
-                            if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
-                            }
+                                if(Objects.equals(orderItem[2], "MONTO")){
+                                    totalPrice = (productPrice.getUnitSalePrice() * (Integer) orderItem[0])-((Double) orderItem[1]);
+                                }
 
-                            if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
-                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                                if(Objects.equals(orderItem[2], "NO APLICA")){
+                                    totalPrice = (productPrice.getUnitSalePrice() * (Integer) orderItem[0]);
+                                }
+                                productAmountPerManifest[0] += (productPrice.getUnitSalePrice() * (Integer) orderItem[0]);
                             }
-                            productAmountPerManifest[0] += (productPrice.getUnitSalePrice() * orderItem.getQuantity());
                             return DeliveryManifestItemDTO.builder()
                                     .id((UUID) deliveryManifestItem[0])
                                     .user((String) deliveryManifestItem[1])
@@ -397,12 +401,12 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                     .orderNumber((Long) deliveryManifestItem[6])
                                     .quantity((Integer) deliveryManifestItem[8])
                                     .delivered((Boolean) deliveryManifestItem[7])
-                                    .skuProduct(iUtil.buildProductSku(orderItem.getProduct()))
+                                    .skuProduct(iUtil.buildProductSku(productPrice.getProduct()))
                                     .management((String) deliveryManifestItem[9])
                                     .paymentMethod((String) deliveryManifestItem[10])
                                     .paymentState((String) deliveryManifestItem[11])
                                     .orderItemAmount(totalPrice)
-                                    .product(orderItem.getProduct().getName())
+                                    .product(productPrice.getProduct().getName())
                                     .build();
                         }).toList();
                 totalProductAmountPerManifest[0]+=productAmountPerManifest[0];
