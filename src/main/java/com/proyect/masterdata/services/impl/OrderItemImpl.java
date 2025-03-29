@@ -823,6 +823,7 @@ public class OrderItemImpl implements IOrderItem {
             }
 
             try {
+                System.out.println("entro select item");
                 orderItemRepository.selectPreparedOrdetItem(
                         ordering.getId(),
                         orderItemId,
@@ -830,6 +831,7 @@ public class OrderItemImpl implements IOrderItem {
                         OffsetDateTime.now(),
                         !orderItem.getSelectOrderStatus()
                 );
+                System.out.println("Paso");
                 iOrderLog.save(
                         user,
                         ordering,
