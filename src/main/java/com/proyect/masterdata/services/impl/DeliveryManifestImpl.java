@@ -374,10 +374,9 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                             ProductPrice productPrice = productPriceRepository.findByProductId((UUID) deliveryManifestItem[6]);
                             List<Object[]> orderItems = orderItemRepository.findOrderItemDetailsByIdAndClientId((UUID) deliveryManifestItem[13],clientId);
                             Double totalPrice = null;
+                            System.out.println(deliveryManifestItem[14]);
+                            System.out.println(deliveryManifestItem[13]);
                             for(Object[] orderItem:orderItems){
-                                System.out.println(orderItem[0]);
-                                System.out.println(orderItem[1]);
-                                System.out.println(orderItem[2]);
                                 if(Objects.equals(orderItem[2], "PORCENTAJE")){
                                     totalPrice = (productPrice.getUnitSalePrice() * (Integer) orderItem[0])-((productPrice.getUnitSalePrice() * (Integer) orderItem[0])*((Double) orderItem[1]/100));
                                 }
@@ -391,12 +390,18 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 }
                                 productAmountPerManifest[0] += (productPrice.getUnitSalePrice() * (Integer) orderItem[0]);
                             }
+                            System.out.println(deliveryManifestItem[12]);
+                            System.out.println(deliveryManifestItem[14]);
+                            System.out.println(deliveryManifestItem[13]);
+                            String customerName = (String) deliveryManifestItem[14];
+                            System.out.println(customerName);
+                            System.out.println(Arrays.toString(deliveryManifestItem));
                             return DeliveryManifestItemDTO.builder()
                                     .id((UUID) deliveryManifestItem[0])
                                     .user((String) deliveryManifestItem[1])
                                     .manifestNumber((Long) deliveryManifestItem[2])
                                     .phone((String) deliveryManifestItem[3])
-                                    .customer((String) deliveryManifestItem[14])
+                                    .customer(customerName)
                                     .district((String) deliveryManifestItem[5])
                                     .orderNumber((Long) deliveryManifestItem[6])
                                     .quantity((Integer) deliveryManifestItem[8])
