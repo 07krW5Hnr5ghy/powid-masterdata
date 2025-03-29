@@ -187,4 +187,17 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
             @Param("updateDate") OffsetDateTime updateDate,
             @Param("selectOrderStatus") Boolean selectOrderStatus
     );
+
+    @Query("""
+    SELECT oi.quantity,
+    oi.discountAmount,
+    di.name
+    FROM OrderItem oi
+    JOIN oi.discount di
+    WHERE oi.id = :orderItemId AND oi.clientId = :clientId
+    """)
+    List<Object[]> findOrderItemDetailsByIdAndClientId(
+            UUID orderItemId,
+            UUID clientId
+    );
 }

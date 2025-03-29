@@ -64,19 +64,19 @@ public class OrderItem {
     @Column(name = "select_order_status")
     private Boolean selectOrderStatus;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "product_id", columnDefinition = "productId", insertable = false,updatable = false)
     private Product product;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "order_id", columnDefinition = "orderId", insertable = false, updatable = false)
     private Ordering ordering;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
 
-    @ManyToOne
+    @ManyToOne()
     @JoinColumn(name = "discount_id",columnDefinition = "discountId",insertable = false,updatable = false)
     private Discount discount;
 
