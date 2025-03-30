@@ -20,6 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -154,7 +155,32 @@ public class KardexOperationTypeImpl implements IKardexOperationType {
 
     @Override
     public CompletableFuture<List<KardexOperationTypeDTO>> listKardexOperationType(String username) throws BadRequestExceptions {
-        return null;
+        return CompletableFuture.supplyAsync(()->{
+            List<KardexOperationType> kardexOperationTypes;
+            User user;
+            try {
+                user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+            } catch (RuntimeException e) {
+                log.error(e);
+                throw new BadRequestExceptions(Constants.ResultsFound);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                kardexOperationTypes = kardexOperationTypeRepository.findAllByStatusTrueAndClientId(user.getClientId());
+            }
+            if (kardexOperationTypes.isEmpty()) {
+                return Collections.emptyList();
+            }
+            return kardexOperationTypes.stream().map(kardexOperationType -> KardexOperationTypeDTO.builder()
+                    .id(kardexOperationType.getId())
+                    .updateDate(kardexOperationType.getUpdateDate())
+                    .name(kardexOperationType.getName())
+                    .registrationDate(kardexOperationType.getRegistrationDate())
+                    .user(kardexOperationType.getUser().getUsername())
+                    .status(kardexOperationType.getStatus())
+                    .build()).toList();
+        });
     }
 
     @Override
