@@ -4,6 +4,7 @@ import com.proyect.masterdata.dto.CourierDTO;
 import com.proyect.masterdata.dto.request.RequestCourier;
 import com.proyect.masterdata.dto.request.RequestCourierOrder;
 import com.proyect.masterdata.dto.request.RequestCourierUser;
+import com.proyect.masterdata.dto.response.ResponseCourierInfo;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -39,4 +40,5 @@ public interface ICourier {
     CompletableFuture<List<CourierDTO>> listCouriers(String user) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<CourierDTO>> listCouriersFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<CourierDTO>> listFilters(String user) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<ResponseCourierInfo> infoCouerier(String tokernUser) throws InternalErrorExceptions,BadRequestExceptions;
 }

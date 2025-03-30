@@ -3,9 +3,11 @@ package com.proyect.masterdata.repository;
 import com.proyect.masterdata.domain.Ordering;
 import com.proyect.masterdata.dto.DailySaleSummaryDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.Date;
@@ -90,4 +92,7 @@ public interface OrderingRepository extends JpaRepository<Ordering, UUID> {
     );
 
     Long countByClientId(UUID clientId);
+
+    @Query("SELECT o FROM Ordering o where o.courierId = :courierId")
+    Ordering findByCourierId(UUID courierId);
 }

@@ -1851,7 +1851,7 @@ public class Seeder implements CommandLineRunner {
 //                                .address("HUARAL")
 //                                .courier("igorrc")
 //                                .build(), "JOELC").get();
-                        iDeliveryCompany.save("ARANNI COMPANY", "JOELC").get();
+                        iDeliveryCompany.save("ARANNI COMPANY", adminUser.getUsername()).get();
 
                         iCourier.saveCourierToUser(RequestCourierUser.builder()
                                         .company("ARANNI COMPANY")
@@ -1864,7 +1864,7 @@ public class Seeder implements CommandLineRunner {
                                         .surname("ramos")
                                         .password("n>53F-8W5L7Dw+")
                                         .district("HUARAL")
-                                        .address("asasa")
+                                        .address("Av. San Martín cdra. 5")
                                         .mobile("929417416")
                                         .gender("M")
                                 .build(), adminUser.getUsername());

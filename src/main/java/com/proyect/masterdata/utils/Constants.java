@@ -132,6 +132,7 @@ public class Constants {
     public static final String ErrorWhileUpdating = "Error editando";
     public static final String ErrorWhenDeleting = "Error eliminando";
 
+    public static final String ErrorEmptyField = "El campo no puede estar vacío";
     public static final String ErrorUser = "El usuario no esta registrado";
     public static final String ErrorUserExist = "El usuario ya fue registrado";
     public static final String ErrorUserDniExist = "El dni ya fue registrado";
