@@ -487,7 +487,7 @@ public class OrderContactedImpl implements IOrderContacted {
                 ordering.setOrderStateId(orderState.getId());
                 ordering.setCourier(courier);
                 ordering.setCourierId(courier.getId());
-                orderingRepository.save(ordering);
+                orderingRepository.save(ordering); // no se esta setendo el id de los couiers
 //                orderContacted.setUpdateDate(OffsetDateTime.now());
 //                orderContacted.setUser(user);
 //                orderContacted.setUserId(user.getId());

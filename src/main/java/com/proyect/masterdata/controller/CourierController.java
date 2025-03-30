@@ -4,6 +4,7 @@ import com.proyect.masterdata.dto.CourierDTO;
 import com.proyect.masterdata.dto.request.RequestCourier;
 import com.proyect.masterdata.dto.request.RequestCourierOrder;
 import com.proyect.masterdata.dto.request.RequestCourierUser;
+import com.proyect.masterdata.dto.response.ResponseCourierInfo;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -133,6 +134,14 @@ public class CourierController {
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<CourierDTO>> result = iCourier.listFilters(user);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
+    @GetMapping("info")
+    public ResponseEntity<ResponseCourierInfo> courierInfo(
+            @RequestParam("user")String user
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseCourierInfo> result = iCourier.infoCouerier(user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 

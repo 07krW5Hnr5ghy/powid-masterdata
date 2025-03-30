@@ -5,6 +5,7 @@ import com.proyect.masterdata.dto.CourierDTO;
 import com.proyect.masterdata.dto.request.RequestCourier;
 import com.proyect.masterdata.dto.request.RequestCourierOrder;
 import com.proyect.masterdata.dto.request.RequestCourierUser;
+import com.proyect.masterdata.dto.response.ResponseCourierInfo;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -46,6 +47,9 @@ public class CourierImpl implements ICourier {
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
     private final ProvinceRepository provinceRepository;
+    private final OrderItemRepository orderItemRepository;
+    private final DeliveryManifestItemRepository deliveryManifestItemRepository;
+    private final DeliveryManifestRepository deliveryManifestRepository;
 
     @Override
     public CompletableFuture<ResponseSuccess> save(RequestCourier requestCourier, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
@@ -521,6 +525,65 @@ public class CourierImpl implements ICourier {
                     .build();
             courierDTOS.add(dtoNoCourier);
             return courierDTOS;
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseCourierInfo> infoCouerier(String tokernUser) throws InternalErrorExceptions, BadRequestExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Courier courier;
+            DeliveryManifest deliveryManifest;
+            Ordering ordering;
+            List<DeliveryManifestItem> deliveryManifestItems;
+            int ordersCountDelivered = 0;
+            double collectionsBalance = 0.0;
+            if(tokernUser == null || tokernUser.isEmpty()){
+                throw new BadRequestExceptions(Constants.ErrorEmptyField);
+            }
+
+            try {
+                user = userRepository.findByUsername(tokernUser.toUpperCase());
+
+                if(user == null){
+                    throw new InternalErrorExceptions(Constants.ErrorUser);
+                }
+                courier = courierRepository.findByNameAndStatusTrue(
+                        user.getName().toUpperCase() + " " + user.getSurname().toUpperCase()
+                );
+
+                if(courier == null){
+                    throw new InternalErrorExceptions(Constants.ErrorCourier);
+                }
+//                ordering = orderingRepository.findByCourierId(courier.getId());
+////
+//                System.out.println( "orderin -> " + ordering.getId());
+
+                deliveryManifest = deliveryManifestRepository.findByCourierId(courier.getId());
+                ;
+                deliveryManifestItems = deliveryManifest != null
+                        ? deliveryManifestItemRepository.findAllById(deliveryManifest.getId())
+                        : Collections.emptyList();
+
+                ordersCountDelivered = (int) deliveryManifestItems.stream()
+                        .filter(DeliveryManifestItem::getDelivered)
+                           .count();
+
+                return ResponseCourierInfo.builder()
+                        .fullName(courier.getName())
+                        .phone(courier.getPhone())
+                        .dni(courier.getDni())
+                        .company(courier.getDeliveryCompany().getName())
+                        .plate(courier.getPlate())
+                        .address(courier.getAddress())
+                        .ordersDelivered(ordersCountDelivered)
+                        .collectionBalance(collectionsBalance)
+                        .build();
+
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
         });
     }
 }
