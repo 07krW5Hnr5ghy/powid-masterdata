@@ -34,7 +34,7 @@ public interface    DeliveryManifestItemRepository extends JpaRepository<Deliver
                ord.order_id AS orderId,
                oi.order_item_id AS orderItemId,
                cu.name AS customerName
-        FROM logistics.delivery_manifest_items dmi
+        FROM logistics.delivery_manifest_item dmi
         JOIN logistics.delivery_manifest dm ON dmi.delivery_manifest_id = dm.delivery_manifest_id
         JOIN ordering.order_item oi ON dmi.order_item_id = oi.order_item_id
         JOIN ordering.order ord ON oi.order_id = ord.order_id
