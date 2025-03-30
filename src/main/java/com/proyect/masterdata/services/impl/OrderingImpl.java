@@ -1333,4 +1333,106 @@ public class OrderingImpl implements IOrdering {
             }
         });
     }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> uploadPhotos(UUID orderId, MultipartFile[] receipts, MultipartFile[] courierPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+        Path folderOrders = Paths.get(urlPathServer+"/home/orders");
+        Path folderCouriers = Paths.get(urlPathServer+"/uploads/couriers/");
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            Ordering ordering;
+
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                ordering = orderingRepository.findById(orderId).orElse(null);
+            }catch (RuntimeException e){
+                e.printStackTrace();
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(user == null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+
+            if(ordering == null){
+                throw new BadRequestExceptions(Constants.ErrorOrdering);
+            }
+
+            try{
+
+                Ordering updatedOrder;
+
+                updatedOrder = orderingRepository.save(ordering);
+                List<File> receiptList = new ArrayList<>();
+                for(MultipartFile multipartFile : receipts){
+                    if(multipartFile.isEmpty()){
+                        break;
+                    }
+                    File convFile = new File(urlPathServer+"/uploads/orders/"+multipartFile.getOriginalFilename());
+                    convFile.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(convFile);
+                    fos.write(multipartFile.getBytes());
+                    fos.close();
+                    receiptList.add(convFile);
+                }
+                List<File> courierPictureList = new ArrayList<>();
+                for(MultipartFile multipartFile:courierPictures){
+                    if(multipartFile.isEmpty()){
+                        break;
+                    }
+                    File convFile = new File(urlPathServer+"/uploads/couriers/"+multipartFile.getOriginalFilename());
+                    convFile.createNewFile();
+                    FileOutputStream fos = new FileOutputStream(convFile);
+                    fos.write(multipartFile.getBytes());
+                    fos.close();
+                    courierPictureList.add(convFile);
+                }
+
+                CompletableFuture<List<String>> paymentReceipts = iOrderPaymentReceipt.uploadReceiptAsync(receiptList,ordering.getId(),user.getUsername());
+                CompletableFuture<List<String>> courierPhotos = iCourierPicture.uploadPictureAsync(courierPictureList,ordering.getId(),user.getUsername());
+                if(!paymentReceipts.get().isEmpty()){
+                    if(!ordering.getReceiptFlag()){
+                        ordering.setReceiptFlag(true);
+                        updatedOrder = orderingRepository.save(ordering);
+                    }
+                    Stream<Path> paths = Files.list(folderOrders);
+                    paths.filter(Files::isRegularFile).forEach(path -> {
+                        try {
+                            Files.delete(path);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                }
+                if(!courierPhotos.get().isEmpty()){
+                    if(!ordering.getDeliveryFlag()){
+                        ordering.setDeliveryFlag(true);
+                        updatedOrder = orderingRepository.save(ordering);
+                    }
+                    Stream<Path> paths = Files.list(folderCouriers);
+                    paths.filter(Files::isRegularFile).forEach(path -> {
+                        try {
+                            Files.delete(path);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    });
+                }
+                iOrderLog.save(user,updatedOrder,
+                        OffsetDateTime.now()+
+                                " - "+
+                                user.getUsername()+
+                                " "+updatedOrder.getOrderState().getName());
+                iAudit.save("UPDATE_ORDER","PEDIDO "+ordering.getId()+" ACTUALIZADO.",ordering.getId().toString(),user.getUsername());
+                return ResponseSuccess.builder()
+                        .code(200)
+                        .message(Constants.update)
+                        .build();
+            }catch (RuntimeException | IOException | InterruptedException | ExecutionException e){
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
 }
