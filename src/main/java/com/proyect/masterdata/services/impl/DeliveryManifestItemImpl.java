@@ -280,6 +280,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                 }
                 return DeliveryManifestItemDTO.builder()
                         .id(deliveryManifestItem.getId())
+                        .delivered(deliveryManifestItem.getDelivered())
                         .phone(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getPhone())
                         .district(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getDistrict().getName())
                         .manifestNumber(deliveryManifestItem.getDeliveryManifest().getManifestNumber())
