@@ -1137,8 +1137,7 @@ public class ExcelImpl implements IExcel {
                                 .message(Constants.ErrorProductExists+" en linea: "+(j+1)+".")
                                 .build();
                     }
-                    if(!names.add(product.getName())||
-                            !uniqueCombinations.add(iUtil.buildProductSku(product))){
+                    if(!uniqueCombinations.add(iUtil.buildProductSku(product))){
                         hasDuplicate = true;
                     }
                     if(hasDuplicate){
