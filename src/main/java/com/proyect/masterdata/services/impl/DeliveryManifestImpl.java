@@ -175,13 +175,12 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
 
                 //iStockTransactionItem.save(stockTransaction,RequestStockTransactionItem.builder().build(),requestDeliveryManifest.getUsername() );
                 System.out.println("Pasa el guardado de items en manifest");
-//                iStockTransaction.save(
-//                        "DM"+deliveryManifest.getManifestNumber(),
-//                        deliveryManifest.getWarehouse(),
-//                        stockTransactionList,
-//                        "GUIA-COURIER",
-//                        user);
-//                System.out.println("pasa stock transaction");
+                iStockTransaction.save(
+                        "DMA"+deliveryManifest.getManifestNumber(),
+                        deliveryManifest.getWarehouse(),
+                        stockTransactionList,
+                        "GUIA-COURIER",
+                        user);
                 iAudit.save(
                         "ADD_DELIVERY_MANIFEST",
                         "GUIA "+
