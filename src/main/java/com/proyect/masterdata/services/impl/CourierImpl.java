@@ -548,6 +548,9 @@ public class CourierImpl implements ICourier {
                 if(user == null){
                     throw new InternalErrorExceptions(Constants.ErrorUser);
                 }
+
+
+
                 courier = courierRepository.findByNameAndStatusTrue(
                         user.getName().toUpperCase() + " " + user.getSurname().toUpperCase()
                 );

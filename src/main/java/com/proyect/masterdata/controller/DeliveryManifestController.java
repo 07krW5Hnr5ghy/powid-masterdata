@@ -61,7 +61,7 @@ public class DeliveryManifestController {
 
     @PutMapping("/close/{deliveryManifestId}")
     public ResponseEntity<ResponseSuccess> closeManifest(
-            @PathVariable UUID deliveryManifestId,
+            @RequestParam("deliveryManifestId") UUID deliveryManifestId,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseSuccess> result = iDeliveryManifest.closeDeliveryManifest(deliveryManifestId,user);
