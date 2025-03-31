@@ -18,4 +18,7 @@ public class DeliveryManifestOrderDTO {
     private String paymentMethod;
     private Double advancePayment;
     private String orderState;
+    private String dni;
+    private String customer;
+    private String address;
 }

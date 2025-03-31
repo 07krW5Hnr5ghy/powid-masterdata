@@ -277,6 +277,9 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                     totalOrdersSaleAmount+=saleAmount;
                     totalOrdersDuePayment+=totalDuePayment;
                     deliveryManifestOrderDTOS.add(DeliveryManifestOrderDTO.builder()
+                            .address(order.getCustomer().getAddress())
+                            .dni(order.getCustomer().getDni())
+                            .customer(order.getCustomer().getName())
                             .orderNumber(order.getOrderNumber())
                             .orderState(order.getOrderState().getName())
                             .payableAmount(totalDuePayment)
