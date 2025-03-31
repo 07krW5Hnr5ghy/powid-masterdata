@@ -19,6 +19,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.*;
@@ -56,6 +57,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
             Courier courier;
             Warehouse warehouse;
             try{
+                System.out.println(requestDeliveryManifest);
                 user = userRepository.findByUsernameAndStatusTrue(requestDeliveryManifest.getUsername().toUpperCase());
                 courier = courierRepository.findByNameAndStatusTrue(requestDeliveryManifest.getCourier().toUpperCase());
                 warehouse = warehouseRepository.findByNameAndStatusTrue(requestDeliveryManifest.getWarehouse().toUpperCase());
@@ -314,12 +316,15 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
             }
         });
     }
+
+    @Transactional
     @Override
     public CompletableFuture<ResponseSuccess> closeDeliveryManifest(UUID deliveryManifestId, String username) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             DeliveryManifest deliveryManifest;
             try{
+                System.out.println("id deliveru ->" + deliveryManifestId);
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 deliveryManifest = deliveryManifestRepository.findById(deliveryManifestId).orElse(null);
             }catch (RuntimeException e){
@@ -337,7 +342,15 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 deliveryManifest.setUpdateDate(OffsetDateTime.now());
                 deliveryManifest.setUser(user);
                 deliveryManifest.setUserId(user.getId());
-                deliveryManifestRepository.save(deliveryManifest);
+                //deliveryManifestRepository.save(deliveryManifest);
+
+                deliveryManifestRepository.closeDeliveriManifest(
+                        deliveryManifest.getId(),
+                        user.getId(),
+                        false,
+                        OffsetDateTime.now()
+                );
+
                 List<DeliveryManifestItemProjection> deliveryManifestItemList = deliveryManifestItemRepository.findAllByDeliveryManifestIdAndClientId(deliveryManifest.getId(),user.getClientId());
                 List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
                 boolean returnFlag = false;

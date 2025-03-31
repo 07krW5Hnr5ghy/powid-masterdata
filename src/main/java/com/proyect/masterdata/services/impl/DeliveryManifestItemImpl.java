@@ -55,7 +55,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
             try{
                 System.out.println("entra -> id product: " + orderItem.getProduct().getId() + " warehouseId: " + warehouse.getId());
                 warehouseStock = warehouseStockRepository.findByWarehouseIdAndProductId(warehouse.getId(),orderItem.getProduct().getId());
-                System.out.println(warehouseStock);
+                System.out.println( "werestock -> " + warehouseStock);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -69,7 +69,6 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                 throw new BadRequestExceptions(Constants.ErrorDeliveryManifestItemDelivered);
             }
             if(warehouseStock.getQuantity()<orderItem.getQuantity()){
-                System.out.println("Aqui-ZZZZ cantidad en estock es mejor a llo que piden");
                 throw new BadRequestExceptions(Constants.ErrorWarehouseStockLess);
 
             }
