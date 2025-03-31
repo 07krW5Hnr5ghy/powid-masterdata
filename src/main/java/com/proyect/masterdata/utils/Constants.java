@@ -123,6 +123,7 @@ public class Constants {
     public static final String tableKardexOuput = "kardex_output";
     public static final String tableKardexReceiptType = "kardex_receipt_type";
     public static final String tableKardexBalance = "kardex_balance";
+    public static final String tableDeliveryManifestOrder = "delivery_manifest_order";
     // messages
     public static final String register = "registro exitoso";
     public static final String update = "edicion exitosa";
@@ -360,4 +361,6 @@ public class Constants {
     public static final String ErrorDeliveryManifestNoResults = "No se encontraron guias de motorizado";
     public static final String ErrorKardexOperationType = "Operacion de Kardex no esta registrado";
     public static final String ErrorKardexOperationTypeExists = "Operacion de kardex ya fue registrado";
+    public static final String ErrorDeliveryManifestOrder = "Comentario y/o monto recibido no esta registrado";
+    public static final String ErrorDeliveryManifestOrderExist = "Comentario y/o monto recibido ya fue registrado";
 }

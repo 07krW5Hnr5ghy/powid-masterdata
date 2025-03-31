@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
+import java.util.UUID;
 
 @Builder
 @AllArgsConstructor
@@ -21,4 +22,8 @@ public class DeliveryManifestOrderDTO {
     private String dni;
     private String customer;
     private String address;
+    private UUID orderId;
+    private String observations;
+    private Double receivedAmount;
+    private String orderPaymentState;
 }
