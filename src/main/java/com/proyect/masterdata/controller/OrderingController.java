@@ -130,4 +130,16 @@ public class OrderingController {
         CompletableFuture<OrderDTO> result = iOrdering.selectOrder(orderId,user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+
+    @PostMapping("order")
+    //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:ORDER_PUT')")
+    public ResponseEntity<ResponseSuccess> uploadPhotos(
+            @RequestParam("orderId") UUID orderId,
+            @RequestPart("receipts") MultipartFile[] receipts,
+            @RequestPart("courierPictures") MultipartFile[] courierPictures,
+            @RequestParam("tokenUser") String tokenUser
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iOrdering.uploadPhotos(orderId,receipts,courierPictures,tokenUser);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
 }

@@ -243,6 +243,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                             productAmountPerManifest[0] += (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity());
                             return DeliveryManifestItemDTO.builder()
                                     .id(deliveryManifestItem.getId())
+                                    .delivered(deliveryManifestItem.isDelivered())
                                     .user(deliveryManifestItem.getUser().getUsername())
                                     .manifestNumber(deliveryManifestItem.getDeliveryManifest().getManifestNumber())
                                     .phone(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getPhone())
@@ -689,6 +690,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                             return DeliveryManifestItemDTO.builder()
                                     .id(deliveryManifestItem.getId())
                                     .user(deliveryManifestItem.getUser().getUsername())
+                                    .delivered(deliveryManifestItem.isDelivered())
                                     .manifestNumber(deliveryManifestItem.getDeliveryManifest().getManifestNumber())
                                     .phone(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getPhone())
                                     .customer(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getName())
