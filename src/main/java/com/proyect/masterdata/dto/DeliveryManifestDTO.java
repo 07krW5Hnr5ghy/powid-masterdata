@@ -17,7 +17,7 @@ public class DeliveryManifestDTO {
     private UUID id;
     private String user;
     private Long manifestNumber;
-    private List<DeliveryManifestItemDTO> deliveryManifestItemDTOS;
+    private List<DeliveryManifestOrderDTO> deliveryManifestOrderDTOS;
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
     private String courier;

@@ -21,6 +21,7 @@ import com.itextpdf.layout.properties.UnitValue;
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.DeliveryManifestDTO;
 import com.proyect.masterdata.dto.DeliveryManifestItemDTO;
+import com.proyect.masterdata.dto.DeliveryManifestOrderDTO;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
@@ -208,6 +209,7 @@ public class PdfGeneratorImpl implements IPdfGenerator {
             try{
                 List<Ordering> orders = new ArrayList<>();
                 Set<Long> uniqueOrderNumbers = new HashSet<>();
+                List<DeliveryManifestOrderDTO> deliveryManifestOrderDTOS = new ArrayList<>();
                 List<DeliveryManifestItemDTO> deliveryManifestItemDTOS = deliveryManifestItemRepository.findAllById(deliveryManifest.getId())
                         .stream().map(deliveryManifestItem -> {
                             if(!uniqueOrderNumbers.contains(deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber())){
@@ -274,6 +276,15 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                     }
                     totalOrdersSaleAmount+=saleAmount;
                     totalOrdersDuePayment+=totalDuePayment;
+                    deliveryManifestOrderDTOS.add(DeliveryManifestOrderDTO.builder()
+                            .orderNumber(order.getOrderNumber())
+                            .orderState(order.getOrderState().getName())
+                            .payableAmount(totalDuePayment)
+                            .paymentMethod(order.getOrderPaymentMethod().getName())
+                            .advancePayment(order.getAdvancedPayment())
+                            .deliveryManifestItemDTOList(deliveryManifestItemDTOS.stream()
+                                    .filter(item -> Objects.equals(item.getOrderNumber(), order.getOrderNumber())).toList())
+                            .build());
                 }
                 DeliveryManifestDTO deliveryManifestDTO =  DeliveryManifestDTO.builder()
                         .id(deliveryManifest.getId())
@@ -285,7 +296,7 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                         .warehouse(deliveryManifest.getWarehouse().getName())
                         .registrationDate(deliveryManifest.getRegistrationDate())
                         .updateDate(deliveryManifest.getUpdateDate())
-                        .deliveryManifestItemDTOS(deliveryManifestItemDTOS)
+                        .deliveryManifestOrderDTOS(deliveryManifestOrderDTOS)
                         .pickupAddress(deliveryManifest.getWarehouse().getAddress())
                         .amount(totalOrdersSaleAmount)
                         .paidAmount(totalOrdersSaleAmount-totalOrdersDuePayment)
@@ -358,16 +369,18 @@ public class PdfGeneratorImpl implements IPdfGenerator {
 
                 List<DeliveryManifestItemDTO> paidItems = new ArrayList<>();
                 double paidItemsAmount = 0;
-                for(DeliveryManifestItemDTO deliveryManifestItemDTO:deliveryManifestDTO.getDeliveryManifestItemDTOS()){
-                    if(!Objects.equals(deliveryManifestItemDTO.getPaymentMethod(), "CONTRAENTREGA")){
-                        paidTable.addCell(deliveryManifestItemDTO.getOrderNumber().toString());
-                        paidTable.addCell(deliveryManifestItemDTO.getProduct());
-                        paidTable.addCell(deliveryManifestItemDTO.getCustomer());
-                        paidTable.addCell(deliveryManifestItemDTO.getPhone());
-                        paidTable.addCell(deliveryManifestItemDTO.getDistrict());
-                        paidTable.addCell("S/ " + deliveryManifestItemDTO.getOrderItemAmount());
-                        paidItems.add(deliveryManifestItemDTO);
-                        paidItemsAmount+=deliveryManifestItemDTO.getOrderItemAmount();
+                for(DeliveryManifestOrderDTO deliveryManifestOrderDTO:deliveryManifestDTO.getDeliveryManifestOrderDTOS()){
+                    for(DeliveryManifestItemDTO deliveryManifestItemDTO:deliveryManifestOrderDTO.getDeliveryManifestItemDTOList()){
+                        if(!Objects.equals(deliveryManifestItemDTO.getPaymentMethod(), "CONTRAENTREGA")){
+                            paidTable.addCell(deliveryManifestItemDTO.getOrderNumber().toString());
+                            paidTable.addCell(deliveryManifestItemDTO.getProduct());
+                            paidTable.addCell(deliveryManifestItemDTO.getCustomer());
+                            paidTable.addCell(deliveryManifestItemDTO.getPhone());
+                            paidTable.addCell(deliveryManifestItemDTO.getDistrict());
+                            paidTable.addCell("S/ " + deliveryManifestItemDTO.getOrderItemAmount());
+                            paidItems.add(deliveryManifestItemDTO);
+                            paidItemsAmount+=deliveryManifestItemDTO.getOrderItemAmount();
+                        }
                     }
                 }
 
@@ -389,16 +402,18 @@ public class PdfGeneratorImpl implements IPdfGenerator {
 
                 List<DeliveryManifestItemDTO> cashOnDeliveryItems = new ArrayList<>();
                 double cashOnDeliveryItemsAmount = 0;
-                for(DeliveryManifestItemDTO deliveryManifestItemDTO:deliveryManifestDTO.getDeliveryManifestItemDTOS()){
-                    if(Objects.equals(deliveryManifestItemDTO.getPaymentMethod(), "CONTRAENTREGA")){
-                        cashOnDeliveryTable.addCell(deliveryManifestItemDTO.getOrderNumber().toString());
-                        cashOnDeliveryTable.addCell(deliveryManifestItemDTO.getProduct());
-                        cashOnDeliveryTable.addCell(deliveryManifestItemDTO.getCustomer());
-                        cashOnDeliveryTable.addCell(deliveryManifestItemDTO.getPhone());
-                        cashOnDeliveryTable.addCell(deliveryManifestItemDTO.getDistrict());
-                        cashOnDeliveryTable.addCell("S/ " + deliveryManifestItemDTO.getOrderItemAmount());
-                        cashOnDeliveryItems.add(deliveryManifestItemDTO);
-                        cashOnDeliveryItemsAmount+=deliveryManifestItemDTO.getOrderItemAmount();
+                for(DeliveryManifestOrderDTO deliveryManifestOrderDTO:deliveryManifestDTO.getDeliveryManifestOrderDTOS()){
+                    for(DeliveryManifestItemDTO deliveryManifestItemDTO:deliveryManifestOrderDTO.getDeliveryManifestItemDTOList()){
+                        if(Objects.equals(deliveryManifestItemDTO.getPaymentMethod(), "CONTRAENTREGA")){
+                            cashOnDeliveryTable.addCell(deliveryManifestItemDTO.getOrderNumber().toString());
+                            cashOnDeliveryTable.addCell(deliveryManifestItemDTO.getProduct());
+                            cashOnDeliveryTable.addCell(deliveryManifestItemDTO.getCustomer());
+                            cashOnDeliveryTable.addCell(deliveryManifestItemDTO.getPhone());
+                            cashOnDeliveryTable.addCell(deliveryManifestItemDTO.getDistrict());
+                            cashOnDeliveryTable.addCell("S/ " + deliveryManifestItemDTO.getOrderItemAmount());
+                            cashOnDeliveryItems.add(deliveryManifestItemDTO);
+                            cashOnDeliveryItemsAmount+=deliveryManifestItemDTO.getOrderItemAmount();
+                        }
                     }
                 }
 

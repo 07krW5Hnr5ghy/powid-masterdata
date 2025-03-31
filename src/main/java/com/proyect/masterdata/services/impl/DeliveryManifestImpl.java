@@ -4,6 +4,7 @@ import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.DeliveryManifestCourierDTO;
 import com.proyect.masterdata.dto.DeliveryManifestDTO;
 import com.proyect.masterdata.dto.DeliveryManifestItemDTO;
+import com.proyect.masterdata.dto.DeliveryManifestOrderDTO;
 import com.proyect.masterdata.dto.projections.DeliveryManifestItemProjection;
 import com.proyect.masterdata.dto.request.RequestDeliveryManifest;
 import com.proyect.masterdata.dto.request.RequestStockTransactionItem;
@@ -219,6 +220,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 List<Ordering> orders = new ArrayList<>();
                 Set<Long> uniqueOrderNumbers = new HashSet<>();
                 double[] productAmountPerManifest = {0.00};
+                List<DeliveryManifestOrderDTO> deliveryManifestOrderDTOS = new ArrayList<>();
                 List<DeliveryManifestItemDTO> deliveryManifestItemDTOS = deliveryManifestItemRepository.findAllByDeliveryManifestId(deliveryManifest.getId())
                         .stream().map(deliveryManifestItem -> {
                             if(!uniqueOrderNumbers.contains(deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber())){
@@ -286,6 +288,15 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                     }
                     totalOrdersSaleAmount+=saleAmount;
                     totalOrdersDuePayment+=totalDuePayment;
+                    deliveryManifestOrderDTOS.add(DeliveryManifestOrderDTO.builder()
+                                    .orderNumber(order.getOrderNumber())
+                                    .orderState(order.getOrderState().getName())
+                                    .payableAmount(totalDuePayment)
+                                    .paymentMethod(order.getOrderPaymentMethod().getName())
+                                    .advancePayment(order.getAdvancedPayment())
+                                    .deliveryManifestItemDTOList(deliveryManifestItemDTOS.stream()
+                                            .filter(item -> Objects.equals(item.getOrderNumber(), order.getOrderNumber())).toList())
+                            .build());
                 }
                 return DeliveryManifestDTO.builder()
                         .id(deliveryManifest.getId())
@@ -297,7 +308,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         .warehouse(deliveryManifest.getWarehouse().getName())
                         .registrationDate(deliveryManifest.getRegistrationDate())
                         .updateDate(deliveryManifest.getUpdateDate())
-                        .deliveryManifestItemDTOS(deliveryManifestItemDTOS)
+                        .deliveryManifestOrderDTOS(deliveryManifestOrderDTOS)
                         .pickupAddress(deliveryManifest.getWarehouse().getAddress())
                         .amount(totalOrdersSaleAmount)
                         .paidAmount(totalOrdersSaleAmount-totalOrdersDuePayment)
@@ -436,6 +447,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 List<Ordering> orders = new ArrayList<>();
                 Set<Long> uniqueOrderNumbers = new HashSet<>();
                 double[] totalProductAmountPerManifest = {0.00};
+                List<DeliveryManifestOrderDTO> deliveryManifestOrderDTOS = new ArrayList<>();
                 List<DeliveryManifestDTO> deliveryManifestDTOS = deliveryManifestPage.getContent().stream().map(deliveryManifest -> {
                     double[] productAmountPerManifest = {0.00};
                     List<DeliveryManifestItemDTO> deliveryManifestItemDTOS = deliveryManifestItemRepository.findAllByDeliveryManifestIdAndClientId(deliveryManifest.getId(),clientId)
@@ -513,6 +525,15 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         }
                         totalOrdersSaleAmount+=saleAmount;
                         totalOrdersDuePayment+=totalDuePayment;
+                        deliveryManifestOrderDTOS.add(DeliveryManifestOrderDTO.builder()
+                                .orderNumber(order.getOrderNumber())
+                                .orderState(order.getOrderState().getName())
+                                .payableAmount(totalDuePayment)
+                                .paymentMethod(order.getOrderPaymentMethod().getName())
+                                .advancePayment(order.getAdvancedPayment())
+                                .deliveryManifestItemDTOList(deliveryManifestItemDTOS.stream()
+                                        .filter(item -> Objects.equals(item.getOrderNumber(), order.getOrderNumber())).toList())
+                                .build());
                     }
                     return DeliveryManifestDTO.builder()
                             .id(deliveryManifest.getId())
@@ -524,7 +545,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                             .warehouse(deliveryManifest.getWarehouse().getName())
                             .registrationDate(deliveryManifest.getRegistrationDate())
                             .updateDate(deliveryManifest.getUpdateDate())
-                            .deliveryManifestItemDTOS(deliveryManifestItemDTOS)
+                            .deliveryManifestOrderDTOS(deliveryManifestOrderDTOS)
                             .pickupAddress(deliveryManifest.getWarehouse().getAddress())
                             .amount(totalOrdersSaleAmount)
                             .paidAmount(totalOrdersSaleAmount-totalOrdersDuePayment)
@@ -654,6 +675,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 List<Ordering> orders = new ArrayList<>();
                 Set<Long> uniqueOrderNumbers = new HashSet<>();
                 double[] productAmountPerManifest = {0.00};
+                List<DeliveryManifestOrderDTO> deliveryManifestOrderDTOS = new ArrayList<>();
                 List<DeliveryManifestItemDTO> deliveryManifestItemDTOS = deliveryManifestItemRepository.findAllByDeliveryManifestId(lastDeliveryManifest.getId())
                         .stream().map(deliveryManifestItem -> {
                             if(!uniqueOrderNumbers.contains(deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber())){
@@ -721,6 +743,15 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                     }
                     totalOrdersSaleAmount+=saleAmount;
                     totalOrdersDuePayment+=totalDuePayment;
+                    deliveryManifestOrderDTOS.add(DeliveryManifestOrderDTO.builder()
+                            .orderNumber(order.getOrderNumber())
+                            .orderState(order.getOrderState().getName())
+                            .payableAmount(totalDuePayment)
+                            .paymentMethod(order.getOrderPaymentMethod().getName())
+                            .advancePayment(order.getAdvancedPayment())
+                            .deliveryManifestItemDTOList(deliveryManifestItemDTOS.stream()
+                                    .filter(item -> Objects.equals(item.getOrderNumber(), order.getOrderNumber())).toList())
+                            .build());
                 }
                 return DeliveryManifestDTO.builder()
                         .id(lastDeliveryManifest.getId())
@@ -732,7 +763,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         .warehouse(lastDeliveryManifest.getWarehouse().getName())
                         .registrationDate(lastDeliveryManifest.getRegistrationDate())
                         .updateDate(lastDeliveryManifest.getUpdateDate())
-                        .deliveryManifestItemDTOS(deliveryManifestItemDTOS)
+                        .deliveryManifestOrderDTOS(deliveryManifestOrderDTOS)
                         .pickupAddress(lastDeliveryManifest.getWarehouse().getAddress())
                         .amount(totalOrdersSaleAmount)
                         .paidAmount(totalOrdersSaleAmount-totalOrdersDuePayment)
