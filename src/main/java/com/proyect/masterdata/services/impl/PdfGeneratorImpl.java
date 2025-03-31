@@ -56,6 +56,7 @@ public class PdfGeneratorImpl implements IPdfGenerator {
     private final DeliveryManifestRepository deliveryManifestRepository;
     private final DeliveryManifestItemRepository deliveryManifestItemRepository;
     private final IUtil iUtil;
+    private final DeliveryManifestOrderRepository deliveryManifestOrderRepository;
     @Override
     public CompletableFuture<InputStream> generateOrderReport(UUID orderId, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -276,7 +277,7 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                     }
                     totalOrdersSaleAmount+=saleAmount;
                     totalOrdersDuePayment+=totalDuePayment;
-                    deliveryManifestOrderDTOS.add(DeliveryManifestOrderDTO.builder()
+                    DeliveryManifestOrderDTO deliveryManifestOrderDTO = DeliveryManifestOrderDTO.builder()
                             .address(order.getCustomer().getAddress())
                             .dni(order.getCustomer().getDni())
                             .customer(order.getCustomer().getName())
@@ -287,7 +288,21 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                             .advancePayment(order.getAdvancedPayment())
                             .deliveryManifestItemDTOList(deliveryManifestItemDTOS.stream()
                                     .filter(item -> Objects.equals(item.getOrderNumber(), order.getOrderNumber())).toList())
-                            .build());
+                            .orderId(order.getId())
+                            .build();
+                    DeliveryManifestOrder deliveryManifestOrder = deliveryManifestOrderRepository.findByDeliveryManifestIdAndOrderIdAndClientId(
+                            deliveryManifest.getId(),
+                            order.getId(),
+                            order.getClientId()
+                    );
+                    if(deliveryManifestOrder!=null){
+                        deliveryManifestOrderDTO.setReceivedAmount(deliveryManifestOrder.getReceivedAmount());
+                        deliveryManifestOrderDTO.setObservations(deliveryManifestOrder.getObservations());
+                    }else{
+                        deliveryManifestOrderDTO.setReceivedAmount(0.00);
+                        deliveryManifestOrderDTO.setObservations("Sin observaciones");
+                    }
+                    deliveryManifestOrderDTOS.add(deliveryManifestOrderDTO);
                 }
                 DeliveryManifestDTO deliveryManifestDTO =  DeliveryManifestDTO.builder()
                         .id(deliveryManifest.getId())
