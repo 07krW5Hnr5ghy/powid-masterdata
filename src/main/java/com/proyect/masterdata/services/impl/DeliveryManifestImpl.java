@@ -301,6 +301,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                             .deliveryManifestItemDTOList(deliveryManifestItemDTOS.stream()
                                     .filter(item -> Objects.equals(item.getOrderNumber(), order.getOrderNumber())).toList())
                             .orderId(order.getId())
+                            .orderPaymentState(order.getOrderPaymentState().getName())
                             .build();
                     DeliveryManifestOrder deliveryManifestOrder = deliveryManifestOrderRepository.findByDeliveryManifestIdAndOrderIdAndClientId(
                             deliveryManifest.getId(),
@@ -555,6 +556,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 .deliveryManifestItemDTOList(deliveryManifestItemDTOS.stream()
                                         .filter(item -> Objects.equals(item.getOrderNumber(), order.getOrderNumber())).toList())
                                 .orderId(order.getId())
+                                .orderPaymentState(order.getOrderPaymentState().getName())
                                 .build();
                         DeliveryManifestOrder deliveryManifestOrder = deliveryManifestOrderRepository.findByDeliveryManifestIdAndOrderIdAndClientId(
                                 deliveryManifest.getId(),
@@ -790,6 +792,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                             .deliveryManifestItemDTOList(deliveryManifestItemDTOS.stream()
                                     .filter(item -> Objects.equals(item.getOrderNumber(), order.getOrderNumber())).toList())
                             .orderId(order.getId())
+                            .orderPaymentState(order.getOrderPaymentState().getName())
                             .build();
                     DeliveryManifestOrder deliveryManifestOrder = deliveryManifestOrderRepository.findByDeliveryManifestIdAndOrderIdAndClientId(
                             lastDeliveryManifest.getId(),
