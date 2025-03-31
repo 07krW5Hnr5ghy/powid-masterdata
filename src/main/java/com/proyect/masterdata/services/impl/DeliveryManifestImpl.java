@@ -51,6 +51,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
     private final StockTransactionRepository stockTransactionRepository;
     private final StockTransactionItemRepository stockTransactionItemRepository;
     private final IStockTransactionItem iStockTransactionItem;
+    private final DeliveryManifestOrderRepository deliveryManifestOrderRepository;
     @Override
     public CompletableFuture<ResponseSuccess> save(RequestDeliveryManifest requestDeliveryManifest) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -290,18 +291,33 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                     }
                     totalOrdersSaleAmount+=saleAmount;
                     totalOrdersDuePayment+=totalDuePayment;
-                    deliveryManifestOrderDTOS.add(DeliveryManifestOrderDTO.builder()
-                                    .address(order.getCustomer().getAddress())
-                                    .dni(order.getCustomer().getDni())
-                                    .customer(order.getCustomer().getName())
-                                    .orderNumber(order.getOrderNumber())
-                                    .orderState(order.getOrderState().getName())
-                                    .payableAmount(totalDuePayment)
-                                    .paymentMethod(order.getOrderPaymentMethod().getName())
-                                    .advancePayment(order.getAdvancedPayment())
-                                    .deliveryManifestItemDTOList(deliveryManifestItemDTOS.stream()
-                                            .filter(item -> Objects.equals(item.getOrderNumber(), order.getOrderNumber())).toList())
-                            .build());
+                    DeliveryManifestOrderDTO deliveryManifestOrderDTO = DeliveryManifestOrderDTO.builder()
+                            .address(order.getCustomer().getAddress())
+                            .dni(order.getCustomer().getDni())
+                            .customer(order.getCustomer().getName())
+                            .orderNumber(order.getOrderNumber())
+                            .orderState(order.getOrderState().getName())
+                            .payableAmount(totalDuePayment)
+                            .paymentMethod(order.getOrderPaymentMethod().getName())
+                            .advancePayment(order.getAdvancedPayment())
+                            .deliveryManifestItemDTOList(deliveryManifestItemDTOS.stream()
+                                    .filter(item -> Objects.equals(item.getOrderNumber(), order.getOrderNumber())).toList())
+                            .orderId(order.getId())
+                            .orderPaymentState(order.getOrderPaymentState().getName())
+                            .build();
+                    DeliveryManifestOrder deliveryManifestOrder = deliveryManifestOrderRepository.findByDeliveryManifestIdAndOrderIdAndClientId(
+                            deliveryManifest.getId(),
+                            order.getId(),
+                            user.getClientId()
+                    );
+                    if(deliveryManifestOrder!=null){
+                        deliveryManifestOrderDTO.setReceivedAmount(deliveryManifestOrder.getReceivedAmount());
+                        deliveryManifestOrderDTO.setObservations(deliveryManifestOrder.getObservations());
+                    }else{
+                        deliveryManifestOrderDTO.setReceivedAmount(0.00);
+                        deliveryManifestOrderDTO.setObservations("Sin observaciones");
+                    }
+                    deliveryManifestOrderDTOS.add(deliveryManifestOrderDTO);
                 }
                 return DeliveryManifestDTO.builder()
                         .id(deliveryManifest.getId())
@@ -541,7 +557,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         }
                         totalOrdersSaleAmount+=saleAmount;
                         totalOrdersDuePayment+=totalDuePayment;
-                        deliveryManifestOrderDTOS.add(DeliveryManifestOrderDTO.builder()
+                        DeliveryManifestOrderDTO deliveryManifestOrderDTO = DeliveryManifestOrderDTO.builder()
                                 .address(order.getCustomer().getAddress())
                                 .dni(order.getCustomer().getDni())
                                 .customer(order.getCustomer().getName())
@@ -552,7 +568,22 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 .advancePayment(order.getAdvancedPayment())
                                 .deliveryManifestItemDTOList(deliveryManifestItemDTOS.stream()
                                         .filter(item -> Objects.equals(item.getOrderNumber(), order.getOrderNumber())).toList())
-                                .build());
+                                .orderId(order.getId())
+                                .orderPaymentState(order.getOrderPaymentState().getName())
+                                .build();
+                        DeliveryManifestOrder deliveryManifestOrder = deliveryManifestOrderRepository.findByDeliveryManifestIdAndOrderIdAndClientId(
+                                deliveryManifest.getId(),
+                                order.getId(),
+                                order.getClientId()
+                        );
+                        if(deliveryManifestOrder!=null){
+                            deliveryManifestOrderDTO.setReceivedAmount(deliveryManifestOrder.getReceivedAmount());
+                            deliveryManifestOrderDTO.setObservations(deliveryManifestOrder.getObservations());
+                        }else{
+                            deliveryManifestOrderDTO.setReceivedAmount(0.00);
+                            deliveryManifestOrderDTO.setObservations("Sin observaciones");
+                        }
+                        deliveryManifestOrderDTOS.add(deliveryManifestOrderDTO);
                     }
                     return DeliveryManifestDTO.builder()
                             .id(deliveryManifest.getId())
@@ -762,7 +793,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                     }
                     totalOrdersSaleAmount+=saleAmount;
                     totalOrdersDuePayment+=totalDuePayment;
-                    deliveryManifestOrderDTOS.add(DeliveryManifestOrderDTO.builder()
+                    DeliveryManifestOrderDTO deliveryManifestOrderDTO = DeliveryManifestOrderDTO.builder()
                             .address(order.getCustomer().getAddress())
                             .dni(order.getCustomer().getDni())
                             .customer(order.getCustomer().getName())
@@ -773,7 +804,22 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                             .advancePayment(order.getAdvancedPayment())
                             .deliveryManifestItemDTOList(deliveryManifestItemDTOS.stream()
                                     .filter(item -> Objects.equals(item.getOrderNumber(), order.getOrderNumber())).toList())
-                            .build());
+                            .orderId(order.getId())
+                            .orderPaymentState(order.getOrderPaymentState().getName())
+                            .build();
+                    DeliveryManifestOrder deliveryManifestOrder = deliveryManifestOrderRepository.findByDeliveryManifestIdAndOrderIdAndClientId(
+                            lastDeliveryManifest.getId(),
+                            order.getId(),
+                            user.getClientId()
+                    );
+                    if(deliveryManifestOrder!=null){
+                        deliveryManifestOrderDTO.setReceivedAmount(deliveryManifestOrder.getReceivedAmount());
+                        deliveryManifestOrderDTO.setObservations(deliveryManifestOrder.getObservations());
+                    }else{
+                        deliveryManifestOrderDTO.setReceivedAmount(0.00);
+                        deliveryManifestOrderDTO.setObservations("Sin observaciones");
+                    }
+                    deliveryManifestOrderDTOS.add(deliveryManifestOrderDTO);
                 }
                 return DeliveryManifestDTO.builder()
                         .id(lastDeliveryManifest.getId())
