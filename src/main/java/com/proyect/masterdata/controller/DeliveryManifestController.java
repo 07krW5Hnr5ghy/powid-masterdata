@@ -59,7 +59,7 @@ public class DeliveryManifestController {
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
-    @PutMapping("/close/{deliveryManifestId}")
+    @PutMapping("/close")
     public ResponseEntity<ResponseSuccess> closeManifest(
             @RequestParam("deliveryManifestId") UUID deliveryManifestId,
             @RequestParam("user") String user

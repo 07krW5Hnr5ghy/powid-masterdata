@@ -140,6 +140,57 @@ public class StockTransactionImpl implements IStockTransaction {
     }
 
     @Override
+    public StockTransaction addStockTransaction(String serial, Warehouse warehouse, List<RequestStockTransactionItem> requestStockTransactionItemList, String stockTransactionType, User user) throws BadRequestExceptions, InternalErrorExceptions {
+        StockTransaction stockTransaction;
+        StockTransactionType stockTransactionTypeData;
+
+        try{
+            stockTransaction = stockTransactionRepository.findBySerial(serial.toUpperCase());
+            stockTransactionTypeData = stockTransactionTypeRepository.findByNameAndStatusTrue(stockTransactionType.toUpperCase());
+        }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+
+        if(user == null){
+            throw new BadRequestExceptions(Constants.ErrorUser);
+        }
+
+        if(stockTransaction != null){
+            throw new BadRequestExceptions(Constants.ErrorStockTransactionExists);
+        }
+
+        if(stockTransactionTypeData == null){
+            throw new BadRequestExceptions(Constants.ErrorStockTransactionType);
+        }
+
+        try{
+
+            StockTransaction newStockTransaction = stockTransactionRepository.save(StockTransaction.builder()
+                    .serial(serial.toUpperCase())
+                    .stockTransactionType(stockTransactionTypeData)
+                    .stockTransactionTypeId(stockTransactionTypeData.getId())
+                    .warehouse(warehouse)
+                    .warehouseId(warehouse.getId())
+                    .client(user.getClient())
+                    .clientId(user.getClientId())
+                    .registrationDate(OffsetDateTime.now())
+                    .user(user).userId(user.getId())
+                    .build());
+
+            for(RequestStockTransactionItem requestStockTransactionItem : requestStockTransactionItemList){
+                iStockTransactionItem.save(newStockTransaction,requestStockTransactionItem,user.getUsername());
+            }
+            iAudit.save("ADD_STOCK_TRANSACTION","TRANSACCION DE STOCK "+newStockTransaction.getSerial()+" CREADO.",newStockTransaction.getSerial(),user.getUsername());
+            return newStockTransaction;
+        }catch (RuntimeException e){
+            e.printStackTrace();
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+    }
+
+    @Override
     public CompletableFuture<Page<StockTransactionDTO>> list(
             String user,
             List<String> serials,
