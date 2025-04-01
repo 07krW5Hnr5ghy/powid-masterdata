@@ -121,7 +121,7 @@ public class Constants {
     public static final String tableDeliveryZoneDistrict = "delivery_zone_district";
     public static final String tableKardexInput = "kardex_input";
     public static final String tableKardexOuput = "kardex_output";
-    public static final String tableKardexReceiptType = "kardex_receipt_type";
+    public static final String tableKardexOperationType = "kardex_operation_type";
     public static final String tableKardexBalance = "kardex_balance";
     public static final String tableDeliveryManifestOrder = "delivery_manifest_order";
     // messages

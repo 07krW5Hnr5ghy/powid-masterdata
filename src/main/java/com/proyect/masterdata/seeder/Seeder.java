@@ -90,6 +90,7 @@ public class Seeder implements CommandLineRunner {
         private final IAuthentication iAuthentication;
         private final IDeliveryZone iDeliveryZone;
         private final IDeliveryZoneDistrict iDeliveryZoneDistrict;
+        private final IKardexOperationType iKardexOperationType;
         @Override
         public void run(String... args) throws Exception {
 
@@ -1536,7 +1537,23 @@ public class Seeder implements CommandLineRunner {
                                 .build();
                         // purchase discounts
                         iPurchaseIGV.save(requestPurchaseIGVNo);
-
+                        // Kardex operation types
+                        iKardexOperationType.save("VENTA",adminUser.getUsername());
+                        iKardexOperationType.save("COMPRA",adminUser.getUsername());
+                        iKardexOperationType.save("CONSIGNACION RECIBIDA",adminUser.getUsername());
+                        iKardexOperationType.save("CONSIGNACION ENTREGADA",adminUser.getUsername());
+                        iKardexOperationType.save("DEVOLUCION RECIBIDA",adminUser.getUsername());
+                        iKardexOperationType.save("DEVOLUCION ENTREGADA",adminUser.getUsername());
+                        iKardexOperationType.save("PROMOCION",adminUser.getUsername());
+                        iKardexOperationType.save("PREMIO",adminUser.getUsername());
+                        iKardexOperationType.save("DONACION",adminUser.getUsername());
+                        iKardexOperationType.save("SALIDA A PRODUCCCION",adminUser.getUsername());
+                        iKardexOperationType.save("TRANSFERENCIA ENTRE ALMACENES",adminUser.getUsername());
+                        iKardexOperationType.save("RETIRO",adminUser.getUsername());
+                        iKardexOperationType.save("MERMAS",adminUser.getUsername());
+                        iKardexOperationType.save("DESMEDROS",adminUser.getUsername());
+                        iKardexOperationType.save("DESTRUCCION",adminUser.getUsername());
+                        iKardexOperationType.save("SALDO INICIAL",adminUser.getUsername());
 
 
 //                        User business1 = userRepository.save(User.builder()
