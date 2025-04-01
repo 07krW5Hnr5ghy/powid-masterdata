@@ -629,8 +629,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
             try{
                 courier = courierRepository.findById(courierId).get();
                 user = userRepository.findByDni(courier.getDni());
-
-                deliveryManifest = deliveryManifestRepository.findByCourierId(courierId);
+                deliveryManifest = deliveryManifestRepository.findByCourierIdAndOpenTrue(courierId);
 
                 if(deliveryManifest==null){
                     return DeliveryManifestCourierDTO.builder()

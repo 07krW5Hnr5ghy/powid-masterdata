@@ -562,8 +562,7 @@ public class CourierImpl implements ICourier {
 ////
 //                System.out.println( "orderin -> " + ordering.getId());
 
-                deliveryManifest = deliveryManifestRepository.findByCourierId(courier.getId());
-                ;
+                deliveryManifest = deliveryManifestRepository.findByCourierIdAndOpenTrue(courier.getId());
                 deliveryManifestItems = deliveryManifest != null
                         ? deliveryManifestItemRepository.findAllById(deliveryManifest.getId())
                         : Collections.emptyList();
