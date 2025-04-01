@@ -124,10 +124,10 @@ public class GeneralStockImpl implements IGeneralStock {
                 if (generalStock == null) {
                     throw new BadRequestExceptions(Constants.ErrorGeneralStock);
                 }
-
-                if (quantity > generalStock.getQuantity()) {
-                    throw new BadRequestExceptions(Constants.ErrorGeneralStockLess);
-                }
+// comentado mientras se implementa el kardex en el inventario
+//                if (quantity > generalStock.getQuantity()) {
+//                    throw new BadRequestExceptions(Constants.ErrorGeneralStockLess);
+//                }
 
                 generalStock.setQuantity(generalStock.getQuantity() - quantity);
                 generalStockRepository.save(generalStock);

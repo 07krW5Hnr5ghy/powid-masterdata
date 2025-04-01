@@ -68,10 +68,11 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
             if(deliveryManifestItem!=null){
                 throw new BadRequestExceptions(Constants.ErrorDeliveryManifestItemDelivered);
             }
-            if(warehouseStock.getQuantity()<orderItem.getQuantity()){
-                throw new BadRequestExceptions(Constants.ErrorWarehouseStockLess);
-
-            }
+            // codigo comentado mientras se implementa kardex en el inventario
+//            if(warehouseStock.getQuantity()<orderItem.getQuantity()){
+//                throw new BadRequestExceptions(Constants.ErrorWarehouseStockLess);
+//
+//            }
             try{
                 DeliveryManifestItem newDeliveryManifestItem = deliveryManifestItemRepository.save(DeliveryManifestItem.builder()
                         .deliveryManifest(deliveryManifest)
@@ -111,6 +112,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                         newDeliveryManifestItem.getId().toString(),user.getUsername());
                 return newDeliveryManifestItem;
             }catch (RuntimeException e){
+                e.printStackTrace();
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
