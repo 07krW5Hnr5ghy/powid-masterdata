@@ -127,10 +127,10 @@ public class WarehouseStockImpl implements IWarehouseStock {
             if (warehouseStock == null) {
                 throw new BadRequestExceptions(Constants.ErrorWarehouseStock);
             }
-
-            if (quantity > warehouseStock.getQuantity()) {
-                throw new BadRequestExceptions(Constants.ErrorWarehouseStockLess);
-            }
+//          comentado mientras se implementa el kardex en el inventario
+//            if (quantity > warehouseStock.getQuantity()) {
+//                throw new BadRequestExceptions(Constants.ErrorWarehouseStockLess);
+//            }
 
             warehouseStock.setQuantity(warehouseStock.getQuantity() - quantity);
             warehouseStockRepository.save(warehouseStock);
@@ -145,6 +145,7 @@ public class WarehouseStockImpl implements IWarehouseStock {
                     .message(Constants.register)
                     .build();
         } catch (RuntimeException e) {
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }

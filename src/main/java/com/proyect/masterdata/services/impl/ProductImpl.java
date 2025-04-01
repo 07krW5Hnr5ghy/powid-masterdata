@@ -54,6 +54,9 @@ public class ProductImpl implements IProduct {
     private final BrandRepository brandRepository;
     private final SubCategoryProductRepository subCategoryProductRepository;
     private final IUtil iUtil;
+    private final IGeneralStock iGeneralStock;
+    private final IWarehouseStock iWarehouseStock;
+    private final WarehouseRepository warehouseRepository;
     @Value("${storage.path.server}")
     private String urlPathServer ;
     @Override
@@ -66,10 +69,12 @@ public class ProductImpl implements IProduct {
         SubCategoryProduct subCategoryProduct;
         Color color;
         Unit unit;
+        Warehouse warehouse;
 
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            subCategoryProduct = subCategoryProductRepository.findByNameAndClientIdAndStatusTrue(requestProductSave.getSubCategoryProduct().toUpperCase(),user.getClientId());
+            // almacen para cargar el inventario negativo
+            warehouse = warehouseRepository.findByNameAndStatusTrue("ALMACEN ARANNI");
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -80,6 +85,12 @@ public class ProductImpl implements IProduct {
         }else{
             model = modelRepository.findByNameAndClientIdAndStatusTrue(requestProductSave.getModel().toUpperCase(),user.getClientId());
             color = colorRepository.findByNameAndClientIdAndStatusTrue(requestProductSave.getColor().toUpperCase(),user.getClientId());
+            subCategoryProduct = subCategoryProductRepository.findByNameAndClientIdAndStatusTrue(requestProductSave.getSubCategoryProduct().toUpperCase(),user.getClientId());
+        }
+
+        if(subCategoryProduct==null){
+            throw new BadRequestExceptions(Constants.ErrorSubCategoryProduct);
+        }else{
             unit = unitRepository.findByNameAndUnitTypeIdAndClientIdAndStatusTrue(requestProductSave.getUnit().toUpperCase(),subCategoryProduct.getCategoryProduct().getUnitTypeId(),user.getClientId());
         }
 
@@ -91,10 +102,6 @@ public class ProductImpl implements IProduct {
 
         if (size == null) {
             throw new BadRequestExceptions(Constants.ErrorSize);
-        }
-
-        if (subCategoryProduct == null) {
-            throw new BadRequestExceptions(Constants.ErrorSubCategoryProduct);
         }
 
         if (color == null) {
@@ -144,6 +151,9 @@ public class ProductImpl implements IProduct {
                 productRepository.save(productData);
             }
             iAudit.save("ADD_PRODUCT","PRODUCTO DE MARKETING "+productData.getId()+" CREADO.",productData.getId().toString(),user.getUsername());
+            // setear el inventario en cero mientras se implementa el kardex
+            iGeneralStock.in(productData,0,user.getUsername());
+            iWarehouseStock.in(warehouse,productData,0,user);
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -166,12 +176,13 @@ public class ProductImpl implements IProduct {
             SubCategoryProduct subCategoryProduct;
             Color color;
             Unit unit;
+            Warehouse warehouse;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-                subCategoryProduct = subCategoryProductRepository.findByNameAndClientIdAndStatusTrue(requestProductSave.getSubCategoryProduct().toUpperCase(),user.getClientId());
-                //subCategoryProduct.getCategoryProduct().getSizeTypeId()
                 System.out.println(unitRepository.findAll());
+                // almacen para cargar el inventario negativo
+                warehouse = warehouseRepository.findByNameAndStatusTrue("ALMACEN ARANNI");
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -182,13 +193,14 @@ public class ProductImpl implements IProduct {
             }else{
                 model = modelRepository.findByNameAndClientIdAndStatusTrue(requestProductSave.getModel().toUpperCase(),user.getClientId());
                 color = colorRepository.findByNameAndClientIdAndStatusTrue(requestProductSave.getColor().toUpperCase(),user.getClientId());
-                unit = unitRepository.findByNameAndUnitTypeIdAndClientIdAndStatusTrue(requestProductSave.getUnit().toUpperCase(),subCategoryProduct.getCategoryProduct().getUnitTypeId(),user.getClientId());
-                //modelRepository.findBySkuAndClientIdAndStatusTrue(requestProductSave.getModel().toUpperCase(),user.getClientId());
-            //modelRepository.findByNameAndClientId(requestProductSave.getModel().toUpperCase(),user.getClientId());
-                        //
-                //System.out.println(modelRepository.findByNameAndClientId(requestProductSave.getModel().toUpperCase(),user.getClientId()));
+                subCategoryProduct = subCategoryProductRepository.findByNameAndClientIdAndStatusTrue(requestProductSave.getSubCategoryProduct().toUpperCase(),user.getClientId());
             }
-            //System.out.println(model);
+
+            if(subCategoryProduct==null){
+                throw new BadRequestExceptions(Constants.ErrorSubCategoryProduct);
+            }else{
+                unit = unitRepository.findByNameAndUnitTypeIdAndClientIdAndStatusTrue(requestProductSave.getUnit().toUpperCase(),subCategoryProduct.getCategoryProduct().getUnitTypeId(),user.getClientId());
+            }
 
             if (model == null) {
                 throw new BadRequestExceptions(Constants.ErrorModel);
@@ -202,10 +214,6 @@ public class ProductImpl implements IProduct {
 
             if (color == null) {
                 throw new BadRequestExceptions(Constants.ErrorColor);
-            }
-
-            if (subCategoryProduct == null) {
-                throw new BadRequestExceptions(Constants.ErrorSubCategoryProduct);
             }
 
             if(!Objects.equals(size.getSizeTypeId(), subCategoryProduct.getCategoryProduct().getSizeTypeId())){
@@ -273,6 +281,9 @@ public class ProductImpl implements IProduct {
                     productRepository.save(productData);
                 }
                 iAudit.save("ADD_PRODUCT","PRODUCTO DE MARKETING "+productData.getId()+" CREADO.",productData.getId().toString(),user.getUsername());
+                // setear el inventario en cero mientras se implementa el kardex
+                iGeneralStock.in(productData,0,user.getUsername());
+                iWarehouseStock.in(warehouse,productData,0,user);
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
