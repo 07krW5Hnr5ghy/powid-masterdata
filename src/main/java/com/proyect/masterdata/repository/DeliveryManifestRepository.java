@@ -21,7 +21,7 @@ public interface DeliveryManifestRepository extends JpaRepository<DeliveryManife
     DeliveryManifest findByUserId(UUID userId);
 
     DeliveryManifest findByCourierId(UUID courierId);
-
+    DeliveryManifest findByCourierIdAndOpenTrue(UUID courierId);
     @Query("""
         SELECT dm 
         FROM DeliveryManifest dm
