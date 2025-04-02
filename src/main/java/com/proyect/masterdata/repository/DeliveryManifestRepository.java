@@ -1,6 +1,7 @@
 package com.proyect.masterdata.repository;
 
 import com.proyect.masterdata.domain.DeliveryManifest;
+import com.proyect.masterdata.domain.DeliveryManifestItem;
 import com.proyect.masterdata.domain.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -57,6 +58,7 @@ public interface DeliveryManifestRepository extends JpaRepository<DeliveryManife
                 where dm.id = :deliveryManifestId
     """)
     void closeDeliveriManifest(UUID deliveryManifestId, UUID userId, boolean open, OffsetDateTime updateDate);
+
 }
 
 

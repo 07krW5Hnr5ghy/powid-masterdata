@@ -16,6 +16,7 @@ public interface DeliveryManifestItemDTOP {
     Integer getQuantity();
     OrderItem getOrderItem();
     DeliveryManifest getDeliveryManifest();
+    Integer getDeliveredQuantity();
     Product getProduct();
     User getUser();
     boolean isDelivered();

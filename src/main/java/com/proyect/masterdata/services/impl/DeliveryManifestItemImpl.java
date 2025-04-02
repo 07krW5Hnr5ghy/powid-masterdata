@@ -77,7 +77,8 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                 DeliveryManifestItem newDeliveryManifestItem = deliveryManifestItemRepository.save(DeliveryManifestItem.builder()
                         .deliveryManifest(deliveryManifest)
                         .deliveryManifestId(deliveryManifest.getId())
-                        .quantity(orderItem.getQuantity())
+                        .quantity(orderItem.getPreparedProducts())
+                        .deliveredQuantity(0)
                         .productId(orderItem.getProduct().getId())
                         .product(orderItem.getProduct())
                         .collected(false)
@@ -269,15 +270,15 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                 ProductPrice productPrice = productPriceRepository.findByProductId(deliveryManifestItem.getProductId());
                 Double totalPrice = null;
                 if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "PORCENTAJE")){
-                    totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity())-((productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity())*(deliveryManifestItem.getOrderItem().getDiscountAmount()/100));
+                    totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts())-((productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts())*(deliveryManifestItem.getOrderItem().getDiscountAmount()/100));
                 }
 
                 if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "MONTO")){
-                    totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity())-(deliveryManifestItem.getOrderItem().getDiscountAmount());
+                    totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts())-(deliveryManifestItem.getOrderItem().getDiscountAmount());
                 }
 
                 if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "NO APLICA")){
-                    totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity());
+                    totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts());
                 }
                 return DeliveryManifestItemDTO.builder()
                         .id(deliveryManifestItem.getId())
@@ -287,6 +288,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                         .manifestNumber(deliveryManifestItem.getDeliveryManifest().getManifestNumber())
                         .orderNumber(deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber())
                         .quantity(deliveryManifestItem.getQuantity())
+                        .deliveredQuantity(deliveryManifestItem.getDeliveredQuantity())
                         .customer(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getName())
                         .skuProduct(iUtil.buildProductSku(deliveryManifestItem.getProduct()))
                         .management(deliveryManifestItem.getOrderItem().getOrdering().getManagementType().getName())
@@ -348,15 +350,15 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                     ProductPrice productPrice = productPriceRepository.findByProductId(deliveryManifestItem.getProductId());
                     Double totalPrice = null;
                     if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "PORCENTAJE")){
-                        totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity())-((productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity())*(deliveryManifestItem.getOrderItem().getDiscountAmount()/100));
+                        totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts())-((productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts())*(deliveryManifestItem.getOrderItem().getDiscountAmount()/100));
                     }
 
                     if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "MONTO")){
-                        totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity())-(deliveryManifestItem.getOrderItem().getDiscountAmount());
+                        totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getDeliveredProducts())-(deliveryManifestItem.getOrderItem().getDiscountAmount());
                     }
 
                     if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "NO APLICA")){
-                        totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getQuantity());
+                        totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getDeliveredProducts());
                     }
                 }
                 for(Ordering order:orders){
@@ -367,13 +369,13 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                        for(OrderItem orderItem : orderItems){
                            ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
                            if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
-                               saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - ((productPrice.getUnitSalePrice() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
+                               saleAmount += (productPrice.getUnitSalePrice() * orderItem.getPreparedProducts()) - ((productPrice.getUnitSalePrice() * orderItem.getPreparedProducts()) * (orderItem.getDiscountAmount() / 100));
                            }
                            if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-                               saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
+                               saleAmount += (productPrice.getUnitSalePrice() * orderItem.getPreparedProducts()) - orderItem.getDiscountAmount();
                            }
                            if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
-                               saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+                               saleAmount += (productPrice.getUnitSalePrice() * orderItem.getPreparedProducts());
                            }
 
                        }

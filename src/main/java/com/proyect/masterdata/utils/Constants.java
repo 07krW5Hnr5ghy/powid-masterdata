@@ -363,4 +363,6 @@ public class Constants {
     public static final String ErrorKardexOperationTypeExists = "Operacion de kardex ya fue registrado";
     public static final String ErrorDeliveryManifestOrder = "Comentario y/o monto recibido no esta registrado";
     public static final String ErrorDeliveryManifestOrderExist = "Comentario y/o monto recibido ya fue registrado";
+    public static final String ErrorProductQuantityNegative = "Cantida de productos preparados no puede ser negativo";
+    public static final String ErrorProductQuantityExceeded = "Cantida de productos preparados no puede exeder la cantidad total";
 }

@@ -33,7 +33,8 @@ public interface    DeliveryManifestItemRepository extends JpaRepository<Deliver
                ps.name AS paymentState,
                ord.order_id AS orderId,
                oi.order_item_id AS orderItemId,
-               cu.name AS customerName
+               cu.name AS customerName,
+               dmi.delivered_quantity as deliveredQuantity 
         FROM logistics.delivery_manifest_item dmi
         JOIN logistics.delivery_manifest dm ON dmi.delivery_manifest_id = dm.delivery_manifest_id
         JOIN ordering.order_item oi ON dmi.order_item_id = oi.order_item_id
