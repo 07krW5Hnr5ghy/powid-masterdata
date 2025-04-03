@@ -32,7 +32,7 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
     @Query("SELECT o FROM OrderItem o " +
             "WHERE o.orderId = :orderId " +
             "AND o.status = true " +
-            "AND o.selectOrderStatus = true")
+            "AND o.preparedProducts > 0")
     List<OrderItem> findOrderItemsForOrder(@Param("orderId") UUID orderId);
 
     @Query(value = "SELECT " +
@@ -189,7 +189,7 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
     );
 
     @Query("""
-    SELECT oi.quantity,
+    SELECT oi.preparedProducts,
     oi.discountAmount,
     di.name
     FROM OrderItem oi

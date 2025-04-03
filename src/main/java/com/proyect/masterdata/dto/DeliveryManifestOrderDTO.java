@@ -26,6 +26,7 @@ public class DeliveryManifestOrderDTO {
     private String district;
     private String province;
     private UUID orderId;
+    private UUID deliveryManifestId;
     private String observations;
     private Double receivedAmount;
     private String orderPaymentState;
