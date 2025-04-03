@@ -23,6 +23,7 @@ import com.proyect.masterdata.dto.DeliveryManifestDTO;
 import com.proyect.masterdata.dto.DeliveryManifestItemDTO;
 import com.proyect.masterdata.dto.DeliveryManifestOrderDTO;
 import com.proyect.masterdata.dto.projections.DeliveryManifestItemProjection;
+import com.proyect.masterdata.dto.projections.ProvinceDTOP;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
@@ -58,6 +59,9 @@ public class PdfGeneratorImpl implements IPdfGenerator {
     private final DeliveryManifestItemRepository deliveryManifestItemRepository;
     private final IUtil iUtil;
     private final DeliveryManifestOrderRepository deliveryManifestOrderRepository;
+    private final DeliveryZoneDistrictRepository deliveryZoneDistrictRepository;
+    private final DistrictRepository districtRepository;
+    private final ProvinceRepository provinceRepository;
     @Override
     public CompletableFuture<InputStream> generateOrderReport(UUID orderId, String tokenUser) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -289,6 +293,9 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                             .address(order.getCustomer().getAddress())
                             .dni(order.getCustomer().getDni())
                             .customer(order.getCustomer().getName())
+                            .phone(order.getCustomer().getPhone())
+                            .district(order.getCustomer().getDistrict().getName())
+                            .province(order.getCustomer().getDistrict().getProvince().getName())
                             .orderNumber(order.getOrderNumber())
                             .orderState(order.getOrderState().getName())
                             .payableAmount(totalDuePayment)
@@ -390,28 +397,37 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                 paidTable.setWidth(UnitValue.createPercentValue(100));
 
                 paidTable.addCell("No. Pedido").setBold();
-                paidTable.addCell("Producto").setBold();
+                paidTable.addCell("No Paquetes").setBold();
                 paidTable.addCell("Descripción").setBold();
                 paidTable.addCell("Teléfono").setBold();
                 paidTable.addCell("Distrito").setBold();
+                paidTable.addCell("Zona").setBold();
                 paidTable.addCell("Importe").setBold();
 
                 List<DeliveryManifestItemDTO> paidItems = new ArrayList<>();
-                double paidItemsAmount = 0;
+                Double paidItemsAmount = 0.00;
                 for(DeliveryManifestOrderDTO deliveryManifestOrderDTO:deliveryManifestDTO.getDeliveryManifestOrderDTOS()){
                     System.out.println(deliveryManifestOrderDTO);
+                    paidTable.addCell(deliveryManifestOrderDTO.getOrderNumber().toString());
+                    Integer packageNumbers = 0;
+                    Double paidItemsAmountOrder=0.00;
                     for(DeliveryManifestItemDTO deliveryManifestItemDTO:deliveryManifestOrderDTO.getDeliveryManifestItemDTOList()){
                         if(!Objects.equals(deliveryManifestItemDTO.getPaymentMethod(), "CONTRAENTREGA")){
-                            paidTable.addCell(deliveryManifestItemDTO.getOrderNumber().toString());
-                            paidTable.addCell(deliveryManifestItemDTO.getProduct());
-                            paidTable.addCell(deliveryManifestItemDTO.getCustomer());
-                            paidTable.addCell(deliveryManifestItemDTO.getPhone());
-                            paidTable.addCell(deliveryManifestItemDTO.getDistrict());
-                            paidTable.addCell("S/ " + deliveryManifestItemDTO.getOrderItemAmount());
+                            packageNumbers += deliveryManifestItemDTO.getQuantity();
                             paidItems.add(deliveryManifestItemDTO);
                             paidItemsAmount+=deliveryManifestItemDTO.getOrderItemAmount();
+                            paidItemsAmountOrder+=deliveryManifestItemDTO.getOrderItemAmount();
                         }
                     }
+                    paidTable.addCell(String.valueOf(packageNumbers));
+                    paidTable.addCell(deliveryManifestOrderDTO.getCustomer());
+                    paidTable.addCell(deliveryManifestOrderDTO.getPhone());
+                    paidTable.addCell(deliveryManifestOrderDTO.getDistrict());
+                    ProvinceDTOP province = provinceRepository.findByName(deliveryManifestOrderDTO.getProvince());
+                    District district = districtRepository.findByNameAndProvinceId(deliveryManifestOrderDTO.getDistrict(),province.getId());
+                    DeliveryZoneDistrict deliveryZoneDistrict = deliveryZoneDistrictRepository.findByDistrictId(district.getId());
+                    paidTable.addCell(deliveryZoneDistrict.getDeliveryZone().getName());
+                    paidTable.addCell("S/ " + paidItemsAmountOrder);
                 }
 
                 document.add(paidTable);
@@ -424,27 +440,36 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                 cashOnDeliveryTable.setWidth(UnitValue.createPercentValue(100));
 
                 cashOnDeliveryTable.addCell("No. Pedido").setBold();
-                cashOnDeliveryTable.addCell("Producto").setBold();
+                cashOnDeliveryTable.addCell("No Paquetes").setBold();
                 cashOnDeliveryTable.addCell("Descripción").setBold();
                 cashOnDeliveryTable.addCell("Teléfono").setBold();
                 cashOnDeliveryTable.addCell("Distrito").setBold();
+                cashOnDeliveryTable.addCell("Zona").setBold();
                 cashOnDeliveryTable.addCell("Importe").setBold();
 
                 List<DeliveryManifestItemDTO> cashOnDeliveryItems = new ArrayList<>();
                 double cashOnDeliveryItemsAmount = 0;
                 for(DeliveryManifestOrderDTO deliveryManifestOrderDTO:deliveryManifestDTO.getDeliveryManifestOrderDTOS()){
+                    cashOnDeliveryTable.addCell(deliveryManifestOrderDTO.getOrderNumber().toString());
+                    Integer packageNumbers = 0;
+                    double cashOnDeliveryItemsAmountOrder = 0.00;
                     for(DeliveryManifestItemDTO deliveryManifestItemDTO:deliveryManifestOrderDTO.getDeliveryManifestItemDTOList()){
                         if(Objects.equals(deliveryManifestItemDTO.getPaymentMethod(), "CONTRAENTREGA")){
-                            cashOnDeliveryTable.addCell(deliveryManifestItemDTO.getOrderNumber().toString());
-                            cashOnDeliveryTable.addCell(deliveryManifestItemDTO.getProduct());
-                            cashOnDeliveryTable.addCell(deliveryManifestItemDTO.getCustomer());
-                            cashOnDeliveryTable.addCell(deliveryManifestItemDTO.getPhone());
-                            cashOnDeliveryTable.addCell(deliveryManifestItemDTO.getDistrict());
-                            cashOnDeliveryTable.addCell("S/ " + deliveryManifestItemDTO.getOrderItemAmount());
+                            packageNumbers += deliveryManifestItemDTO.getQuantity();
                             cashOnDeliveryItems.add(deliveryManifestItemDTO);
                             cashOnDeliveryItemsAmount+=deliveryManifestItemDTO.getOrderItemAmount();
+                            cashOnDeliveryItemsAmountOrder+=deliveryManifestItemDTO.getOrderItemAmount();
                         }
                     }
+                    cashOnDeliveryTable.addCell(String.valueOf(packageNumbers));
+                    cashOnDeliveryTable.addCell(deliveryManifestOrderDTO.getCustomer());
+                    cashOnDeliveryTable.addCell(deliveryManifestOrderDTO.getPhone());
+                    cashOnDeliveryTable.addCell(deliveryManifestOrderDTO.getDistrict());
+                    ProvinceDTOP province = provinceRepository.findByName(deliveryManifestOrderDTO.getProvince());
+                    District district = districtRepository.findByNameAndProvinceId(deliveryManifestOrderDTO.getDistrict(),province.getId());
+                    DeliveryZoneDistrict deliveryZoneDistrict = deliveryZoneDistrictRepository.findByDistrictId(district.getId());
+                    cashOnDeliveryTable.addCell(deliveryZoneDistrict.getDeliveryZone().getName());
+                    cashOnDeliveryTable.addCell("S/ " + cashOnDeliveryItemsAmountOrder);
                 }
 
                 document.add(cashOnDeliveryTable);
