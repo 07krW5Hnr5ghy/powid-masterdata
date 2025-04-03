@@ -19,4 +19,5 @@ public interface DeliveryManifestItemProjection {
     UUID getOrderItemId();
     String getCustomerName();
     Integer getDeliveredQuantity();
+    Integer getCollectedQuantity();
 }

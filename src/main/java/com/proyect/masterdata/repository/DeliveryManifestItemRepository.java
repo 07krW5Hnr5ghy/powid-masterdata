@@ -16,7 +16,7 @@ import java.util.UUID;
 @Repository
 public interface    DeliveryManifestItemRepository extends JpaRepository<DeliveryManifestItem, UUID> {
     List<DeliveryManifestItem> findAllById(UUID deliveryManifestId);
-    DeliveryManifestItem findByOrderItemIdAndProductIdAndDeliveredTrue(UUID orderItemId,UUID productId);
+    DeliveryManifestItem findByOrderItemIdAndProductId(UUID orderItemId,UUID productId);
     List<DeliveryManifestItemDTOP> findAllByDeliveryManifestId(UUID deliveryManifestId);
     @Query(value = """
         SELECT dmi.delivery_manifest_item_id AS deliveryManifestItemId,
@@ -34,7 +34,8 @@ public interface    DeliveryManifestItemRepository extends JpaRepository<Deliver
                ord.order_id AS orderId,
                oi.order_item_id AS orderItemId,
                cu.name AS customerName,
-               dmi.delivered_quantity as deliveredQuantity 
+               dmi.delivered_quantity as deliveredQuantity,
+               dmi.collected_quantity as collectedQuantity, 
         FROM logistics.delivery_manifest_item dmi
         JOIN logistics.delivery_manifest dm ON dmi.delivery_manifest_id = dm.delivery_manifest_id
         JOIN ordering.order_item oi ON dmi.order_item_id = oi.order_item_id
@@ -54,7 +55,7 @@ public interface    DeliveryManifestItemRepository extends JpaRepository<Deliver
     );
     @Query("""
     SELECT dmi.deliveryManifest.id, oi.orderId, 
-           COUNT(CASE WHEN dmi.delivered = true THEN 1 END) AS deliveredCount
+           COUNT(CASE WHEN dmi.deliveredQuantity > 0 THEN 1 END) AS deliveredCount
     FROM DeliveryManifestItem dmi
     JOIN dmi.deliveryManifest dm
     JOIN dmi.orderItem oi
@@ -73,8 +74,8 @@ public interface    DeliveryManifestItemRepository extends JpaRepository<Deliver
         FROM DeliveryManifestItem dmi
         JOIN dmi.deliveryManifest dm
         JOIN dmi.orderItem oi
-        WHERE dmi.delivered = TRUE
-          AND dmi.collected = FALSE
+        WHERE dmi.deliveredQuantity > 0
+          AND dmi.collectedQuantity = 0
           AND dm.courierId = :courierId
           AND dmi.registrationDate BETWEEN :startDate AND :endDate
     """)

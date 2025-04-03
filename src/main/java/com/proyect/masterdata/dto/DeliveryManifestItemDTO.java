@@ -21,11 +21,11 @@ public class DeliveryManifestItemDTO {
     private Long orderNumber;
     private Long manifestNumber;
     private Integer deliveredQuantity;
+    private Integer collectedQuantity;
     private String district;
     private String customer;
     private String phone;
     private String management;
-    private Boolean delivered;
     private String paymentMethod;
     private String paymentState;
     private Double orderItemAmount;
