@@ -30,4 +30,5 @@ public class DeliveryManifestOrderDTO {
     private String observations;
     private Double receivedAmount;
     private String orderPaymentState;
+    private Boolean deliveryFeeCollected;
 }

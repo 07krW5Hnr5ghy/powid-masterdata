@@ -316,9 +316,13 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                     if(deliveryManifestOrder!=null){
                         deliveryManifestOrderDTO.setReceivedAmount(deliveryManifestOrder.getReceivedAmount());
                         deliveryManifestOrderDTO.setObservations(deliveryManifestOrder.getObservations());
+                        deliveryManifestOrderDTO.setDeliveryFeeCollected(deliveryManifestOrder.getDeliveryFeeCollected());
+                        deliveryManifestOrderDTO.setPaymentMethod(deliveryManifestOrder.getOrderPaymentMethod().getName());
                     }else{
                         deliveryManifestOrderDTO.setReceivedAmount(0.00);
                         deliveryManifestOrderDTO.setObservations("Sin observaciones");
+                        deliveryManifestOrderDTO.setDeliveryFeeCollected(false);
+                        deliveryManifestOrderDTO.setPaymentMethod("SIN SELECCIONAR");
                     }
                     deliveryManifestOrderDTOS.add(deliveryManifestOrderDTO);
                 }
