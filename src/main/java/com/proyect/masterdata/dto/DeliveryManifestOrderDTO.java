@@ -23,6 +23,7 @@ public class DeliveryManifestOrderDTO {
     private String customer;
     private String address;
     private UUID orderId;
+    private UUID deliveryManifestId;
     private String observations;
     private Double receivedAmount;
     private String orderPaymentState;
