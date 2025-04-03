@@ -245,7 +245,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                             productAmountPerManifest[0] += (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts());
                             return DeliveryManifestItemDTO.builder()
                                     .id(deliveryManifestItem.getId())
-                                    .delivered(deliveryManifestItem.isDelivered())
+                                    .deliveredQuantity(deliveryManifestItem.getDeliveredQuantity())
                                     .user(deliveryManifestItem.getUser().getUsername())
                                     .manifestNumber(deliveryManifestItem.getDeliveryManifest().getManifestNumber())
                                     .phone(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getPhone())
@@ -544,7 +544,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                         .orderNumber(deliveryManifestItem.getOrderNumber())
                                         .deliveredQuantity(deliveryManifestItem.getDeliveredQuantity())
                                         .quantity(deliveryManifestItem.getQuantity())
-                                        .delivered(deliveryManifestItem.getDelivered())
+                                        .collectedQuantity(deliveryManifestItem.getQuantity())
                                         .skuProduct(iUtil.buildProductSku(productPrice.getProduct()))
                                         .management(deliveryManifestItem.getManagementType())
                                         .paymentMethod(deliveryManifestItem.getPaymentMethod())
@@ -703,8 +703,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
             }
 
             for(DeliveryManifestItem deliveryManifestItem : deliveryManifestItemLis){
-                if(deliveryManifestItem.getDelivered())
-                    delivered++;
+                delivered += deliveryManifestItem.getDeliveredQuantity();
             }
 
             quantityOrders = deliveryManifestItemLis.size();
@@ -786,8 +785,8 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                             return DeliveryManifestItemDTO.builder()
                                     .id(deliveryManifestItem.getId())
                                     .user(deliveryManifestItem.getUser().getUsername())
-                                    .delivered(deliveryManifestItem.isDelivered())
-
+                                    .deliveredQuantity(deliveryManifestItem.getDeliveredQuantity())
+                                    .collectedQuantity(deliveryManifestItem.getCollectedQuantity())
                                     .manifestNumber(deliveryManifestItem.getDeliveryManifest().getManifestNumber())
                                     .phone(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getPhone())
                                     .customer(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getName())

@@ -63,9 +63,9 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
             if(warehouseStock==null){
                 throw new BadRequestExceptions(Constants.ErrorWarehouseStock);
             }else{
-                deliveryManifestItem = deliveryManifestItemRepository.findByOrderItemIdAndProductIdAndDeliveredTrue(orderItem.getId(),orderItem.getProductId());
+                deliveryManifestItem = deliveryManifestItemRepository.findByOrderItemIdAndProductId(orderItem.getId(),orderItem.getProductId());
             }
-            if(deliveryManifestItem!=null){
+            if(deliveryManifestItem!=null || orderItem.getDeliveredProducts() >= orderItem.getQuantity()){
                 throw new BadRequestExceptions(Constants.ErrorDeliveryManifestItemDelivered);
             }
             // codigo comentado mientras se implementa kardex en el inventario
@@ -81,7 +81,6 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                         .deliveredQuantity(0)
                         .productId(orderItem.getProduct().getId())
                         .product(orderItem.getProduct())
-                        .collected(false)
                         .orderItem(orderItem)
                         .orderItemId(orderItem.getId())
                         .userId(orderItem.getUser().getId())
@@ -90,7 +89,6 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                         .updateDate(OffsetDateTime.now())
                                 .clientId(user.getClientId())
                                 .client(user.getClient())
-                        .delivered(false)
                         .build());
                 iWarehouseStock.out(
                         newDeliveryManifestItem.getDeliveryManifest().getWarehouse(),
@@ -122,6 +120,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
     @Override
     public CompletableFuture<ResponseSuccess> markDeliveredDeliveryManifestItem(
             UUID deliveryManifestItemId,
+            Integer quantity,
             String username) {
         return CompletableFuture.supplyAsync(()->{
             User user;
@@ -140,7 +139,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                 throw new BadRequestExceptions(Constants.ErrorDeliveryManifestItem);
             }
             try{
-                deliveryManifestItem.setDelivered(true);
+                deliveryManifestItem.setDeliveredQuantity(quantity);
                 deliveryManifestItem.setUser(user);
                 deliveryManifestItem.setUserId(user.getId());
                 deliveryManifestItem.setUpdateDate(OffsetDateTime.now());
@@ -165,7 +164,10 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
     }
 
     @Override
-    public CompletableFuture<ResponseSuccess> markCollectedDeliveryManifestItem(UUID deliveryManifestItemId, String username) {
+    public CompletableFuture<ResponseSuccess> markCollectedDeliveryManifestItem(
+            UUID deliveryManifestItemId,
+            Integer quantity,
+            String username) {
         return CompletableFuture.supplyAsync(()->{
             User user;
             DeliveryManifestItem deliveryManifestItem;
@@ -183,7 +185,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                 throw new BadRequestExceptions(Constants.ErrorDeliveryManifestItem);
             }
             try{
-                deliveryManifestItem.setCollected(true);
+                deliveryManifestItem.setQuantity(quantity);
                 deliveryManifestItem.setUser(user);
                 deliveryManifestItem.setUserId(user.getId());
                 deliveryManifestItem.setUpdateDate(OffsetDateTime.now());
@@ -282,7 +284,8 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                 }
                 return DeliveryManifestItemDTO.builder()
                         .id(deliveryManifestItem.getId())
-                        .delivered(deliveryManifestItem.getDelivered())
+                        .deliveredQuantity(deliveryManifestItem.getDeliveredQuantity())
+                        .collectedQuantity(deliveryManifestItem.getCollectedQuantity())
                         .phone(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getPhone())
                         .district(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getDistrict().getName())
                         .manifestNumber(deliveryManifestItem.getDeliveryManifest().getManifestNumber())

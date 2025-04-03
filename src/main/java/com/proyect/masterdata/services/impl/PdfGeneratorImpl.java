@@ -241,7 +241,8 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                             }
                             return DeliveryManifestItemDTO.builder()
                                     .id(deliveryManifestItem.getDeliveryManifestItemId())
-                                    .delivered(deliveryManifestItem.getDelivered())
+                                    .deliveredQuantity(deliveryManifestItem.getDeliveredQuantity())
+                                    .collectedQuantity(deliveryManifestItem.getCollectedQuantity())
                                     .user(deliveryManifestItem.getUsername())
                                     .manifestNumber(deliveryManifestItem.getManifestNumber())
                                     .phone(deliveryManifestItem.getPhone())
