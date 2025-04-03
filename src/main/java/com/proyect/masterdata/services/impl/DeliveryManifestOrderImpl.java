@@ -76,6 +76,7 @@ public class DeliveryManifestOrderImpl implements IDeliveryManifestOrder {
                         .deliveryFeeCollected(requestDeliveryManifestOrder.getDeliveryFeeCollected())
                         .orderPaymentMethod(orderPaymentMethod)
                         .paymentMethodId(orderPaymentMethod.getId())
+                        .delivered(requestDeliveryManifestOrder.getDelivered())
                         .build();
                 if(requestDeliveryManifestOrder.getObservations() != null && requestDeliveryManifestOrder.getReceivedAmount() != null){
                     iOrderLog.save(user,ordering,

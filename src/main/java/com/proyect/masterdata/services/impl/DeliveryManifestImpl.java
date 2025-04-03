@@ -322,11 +322,13 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         deliveryManifestOrderDTO.setObservations(deliveryManifestOrder.getObservations());
                         deliveryManifestOrderDTO.setDeliveryFeeCollected(deliveryManifestOrder.getDeliveryFeeCollected());
                         deliveryManifestOrderDTO.setPaymentMethod(deliveryManifestOrder.getOrderPaymentMethod().getName());
+                        deliveryManifestOrderDTO.setDelivered(deliveryManifestOrder.getDelivered());
                     }else{
                         deliveryManifestOrderDTO.setReceivedAmount(0.00);
                         deliveryManifestOrderDTO.setObservations("Sin observaciones");
                         deliveryManifestOrderDTO.setDeliveryFeeCollected(false);
                         deliveryManifestOrderDTO.setPaymentMethod("SIN SELECCIONAR");
+                        deliveryManifestOrderDTO.setDelivered(false);
                     }
                     deliveryManifestOrderDTOS.add(deliveryManifestOrderDTO);
                 }
@@ -618,11 +620,13 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                             deliveryManifestOrderDTO.setObservations(deliveryManifestOrder.getObservations());
                             deliveryManifestOrderDTO.setDeliveryFeeCollected(deliveryManifestOrder.getDeliveryFeeCollected());
                             deliveryManifestOrderDTO.setPaymentMethod(deliveryManifestOrder.getOrderPaymentMethod().getName());
+                            deliveryManifestOrderDTO.setDelivered(deliveryManifestOrder.getDelivered());
                         }else{
                             deliveryManifestOrderDTO.setReceivedAmount(0.00);
                             deliveryManifestOrderDTO.setObservations("Sin observaciones");
                             deliveryManifestOrderDTO.setDeliveryFeeCollected(false);
                             deliveryManifestOrderDTO.setPaymentMethod("SIN SELECCIONAR");
+                            deliveryManifestOrderDTO.setDelivered(false);
                         }
                         if(!deliveryManifestOrderDTO.getDeliveryManifestItemDTOList().isEmpty()){ // porque se esta obteniendo un delivery manifest con imtens vacios
                             deliveryManifestOrderDTOS.add(deliveryManifestOrderDTO);
@@ -870,11 +874,13 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         deliveryManifestOrderDTO.setObservations(deliveryManifestOrder.getObservations());
                         deliveryManifestOrderDTO.setDeliveryFeeCollected(deliveryManifestOrder.getDeliveryFeeCollected());
                         deliveryManifestOrderDTO.setPaymentMethod(deliveryManifestOrder.getOrderPaymentMethod().getName());
+                        deliveryManifestOrderDTO.setDelivered(deliveryManifestOrder.getDelivered());
                     }else{
                         deliveryManifestOrderDTO.setReceivedAmount(0.00);
                         deliveryManifestOrderDTO.setObservations("Sin observaciones");
                         deliveryManifestOrderDTO.setDeliveryFeeCollected(false);
                         deliveryManifestOrderDTO.setPaymentMethod("SIN SELECCIONAR");
+                        deliveryManifestOrderDTO.setDelivered(false);
                     }
                     deliveryManifestOrderDTOS.add(deliveryManifestOrderDTO);
                 }

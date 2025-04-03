@@ -46,6 +46,9 @@ public class DeliveryManifestOrder {
     @Column(name = "delivery_fee_collected")
     private Boolean deliveryFeeCollected;
 
+    @Column(name = "delivered")
+    private Boolean delivered;
+
     @Column(name = "user_id")
     private UUID userId;
 
