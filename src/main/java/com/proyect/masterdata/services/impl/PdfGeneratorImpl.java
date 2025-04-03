@@ -406,6 +406,7 @@ public class PdfGeneratorImpl implements IPdfGenerator {
 
                 List<DeliveryManifestItemDTO> paidItems = new ArrayList<>();
                 Double paidItemsAmount = 0.00;
+                int paidOrderQuantity = 0;
                 for(DeliveryManifestOrderDTO deliveryManifestOrderDTO:deliveryManifestDTO.getDeliveryManifestOrderDTOS()){
                     System.out.println(deliveryManifestOrderDTO);
                     paidTable.addCell(deliveryManifestOrderDTO.getOrderNumber().toString());
@@ -428,6 +429,7 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                     DeliveryZoneDistrict deliveryZoneDistrict = deliveryZoneDistrictRepository.findByDistrictId(district.getId());
                     paidTable.addCell(deliveryZoneDistrict.getDeliveryZone().getName());
                     paidTable.addCell("S/ " + paidItemsAmountOrder);
+                    paidOrderQuantity+=1;
                 }
 
                 document.add(paidTable);
@@ -449,6 +451,7 @@ public class PdfGeneratorImpl implements IPdfGenerator {
 
                 List<DeliveryManifestItemDTO> cashOnDeliveryItems = new ArrayList<>();
                 double cashOnDeliveryItemsAmount = 0;
+                int cashOnDeliveryOrderQuantity = 0;
                 for(DeliveryManifestOrderDTO deliveryManifestOrderDTO:deliveryManifestDTO.getDeliveryManifestOrderDTOS()){
                     cashOnDeliveryTable.addCell(deliveryManifestOrderDTO.getOrderNumber().toString());
                     Integer packageNumbers = 0;
@@ -470,6 +473,7 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                     DeliveryZoneDistrict deliveryZoneDistrict = deliveryZoneDistrictRepository.findByDistrictId(district.getId());
                     cashOnDeliveryTable.addCell(deliveryZoneDistrict.getDeliveryZone().getName());
                     cashOnDeliveryTable.addCell("S/ " + cashOnDeliveryItemsAmountOrder);
+                    cashOnDeliveryOrderQuantity+=1;
                 }
 
                 document.add(cashOnDeliveryTable);
@@ -487,13 +491,13 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                 summaryTable.setWidth(UnitValue.createPercentValue(100));
 
                 summaryTable.addCell("No. PEDIDOS").setFont(boldFont);
-                summaryTable.addCell(String.valueOf(paidOrderCount.size())).setTextAlignment(TextAlignment.RIGHT);
+                summaryTable.addCell(String.valueOf(paidOrderQuantity)).setTextAlignment(TextAlignment.RIGHT);
 
                 summaryTable.addCell("TOTAL PAGADO").setFont(boldFont);
                 summaryTable.addCell("S/ " + paidItemsAmount).setTextAlignment(TextAlignment.RIGHT);
 
                 summaryTable.addCell("No. PEDIDOS").setFont(boldFont);
-                summaryTable.addCell(String.valueOf(cashOnDeliveryOrderCount.size())).setTextAlignment(TextAlignment.RIGHT);
+                summaryTable.addCell(Integer.toString(cashOnDeliveryOrderQuantity)).setTextAlignment(TextAlignment.RIGHT);
 
                 summaryTable.addCell("TOTAL POR COBRAR").setFont(boldFont);
                 summaryTable.addCell("S/ " + cashOnDeliveryItemsAmount).setTextAlignment(TextAlignment.RIGHT);
