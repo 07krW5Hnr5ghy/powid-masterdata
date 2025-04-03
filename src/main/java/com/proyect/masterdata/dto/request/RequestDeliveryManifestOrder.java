@@ -19,4 +19,5 @@ public class RequestDeliveryManifestOrder {
     String observations;
     Boolean deliveryFeeCollected;
     String paymentMethod;
+    Boolean delivered;
 }
