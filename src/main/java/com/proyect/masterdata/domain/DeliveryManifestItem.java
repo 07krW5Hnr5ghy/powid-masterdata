@@ -26,6 +26,9 @@ public class DeliveryManifestItem {
     @Column(name = "quantity")
     private Integer quantity;
 
+    @Column(name = "delivered_quantity")
+    private Integer deliveredQuantity;
+
     @Column(name = "collected")
     private Boolean collected;
 

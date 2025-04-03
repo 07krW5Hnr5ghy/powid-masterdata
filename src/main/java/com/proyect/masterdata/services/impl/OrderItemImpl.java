@@ -92,6 +92,8 @@ public class OrderItemImpl implements IOrderItem {
                             .client(user.getClient())
                             .clientId(user.getClientId())
                             .product(product)
+                            .preparedProducts(0)
+                            .deliveredProducts(0)
                             .productId(product.getId())
                             .observations(requestOrderItem.getObservations().toUpperCase())
                             .status(true)
@@ -158,6 +160,8 @@ public class OrderItemImpl implements IOrderItem {
                         .productId(product.getId())
                         .observations(requestOrderItem.getObservations().toUpperCase())
                         .status(true)
+                        .preparedProducts(0)
+                        .deliveredProducts(0)
                         .selectOrderStatus(false)
                         .registrationDate(OffsetDateTime.now())
                         .updateDate(OffsetDateTime.now())
@@ -328,15 +332,11 @@ public class OrderItemImpl implements IOrderItem {
             Product product;
             OrderItem orderItem;
             Discount discount;
-            //System.out.println(orderId);
-            //System.out.println(requestOrderItem);
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 ordering = orderingRepository.findById(orderId).orElse(null);
-                //System.out.println("orderinng -> " + ordering);
                 product = productRepository.findByIdAndStatusTrue(requestOrderItem.getProductId());
                 orderItem = orderItemRepository.findByProductId(product.getId());
-                //System.out.println( "order item ->" + orderItem);
                 discount = discountRepository.findByName(requestOrderItem.getDiscount().toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -601,6 +601,8 @@ public class OrderItemImpl implements IOrderItem {
                         .category(orderItem.getProduct().getSubCategoryProduct().getCategoryProduct().getName())
                         .sku(iUtil.buildProductSku(orderItem.getProduct()))
                         .unitPrice(productPrice.getUnitSalePrice())
+                        .deliveredProducts(orderItem.getDeliveredProducts())
+                        .preparedProducts(orderItem.getPreparedProducts())
                         .discount(orderItem.getDiscount().getName())
                         .discountAmount(orderItem.getDiscountAmount())
                         .quantity(orderItem.getQuantity())
@@ -657,6 +659,8 @@ public class OrderItemImpl implements IOrderItem {
                         .size(orderItem.getProduct().getSize().getName())
                         .sku(iUtil.buildProductSku(orderItem.getProduct()))
                         .model(orderItem.getProduct().getModel().getName())
+                        .deliveredProducts(orderItem.getDeliveredProducts())
+                        .preparedProducts(orderItem.getPreparedProducts())
                         .category(orderItem.getProduct().getSubCategoryProduct().getCategoryProduct().getName())
                         .subCategory(orderItem.getProduct().getSubCategoryProduct().getName())
                         .quantity(orderItem.getQuantity())
@@ -709,6 +713,8 @@ public class OrderItemImpl implements IOrderItem {
                         .orderId(orderItem.getOrderId())
                         .color(orderItem.getProduct().getColor().getName())
                         .size(orderItem.getProduct().getSize().getName())
+                        .deliveredProducts(orderItem.getDeliveredProducts())
+                        .preparedProducts(orderItem.getPreparedProducts())
                         .sku(iUtil.buildProductSku(orderItem.getProduct()))
                         .model(orderItem.getProduct().getModel().getName())
                         .category(orderItem.getProduct().getSubCategoryProduct().getCategoryProduct().getName())
@@ -791,7 +797,7 @@ public class OrderItemImpl implements IOrderItem {
 
     @Transactional
     @Override
-    public CompletableFuture<ResponseSuccess> preparateOrderItemCheck(UUID orderItemId, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseSuccess> preparateOrderItemCheck(UUID orderItemId, String tokenUser,Integer preparedProducts) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync( () -> {
             Ordering ordering;
             OrderItem orderItem;
@@ -801,14 +807,13 @@ public class OrderItemImpl implements IOrderItem {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 orderItem = orderItemRepository.findOrderItemById(orderItemId);
                 ordering = orderingRepository.findById(orderItem.getOrderId()).orElse(null);
-
-
-                System.out.println("user");
-                System.out.println("orderItem: "+orderItem);
-                System.out.println("ordering:" + ordering );
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+
+            if(orderItem == null){
+                throw new BadRequestExceptions(Constants.ErrorOrderItem);
             }
 
             if(user == null){
@@ -818,24 +823,28 @@ public class OrderItemImpl implements IOrderItem {
             if(ordering == null){
                 throw new BadRequestExceptions(Constants.ErrorOrdering);
             }
-            if(orderItem == null){
-                throw new BadRequestExceptions(Constants.ErrorOrderItem);
+
+
+            if(preparedProducts + orderItem.getPreparedProducts() < 0){
+                throw new BadRequestExceptions(Constants.ErrorProductQuantityNegative);
+            }
+
+            if(preparedProducts + orderItem.getPreparedProducts() > orderItem.getQuantity()){
+                throw new BadRequestExceptions(Constants.ErrorProductQuantityExceeded);
             }
 
             try {
-                System.out.println("entro select item");
                 orderItemRepository.selectPreparedOrdetItem(
                         ordering.getId(),
                         orderItemId,
                         user.getId(),
                         OffsetDateTime.now(),
-                        !orderItem.getSelectOrderStatus()
+                        preparedProducts
                 );
-                System.out.println("Paso");
                 iOrderLog.save(
                         user,
                         ordering,
-                        (!orderItem.getSelectOrderStatus() ? "item preparado ":"item deseleccionado ")
+                        ("Cantidad preparada : " + preparedProducts + " ")
                                 + orderItem.getProduct().getName().toUpperCase()
                 );
                 return ResponseSuccess.builder()

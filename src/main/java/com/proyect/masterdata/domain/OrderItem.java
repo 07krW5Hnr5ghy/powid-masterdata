@@ -30,6 +30,12 @@ public class OrderItem {
     @Column(name = "quantity")
     private Integer quantity;
 
+    @Column(name = "prepared_products")
+    private Integer preparedProducts;
+
+    @Column(name = "delivered_products")
+    private Integer deliveredProducts;
+
     @Column(name = "discount_amount")
     private Double discountAmount;
 

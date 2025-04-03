@@ -175,7 +175,7 @@ public class Seeder implements CommandLineRunner {
                                 .userId(adminUser.getId())
                                 .build());
 
-                        Role role = roleRepository.save(Role.builder()
+                        Role roleA = roleRepository.save(Role.builder()
                                 .user(adminUser)
                                 .userId(adminUser.getId())
                                 .name("ADMINISTRACION")
@@ -187,23 +187,25 @@ public class Seeder implements CommandLineRunner {
                         userRoleRepository.save(UserRole.builder()
                                 .user(adminUser)
                                 .userId(adminUser.getId())
-                                .role(role)
-                                .roleId(role.getId())
+                                .role(roleA)
+                                .roleId(roleA.getId())
                                 .status(true)
                                 .registrationDate(OffsetDateTime.now())
                                 .updateDate(OffsetDateTime.now())
                                 .build());
 
                         roleAccessRepository.save(RoleAccess.builder()
-                                .role(role)
+                                .role(roleA)
                                 .access(access)
                                 .user(adminUser)
                                 .registrationDate(OffsetDateTime.now())
                                 .updateDate(OffsetDateTime.now())
                                 .status(true)
-                                .roleId(role.getId())
+                                .roleId(roleA.getId())
                                 .accessId(access.getId())
                                 .build());
+
+
 
                         // user for register new users
                         User registerUser = userRepository.save(User.builder()
@@ -1739,6 +1741,9 @@ public class Seeder implements CommandLineRunner {
                                 .build();
 
                         iCourier.save(requestCourier, adminUser.getUsername());
+
+
+
 
 
 //                        User courierUser = userRepository.save(User.builder()

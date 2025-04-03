@@ -32,7 +32,7 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
     @Query("SELECT o FROM OrderItem o " +
             "WHERE o.orderId = :orderId " +
             "AND o.status = true " +
-            "AND o.selectOrderStatus = true")
+            "AND o.preparedProducts > 0")
     List<OrderItem> findOrderItemsForOrder(@Param("orderId") UUID orderId);
 
     @Query(value = "SELECT " +
@@ -177,19 +177,19 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
     @Modifying
     @Transactional
     @Query("UPDATE OrderItem o SET " +
-                    "o.selectOrderStatus = :selectOrderStatus," +
-                    "o.updateDate = :updateDate " +
+                    "o.updateDate = :updateDate, " +
+                    "o.preparedProducts = :preparedProducts " +
                     "WHERE o.userId = :userId AND o.orderId = :orderId AND o.id = :orderItemId")
     void selectPreparedOrdetItem (
             @Param("orderId") UUID orderId,
             @Param("orderItemId") UUID orderItemId,
             @Param("userId") UUID userId,
             @Param("updateDate") OffsetDateTime updateDate,
-            @Param("selectOrderStatus") Boolean selectOrderStatus
+            @Param("preparedProducts") Integer preparedProducts
     );
 
     @Query("""
-    SELECT oi.quantity,
+    SELECT oi.preparedProducts,
     oi.discountAmount,
     di.name
     FROM OrderItem oi

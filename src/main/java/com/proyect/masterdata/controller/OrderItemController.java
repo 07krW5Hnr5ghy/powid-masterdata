@@ -82,12 +82,13 @@ public class OrderItemController {
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
-    @PutMapping("preparate")
+    @PutMapping("preparate/product")
     public ResponseEntity<ResponseSuccess> preparateOrderItem(
             @RequestParam("orderItemId") UUID orderItemId,
-            @RequestParam("tokerUser") String tokenUser
+            @RequestParam("tokerUser") String tokenUser,
+            @RequestParam("preparedProducts")Integer preparedProducts
     )throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iOrderItem.preparateOrderItemCheck(orderItemId,tokenUser);
+        CompletableFuture<ResponseSuccess> result = iOrderItem.preparateOrderItemCheck(orderItemId,tokenUser, preparedProducts);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
