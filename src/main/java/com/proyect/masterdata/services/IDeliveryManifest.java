@@ -36,4 +36,18 @@ public interface IDeliveryManifest {
     ) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<DeliveryManifestCourierDTO> checkCourierToDeliveryManifest(UUID courierId) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<DeliveryManifestDTO> getLastDeliveryManifestByCourier(String username) throws BadRequestExceptions,InternalErrorExceptions;
+    CompletableFuture<DeliveryManifestDTO> listFilterToPreparations( String user,
+                                                                     Long manifestNumber,
+                                                                     String warehouse,
+                                                                     String courier,
+                                                                     String courierDni,
+                                                                     OffsetDateTime registrationStartDate,
+                                                                     OffsetDateTime registrationEndDate,
+                                                                     OffsetDateTime updateStartDate,
+                                                                     OffsetDateTime updateEndDate,
+                                                                     String sort,
+                                                                     String sortColumn,
+                                                                     Integer pageNumber,
+                                                                     Integer pageSize,
+                                                                     Boolean open) throws BadRequestExceptions,InternalErrorExceptions;
 }

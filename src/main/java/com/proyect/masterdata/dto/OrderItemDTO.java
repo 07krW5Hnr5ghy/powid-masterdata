@@ -23,6 +23,7 @@ public class OrderItemDTO {
     private String model;
     private String color;
     private String size;
+    private String nameProduct;
     private String category;
     private String subCategory;
     private String unit;
