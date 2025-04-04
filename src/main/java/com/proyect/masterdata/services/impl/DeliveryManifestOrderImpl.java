@@ -1,17 +1,11 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.DeliveryManifest;
-import com.proyect.masterdata.domain.DeliveryManifestOrder;
-import com.proyect.masterdata.domain.Ordering;
-import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.request.RequestDeliveryManifestOrder;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.repository.DeliveryManifestOrderRepository;
-import com.proyect.masterdata.repository.DeliveryManifestRepository;
-import com.proyect.masterdata.repository.OrderingRepository;
-import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IDeliveryManifestOrder;
 import com.proyect.masterdata.services.IOrderLog;
 import com.proyect.masterdata.utils.Constants;
@@ -31,6 +25,7 @@ public class DeliveryManifestOrderImpl implements IDeliveryManifestOrder {
     private final UserRepository userRepository;
     private final OrderingRepository orderingRepository;
     private final IOrderLog iOrderLog;
+    private final OrderPaymentMethodRepository orderPaymentMethodRepository;
     @Override
     public CompletableFuture<ResponseSuccess> save(RequestDeliveryManifestOrder requestDeliveryManifestOrder) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -38,10 +33,13 @@ public class DeliveryManifestOrderImpl implements IDeliveryManifestOrder {
             DeliveryManifest deliveryManifest;
             User user;
             Ordering ordering;
+            OrderPaymentMethod orderPaymentMethod;
+
             try {
                 user = userRepository.findByUsernameAndStatusTrue(requestDeliveryManifestOrder.getUsername().toUpperCase());
                 deliveryManifest = deliveryManifestRepository.findById(requestDeliveryManifestOrder.getOrderId()).orElse(null);
                 ordering = orderingRepository.findById(requestDeliveryManifestOrder.getOrderId()).orElse(null);
+                orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestDeliveryManifestOrder.getPaymentMethod().toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -60,6 +58,9 @@ public class DeliveryManifestOrderImpl implements IDeliveryManifestOrder {
             if(deliveryManifestOrder!=null){
                 throw new BadRequestExceptions(Constants.ErrorDeliveryManifestOrderExist);
             }
+            if(orderPaymentMethod==null){
+                throw new BadRequestExceptions(Constants.ErrorPaymentMethod);
+            }
             try {
                 DeliveryManifestOrder newDeliveryManifestOrder = DeliveryManifestOrder.builder()
                         .orderId(ordering.getId())
@@ -72,6 +73,10 @@ public class DeliveryManifestOrderImpl implements IDeliveryManifestOrder {
                         .user(user)
                         .observations(requestDeliveryManifestOrder.getObservations()!=null? requestDeliveryManifestOrder.getObservations():"Sin observaciones")
                         .receivedAmount(requestDeliveryManifestOrder.getReceivedAmount()!=null? requestDeliveryManifestOrder.getReceivedAmount():0.00)
+                        .deliveryFeeCollected(requestDeliveryManifestOrder.getDeliveryFeeCollected())
+                        .orderPaymentMethod(orderPaymentMethod)
+                        .paymentMethodId(orderPaymentMethod.getId())
+                        .delivered(requestDeliveryManifestOrder.getDelivered())
                         .build();
                 if(requestDeliveryManifestOrder.getObservations() != null && requestDeliveryManifestOrder.getReceivedAmount() != null){
                     iOrderLog.save(user,ordering,

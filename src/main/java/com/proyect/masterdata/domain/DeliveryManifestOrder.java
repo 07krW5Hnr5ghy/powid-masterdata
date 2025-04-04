@@ -43,11 +43,20 @@ public class DeliveryManifestOrder {
     @CreationTimestamp()
     private OffsetDateTime updateDate;
 
+    @Column(name = "delivery_fee_collected")
+    private Boolean deliveryFeeCollected;
+
+    @Column(name = "delivered")
+    private Boolean delivered;
+
     @Column(name = "user_id")
     private UUID userId;
 
     @Column(name = "client_id")
     private UUID clientId;
+
+    @Column(name="payment_method_id")
+    private UUID paymentMethodId;
 
     @ManyToOne()
     @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
@@ -64,5 +73,9 @@ public class DeliveryManifestOrder {
     @ManyToOne()
     @JoinColumn(name="delivery_manifest_id",columnDefinition = "deliveryManifestId",insertable = false,updatable = false)
     private DeliveryManifest deliveryManifest;
+
+    @ManyToOne()
+    @JoinColumn(name = "payment_method_id",columnDefinition = "paymentMethodId",insertable = false,updatable = false)
+    private OrderPaymentMethod orderPaymentMethod;
 
 }

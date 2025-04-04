@@ -568,7 +568,7 @@ public class CourierImpl implements ICourier {
                         : Collections.emptyList();
 
                 ordersCountDelivered = (int) deliveryManifestItems.stream()
-                        .filter(DeliveryManifestItem::getDelivered)
+                        .filter(deliveryManifestItem -> deliveryManifestItem.getDeliveredQuantity()>0)
                            .count();
 
                 return ResponseCourierInfo.builder()

@@ -27,17 +27,19 @@ public class DeliveryManifestItemController {
     @PutMapping("/delivered/{deliveryManifestItemId}")
     public ResponseEntity<ResponseSuccess> markDeliveredItem(
             @PathVariable UUID deliveryManifestItemId,
+            @RequestParam("quantity") Integer quantity,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iDeliveryManifestItem.markDeliveredDeliveryManifestItem(deliveryManifestItemId,user);
+        CompletableFuture<ResponseSuccess> result = iDeliveryManifestItem.markDeliveredDeliveryManifestItem(deliveryManifestItemId,quantity,user);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @PutMapping("/collected/{deliveryManifestItemId}")
     public ResponseEntity<ResponseSuccess> markCollectedItem(
             @PathVariable UUID deliveryManifestItemId,
+            @RequestParam("quantity") Integer quantity,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iDeliveryManifestItem.markDeliveredDeliveryManifestItem(deliveryManifestItemId,user);
+        CompletableFuture<ResponseSuccess> result = iDeliveryManifestItem.markDeliveredDeliveryManifestItem(deliveryManifestItemId,quantity,user);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping()
