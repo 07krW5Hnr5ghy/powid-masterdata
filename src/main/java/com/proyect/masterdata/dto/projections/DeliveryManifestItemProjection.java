@@ -10,7 +10,6 @@ public interface DeliveryManifestItemProjection {
     String getDistrictName();
     Long getOrderNumber();
     UUID getProductId();
-    Boolean getDelivered();
     Integer getQuantity();
     String getManagementType();
     String getPaymentMethod();

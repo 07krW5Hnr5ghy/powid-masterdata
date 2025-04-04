@@ -403,7 +403,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
                 boolean returnFlag = false;
                 for(DeliveryManifestItemProjection deliveryManifestItem:deliveryManifestItemList){
-                    if(!deliveryManifestItem.getDelivered()){
+                    if(deliveryManifestItem.getDeliveredQuantity()<1){
                         returnFlag = true;
                         int quantityReturn = deliveryManifestItem.getQuantity() - deliveryManifestItem.getDeliveredQuantity();
                         stockTransactionList.add(RequestStockTransactionItem.builder()

@@ -55,7 +55,7 @@ public class DeliveryManifestOrder {
     @Column(name = "client_id")
     private UUID clientId;
 
-    @Column(name="payment_method")
+    @Column(name="payment_method_id")
     private UUID paymentMethodId;
 
     @ManyToOne()
@@ -75,7 +75,7 @@ public class DeliveryManifestOrder {
     private DeliveryManifest deliveryManifest;
 
     @ManyToOne()
-    @JoinColumn(name = "payment_method_id",columnDefinition = "paymentMethodId",insertable = true,updatable = false)
+    @JoinColumn(name = "payment_method_id",columnDefinition = "paymentMethodId",insertable = false,updatable = false)
     private OrderPaymentMethod orderPaymentMethod;
 
 }
