@@ -499,7 +499,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         sortColumn,
                         pageNumber,
                         pageSize,
-                        open
+                            open
                 );
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -919,6 +919,27 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
+        });
+    }
+
+    @Override
+    public CompletableFuture<DeliveryManifestDTO> listFilterToPreparations( String user,
+                                                                            Long manifestNumber,
+                                                                            String warehouse,
+                                                                            String courier,
+                                                                            String courierDni,
+                                                                            OffsetDateTime registrationStartDate,
+                                                                            OffsetDateTime registrationEndDate,
+                                                                            OffsetDateTime updateStartDate,
+                                                                            OffsetDateTime updateEndDate,
+                                                                            String sort,
+                                                                            String sortColumn,
+                                                                            Integer pageNumber,
+                                                                            Integer pageSize,
+                                                                            Boolean open) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(() ->{
+
+            return null;
         });
     }
 }
