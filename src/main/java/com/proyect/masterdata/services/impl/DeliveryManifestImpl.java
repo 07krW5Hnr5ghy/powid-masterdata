@@ -311,6 +311,9 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                     .toList())
                             .orderId(order.getId())
                             .orderPaymentState(order.getOrderPaymentState().getName())
+                            .phone(order.getCustomer().getPhone())
+                            .district(order.getCustomer().getDistrict().getName())
+                            .province(order.getCustomer().getDistrict().getProvince().getName())
                             .build();
                     DeliveryManifestOrder deliveryManifestOrder = deliveryManifestOrderRepository.findByDeliveryManifestIdAndOrderIdAndClientId(
                             deliveryManifest.getId(),
@@ -403,7 +406,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
                 boolean returnFlag = false;
                 for(DeliveryManifestItemProjection deliveryManifestItem:deliveryManifestItemList){
-                    if(!deliveryManifestItem.getDelivered()){
+                    if(deliveryManifestItem.getDeliveredQuantity()<1){
                         returnFlag = true;
                         int quantityReturn = deliveryManifestItem.getQuantity() - deliveryManifestItem.getDeliveredQuantity();
                         stockTransactionList.add(RequestStockTransactionItem.builder()
@@ -608,6 +611,9 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                         .filter(item -> Objects.equals(item.getOrderNumber(), order.getOrderNumber())).toList())
                                 .orderId(order.getId())
                                 .orderPaymentState(order.getOrderPaymentState().getName())
+                                .phone(order.getCustomer().getPhone())
+                                .district(order.getCustomer().getDistrict().getName())
+                                .province(order.getCustomer().getDistrict().getProvince().getName())
                                 .build();
                         DeliveryManifestOrder deliveryManifestOrder = deliveryManifestOrderRepository.findByDeliveryManifestIdAndOrderIdAndClientId(
                                 deliveryManifest.getId(),
@@ -862,6 +868,9 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                     .toList())
                             .orderId(order.getId())
                             .orderPaymentState(order.getOrderPaymentState().getName())
+                            .phone(order.getCustomer().getPhone())
+                            .district(order.getCustomer().getDistrict().getName())
+                            .province(order.getCustomer().getDistrict().getProvince().getName())
                             .build();
 
                     DeliveryManifestOrder deliveryManifestOrder = deliveryManifestOrderRepository.findByDeliveryManifestIdAndOrderIdAndClientId(
