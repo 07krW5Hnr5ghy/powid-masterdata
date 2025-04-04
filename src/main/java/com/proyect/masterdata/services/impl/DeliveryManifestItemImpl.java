@@ -292,6 +292,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                         .orderNumber(deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber())
                         .quantity(deliveryManifestItem.getQuantity())
                         .deliveredQuantity(deliveryManifestItem.getDeliveredQuantity())
+                        .collectedQuantity(deliveryManifestItem.getCollectedQuantity())
                         .customer(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getName())
                         .skuProduct(iUtil.buildProductSku(deliveryManifestItem.getProduct()))
                         .management(deliveryManifestItem.getOrderItem().getOrdering().getManagementType().getName())
