@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestKardexInput {
+public class RequestKardexOutput {
     private String user;
+    private Integer quantity;
     private Product product;
     private SupplyOrderItem supplyOrderItem;
-    private String kardexOperationType;
 }
