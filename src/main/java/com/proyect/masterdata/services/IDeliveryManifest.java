@@ -24,6 +24,7 @@ public interface IDeliveryManifest {
             String warehouse,
             String courier,
             String courierDni,
+            String courierUser,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,

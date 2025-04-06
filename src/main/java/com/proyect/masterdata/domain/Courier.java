@@ -26,6 +26,9 @@ public class Courier {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "username")
+    private String username;
+
     @Column(name = "phone")
     private String phone;
 
