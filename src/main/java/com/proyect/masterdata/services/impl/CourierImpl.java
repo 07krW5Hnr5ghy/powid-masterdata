@@ -157,6 +157,7 @@ public class CourierImpl implements ICourier {
             try {
                 Courier newCourier = courierRepository.save(Courier.builder()
                         .name(requestCourierUser.getName().toUpperCase() +" "+ requestCourierUser.getSurname().toUpperCase())
+                        .username(requestCourierUser.getUsername().toUpperCase())
                         .phone(requestCourierUser.getMobile())
                         .address(requestCourierUser.getAddress())
                         .plate(requestCourierUser.getPlate())
