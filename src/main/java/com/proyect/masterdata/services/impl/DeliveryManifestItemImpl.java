@@ -125,39 +125,40 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
             String username) {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            DeliveryManifestItem deliveryManifestItem;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                deliveryManifestItem = deliveryManifestItemRepository.findById(deliveryManifestItemId).orElse(null);
             }catch (RuntimeException e){
+                e.printStackTrace();
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
-            if(deliveryManifestItem==null){
-                throw new BadRequestExceptions(Constants.ErrorDeliveryManifestItem);
-            }
             try{
-                deliveryManifestItem.setDeliveredQuantity(quantity);
-                deliveryManifestItem.setUser(user);
-                deliveryManifestItem.setUserId(user.getId());
-                deliveryManifestItem.setUpdateDate(OffsetDateTime.now());
-                deliveryManifestItemRepository.save(deliveryManifestItem);
-                iAudit.save(
-                        "UPDATE_DELIVERY_MANIFEST_ITEM",
-                        "ITEM DE GUIA "+
-                                deliveryManifestItem.getId()+
-                                "PARA PEDIDO " +
-                                deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber() +
-                                " ACTUALIZADO.",
-                        deliveryManifestItem.getId().toString(),user.getUsername());
+                deliveryManifestItemRepository.setDeliveredQuantityDeliveredManifestItem(
+                        deliveryManifestItemId,
+                        user.getClientId(),
+                        OffsetDateTime.now(),
+                        quantity
+                );
+                List<Object[]> orderNumber = deliveryManifestItemRepository.retrieveDeliveryManifestItemOrderNumber(deliveryManifestItemId,user.getClientId());
+                for(Object[] result:orderNumber){
+                    iAudit.save(
+                            "UPDATE_DELIVERY_MANIFEST_ITEM",
+                            "ITEM DE GUIA "+
+                                    deliveryManifestItemId+
+                                    "PARA PEDIDO " +
+                                    result[0]+
+                                    " ACTUALIZADO.",
+                            deliveryManifestItemId.toString(),user.getUsername());
+                }
                 return ResponseSuccess.builder()
                         .message(Constants.update)
                         .code(200)
                         .build();
             }catch (RuntimeException e){
+                e.printStackTrace();
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
@@ -171,39 +172,40 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
             String username) {
         return CompletableFuture.supplyAsync(()->{
             User user;
-            DeliveryManifestItem deliveryManifestItem;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-                deliveryManifestItem = deliveryManifestItemRepository.findById(deliveryManifestItemId).orElse(null);
             }catch (RuntimeException e){
+                e.printStackTrace();
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
-            if(deliveryManifestItem==null){
-                throw new BadRequestExceptions(Constants.ErrorDeliveryManifestItem);
-            }
             try{
-                deliveryManifestItem.setQuantity(quantity);
-                deliveryManifestItem.setUser(user);
-                deliveryManifestItem.setUserId(user.getId());
-                deliveryManifestItem.setUpdateDate(OffsetDateTime.now());
-                deliveryManifestItemRepository.save(deliveryManifestItem);
-                iAudit.save(
-                        "UPDATE_DELIVERY_MANIFEST_ITEM",
-                        "ITEM DE GUIA "+
-                                deliveryManifestItem.getId()+
-                                "PARA PEDIDO " +
-                                deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber() +
-                                " ACTUALIZADO.",
-                        deliveryManifestItem.getId().toString(),user.getUsername());
+                deliveryManifestItemRepository.setCollectedQuantityDeliveredManifestItem(
+                        deliveryManifestItemId,
+                        user.getClientId(),
+                        OffsetDateTime.now(),
+                        quantity
+                );
+                List<Object[]> orderNumber = deliveryManifestItemRepository.retrieveDeliveryManifestItemOrderNumber(deliveryManifestItemId,user.getClientId());
+                for(Object[] result:orderNumber){
+                    iAudit.save(
+                            "UPDATE_DELIVERY_MANIFEST_ITEM",
+                            "ITEM DE GUIA "+
+                                    deliveryManifestItemId+
+                                    "PARA PEDIDO " +
+                                    result[0]+
+                                    " ACTUALIZADO.",
+                            deliveryManifestItemId.toString(),user.getUsername());
+                }
                 return ResponseSuccess.builder()
                         .message(Constants.update)
                         .code(200)
                         .build();
             }catch (RuntimeException e){
+                e.printStackTrace();
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
