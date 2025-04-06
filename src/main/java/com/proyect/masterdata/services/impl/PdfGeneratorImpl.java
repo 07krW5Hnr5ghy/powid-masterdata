@@ -385,8 +385,8 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                 guideTable.addCell(new Cell().add(new Paragraph("Número: #" + deliveryManifestDTO.getManifestNumber()))
                         .setFont(boldFont)
                         .setBorder(Border.NO_BORDER));
-
-                guideTable.addCell(new Cell().add(new Paragraph("Fecha: " + deliveryManifestDTO.getRegistrationDate()))
+                String[] recordDate = deliveryManifestDTO.getRegistrationDate().toString().split("T");
+                guideTable.addCell(new Cell().add(new Paragraph("Fecha: " + recordDate[0] + " " + recordDate[1]))
                         .setFont(regularFont)
                         .setBorder(Border.NO_BORDER));
 
