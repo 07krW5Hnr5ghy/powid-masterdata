@@ -131,7 +131,7 @@ public class OrderingController {
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
-    @PostMapping("order")
+    @PostMapping("pictures")
     //@PreAuthorize("hasAnyAuthority('ROLE:SALES','ROLE:CUSTOMER_SERVICE') and hasAuthority('ACCESS:ORDER_PUT')")
     public ResponseEntity<ResponseSuccess> uploadPhotos(
             @RequestParam("orderId") UUID orderId,
