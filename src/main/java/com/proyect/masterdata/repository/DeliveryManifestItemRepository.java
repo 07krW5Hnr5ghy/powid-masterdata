@@ -1,13 +1,14 @@
 package com.proyect.masterdata.repository;
 
 import com.proyect.masterdata.domain.DeliveryManifestItem;
-import com.proyect.masterdata.dto.DeliveryManifestItemDTO;
 import com.proyect.masterdata.dto.projections.DeliveryManifestItemDTOP;
 import com.proyect.masterdata.dto.projections.DeliveryManifestItemProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -83,5 +84,41 @@ public interface    DeliveryManifestItemRepository extends JpaRepository<Deliver
             @Param("startDate") OffsetDateTime startDate,
             @Param("endDate") OffsetDateTime endDate
     );
-
+    @Modifying
+    @Transactional
+    @Query("UPDATE DeliveryManifestItem dmi SET " +
+            "dmi.updateDate = :updateDate, " +
+            "dmi.deliveredQuantity = :deliveredQuantity " +
+            "WHERE dmi.clientId = :clientId AND dmi.id = :deliveryManifestItemId")
+    void setDeliveredQuantityDeliveredManifestItem (
+            @Param("deliveryManifestItemId") UUID deliveryManifestItemId,
+            @Param("clientId") UUID userId,
+            @Param("updateDate") OffsetDateTime updateDate,
+            @Param("deliveredQuantity") Integer deliveredQuantity
+    );
+    @Modifying
+    @Transactional
+    @Query("UPDATE DeliveryManifestItem dmi SET " +
+            "dmi.updateDate = :updateDate, " +
+            "dmi.collectedQuantity = :collectedQuantity " +
+            "WHERE dmi.clientId = :clientId AND dmi.id = :deliveryManifestItemId")
+    void setCollectedQuantityDeliveredManifestItem (
+            @Param("deliveryManifestItemId") UUID deliveryManifestItemId,
+            @Param("clientId") UUID userId,
+            @Param("updateDate") OffsetDateTime updateDate,
+            @Param("collectedQuantity") Integer collectedQuantity
+    );
+    @Query("""
+        SELECT ord.orderNumber
+        FROM DeliveryManifestItem dmi
+        JOIN dmi.deliveryManifest dm
+        JOIN dmi.orderItem oi
+        JOIN oi.ordering ord
+        WHERE dmi.id = :deliveryManifestItemId
+          AND dmi.clientId = :clientId
+    """)
+    List<Object[]> retrieveDeliveryManifestItemOrderNumber(
+            @Param("deliveryManifestItemId") UUID deliveryManifestItemId,
+            @Param("clientId") UUID clientId
+    );
 }
