@@ -217,6 +217,7 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                 List<Ordering> orders = new ArrayList<>();
                 Set<Long> uniqueOrderNumbers = new HashSet<>();
                 List<DeliveryManifestOrderDTO> deliveryManifestOrderDTOS = new ArrayList<>();
+                double[] productAmountPerManifest = {0.00};
                 List<DeliveryManifestItemDTO> deliveryManifestItemDTOS = deliveryManifestItemRepository.findAllByDeliveryManifestIdAndClientId(deliveryManifest.getId(),user.getClientId())
                         .stream().map(deliveryManifestItem -> {
                             if(!uniqueOrderNumbers.contains(deliveryManifestItem.getOrderNumber())){
@@ -226,18 +227,20 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                             }
                             ProductPrice productPrice = productPriceRepository.findByProductId(deliveryManifestItem.getProductId());
                             Double totalPrice = null;
-                            OrderItem orderItem = orderItemRepository.findById(deliveryManifestItem.getOrderItemId()).orElse(null);
-                            assert orderItem != null;
-                            if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
-                                totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getQuantity())-((productPrice.getUnitSalePrice() * deliveryManifestItem.getQuantity())*(orderItem.getDiscountAmount()/100));
-                            }
+                            List<Object[]> orderItems = orderItemRepository.findOrderItemDetailsByIdAndClientId(deliveryManifestItem.getOrderItemId(),user.getClientId());
+                            for(Object[] orderItem:orderItems){
+                                if(Objects.equals(orderItem[2], "PORCENTAJE")){
+                                    totalPrice = (productPrice.getUnitSalePrice() * (Integer) orderItem[0])-((productPrice.getUnitSalePrice() * (Integer) orderItem[0])*((Double) orderItem[1]/100));
+                                }
 
-                            if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-                                totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getQuantity())-(orderItem.getDiscountAmount());
-                            }
+                                if(Objects.equals(orderItem[2], "MONTO")){
+                                    totalPrice = (productPrice.getUnitSalePrice() * (Integer) orderItem[0])-((Double) orderItem[1]);
+                                }
 
-                            if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
-                                totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getQuantity());
+                                if(Objects.equals(orderItem[2], "NO APLICA")){
+                                    totalPrice = (productPrice.getUnitSalePrice() * (Integer) orderItem[0]);
+                                }
+                                productAmountPerManifest[0] += (productPrice.getUnitSalePrice() * (Integer) orderItem[0]);
                             }
                             return DeliveryManifestItemDTO.builder()
                                     .id(deliveryManifestItem.getDeliveryManifestItemId())
@@ -434,7 +437,7 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                     ProvinceDTOP province = provinceRepository.findByName(deliveryManifestOrderDTO.getProvince());
                     District district = districtRepository.findByNameAndProvinceId(deliveryManifestOrderDTO.getDistrict(),province.getId());
                     DeliveryZoneDistrict deliveryZoneDistrict = deliveryZoneDistrictRepository.findByDistrictId(district.getId());
-                    paidTable.addCell(deliveryZoneDistrict.getDeliveryZone().getName());
+                    paidTable.addCell(deliveryZoneDistrict != null ? deliveryZoneDistrict.getDeliveryZone().getName() : "PROVINCIA");
                     paidTable.addCell("S/ " + paidItemsAmountOrder);
                     paidOrderQuantity+=1;
                 }
@@ -478,7 +481,7 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                     ProvinceDTOP province = provinceRepository.findByName(deliveryManifestOrderDTO.getProvince());
                     District district = districtRepository.findByNameAndProvinceId(deliveryManifestOrderDTO.getDistrict(),province.getId());
                     DeliveryZoneDistrict deliveryZoneDistrict = deliveryZoneDistrictRepository.findByDistrictId(district.getId());
-                    cashOnDeliveryTable.addCell(deliveryZoneDistrict.getDeliveryZone().getName());
+                    cashOnDeliveryTable.addCell(deliveryZoneDistrict != null ? deliveryZoneDistrict.getDeliveryZone().getName() : "PROVINCIA");
                     cashOnDeliveryTable.addCell("S/ " + cashOnDeliveryItemsAmountOrder);
                     cashOnDeliveryOrderQuantity+=1;
                 }

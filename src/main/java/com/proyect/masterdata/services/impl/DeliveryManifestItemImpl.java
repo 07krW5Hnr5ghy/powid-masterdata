@@ -79,6 +79,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                         .deliveryManifestId(deliveryManifest.getId())
                         .quantity(orderItem.getPreparedProducts())
                         .deliveredQuantity(0)
+                        .collectedQuantity(0)
                         .productId(orderItem.getProduct().getId())
                         .product(orderItem.getProduct())
                         .orderItem(orderItem)
