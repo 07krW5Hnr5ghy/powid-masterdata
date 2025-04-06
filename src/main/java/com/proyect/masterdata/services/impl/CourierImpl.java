@@ -529,7 +529,7 @@ public class CourierImpl implements ICourier {
     }
 
     @Override
-    public CompletableFuture<ResponseCourierInfo> infoCouerier(String tokernUser) throws InternalErrorExceptions, BadRequestExceptions {
+    public CompletableFuture<ResponseCourierInfo> infoCourier(String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
             Courier courier;
@@ -538,12 +538,12 @@ public class CourierImpl implements ICourier {
             List<DeliveryManifestItem> deliveryManifestItems;
             int ordersCountDelivered = 0;
             double collectionsBalance = 0.0;
-            if(tokernUser == null || tokernUser.isEmpty()){
+            if(tokenUser == null || tokenUser.isEmpty()){
                 throw new BadRequestExceptions(Constants.ErrorEmptyField);
             }
 
             try {
-                user = userRepository.findByUsername(tokernUser.toUpperCase());
+                user = userRepository.findByUsername(tokenUser.toUpperCase());
 
                 if(user == null){
                     throw new InternalErrorExceptions(Constants.ErrorUser);

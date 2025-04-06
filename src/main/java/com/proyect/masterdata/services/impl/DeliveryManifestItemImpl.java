@@ -51,7 +51,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
         System.out.println("entroooo manifest item");
         return CompletableFuture.supplyAsync(()->{
             WarehouseStock warehouseStock;
-            DeliveryManifestItem deliveryManifestItem;
+            Boolean deliveryManifestItemExists;
             try{
                 System.out.println("entra -> id product: " + orderItem.getProduct().getId() + " warehouseId: " + warehouse.getId());
                 warehouseStock = warehouseStockRepository.findByWarehouseIdAndProductId(warehouse.getId(),orderItem.getProduct().getId());
@@ -63,9 +63,9 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
             if(warehouseStock==null){
                 throw new BadRequestExceptions(Constants.ErrorWarehouseStock);
             }else{
-                deliveryManifestItem = deliveryManifestItemRepository.findByOrderItemIdAndProductId(orderItem.getId(),orderItem.getProductId());
+                deliveryManifestItemExists = deliveryManifestItemRepository.existsByOrderItemIdAndProductId(orderItem.getId(),orderItem.getProductId());
             }
-            if(deliveryManifestItem!=null || orderItem.getDeliveredProducts() >= orderItem.getQuantity()){
+            if(deliveryManifestItemExists || orderItem.getDeliveredProducts() >= orderItem.getQuantity()){
                 throw new BadRequestExceptions(Constants.ErrorDeliveryManifestItemDelivered);
             }
             // codigo comentado mientras se implementa kardex en el inventario
