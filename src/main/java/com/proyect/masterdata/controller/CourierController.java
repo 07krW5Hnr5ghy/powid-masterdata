@@ -141,7 +141,7 @@ public class CourierController {
     public ResponseEntity<ResponseCourierInfo> courierInfo(
             @RequestParam("user")String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseCourierInfo> result = iCourier.infoCouerier(user);
+        CompletableFuture<ResponseCourierInfo> result = iCourier.infoCourier(user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
