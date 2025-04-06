@@ -39,7 +39,7 @@ public class DeliveryManifestItemController {
             @RequestParam("collectedQuantity") Integer collectedQuantity,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<ResponseSuccess> result = iDeliveryManifestItem.markDeliveredDeliveryManifestItem(deliveryManifestItemId,collectedQuantity,user);
+        CompletableFuture<ResponseSuccess> result = iDeliveryManifestItem.markCollectedDeliveryManifestItem(deliveryManifestItemId,collectedQuantity,user);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping()
