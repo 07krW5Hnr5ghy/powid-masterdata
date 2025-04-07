@@ -31,4 +31,5 @@ public class DeliveryManifestDTO {
     private Double payableAmount;
     private String observations;
     private Double productValue;
+    private List<PaymentMetodClientDTO> paymentMetodClientDTOS;
 }
