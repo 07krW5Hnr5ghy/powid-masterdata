@@ -1,6 +1,5 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.Model;
 import com.proyect.masterdata.domain.OrderItem;
 import com.proyect.masterdata.domain.Product;
 import com.proyect.masterdata.domain.ProductPrice;
@@ -10,39 +9,31 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.time.*;
+import java.time.format.DateTimeParseException;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 @Log4j2
 public class UtilImpl implements IUtil {
-
     private final ProductPriceRepository productPriceRepository;
-
     @Override
-    public Date setToUTCStartOfDay(Date date) {
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT-5"));
-        calendar.setTime(date);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        calendar.add(Calendar.DAY_OF_MONTH, 1);
-        return calendar.getTime();
-    }
+    public OffsetDateTime parseToOffsetDateTime(String input, boolean isStart) {
+        ZoneOffset defaultOffset = ZoneId.systemDefault().getRules().getOffset(Instant.now());
 
-    @Override
-    public Date setToUTCEndOfDay(Date date) {
-        Calendar calendar = Calendar.getInstance(TimeZone.getTimeZone("GMT-5"));
-        calendar.setTime(date);
-        calendar.set(Calendar.HOUR_OF_DAY, 23);
-        calendar.set(Calendar.MINUTE, 59);
-        calendar.set(Calendar.SECOND, 59);
-        calendar.set(Calendar.MILLISECOND, 999);
-        calendar.add(Calendar.DAY_OF_MONTH, 1);
-        return calendar.getTime();
+        try {
+            return OffsetDateTime.parse(input);
+        } catch (DateTimeParseException e) {
+            try {
+                LocalDate date = LocalDate.parse(input);
+                LocalTime time = isStart ? LocalTime.MIN : LocalTime.MAX;
+                return OffsetDateTime.of(date, time, defaultOffset);
+            } catch (DateTimeParseException ex) {
+                throw new IllegalArgumentException("Invalid date format: " + input);
+            }
+        }
     }
-
     @Override
     public double calculateTotalPrice(OrderItem orderItem) {
         ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
