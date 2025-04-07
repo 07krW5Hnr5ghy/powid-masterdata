@@ -171,7 +171,18 @@ public class DeliveryCompanyImpl implements IDeliveryCompany {
     }
 
     @Override
-    public CompletableFuture<Page<DeliveryCompanyDTO>> list(String user, String name, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<DeliveryCompanyDTO>> list(
+            String user,
+            String name,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<DeliveryCompany> deliveryCompanyPage;
             UUID clientId;
@@ -188,45 +199,7 @@ public class DeliveryCompanyImpl implements IDeliveryCompany {
                         sortColumn,
                         pageNumber,
                         pageSize,
-                        true);
-            }catch (RuntimeException e){
-                log.error(e.getMessage());
-                throw new BadRequestExceptions(Constants.ResultsFound);
-            }
-            if(deliveryCompanyPage.isEmpty()){
-                return new PageImpl<>(Collections.emptyList());
-            }
-            List<DeliveryCompanyDTO> deliveryCompanyDTOS = deliveryCompanyPage.stream().map(deliveryCompany -> DeliveryCompanyDTO.builder()
-                    .status(deliveryCompany.getStatus())
-                    .id(deliveryCompany.getId())
-                    .user(deliveryCompany.getUser().getUsername())
-                    .name(deliveryCompany.getName())
-                    .registrationDate(deliveryCompany.getRegistrationDate())
-                    .updateDate(deliveryCompany.getUpdateDate())
-                    .build()).toList();
-            return new PageImpl<>(deliveryCompanyDTOS,deliveryCompanyPage.getPageable(),deliveryCompanyPage.getTotalElements());
-        });
-    }
-
-    @Override
-    public CompletableFuture<Page<DeliveryCompanyDTO>> listFalse(String user, String name, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            Page<DeliveryCompany> deliveryCompanyPage;
-            UUID clientId;
-            try {
-                clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
-                deliveryCompanyPage = deliveryCompanyRepositoryCustom.searchForDeliveryCompany(
-                        clientId,
-                        name,
-                        registrationStartDate,
-                        registrationEndDate,
-                        updateStartDate,
-                        updateEndDate,
-                        sort,
-                        sortColumn,
-                        pageNumber,
-                        pageSize,
-                        false);
+                        status);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
