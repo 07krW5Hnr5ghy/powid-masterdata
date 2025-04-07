@@ -231,7 +231,17 @@ public class DeliveryPointImpl implements IDeliveryPoint {
     }
 
     @Override
-    public CompletableFuture<Page<DeliveryPointDTO>> list(String name, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
+    public CompletableFuture<Page<DeliveryPointDTO>> list(
+            String name,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<DeliveryPoint> deliveryPointPage;
             try{
@@ -245,44 +255,7 @@ public class DeliveryPointImpl implements IDeliveryPoint {
                         sortColumn,
                         pageNumber,
                         pageSize,
-                        true
-                );
-            }catch (RuntimeException e){
-                log.error(e.getMessage());
-                throw new BadRequestExceptions(Constants.ResultsFound);
-            }
-            if(deliveryPointPage.isEmpty()){
-                return new PageImpl<>(Collections.emptyList());
-            }
-            List<DeliveryPointDTO> deliveryPointDTOS = deliveryPointPage.getContent().stream().map(deliveryPoint -> DeliveryPointDTO.builder()
-                    .status(deliveryPoint.getStatus())
-                    .id(deliveryPoint.getId())
-                    .user(deliveryPoint.getUser().getUsername())
-                    .name(deliveryPoint.getName())
-                    .registrationDate(deliveryPoint.getRegistrationDate())
-                    .updateDate(deliveryPoint.getUpdateDate())
-                    .address(deliveryPoint.getAddress())
-                    .build()).toList();
-            return new PageImpl<>(deliveryPointDTOS,deliveryPointPage.getPageable(),deliveryPointPage.getTotalElements());
-        });
-    }
-
-    @Override
-    public CompletableFuture<Page<DeliveryPointDTO>> listFalse(String name, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            Page<DeliveryPoint> deliveryPointPage;
-            try{
-                deliveryPointPage = deliveryPointRepositoryCustom.searchForDeliveryPoint(
-                        name,
-                        registrationStartDate,
-                        registrationEndDate,
-                        updateStartDate,
-                        updateEndDate,
-                        sort,
-                        sortColumn,
-                        pageNumber,
-                        pageSize,
-                        false
+                        status
                 );
             }catch (RuntimeException e){
                 log.error(e.getMessage());
