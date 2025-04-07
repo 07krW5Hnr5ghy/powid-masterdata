@@ -112,7 +112,7 @@ public interface    DeliveryManifestItemRepository extends JpaRepository<Deliver
             @Param("collectedQuantity") Integer collectedQuantity
     );
     @Query("""
-        SELECT ord.orderNumber
+        SELECT ord.orderNumber,oi.preparedProducts
         FROM DeliveryManifestItem dmi
         JOIN dmi.deliveryManifest dm
         JOIN dmi.orderItem oi
