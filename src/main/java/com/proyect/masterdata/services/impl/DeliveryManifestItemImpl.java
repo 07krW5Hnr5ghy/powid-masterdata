@@ -51,12 +51,10 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
         System.out.println("entroooo manifest item");
         return CompletableFuture.supplyAsync(()->{
             WarehouseStock warehouseStock;
-<<<<<<< HEAD
             DeliveryManifestItem deliveryManifestItem;
             DeliveryManifestItemDTOP deliveryManifestItemDTOP;
-=======
-            Boolean deliveryManifestItemExists;
->>>>>>> 9d229fafcbb271f002f266721a82f5e5cbe8e9c3
+
+            Boolean deliveryManifestItemExists = false;
             try{
                 System.out.println("entra -> id product: " + orderItem.getProduct().getId() + " warehouseId: " + warehouse.getId());
                 warehouseStock = warehouseStockRepository.findByWarehouseIdAndProductId(warehouse.getId(),orderItem.getProduct().getId());
@@ -68,16 +66,13 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
             if(warehouseStock==null){
                 throw new BadRequestExceptions(Constants.ErrorWarehouseStock);
             }else{
-<<<<<<< HEAD
                 deliveryManifestItemDTOP = deliveryManifestItemRepository.findByOrderItemIdAndProductId(orderItem.getId(),orderItem.getProductId());
                 //System.out.println("deliverymanifestitemDTOP -> " + deliveryManifestItemDTOP.getProduct());
             }
             if(deliveryManifestItemDTOP!=null || orderItem.getDeliveredProducts() >= orderItem.getQuantity()){
-=======
                 deliveryManifestItemExists = deliveryManifestItemRepository.existsByOrderItemIdAndProductId(orderItem.getId(),orderItem.getProductId());
             }
             if(deliveryManifestItemExists || orderItem.getDeliveredProducts() >= orderItem.getQuantity()){
->>>>>>> 9d229fafcbb271f002f266721a82f5e5cbe8e9c3
                 throw new BadRequestExceptions(Constants.ErrorDeliveryManifestItemDelivered);
             }
             // codigo comentado mientras se implementa kardex en el inventario

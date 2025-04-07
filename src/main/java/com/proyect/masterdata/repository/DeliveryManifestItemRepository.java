@@ -17,10 +17,7 @@ import java.util.UUID;
 @Repository
 public interface    DeliveryManifestItemRepository extends JpaRepository<DeliveryManifestItem, UUID> {
     List<DeliveryManifestItem> findAllById(UUID deliveryManifestId);
-<<<<<<< HEAD
     DeliveryManifestItemDTOP findByOrderItemIdAndProductId(UUID orderItemId,UUID productId);
-=======
->>>>>>> 9d229fafcbb271f002f266721a82f5e5cbe8e9c3
     List<DeliveryManifestItemDTOP> findAllByDeliveryManifestId(UUID deliveryManifestId);
     @Query(value = """
         SELECT dmi.delivery_manifest_item_id AS deliveryManifestItemId,
