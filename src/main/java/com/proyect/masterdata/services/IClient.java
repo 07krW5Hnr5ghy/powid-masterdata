@@ -31,16 +31,7 @@ public interface IClient {
                 String sort,
                 String sortColumn,
                 Integer pageNumber,
-                Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
-        CompletableFuture<Page<ClientDTO>> listFalse(
-                String ruc,
-                String business,
-                OffsetDateTime registrationStartDate,
-                OffsetDateTime registrationEndDate,
-                OffsetDateTime updateStartDate,
-                OffsetDateTime updateEndDate,
-                String sort,
-                String sortColumn,
-                Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
+                Integer pageSize,
+                Boolean status) throws InternalErrorExceptions, BadRequestExceptions;
         CompletableFuture<ResponseSuccess> activate(String ruc,String user) throws BadRequestExceptions,InternalErrorExceptions;
 }
