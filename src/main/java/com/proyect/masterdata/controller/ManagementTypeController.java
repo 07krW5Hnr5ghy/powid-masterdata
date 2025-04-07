@@ -72,7 +72,7 @@ public class ManagementTypeController {
         );
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
-    
+
     @DeleteMapping()
     public ResponseEntity<ResponseDelete> delete(
             @RequestParam("name") String name,
