@@ -19,4 +19,5 @@ public interface DeliveryManifestItemProjection {
     String getCustomerName();
     Integer getDeliveredQuantity();
     Integer getCollectedQuantity();
+    Integer getDeliveredProducts();
 }
