@@ -356,6 +356,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                         ordersUnCollected.add(ordering);
                     }
                 }
+                System.out.println(uniqueOrderNumbersUnCollected);
                 for(Ordering order:ordersUnCollected){
                    if(!Objects.equals(order.getOrderPaymentState().getName(), "POR RECAUDAR")){
                        List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndStatusTrue(order.getId());
@@ -363,13 +364,13 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                        for(OrderItem orderItem : orderItems){
                            ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
                            if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
-                               saleAmount += (productPrice.getUnitSalePrice() * orderItem.getPreparedProducts()) - ((productPrice.getUnitSalePrice() * orderItem.getPreparedProducts()) * (orderItem.getDiscountAmount() / 100));
+                               saleAmount += (productPrice.getUnitSalePrice() * orderItem.getDeliveredProducts()) - ((productPrice.getUnitSalePrice() * orderItem.getDeliveredProducts()) * (orderItem.getDiscountAmount() / 100));
                            }
                            if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-                               saleAmount += (productPrice.getUnitSalePrice() * orderItem.getPreparedProducts()) - orderItem.getDiscountAmount();
+                               saleAmount += (productPrice.getUnitSalePrice() * orderItem.getDeliveredProducts()) - orderItem.getDiscountAmount();
                            }
                            if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
-                               saleAmount += (productPrice.getUnitSalePrice() * orderItem.getPreparedProducts());
+                               saleAmount += (productPrice.getUnitSalePrice() * orderItem.getDeliveredProducts());
                            }
                        }
                        double totalDuePayment=0;
