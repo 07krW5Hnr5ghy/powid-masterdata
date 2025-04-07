@@ -66,7 +66,7 @@ public class EntryChannelController {
                 status);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-    
+
     @GetMapping()
     public ResponseEntity<List<EntryChannelDTO>> list() throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<List<EntryChannelDTO>> result = iEntryChannel.list();
