@@ -67,6 +67,26 @@ public class DeliveryManifestController {
         CompletableFuture<ResponseSuccess> result = iDeliveryManifest.closeDeliveryManifest(deliveryManifestId,user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+
+    @PutMapping("/confirm")
+    public ResponseEntity<ResponseSuccess> confirmManifest(
+            @RequestParam("user") String user,
+            @RequestParam("deliveryManifestId")UUID deliveryManifestId,
+            @RequestParam("totalMoneyReceived") Double totalMoneyReceived,
+            @RequestParam("namePaymentMethod") String namePaymentMethod,
+            @RequestParam("observationsCourier") String observationsCourier,
+            @RequestParam("confirmedOperations") boolean confirmedOperations
+    )throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iDeliveryManifest.confirmDeliveryManifest(
+                user,
+                deliveryManifestId,
+                totalMoneyReceived,
+                namePaymentMethod,
+                observationsCourier,
+                confirmedOperations);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
     @GetMapping()
     public ResponseEntity<Page<DeliveryManifestDTO>> list(
             @RequestParam(value = "user", required = true) String user,

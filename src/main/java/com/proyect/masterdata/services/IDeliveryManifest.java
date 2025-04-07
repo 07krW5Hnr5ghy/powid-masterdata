@@ -8,6 +8,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -18,6 +19,7 @@ public interface IDeliveryManifest {
     CompletableFuture<ResponseSuccess> addOrderDeliveryManifest(RequestDeliveryManifest requestDeliveryManifest, UUID deliveryManifestId,Long manifestNumber) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<DeliveryManifestDTO> getById(UUID deliveryManifestId,String user) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<ResponseSuccess> closeDeliveryManifest(UUID deliveryManifestId,String user) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> confirmDeliveryManifest( String user, UUID deliveryManifestId,Double totalMoneyReceived, String namePaymentMethod, String observationsCourier,boolean confirmedOperations) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<Page<DeliveryManifestDTO>> list(
             String user,
             Long manifestNumber,

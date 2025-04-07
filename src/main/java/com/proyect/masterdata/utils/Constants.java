@@ -104,6 +104,7 @@ public class Constants {
     public static final String tableSubCategoryProduct = "sub_category_product";
     public static final String tablePurchasePaymentType = "purchase_payment_type";
     public static final String tableDeliveryManifest = "delivery_manifest";
+    public static final String tablePaymentMetodClient = "payment_metod_client";
     public static final String tableDeliveryManifestItems = "delivery_manifest_item";
     public static final String tableDeliveryStatus = "delivery_status";
     public static final String tableOrderLog = "order_log";
@@ -158,6 +159,7 @@ public class Constants {
     public static final String ErrorPaymentMethodExists = "El metodo ya fue registrado";
     public static final String ErrorPaymentState = "El estado de pago no esta registrado";
     public static final String ErrorPaymentStateExists = "El estado de pago ya fue registrado";
+    public static final String ErrorPaymentDateAccountExists = "La cuenta ya fue registrado";
     public static final String ErrorSaleChannel = "El canal de venta no esta registrado";
     public static final String ErrorSaleChannelExists = "El canal de venta ya fue registrado";
     public static final String ErrorSize = "El tamaño no esta registrado";

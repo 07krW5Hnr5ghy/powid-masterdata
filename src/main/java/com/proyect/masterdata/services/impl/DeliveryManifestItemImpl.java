@@ -51,7 +51,10 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
         System.out.println("entroooo manifest item");
         return CompletableFuture.supplyAsync(()->{
             WarehouseStock warehouseStock;
-            Boolean deliveryManifestItemExists;
+            DeliveryManifestItem deliveryManifestItem;
+            DeliveryManifestItemDTOP deliveryManifestItemDTOP;
+
+            Boolean deliveryManifestItemExists = false;
             try{
                 System.out.println("entra -> id product: " + orderItem.getProduct().getId() + " warehouseId: " + warehouse.getId());
                 warehouseStock = warehouseStockRepository.findByWarehouseIdAndProductId(warehouse.getId(),orderItem.getProduct().getId());
@@ -63,6 +66,10 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
             if(warehouseStock==null){
                 throw new BadRequestExceptions(Constants.ErrorWarehouseStock);
             }else{
+                deliveryManifestItemDTOP = deliveryManifestItemRepository.findByOrderItemIdAndProductId(orderItem.getId(),orderItem.getProductId());
+                //System.out.println("deliverymanifestitemDTOP -> " + deliveryManifestItemDTOP.getProduct());
+            }
+            if(deliveryManifestItemDTOP!=null || orderItem.getDeliveredProducts() >= orderItem.getQuantity()){
                 deliveryManifestItemExists = deliveryManifestItemRepository.existsByOrderItemIdAndProductId(orderItem.getId(),orderItem.getProductId());
             }
             if(deliveryManifestItemExists || orderItem.getDeliveredProducts() >= orderItem.getQuantity()){
@@ -88,8 +95,8 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                         .user(orderItem.getUser())
                         .registrationDate(OffsetDateTime.now())
                         .updateDate(OffsetDateTime.now())
-                                .clientId(user.getClientId())
-                                .client(user.getClient())
+                        .clientId(user.getClientId())
+                        .client(user.getClient())
                         .build());
                 iWarehouseStock.out(
                         newDeliveryManifestItem.getDeliveryManifest().getWarehouse(),

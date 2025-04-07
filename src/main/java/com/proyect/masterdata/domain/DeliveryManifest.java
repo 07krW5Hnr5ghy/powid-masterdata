@@ -53,6 +53,22 @@ public class DeliveryManifest {
     @Column(name = "open")
     private Boolean open;
 
+    @Column(name = "observations_courier")
+    private String observationsCourier;
+
+    @Column(name = "total_money_received")
+    private Double totalMoneyReceived;
+
+    @Column(name = "payment_method_id")
+    private UUID paymentMethodId;
+
+    @Column(name = "confirmedOperations")
+    private boolean confirmedOperations;
+
+    @ManyToOne()
+    @JoinColumn(name = "payment_method_id", columnDefinition = "paymentMethodId",insertable = false,updatable = false)
+    private OrderPaymentMethod orderPaymentMethod;
+
     @ManyToOne()
     @JoinColumn(name = "courier_id",columnDefinition = "courierId",insertable = false,updatable = false)
     private Courier courier;
