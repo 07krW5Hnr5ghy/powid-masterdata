@@ -141,14 +141,18 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
             try{
-                deliveryManifestItemRepository.setDeliveredQuantityDeliveredManifestItem(
-                        deliveryManifestItemId,
-                        user.getClientId(),
-                        OffsetDateTime.now(),
-                        quantity
-                );
                 List<Object[]> orderNumber = deliveryManifestItemRepository.retrieveDeliveryManifestItemOrderNumber(deliveryManifestItemId,user.getClientId());
                 for(Object[] result:orderNumber){
+                    if(quantity<=(Integer)result[1]){
+                        deliveryManifestItemRepository.setDeliveredQuantityDeliveredManifestItem(
+                                deliveryManifestItemId,
+                                user.getClientId(),
+                                OffsetDateTime.now(),
+                                quantity
+                        );
+                    }else{
+                        throw new BadRequestExceptions(Constants.ErrorDeliveryManifestItemDeliveredQuantity);
+                    }
                     iAudit.save(
                             "UPDATE_DELIVERY_MANIFEST_ITEM",
                             "ITEM DE GUIA "+
@@ -188,14 +192,18 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
             try{
-                deliveryManifestItemRepository.setCollectedQuantityDeliveredManifestItem(
-                        deliveryManifestItemId,
-                        user.getClientId(),
-                        OffsetDateTime.now(),
-                        quantity
-                );
                 List<Object[]> orderNumber = deliveryManifestItemRepository.retrieveDeliveryManifestItemOrderNumber(deliveryManifestItemId,user.getClientId());
                 for(Object[] result:orderNumber){
+                    if(quantity<=(Integer)result[1]){
+                        deliveryManifestItemRepository.setCollectedQuantityDeliveredManifestItem(
+                                deliveryManifestItemId,
+                                user.getClientId(),
+                                OffsetDateTime.now(),
+                                quantity
+                        );
+                    }else {
+                        throw new BadRequestExceptions(Constants.ErrorDeliveryManifestItemCollectedQuantity);
+                    }
                     iAudit.save(
                             "UPDATE_DELIVERY_MANIFEST_ITEM",
                             "ITEM DE GUIA "+

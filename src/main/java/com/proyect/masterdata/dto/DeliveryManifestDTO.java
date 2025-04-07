@@ -32,4 +32,7 @@ public class DeliveryManifestDTO {
     private String observations;
     private Double productValue;
     private List<PaymentMetodClientDTO> paymentMetodClientDTOS;
+    private Integer deliveredQuantity;
+    private Integer totalQuantity;
+    private Integer collectedQuantity;
 }
