@@ -243,13 +243,33 @@ public class CategoryImpl implements ICategory {
         });
     }
     @Override
-    public CompletableFuture<Page<CategoryDTO>> list(String name, String user, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber,
-                                                     Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<CategoryDTO>> list(
+            String name,
+            String user,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<Category> categoryPage;
             try {
-                categoryPage = categoryRepositoryCustom.searchForCategory(name, user,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate, sort, sortColumn, pageNumber,
-                        pageSize, true);
+                categoryPage = categoryRepositoryCustom.searchForCategory(
+                        name,
+                        user,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        status);
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -257,36 +277,6 @@ public class CategoryImpl implements ICategory {
             if (categoryPage.isEmpty()) {
                 return new PageImpl<>(Collections.emptyList());
             }
-            List<CategoryDTO> categoryDTOS = categoryPage.getContent().stream().map(category -> CategoryDTO.builder()
-                    .id(category.getId())
-                    .updateDate(category.getUpdateDate())
-                    .registrationDate(category.getRegistrationDate())
-                    .description(category.getDescription())
-                    .name(category.getName())
-                    .status(category.getStatus())
-                    .user(category.getUser().getUsername())
-                    .build()).toList();
-            return new PageImpl<>(categoryDTOS,
-                    categoryPage.getPageable(), categoryPage.getTotalElements());
-        });
-    }
-    @Override
-    public CompletableFuture<Page<CategoryDTO>> listStatusFalse(String name, String user,OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn,
-            Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            Page<Category> categoryPage;
-            try {
-                categoryPage = categoryRepositoryCustom.searchForCategory(name, user,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate, sort, sortColumn, pageNumber,
-                        pageSize, false);
-            } catch (RuntimeException e) {
-                log.error(e);
-                throw new BadRequestExceptions(Constants.ResultsFound);
-            }
-
-            if (categoryPage.isEmpty()) {
-                return new PageImpl<>(Collections.emptyList());
-            }
-
             List<CategoryDTO> categoryDTOS = categoryPage.getContent().stream().map(category -> CategoryDTO.builder()
                     .id(category.getId())
                     .updateDate(category.getUpdateDate())
