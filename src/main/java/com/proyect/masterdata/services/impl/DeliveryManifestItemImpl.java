@@ -5,6 +5,7 @@ import com.proyect.masterdata.dto.CourierDTO;
 import com.proyect.masterdata.dto.CourierProfileDTO;
 import com.proyect.masterdata.dto.DeliveredOrdersCountDTO;
 import com.proyect.masterdata.dto.DeliveryManifestItemDTO;
+import com.proyect.masterdata.dto.projections.DeliveryManifestItemDTOP;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
