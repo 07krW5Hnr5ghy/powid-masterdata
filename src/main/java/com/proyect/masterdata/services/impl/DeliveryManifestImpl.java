@@ -396,8 +396,8 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 System.out.println("id deliveru ->" + deliveryManifestId);
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 deliveryManifest = deliveryManifestRepository.findById(deliveryManifestId).orElse(null);
-                deliveryManifestItems = deliveryManifestItemRepository.findAllById(deliveryManifest.getId());
             }catch (RuntimeException e){
+                e.printStackTrace();
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
@@ -408,19 +408,12 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 throw new BadRequestExceptions(Constants.ErrorDeliveryManifest);
             }
 
-            if(deliveryManifestItems.isEmpty()){
-                for (DeliveryManifestItem deliveryManifestItem : deliveryManifestItems) {
-                    orderItems.add(orderItemRepository.findOrderItemById(deliveryManifestItem.getOrderItemId()));
-                }
-            }
-
             try{
                 deliveryManifest.setOpen(false);
                 deliveryManifest.setUpdateDate(OffsetDateTime.now());
                 deliveryManifest.setUser(user);
                 deliveryManifest.setUserId(user.getId());
                 //deliveryManifestRepository.save(deliveryManifest);
-
 
                 List<DeliveryManifestItemProjection> deliveryManifestItemList = deliveryManifestItemRepository.findAllByDeliveryManifestIdAndClientId(deliveryManifest.getId(),user.getClientId());
                 List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
@@ -446,6 +439,12 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 user
                         );
                     }
+                    orderItemRepository.setDeliveredQuantityOrderItem(
+                            deliveryManifestItem.getOrderItemId(),
+                            user.getClientId(),
+                            OffsetDateTime.now(),
+                            deliveryManifestItem.getDeliveredProducts() + deliveryManifestItem.getDeliveredQuantity()
+                    );
                 }
                 if(returnFlag){
                     iStockTransaction.save(
@@ -456,16 +455,12 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                             user);
                 }
 
-
-
                 deliveryManifestRepository.closeDeliveriManifest(
                         deliveryManifest.getId(),
                         user.getId(),
                         false,
                         OffsetDateTime.now()
                 );
-
-
 
                 iAudit.save(
                         "DELETE_DELIVERY_MANIFEST",
@@ -478,6 +473,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         .message(Constants.update)
                         .build();
             }catch (RuntimeException e){
+                e.printStackTrace();
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }

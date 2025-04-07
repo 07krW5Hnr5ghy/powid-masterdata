@@ -837,7 +837,7 @@ public class OrderItemImpl implements IOrderItem {
             }
 
             try {
-                orderItemRepository.selectPreparedOrdetItem(
+                orderItemRepository.selectPreparedOrderItem(
                         ordering.getId(),
                         orderItemId,
                         user.getId(),
