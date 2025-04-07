@@ -22,17 +22,8 @@ public interface IMembershipState {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<Page<MembershipStateDTO>> listFalse(
-            String name,
-            OffsetDateTime registrationStartDate,
-            OffsetDateTime registrationEndDate,
-            OffsetDateTime updateStartDate,
-            OffsetDateTime updateEndDate,
-            String sort,
-            String sortColumn,
-            Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions,InternalErrorExceptions;
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<ResponseDelete> delete(String name,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<ResponseSuccess> activate(String name,String tokenUser) throws BadRequestExceptions,InternalErrorExceptions;
 }
