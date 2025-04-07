@@ -332,6 +332,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                             .phone(order.getCustomer().getPhone())
                             .district(order.getCustomer().getDistrict().getName())
                             .province(order.getCustomer().getDistrict().getProvince().getName())
+                            .deliveryFeeAmount(order.getDeliveryAmount())
                             .build();
                     DeliveryManifestOrder deliveryManifestOrder = deliveryManifestOrderRepository.findByDeliveryManifestIdAndOrderIdAndClientId(
                             deliveryManifest.getId(),
@@ -714,6 +715,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 .phone(order.getCustomer().getPhone())
                                 .district(order.getCustomer().getDistrict().getName())
                                 .province(order.getCustomer().getDistrict().getProvince().getName())
+                                .deliveryFeeAmount(order.getDeliveryAmount())
                                 .build();
                         DeliveryManifestOrder deliveryManifestOrder = deliveryManifestOrderRepository.findByDeliveryManifestIdAndOrderIdAndClientId(
                                 deliveryManifest.getId(),
@@ -988,6 +990,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                             .phone(order.getCustomer().getPhone())
                             .district(order.getCustomer().getDistrict().getName())
                             .province(order.getCustomer().getDistrict().getProvince().getName())
+                            .deliveryFeeAmount(order.getDeliveryAmount())
                             .build();
 
                     DeliveryManifestOrder deliveryManifestOrder = deliveryManifestOrderRepository.findByDeliveryManifestIdAndOrderIdAndClientId(

@@ -6,6 +6,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.services.IDeliveryManifestItem;
+import com.proyect.masterdata.services.IUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,6 +25,7 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class DeliveryManifestItemController {
     private final IDeliveryManifestItem iDeliveryManifestItem;
+    private final IUtil iUtil;
     @PutMapping("/delivered/{deliveryManifestItemId}")
     public ResponseEntity<ResponseSuccess> markDeliveredItem(
             @PathVariable UUID deliveryManifestItemId,
@@ -93,10 +95,12 @@ public class DeliveryManifestItemController {
     }
     @GetMapping("profile")
     public ResponseEntity<CourierProfileDTO> courierProfile(
-            @RequestParam(value = "registrationStartDate") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
-            @RequestParam(value = "registrationEndDate") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
+            @RequestParam(value = "registrationStartDate") String startDate,
+            @RequestParam(value = "registrationEndDate") String endDate,
             @RequestParam(value = "user") String username
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
+        OffsetDateTime registrationStartDate = iUtil.parseToOffsetDateTime(startDate,true);
+        OffsetDateTime registrationEndDate = iUtil.parseToOffsetDateTime(endDate, false);
         CompletableFuture<CourierProfileDTO> result = iDeliveryManifestItem.courierProfile(registrationStartDate,registrationEndDate,username);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
