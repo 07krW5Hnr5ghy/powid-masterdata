@@ -232,34 +232,29 @@ public class DistrictImpl implements IDistrict {
     }
 
     @Override
-    public CompletableFuture<Page<DistrictDTO>> list(String name, String user, UUID codeProvince, String nameProvince, String sort,
-            String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<DistrictDTO>> list(
+            String name,
+            String user,
+            UUID codeProvince,
+            String nameProvince,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<District> districtPage;
             try {
-                districtPage = districtRepositoryCustom.searchForDistrict(name, user, codeProvince, nameProvince, sort,
-                        sortColumn, pageNumber, pageSize, true);
-            } catch (RuntimeException e) {
-                log.error(e);
-                throw new BadRequestExceptions(Constants.ResultsFound);
-            }
-
-            if (districtPage.isEmpty()) {
-                return new PageImpl<>(Collections.emptyList());
-            }
-            return new PageImpl<>(districtMapper.listDistrictToListDistrictDTO(districtPage.getContent()),
-                    districtPage.getPageable(), districtPage.getTotalElements());
-        });
-    }
-
-    @Override
-    public CompletableFuture<Page<DistrictDTO>> listStatusFalse(String name, String user, UUID codeProvince, String nameProvince,
-            String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            Page<District> districtPage;
-            try {
-                districtPage = districtRepositoryCustom.searchForDistrict(name, user, codeProvince, nameProvince, sort,
-                        sortColumn, pageNumber, pageSize, false);
+                districtPage = districtRepositoryCustom.searchForDistrict(
+                        name,
+                        user,
+                        codeProvince,
+                        nameProvince,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        status);
             } catch (RuntimeException e) {
                 log.error(e);
                 throw new BadRequestExceptions(Constants.ResultsFound);

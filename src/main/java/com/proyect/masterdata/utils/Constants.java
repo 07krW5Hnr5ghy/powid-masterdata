@@ -367,4 +367,6 @@ public class Constants {
     public static final String ErrorDeliveryManifestOrderExist = "Comentario y/o monto recibido ya fue registrado";
     public static final String ErrorProductQuantityNegative = "Cantida de productos preparados no puede ser negativo";
     public static final String ErrorProductQuantityExceeded = "Cantida de productos preparados no puede exeder la cantidad total";
+    public static final String ErrorDeliveryManifestItemDeliveredQuantity = "Cantidad de producto entregado no puede ser mayor a cantidad de producto preparado";
+    public static final String ErrorDeliveryManifestItemCollectedQuantity = "Cantidad de producto cobrado no puede ser mayor a cantidad de producto preparado";
 }

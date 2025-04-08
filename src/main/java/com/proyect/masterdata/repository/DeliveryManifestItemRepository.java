@@ -35,7 +35,8 @@ public interface    DeliveryManifestItemRepository extends JpaRepository<Deliver
                oi.order_item_id AS orderItemId,
                cu.name AS customerName,
                dmi.delivered_quantity as deliveredQuantity,
-               dmi.collected_quantity as collectedQuantity
+               dmi.collected_quantity as collectedQuantity,
+               oi.delivered_products as deliveredProducts
         FROM logistics.delivery_manifest_item dmi
         JOIN logistics.delivery_manifest dm ON dmi.delivery_manifest_id = dm.delivery_manifest_id
         JOIN ordering.order_item oi ON dmi.order_item_id = oi.order_item_id
@@ -70,16 +71,18 @@ public interface    DeliveryManifestItemRepository extends JpaRepository<Deliver
     );
 
     @Query("""
-        SELECT dmi 
+        SELECT ord.orderNumber,ord.id,pro.id 
         FROM DeliveryManifestItem dmi
         JOIN dmi.deliveryManifest dm
         JOIN dmi.orderItem oi
+        JOIN oi.ordering ord
+        JOIN dmi.product pro
         WHERE dmi.deliveredQuantity > 0
           AND dmi.collectedQuantity = 0
           AND dm.courierId = :courierId
           AND dmi.registrationDate BETWEEN :startDate AND :endDate
     """)
-    List<DeliveryManifestItem> findDeliveredAndUnCollectedOrders(
+    List<Object[]> findDeliveredAndUnCollectedOrders(
             @Param("courierId") UUID courierId,
             @Param("startDate") OffsetDateTime startDate,
             @Param("endDate") OffsetDateTime endDate
@@ -109,7 +112,7 @@ public interface    DeliveryManifestItemRepository extends JpaRepository<Deliver
             @Param("collectedQuantity") Integer collectedQuantity
     );
     @Query("""
-        SELECT ord.orderNumber
+        SELECT ord.orderNumber,oi.preparedProducts
         FROM DeliveryManifestItem dmi
         JOIN dmi.deliveryManifest dm
         JOIN dmi.orderItem oi

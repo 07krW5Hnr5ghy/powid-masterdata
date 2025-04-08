@@ -59,24 +59,11 @@ public class DistrictController {
             @RequestParam("sort") String sort,
             @RequestParam("sortColumn") String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+            @RequestParam("pageSize") Integer pageSize,
+            @RequestParam(value="status",required = false) Boolean status
+    ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<Page<DistrictDTO>> result = iDistrict.list(name, user, codeProvince, nameProvince, sort, sortColumn, pageNumber,
-                pageSize);
-        return new ResponseEntity<>(result.get(), HttpStatus.OK);
-    }
-    @GetMapping(value = "status-false")
-    //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:DISTRICT_GET')")
-    public ResponseEntity<Page<DistrictDTO>> listStatusFalse(
-            @RequestParam("name") String name,
-            @RequestParam("user") String user,
-            @RequestParam("codeProvince") UUID codeProvince,
-            @RequestParam("nameProvince") String nameProvince,
-            @RequestParam("sort") String sort,
-            @RequestParam("sortColumn") String sortColumn,
-            @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<DistrictDTO>> result = iDistrict.listStatusFalse(name, user, codeProvince, nameProvince, sort, sortColumn,
-                pageNumber, pageSize);
+                pageSize,status);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
     @GetMapping(value = "province")

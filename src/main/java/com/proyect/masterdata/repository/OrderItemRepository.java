@@ -180,7 +180,7 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
                     "o.updateDate = :updateDate, " +
                     "o.preparedProducts = :preparedProducts " +
                     "WHERE o.userId = :userId AND o.orderId = :orderId AND o.id = :orderItemId")
-    void selectPreparedOrdetItem (
+    void selectPreparedOrderItem (
             @Param("orderId") UUID orderId,
             @Param("orderItemId") UUID orderItemId,
             @Param("userId") UUID userId,
@@ -199,5 +199,19 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
     List<Object[]> findOrderItemDetailsByIdAndClientId(
             UUID orderItemId,
             UUID clientId
+    );
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE OrderItem o SET " +
+            "o.updateDate = :updateDate, " +
+            "o.preparedProducts = 0, " +
+            "o.deliveredProducts = :deliveredProducts " +
+            "WHERE o.clientId = :clientId AND o.id = :orderItemId")
+    void setDeliveredQuantityOrderItem (
+            @Param("orderItemId") UUID orderItemId,
+            @Param("clientId") UUID clientId,
+            @Param("updateDate") OffsetDateTime updateDate,
+            @Param("deliveredProducts") Integer deliveredProducts
     );
 }

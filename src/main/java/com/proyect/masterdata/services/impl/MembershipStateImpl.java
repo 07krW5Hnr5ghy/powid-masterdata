@@ -76,41 +76,6 @@ public class MembershipStateImpl implements IMembershipState {
     }
 
     @Override
-    public CompletableFuture<Page<MembershipStateDTO>> listFalse(String name, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            Page<MembershipState> membershipStatePage;
-            try{
-                membershipStatePage = membershipStateRepositoryCustom.searchForMembershipState(
-                        name,
-                        registrationStartDate,
-                        registrationEndDate,
-                        updateStartDate,
-                        updateEndDate,
-                        sort,
-                        sortColumn,
-                        pageNumber,
-                        pageSize,
-                        false);
-            }catch (RuntimeException e){
-                log.error(e.getMessage());
-                throw new BadRequestExceptions(Constants.ResultsFound);
-            }
-            if(membershipStatePage.isEmpty()){
-                return new PageImpl<>(Collections.emptyList());
-            }
-            List<MembershipStateDTO> membershipStateDTOs = membershipStatePage.getContent().stream().map(membershipState -> MembershipStateDTO.builder()
-                    .status(membershipState.getStatus())
-                    .id(membershipState.getId())
-                    .user(membershipState.getUser().getUsername())
-                    .name(membershipState.getName())
-                    .registrationDate(membershipState.getRegistrationDate())
-                    .updateDate(membershipState.getUpdateDate())
-                    .build()).toList();
-            return new PageImpl<>(membershipStateDTOs,membershipStatePage.getPageable(),membershipStatePage.getTotalElements());
-        });
-    }
-
-    @Override
     public CompletableFuture<Page<MembershipStateDTO>> listPagination(
             String name,
             OffsetDateTime registrationStartDate,
@@ -120,7 +85,9 @@ public class MembershipStateImpl implements IMembershipState {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
+            Integer pageSize,
+            Boolean status
+    ) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<MembershipState> membershipStatePage;
             try{
@@ -134,7 +101,7 @@ public class MembershipStateImpl implements IMembershipState {
                         sortColumn,
                         pageNumber,
                         pageSize,
-                        true);
+                        status);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);

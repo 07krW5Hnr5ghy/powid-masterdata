@@ -309,6 +309,7 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                                     .filter(item -> Objects.equals(item.getOrderNumber(), order.getOrderNumber())).toList())
                             .orderId(order.getId())
                             .orderPaymentState(order.getOrderPaymentState().getName())
+                            .deliveryFeeAmount(order.getDeliveryAmount())
                             .build();
                     DeliveryManifestOrder deliveryManifestOrder = deliveryManifestOrderRepository.findByDeliveryManifestIdAndOrderIdAndClientId(
                             deliveryManifest.getId(),

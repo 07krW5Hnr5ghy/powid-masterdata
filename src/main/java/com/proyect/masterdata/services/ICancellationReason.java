@@ -24,17 +24,8 @@ public interface ICancellationReason {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions;
-    CompletableFuture<Page<CancellationReasonDTO>> listFalse(
-            String name,
-            OffsetDateTime registrationStartDate,
-            OffsetDateTime registrationEndDate,
-            OffsetDateTime updateStartDate,
-            OffsetDateTime updateEndDate,
-            String sort,
-            String sortColumn,
-            Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions;
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions;
     CompletableFuture<List<String>> list() throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<ResponseDelete> delete(String name,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<ResponseSuccess> activate(String name,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;

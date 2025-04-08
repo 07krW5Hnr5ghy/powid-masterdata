@@ -1,6 +1,5 @@
 package com.proyect.masterdata.controller;
 
-import com.proyect.masterdata.dto.request.RequestDeliveryManifest;
 import com.proyect.masterdata.dto.request.RequestDeliveryManifestOrder;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;

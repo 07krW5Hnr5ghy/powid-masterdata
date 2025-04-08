@@ -25,16 +25,7 @@ public interface IManagementType {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws InternalErrorExceptions,BadRequestExceptions;
-    CompletableFuture<Page<ManagementTypeDTO>> listFalse(
-            String name,
-            OffsetDateTime registrationStartDate,
-            OffsetDateTime registrationEndDate,
-            OffsetDateTime updateStartDate,
-            OffsetDateTime updateEndDate,
-            String sort,
-            String sortColumn,
-            Integer pageNumber,
-            Integer pageSize) throws InternalErrorExceptions,BadRequestExceptions;
+            Integer pageSize,
+            Boolean status) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<List<String>> list() throws InternalErrorExceptions,BadRequestExceptions;
 }

@@ -223,13 +223,31 @@ public class AccessImpl implements IAccess {
     }
 
     @Override
-    public CompletableFuture<Page<AccessDTO>> listPagination(String name,OffsetDateTime registrationStartDate,OffsetDateTime registrationEndDate,OffsetDateTime updateStartDate,OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber,
-                                Integer pageSize) throws BadRequestExceptions {
+    public CompletableFuture<Page<AccessDTO>> listPagination(
+            String name,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(() -> {
             Page<Access> accessPage;
-
             try {
-                accessPage = accessRepositoryCustom.searchForAccess(name,registrationStartDate,registrationEndDate,updateStartDate,updateEndDate,sort, sortColumn, pageNumber, pageSize, true);
+                accessPage = accessRepositoryCustom.searchForAccess(
+                        name,
+                        registrationStartDate,
+                        registrationEndDate,
+                        updateStartDate,
+                        updateEndDate,
+                        sort,
+                        sortColumn,
+                        pageNumber,
+                        pageSize,
+                        status);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -253,38 +271,6 @@ public class AccessImpl implements IAccess {
         });
 
     }
-
-    @Override
-    public CompletableFuture<Page<AccessDTO>> listFalse(String name,OffsetDateTime registrationStartDate,OffsetDateTime registrationEndDate,OffsetDateTime updateStartDate,OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber,
-                                                        Integer pageSize) throws BadRequestExceptions {
-        return CompletableFuture.supplyAsync(() -> {
-            Page<Access> accessPage;
-
-            try {
-                accessPage = accessRepositoryCustom.searchForAccess(name,registrationStartDate,registrationEndDate,updateStartDate,updateEndDate,sort, sortColumn, pageNumber, pageSize, false);
-            } catch (RuntimeException e) {
-                log.error(e.getMessage());
-                throw new BadRequestExceptions(Constants.ResultsFound);
-            }
-
-            if (accessPage.isEmpty()) {
-                return new PageImpl<>(Collections.emptyList());
-            }
-
-            List<AccessDTO> accessDTOs = accessPage.getContent().stream().map(access -> AccessDTO.builder()
-                    .status(access.getStatus())
-                    .id(access.getId())
-                    .name(access.getName())
-                    .registrationDate(access.getRegistrationDate())
-                    .updateDate(access.getUpdateDate())
-                    .user(access.getUser().getUsername())
-                    .build()).toList();
-
-            return new PageImpl<>(accessDTOs, accessPage.getPageable(),
-                    accessPage.getTotalElements());
-        });
-    }
-
     @Override
     public CompletableFuture<ResponseSuccess> activate(String name, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(() -> {

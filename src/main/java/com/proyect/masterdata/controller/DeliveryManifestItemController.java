@@ -6,6 +6,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.services.IDeliveryManifestItem;
+import com.proyect.masterdata.services.IUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,6 +25,7 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class DeliveryManifestItemController {
     private final IDeliveryManifestItem iDeliveryManifestItem;
+    private final IUtil iUtil;
     @PutMapping("/delivered/{deliveryManifestItemId}")
     public ResponseEntity<ResponseSuccess> markDeliveredItem(
             @PathVariable UUID deliveryManifestItemId,
@@ -56,16 +58,20 @@ public class DeliveryManifestItemController {
             @RequestParam(value = "courier",required = false) String courier,
             @RequestParam(value = "courierDni",required = false) String courierDni,
             @RequestParam(value = "warehouse",required = false) String warehouse,
-            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
-            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
-            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateStartDate,
-            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateEndDate,
+            @RequestParam(value = "registrationStartDate",required = false) String rStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) String rEndDate,
+            @RequestParam(value = "updateStartDate",required = false) String uStartDate,
+            @RequestParam(value = "updateEndDate",required = false) String uEndDate,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize,
             @RequestParam(value = "delivered",required = false) Boolean delivered
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
+        OffsetDateTime registrationStartDate = iUtil.parseToOffsetDateTime(rStartDate,true);
+        OffsetDateTime registrationEndDate = iUtil.parseToOffsetDateTime(rEndDate, false);
+        OffsetDateTime updateStartDate = iUtil.parseToOffsetDateTime(uStartDate,true);
+        OffsetDateTime updateEndDate = iUtil.parseToOffsetDateTime(uEndDate,false);
         CompletableFuture<Page<DeliveryManifestItemDTO>> result = iDeliveryManifestItem.list(
                 user,
                 quantity,
@@ -93,10 +99,12 @@ public class DeliveryManifestItemController {
     }
     @GetMapping("profile")
     public ResponseEntity<CourierProfileDTO> courierProfile(
-            @RequestParam(value = "registrationStartDate") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
-            @RequestParam(value = "registrationEndDate") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
+            @RequestParam(value = "registrationStartDate") String startDate,
+            @RequestParam(value = "registrationEndDate") String endDate,
             @RequestParam(value = "user") String username
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
+        OffsetDateTime registrationStartDate = iUtil.parseToOffsetDateTime(startDate,true);
+        OffsetDateTime registrationEndDate = iUtil.parseToOffsetDateTime(endDate, false);
         CompletableFuture<CourierProfileDTO> result = iDeliveryManifestItem.courierProfile(registrationStartDate,registrationEndDate,username);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
