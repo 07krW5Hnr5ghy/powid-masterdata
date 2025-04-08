@@ -41,9 +41,13 @@ public class KardexInputImpl implements IKardexInput {
             kardexOperationType = kardexOperationTypeRepository.findByNameAndClientId("COMPRA",user.getClientId());
         }
         try {
+            Long lotNumber = kardexInputRepository.countByClientIdAndProductId(user.getClientId(),requestKardexInput.getProduct().getId());
             return kardexInputRepository.save(KardexInput.builder()
                             .client(user.getClient())
                             .clientId(user.getClientId())
+                            .lotNumber(lotNumber)
+                            .product(requestKardexInput.getProduct())
+                            .productId(requestKardexInput.getProduct().getId())
                             .user(user)
                             .userId(user.getId())
                             .registrationDate(OffsetDateTime.now())

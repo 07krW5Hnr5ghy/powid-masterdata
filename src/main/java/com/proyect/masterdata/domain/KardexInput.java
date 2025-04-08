@@ -36,6 +36,9 @@ public class KardexInput {
     @Column(name = "kardex_operation_type_id")
     private UUID kardexOperationTypeId;
 
+    @Column(name = "product_id")
+    private UUID productId;
+
     @Column(name = "client_id")
     private UUID clientId;
 
@@ -57,4 +60,8 @@ public class KardexInput {
     @ManyToOne()
     @JoinColumn(name="kardex_operation_type_id",columnDefinition = "kardexOperationTypeId",insertable = false,updatable = false)
     private KardexOperationType kardexOperationType;
+
+    @ManyToOne()
+    @JoinColumn(name="product_id",columnDefinition = "productId",insertable = false,updatable = false)
+    private Product product;
 }

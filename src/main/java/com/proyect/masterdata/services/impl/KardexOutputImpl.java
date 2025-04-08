@@ -7,6 +7,7 @@ import com.proyect.masterdata.domain.User;
 import com.proyect.masterdata.dto.request.RequestKardexOutput;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
+import com.proyect.masterdata.repository.KardexOperationTypeRepository;
 import com.proyect.masterdata.repository.KardexOutputRepository;
 import com.proyect.masterdata.repository.UserRepository;
 import com.proyect.masterdata.services.IkardexOutput;
@@ -23,7 +24,7 @@ import java.time.OffsetDateTime;
 public class KardexOutputImpl implements IkardexOutput {
     private final UserRepository userRepository;
     private final KardexOutputRepository kardexOutputRepository;
-    private final KardexOperationType kardexOperationType;
+    private final KardexOperationTypeRepository kardexOperationTypeRepository;
     @Override
     public KardexOutput save(RequestKardexOutput requestKardexOutput) throws BadRequestExceptions, InternalErrorExceptions {
         User user;
@@ -40,14 +41,12 @@ public class KardexOutputImpl implements IkardexOutput {
             kardexOperationType = kardexOperationTypeRepository.findByNameAndClientId("COMPRA",user.getClientId());
         }
         try {
-            return kardexInputRepository.save(KardexInput.builder()
+            return kardexOutputRepository.save(KardexOutput.builder()
                     .client(user.getClient())
                     .clientId(user.getClientId())
                     .user(user)
                     .userId(user.getId())
                     .registrationDate(OffsetDateTime.now())
-                    .supplyOrderItem(requestKardexInput.getSupplyOrderItem())
-                    .supplyOrderItemId(requestKardexInput.getSupplyOrderItem().getId())
                     .kardexOperationType(kardexOperationType)
                     .kardexOperationTypeId(kardexOperationType.getId())
                     .build());
@@ -55,6 +54,5 @@ public class KardexOutputImpl implements IkardexOutput {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        return null;
     }
 }
