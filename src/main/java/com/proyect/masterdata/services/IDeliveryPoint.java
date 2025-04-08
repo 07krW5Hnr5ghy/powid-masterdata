@@ -27,17 +27,7 @@ public interface IDeliveryPoint {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize
-    ) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<Page<DeliveryPointDTO>> listFalse(
-            String name,
-            OffsetDateTime registrationStartDate,
-            OffsetDateTime registrationEndDate,
-            OffsetDateTime updateStartDate,
-            OffsetDateTime updateEndDate,
-            String sort,
-            String sortColumn,
-            Integer pageNumber,
-            Integer pageSize
+            Integer pageSize,
+            Boolean status
     ) throws BadRequestExceptions,InternalErrorExceptions;
 }

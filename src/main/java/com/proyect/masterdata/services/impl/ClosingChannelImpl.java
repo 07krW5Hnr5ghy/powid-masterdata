@@ -133,7 +133,8 @@ public class ClosingChannelImpl implements IClosingChannel {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws InternalErrorExceptions {
+            Integer pageSize,
+            Boolean status) throws InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<ClosingChannel> closingChannelPage;
             try {
@@ -142,12 +143,12 @@ public class ClosingChannelImpl implements IClosingChannel {
                         registrationStartDate,
                         registrationEndDate,
                         updateStartDate,
-                        updateStartDate,
+                        updateEndDate,
                         sort,
                         sortColumn,
                         pageNumber,
                         pageSize,
-                        true);
+                        status);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);
@@ -168,43 +169,6 @@ public class ClosingChannelImpl implements IClosingChannel {
             return new PageImpl<>(closingChannelDTOS,closingChannelPage.getPageable(),closingChannelPage.getTotalElements());
         });
 
-    }
-
-    @Override
-    public CompletableFuture<Page<ClosingChannelDTO>> listFalse(String name, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            Page<ClosingChannel> closingChannelPage;
-            try {
-                closingChannelPage = closingChannelRepositoryCustom.searchForClosingChannel(
-                        name,
-                        registrationStartDate,
-                        registrationEndDate,
-                        updateStartDate,
-                        updateStartDate,
-                        sort,
-                        sortColumn,
-                        pageNumber,
-                        pageSize,
-                        false);
-            }catch (RuntimeException e){
-                log.error(e.getMessage());
-                throw new BadRequestExceptions(Constants.ResultsFound);
-            }
-
-            if(closingChannelPage.isEmpty()){
-                return new PageImpl<>(Collections.emptyList());
-            }
-
-            List<ClosingChannelDTO> closingChannelDTOS = closingChannelPage.getContent().stream().map(closingChannel -> ClosingChannelDTO.builder()
-                    .id(closingChannel.getId())
-                    .name(closingChannel.getName())
-                    .registrationDate(closingChannel.getRegistrationDate())
-                    .status(closingChannel.getStatus())
-                    .updateDate(closingChannel.getUpdateDate())
-                    .user(closingChannel.getUser().getUsername())
-                    .build()).toList();
-            return new PageImpl<>(closingChannelDTOS,closingChannelPage.getPageable(),closingChannelPage.getTotalElements());
-        });
     }
 
     @Override

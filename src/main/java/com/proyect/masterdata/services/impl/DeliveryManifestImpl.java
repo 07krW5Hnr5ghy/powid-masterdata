@@ -240,6 +240,9 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 List<Ordering> orders = new ArrayList<>();
                 Set<Long> uniqueOrderNumbers = new HashSet<>();
                 double[] productAmountPerManifest = {0.00};
+                int[] deliveryManifestProductQuantity = {0};
+                int[] deliveryManifestDeliveredQuantity = {0};
+                int[] deliveryManifestCollectedQuantity = {0};
                 List<DeliveryManifestOrderDTO> deliveryManifestOrderDTOS = new ArrayList<>();
                 List<DeliveryManifestItemDTO> deliveryManifestItemDTOS = deliveryManifestItemRepository.findAllByDeliveryManifestId(deliveryManifest.getId())
                         .stream().map(deliveryManifestItem -> {
@@ -250,17 +253,20 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                             ProductPrice productPrice = productPriceRepository.findByProductId(deliveryManifestItem.getOrderItem().getProductId());
                             Double totalPrice = null;
                             if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "PORCENTAJE")){
-                                totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts())-((productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts())*(deliveryManifestItem.getOrderItem().getDiscountAmount()/100));
+                                totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getQuantity())-((productPrice.getUnitSalePrice() * deliveryManifestItem.getQuantity())*(deliveryManifestItem.getOrderItem().getDiscountAmount()/100));
                             }
 
                             if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "MONTO")){
-                                totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts())-(deliveryManifestItem.getOrderItem().getDiscountAmount());
+                                totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getQuantity())-(deliveryManifestItem.getOrderItem().getDiscountAmount());
                             }
 
                             if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "NO APLICA")){
-                                totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts());
+                                totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getQuantity());
                             }
-                            productAmountPerManifest[0] += (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts());
+                            productAmountPerManifest[0] += (productPrice.getUnitSalePrice() * deliveryManifestItem.getQuantity());
+                            deliveryManifestProductQuantity[0]+=deliveryManifestItem.getQuantity();
+                            deliveryManifestDeliveredQuantity[0]+=deliveryManifestItem.getDeliveredQuantity();
+                            deliveryManifestCollectedQuantity[0]+=deliveryManifestItem.getCollectedQuantity();
                             return DeliveryManifestItemDTO.builder()
                                     .id(deliveryManifestItem.getId())
                                     .deliveredQuantity(deliveryManifestItem.getDeliveredQuantity())
@@ -374,6 +380,9 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         .courierPhone(deliveryManifest.getCourier().getPhone())
                         .courierPlate(deliveryManifest.getCourier().getPlate())
                         .productValue(productAmountPerManifest[0])
+                        .totalQuantity(deliveryManifestProductQuantity[0])
+                        .deliveredQuantity(deliveryManifestDeliveredQuantity[0])
+                        .collectedQuantity(deliveryManifestCollectedQuantity[0])
                         .build();
             }catch (RuntimeException e){
                 e.printStackTrace();
@@ -610,10 +619,13 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 List<Ordering> orders = new ArrayList<>();
                 Set<Long> uniqueOrderNumbers = new HashSet<>();
                 double[] totalProductAmountPerManifest = {0.00};
+
                 List<DeliveryManifestOrderDTO> deliveryManifestOrderDTOS = new ArrayList<>();
                 List<DeliveryManifestDTO> deliveryManifestDTOS = deliveryManifestPage.getContent().stream().map(deliveryManifest -> {
                     double[] productAmountPerManifest = {0.00};
-
+                    int[] deliveryManifestProductQuantity = {0};
+                    int[] deliveryManifestDeliveredQuantity = {0};
+                    int[] deliveryManifestCollectedQuantity = {0};
                     List<DeliveryManifestItemDTO> deliveryManifestItemDTOS = deliveryManifestItemRepository.findAllByDeliveryManifestIdAndClientId(deliveryManifest.getId(),clientId)
                             .stream().map(deliveryManifestItem -> {
                                 if(!uniqueOrderNumbers.contains(deliveryManifestItem.getOrderNumber())){
@@ -627,17 +639,20 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 Double totalPrice = null;
                                 for(Object[] orderItem:orderItems){
                                     if(Objects.equals(orderItem[2], "PORCENTAJE")){
-                                        totalPrice = (productPrice.getUnitSalePrice() * (Integer) orderItem[0])-((productPrice.getUnitSalePrice() * (Integer) orderItem[0])*((Double) orderItem[1]/100));
+                                        totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getQuantity())-((productPrice.getUnitSalePrice() * deliveryManifestItem.getQuantity())*((Double) orderItem[1]/100));
                                     }
 
                                     if(Objects.equals(orderItem[2], "MONTO")){
-                                        totalPrice = (productPrice.getUnitSalePrice() * (Integer) orderItem[0])-((Double) orderItem[1]);
+                                        totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getQuantity())-((Double) orderItem[1]);
                                     }
 
                                     if(Objects.equals(orderItem[2], "NO APLICA")){
-                                        totalPrice = (productPrice.getUnitSalePrice() * (Integer) orderItem[0]);
+                                        totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getQuantity());
                                     }
-                                    productAmountPerManifest[0] += (productPrice.getUnitSalePrice() * (Integer) orderItem[0]);
+                                    productAmountPerManifest[0] += (productPrice.getUnitSalePrice() * deliveryManifestItem.getQuantity());
+                                    deliveryManifestProductQuantity[0]+=deliveryManifestItem.getQuantity();
+                                    deliveryManifestDeliveredQuantity[0]+=deliveryManifestItem.getDeliveredQuantity();
+                                    deliveryManifestCollectedQuantity[0]+=deliveryManifestItem.getCollectedQuantity();
                                 }
                                 return DeliveryManifestItemDTO.builder()
                                         .id(deliveryManifestItem.getDeliveryManifestItemId())
@@ -659,8 +674,8 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                         .product(productPrice.getProduct().getName())
                                         .build();
                             }).toList();
-
                     totalProductAmountPerManifest[0]+=productAmountPerManifest[0];
+
                     double totalOrdersSaleAmount = 0.00;
                     double totalOrdersDuePayment = 0.00;
 
@@ -738,8 +753,6 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
 
                     }
 
-
-
                     return DeliveryManifestDTO.builder()
                             .id(deliveryManifest.getId())
                             .user(deliveryManifest.getUser().getUsername())
@@ -760,6 +773,9 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                             //.paymentMetodClientDTOS(paymentMetodClientDTOS)
                             .courierPlate(deliveryManifest.getCourier().getPlate())
                             .productValue(totalProductAmountPerManifest[0])
+                            .totalQuantity(deliveryManifestProductQuantity[0])
+                            .deliveredQuantity(deliveryManifestDeliveredQuantity[0])
+                            .collectedQuantity(deliveryManifestCollectedQuantity[0])
                             .build();
                 }).toList();
 
@@ -894,6 +910,9 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
 //                                    .observationsAccount(paymentMetod.getObservations())
 //                                    .build();
 //                        }).toList();
+                int[] deliveryManifestProductQuantity = {0};
+                int[] deliveryManifestDeliveredQuantity = {0};
+                int[] deliveryManifestCollectedQuantity = {0};
                 List<DeliveryManifestItemDTO> deliveryManifestItemDTOS = deliveryManifestItemRepository.findAllByDeliveryManifestId(lastDeliveryManifest.getId())
                         .stream().map(deliveryManifestItem -> {
                             if(!uniqueOrderNumbers.contains(deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber())){
@@ -914,6 +933,9 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts());
                             }
                             productAmountPerManifest[0] += (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts());
+                            deliveryManifestProductQuantity[0]+=deliveryManifestItem.getQuantity();
+                            deliveryManifestDeliveredQuantity[0]+=deliveryManifestItem.getDeliveredQuantity();
+                            deliveryManifestCollectedQuantity[0]+=deliveryManifestItem.getCollectedQuantity();
                             return DeliveryManifestItemDTO.builder()
                                     .id(deliveryManifestItem.getId())
                                     .user(deliveryManifestItem.getUser().getUsername())
@@ -1029,6 +1051,9 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         .courierPhone(lastDeliveryManifest.getCourier().getPhone())
                         .courierPlate(lastDeliveryManifest.getCourier().getPlate())
                         .productValue(productAmountPerManifest[0])
+                        .totalQuantity(deliveryManifestProductQuantity[0])
+                        .deliveredQuantity(deliveryManifestDeliveredQuantity[0])
+                        .collectedQuantity(deliveryManifestCollectedQuantity[0])
                         .build();
             }catch (RuntimeException e){
                 e.printStackTrace();

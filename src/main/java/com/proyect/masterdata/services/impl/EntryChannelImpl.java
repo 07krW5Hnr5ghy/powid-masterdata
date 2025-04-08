@@ -90,7 +90,8 @@ public class EntryChannelImpl implements IEntryChannel {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions {
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<EntryChannel> entryChannelPage;
 
@@ -100,50 +101,12 @@ public class EntryChannelImpl implements IEntryChannel {
                         registrationStartDate,
                         registrationEndDate,
                         updateStartDate,
-                        updateStartDate,
+                        updateEndDate,
                         sort,
                         sortColumn,
                         pageNumber,
                         pageSize,
-                        true);
-            } catch (RuntimeException e) {
-                log.error(e.getMessage());
-                throw new BadRequestExceptions(Constants.ResultsFound);
-            }
-
-            if (entryChannelPage.isEmpty()) {
-                return new PageImpl<>(Collections.emptyList());
-            }
-
-            List<EntryChannelDTO> entryChannelDTOS = entryChannelPage.getContent().stream().map(entryChannel -> EntryChannelDTO.builder()
-                    .id(entryChannel.getId())
-                    .updateDate(entryChannel.getUpdateDate())
-                    .registrationDate(entryChannel.getRegistrationDate())
-                    .name(entryChannel.getName())
-                    .status(entryChannel.getStatus())
-                    .user(entryChannel.getUser().getUsername())
-                    .build()).toList();
-            return new PageImpl<>(entryChannelDTOS,entryChannelPage.getPageable(),entryChannelPage.getTotalElements());
-        });
-    }
-
-    @Override
-    public CompletableFuture<Page<EntryChannelDTO>> listFalse(String name, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            Page<EntryChannel> entryChannelPage;
-
-            try {
-                entryChannelPage = entryChannelRepositoryCustom.searchEntryChannel(
-                        name,
-                        registrationStartDate,
-                        registrationEndDate,
-                        updateStartDate,
-                        updateStartDate,
-                        sort,
-                        sortColumn,
-                        pageNumber,
-                        pageSize,
-                        false);
+                        status);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);

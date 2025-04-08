@@ -31,17 +31,6 @@ public interface IMembership {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
-    CompletableFuture<Page<MembershipDTO>> listFalse(
-            String user,
-            String membershipState,
-            String subscription,
-            OffsetDateTime registrationStartDate,
-            OffsetDateTime registrationEndDate,
-            OffsetDateTime updateStartDate,
-            OffsetDateTime updateEndDate,
-            String sort,
-            String sortColumn,
-            Integer pageNumber,
-            Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions;
+            Integer pageSize,
+            Boolean status) throws InternalErrorExceptions, BadRequestExceptions;
 }
