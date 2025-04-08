@@ -102,29 +102,17 @@ public class OrderingImpl implements IOrdering {
         Discount discount;
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
-            System.out.println(user);
             orderState = orderStateRepository.findByNameAndStatusTrue("PENDIENTE");
-            System.out.println(orderState);
             courier = courierRepository.findByNameAndStatusTrue("SIN COURIER");
-            System.out.println(courier);
             orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue("POR RECAUDAR");
-            System.out.println(orderPaymentState);
             saleChannel = saleChannelRepository.findByNameAndStatusTrue(requestOrderSave.getSaleChannel().toUpperCase());
-            System.out.println(saleChannel);
             managementType = managementTypeRepository.findByNameAndStatusTrue(requestOrderSave.getManagementType().toUpperCase());
-            System.out.println(managementType);
             orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestOrderSave.getPaymentMethod().toUpperCase());
-            System.out.println(orderPaymentMethod);
             store = storeRepository.findByNameAndStatusTrue(requestOrderSave.getStoreName().toUpperCase());
-            System.out.println(store);
             closingChannel = closingChannelRepository.findByNameAndStatusTrue(requestOrderSave.getClosingChannel().toUpperCase());
-            System.out.println(closingChannel);
             customer = customerRepository.findByPhone(requestOrderSave.getPhone().toUpperCase());
-            System.out.println(customer);
             deliveryPoint = deliveryPointRepository.findByNameAndStatusTrue(requestOrderSave.getDeliveryPoint().toUpperCase());
-            System.out.println(deliveryPoint);
             discount = discountRepository.findByNameAndStatusTrue(requestOrderSave.getDiscount().toUpperCase());
-            System.out.println(discount);
         }catch (RuntimeException e){
             e.printStackTrace();
             log.error(e.getMessage());
@@ -336,6 +324,12 @@ public class OrderingImpl implements IOrdering {
                         throw new BadRequestExceptions(Constants.ErrorOrderItemZero);
                     }
                 });
+
+                // si deliveryAmount + discountAmount + advancedPayment == suma(productos preparados)
+                // hay un problema porque en este modulo no se esta teniendo en cuenta los productos preparados
+                //agregar el metodo de pago en editar
+
+
                 Long newOrderNumber = orderingRepository.countByClientId(user.getClientId())+1L;
                 Ordering ordering = orderingRepository.save(Ordering.builder()
                         .cancellation(false)
@@ -413,8 +407,6 @@ public class OrderingImpl implements IOrdering {
                     ordering.setReceiptFlag(true);
                     orderingRepository.save(ordering);
                 }
-                System.out.println(user);
-                System.out.println(ordering);
                 System.out.println(OffsetDateTime.now() + "+ " + user.getUsername() + " + " + ordering.getOrderState().getName());
                 iOrderLog.save(user,ordering,
                         OffsetDateTime.now()+
@@ -859,6 +851,8 @@ public class OrderingImpl implements IOrdering {
         OrderPaymentState orderPaymentState;
         Courier courier;
         CancellationReason cancellationReason;
+        Discount discount;
+        System.out.println("se ejecuto el update :d");
 
         try{
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
@@ -866,6 +860,7 @@ public class OrderingImpl implements IOrdering {
             orderState = orderStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getOrderState().toUpperCase());
             orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentMethod().toUpperCase());
             orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentState().toUpperCase());
+            discount = discountRepository.findByNameAndStatusTrue(requestOrderUpdate.getDiscount().toUpperCase());
         }catch (RuntimeException e){
             e.printStackTrace();
             log.error(e.getMessage());
@@ -957,6 +952,13 @@ public class OrderingImpl implements IOrdering {
                 updatedOrder = orderingRepository.save(ordering);
             }
 
+            if(requestOrderUpdate.getDeliveryAmount() >= 0 && requestOrderUpdate.getDiscountAmount() >= 0 && requestOrderUpdate.getAdvancedPayment()>=0){
+                ordering.setDeliveryAmount(requestOrderUpdate.getDeliveryAmount());
+                ordering.setDiscount(discount);
+                ordering.setDiscountAmount(requestOrderUpdate.getDiscountAmount());
+                ordering.setAdvancedPayment(requestOrderUpdate.getAdvancedPayment());
+            }
+
             CompletableFuture<List<String>> deliveryPictures = iCourierPicture.uploadPicture(courierPictures,ordering.getId(),user.getUsername());
             if((!ordering.getDeliveryFlag())&&(!deliveryPictures.get().isEmpty())){
                 ordering.setDeliveryFlag(true);
@@ -1013,7 +1015,7 @@ public class OrderingImpl implements IOrdering {
 
     @Override
     public CompletableFuture<ResponseSuccess> updateAsync(UUID orderId, RequestOrderUpdate requestOrderUpdate,MultipartFile[] receipts,MultipartFile[] courierPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        Path folderOrders = Paths.get(urlPathServer+"/home/orders");
+        Path folderOrders = Paths.get(urlPathServer+"/uploads/orders");
         Path folderCouriers = Paths.get(urlPathServer+"/uploads/couriers/");
         return CompletableFuture.supplyAsync(()->{
             User user;
@@ -1023,6 +1025,7 @@ public class OrderingImpl implements IOrdering {
             OrderPaymentState orderPaymentState;
             Courier courier;
             CancellationReason cancellationReason;
+            Discount discount;
 //            OrderStock orderStock;
 
             try{
@@ -1031,6 +1034,7 @@ public class OrderingImpl implements IOrdering {
                 orderState = orderStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getOrderState().toUpperCase());
                 orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentMethod().toUpperCase());
                 orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentState().toUpperCase());
+                discount = discountRepository.findByNameAndStatusTrue(requestOrderUpdate.getDiscount().toUpperCase());
             }catch (RuntimeException e){
                 e.printStackTrace();
                 log.error(e.getMessage());
@@ -1056,6 +1060,10 @@ public class OrderingImpl implements IOrdering {
                 throw new BadRequestExceptions(Constants.ErrorOrdering);
             }else {
 //                orderStock = orderStockRepository.findByOrderIdAndClientId(ordering.getId(),user.getClientId());
+            }
+
+            if(discount == null){
+                throw new BadRequestExceptions(Constants.ErrorDiscount);
             }
 
             if(
@@ -1113,6 +1121,14 @@ public class OrderingImpl implements IOrdering {
                     ordering.setCourier(courier);
                     ordering.setCourierId(courier.getId());
                 }
+
+                if(requestOrderUpdate.getDeliveryAmount() >= 0 && requestOrderUpdate.getDiscountAmount() >= 0 && requestOrderUpdate.getAdvancedPayment()>=0){
+                    ordering.setDeliveryAmount(requestOrderUpdate.getDeliveryAmount());
+                    ordering.setDiscount(discount);
+                    ordering.setDiscountAmount(requestOrderUpdate.getDiscountAmount());
+                    ordering.setAdvancedPayment(requestOrderUpdate.getAdvancedPayment());
+                }
+
                 Ordering updatedOrder;
 
                 updatedOrder = orderingRepository.save(ordering);
@@ -1172,8 +1188,6 @@ public class OrderingImpl implements IOrdering {
                     });
                 }
 
-//                System.out.println("order state ---> " + orderState.getName());
-//
                 if(orderState.getName().equals("PREPARADO")){
                     iOrderContact.save(
                             orderId,
