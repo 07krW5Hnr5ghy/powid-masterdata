@@ -59,6 +59,23 @@ public interface DeliveryManifestRepository extends JpaRepository<DeliveryManife
     """)
     void closeDeliveriManifest(UUID deliveryManifestId, UUID userId, boolean open, OffsetDateTime updateDate);
 
+    @Modifying
+    @Transactional
+    @Query("""
+            update DeliveryManifest dm set 
+                dm.paymentMethodId = :orderPaymentMethodId,
+                dm.totalMoneyReceived = :totalMoneyReceived,
+                dm.confirmedOperations = :confirmedOperations,
+                dm.observationsCourier = :observationsCourier 
+                       where dm.id = :deliveryManifestId
+            """)
+    void confirmManifest(
+            UUID deliveryManifestId,
+            UUID orderPaymentMethodId,
+            boolean confirmedOperations,
+            String observationsCourier,
+            Double totalMoneyReceived
+    );
 }
 
 

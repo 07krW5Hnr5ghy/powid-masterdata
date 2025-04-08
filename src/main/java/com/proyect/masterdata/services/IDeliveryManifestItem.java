@@ -21,12 +21,12 @@ public interface IDeliveryManifestItem {
             User user) throws BadRequestExceptions,InterruptedException;
     CompletableFuture<ResponseSuccess> markDeliveredDeliveryManifestItem(
             UUID deliveryManifestItemId,
-            Integer quantity,
+            Integer deliveredQuantity,
             String user
     );
     CompletableFuture<ResponseSuccess> markCollectedDeliveryManifestItem(
             UUID deliveryManifestItemId,
-            Integer quantity,
+            Integer collectedQuantity,
             String user
     );
     CompletableFuture<Page<DeliveryManifestItemDTO>> list(

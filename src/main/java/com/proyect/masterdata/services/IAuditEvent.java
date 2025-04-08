@@ -26,15 +26,6 @@ public interface IAuditEvent {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<Page<AuditEventDTO>> listFalse(
-            String name,
-            OffsetDateTime registrationStartDate,
-            OffsetDateTime registrationEndDate,
-            OffsetDateTime updateStartDate,
-            OffsetDateTime updateEndDate,
-            String sort,
-            String sortColumn,
-            Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions,InternalErrorExceptions;
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions,InternalErrorExceptions;
 }

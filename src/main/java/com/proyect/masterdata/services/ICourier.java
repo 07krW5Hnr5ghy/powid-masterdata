@@ -40,5 +40,5 @@ public interface ICourier {
     CompletableFuture<List<CourierDTO>> listCouriers(String user) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<CourierDTO>> listCouriersFalse(String user) throws BadRequestExceptions,InternalErrorExceptions;
     CompletableFuture<List<CourierDTO>> listFilters(String user) throws BadRequestExceptions,InternalErrorExceptions;
-    CompletableFuture<ResponseCourierInfo> infoCouerier(String tokernUser) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<ResponseCourierInfo> infoCourier(String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
 }

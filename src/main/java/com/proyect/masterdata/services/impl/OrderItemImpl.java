@@ -597,6 +597,7 @@ public class OrderItemImpl implements IOrderItem {
                         .color(orderItem.getProduct().getColor().getName())
                         .size(orderItem.getProduct().getSize().getName())
                         .pictures(productPictures)
+                        .nameProduct(orderItem.getProduct().getName())
                         .subCategory(orderItem.getProduct().getSubCategoryProduct().getName())
                         .category(orderItem.getProduct().getSubCategoryProduct().getCategoryProduct().getName())
                         .sku(iUtil.buildProductSku(orderItem.getProduct()))
@@ -650,6 +651,7 @@ public class OrderItemImpl implements IOrderItem {
                 return OrderItemDTO.builder()
                         .id(orderItem.getId())
                         .productId(orderItem.getProductId())
+                        .nameProduct(orderItem.getProduct().getName())
                         .user(orderItem.getUser().getUsername())
                         .status(orderItem.getStatus())
                         .selectOrderStatus(orderItem.getSelectOrderStatus())
@@ -717,6 +719,7 @@ public class OrderItemImpl implements IOrderItem {
                         .preparedProducts(orderItem.getPreparedProducts())
                         .sku(iUtil.buildProductSku(orderItem.getProduct()))
                         .model(orderItem.getProduct().getModel().getName())
+                        .nameProduct(orderItem.getProduct().getName())
                         .category(orderItem.getProduct().getSubCategoryProduct().getCategoryProduct().getName())
                         .subCategory(orderItem.getProduct().getSubCategoryProduct().getName())
                         .quantity(orderItem.getQuantity())
@@ -834,7 +837,7 @@ public class OrderItemImpl implements IOrderItem {
             }
 
             try {
-                orderItemRepository.selectPreparedOrdetItem(
+                orderItemRepository.selectPreparedOrderItem(
                         ordering.getId(),
                         orderItemId,
                         user.getId(),

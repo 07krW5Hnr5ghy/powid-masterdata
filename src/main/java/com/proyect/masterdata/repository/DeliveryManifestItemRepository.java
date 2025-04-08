@@ -1,13 +1,14 @@
 package com.proyect.masterdata.repository;
 
 import com.proyect.masterdata.domain.DeliveryManifestItem;
-import com.proyect.masterdata.dto.DeliveryManifestItemDTO;
 import com.proyect.masterdata.dto.projections.DeliveryManifestItemDTOP;
 import com.proyect.masterdata.dto.projections.DeliveryManifestItemProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.UUID;
 @Repository
 public interface    DeliveryManifestItemRepository extends JpaRepository<DeliveryManifestItem, UUID> {
     List<DeliveryManifestItem> findAllById(UUID deliveryManifestId);
-    DeliveryManifestItem findByOrderItemIdAndProductId(UUID orderItemId,UUID productId);
+    DeliveryManifestItemDTOP findByOrderItemIdAndProductId(UUID orderItemId,UUID productId);
     List<DeliveryManifestItemDTOP> findAllByDeliveryManifestId(UUID deliveryManifestId);
     @Query(value = """
         SELECT dmi.delivery_manifest_item_id AS deliveryManifestItemId,
@@ -34,7 +35,8 @@ public interface    DeliveryManifestItemRepository extends JpaRepository<Deliver
                oi.order_item_id AS orderItemId,
                cu.name AS customerName,
                dmi.delivered_quantity as deliveredQuantity,
-               dmi.collected_quantity as collectedQuantity
+               dmi.collected_quantity as collectedQuantity,
+               oi.delivered_products as deliveredProducts
         FROM logistics.delivery_manifest_item dmi
         JOIN logistics.delivery_manifest dm ON dmi.delivery_manifest_id = dm.delivery_manifest_id
         JOIN ordering.order_item oi ON dmi.order_item_id = oi.order_item_id
@@ -69,19 +71,58 @@ public interface    DeliveryManifestItemRepository extends JpaRepository<Deliver
     );
 
     @Query("""
-        SELECT dmi 
+        SELECT ord.orderNumber,ord.id,pro.id 
         FROM DeliveryManifestItem dmi
         JOIN dmi.deliveryManifest dm
         JOIN dmi.orderItem oi
+        JOIN oi.ordering ord
+        JOIN dmi.product pro
         WHERE dmi.deliveredQuantity > 0
           AND dmi.collectedQuantity = 0
           AND dm.courierId = :courierId
           AND dmi.registrationDate BETWEEN :startDate AND :endDate
     """)
-    List<DeliveryManifestItem> findDeliveredAndUnCollectedOrders(
+    List<Object[]> findDeliveredAndUnCollectedOrders(
             @Param("courierId") UUID courierId,
             @Param("startDate") OffsetDateTime startDate,
             @Param("endDate") OffsetDateTime endDate
     );
-
+    @Modifying
+    @Transactional
+    @Query("UPDATE DeliveryManifestItem dmi SET " +
+            "dmi.updateDate = :updateDate, " +
+            "dmi.deliveredQuantity = :deliveredQuantity " +
+            "WHERE dmi.clientId = :clientId AND dmi.id = :deliveryManifestItemId")
+    void setDeliveredQuantityDeliveredManifestItem (
+            @Param("deliveryManifestItemId") UUID deliveryManifestItemId,
+            @Param("clientId") UUID userId,
+            @Param("updateDate") OffsetDateTime updateDate,
+            @Param("deliveredQuantity") Integer deliveredQuantity
+    );
+    @Modifying
+    @Transactional
+    @Query("UPDATE DeliveryManifestItem dmi SET " +
+            "dmi.updateDate = :updateDate, " +
+            "dmi.collectedQuantity = :collectedQuantity " +
+            "WHERE dmi.clientId = :clientId AND dmi.id = :deliveryManifestItemId")
+    void setCollectedQuantityDeliveredManifestItem (
+            @Param("deliveryManifestItemId") UUID deliveryManifestItemId,
+            @Param("clientId") UUID userId,
+            @Param("updateDate") OffsetDateTime updateDate,
+            @Param("collectedQuantity") Integer collectedQuantity
+    );
+    @Query("""
+        SELECT ord.orderNumber,oi.preparedProducts
+        FROM DeliveryManifestItem dmi
+        JOIN dmi.deliveryManifest dm
+        JOIN dmi.orderItem oi
+        JOIN oi.ordering ord
+        WHERE dmi.id = :deliveryManifestItemId
+          AND dmi.clientId = :clientId
+    """)
+    List<Object[]> retrieveDeliveryManifestItemOrderNumber(
+            @Param("deliveryManifestItemId") UUID deliveryManifestItemId,
+            @Param("clientId") UUID clientId
+    );
+    boolean existsByOrderItemIdAndProductId(UUID orderItemId,UUID productId);
 }

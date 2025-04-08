@@ -24,17 +24,8 @@ public interface IClosingChannel {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions;
-    CompletableFuture<Page<ClosingChannelDTO>> listFalse(
-            String name,
-            OffsetDateTime registrationStartDate,
-            OffsetDateTime registrationEndDate,
-            OffsetDateTime updateStartDate,
-            OffsetDateTime updateEndDate,
-            String sort,
-            String sortColumn,
-            Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions;
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions;
     CompletableFuture<List<ClosingChannelDTO>> list() throws BadRequestExceptions;
     CompletableFuture<ResponseDelete> delete(String name, String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;
     CompletableFuture<ResponseSuccess> activate(String name,String tokenUser) throws InternalErrorExceptions,BadRequestExceptions;

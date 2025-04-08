@@ -5,6 +5,7 @@ import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IDeliveryZoneDistrict;
+import com.proyect.masterdata.services.IUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -22,6 +23,7 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class DeliveryZoneDistrictController {
     private final IDeliveryZoneDistrict iDeliveryZoneDistrict;
+    private final IUtil iUtil;
     @PostMapping()
     //@PreAuthorize("hasAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:COLOR_POST')")
     public ResponseEntity<ResponseSuccess> save(
@@ -47,15 +49,19 @@ public class DeliveryZoneDistrictController {
     public ResponseEntity<Page<DeliveryZoneDistrictDTO>> list(
             @RequestParam(value = "deliveryZone", required = false) String deliveryZone,
             @RequestParam(value = "district", required = false) String district,
-            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
-            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
-            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateStartDate,
-            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateEndDate,
+            @RequestParam(value = "registrationStartDate",required = false) String rStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) String rEndDate,
+            @RequestParam(value = "updateStartDate",required = false) String uStartDate,
+            @RequestParam(value = "updateEndDate",required = false) String uEndDate,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize,
             @RequestParam(value = "status",required = false) Boolean status) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        OffsetDateTime registrationStartDate = iUtil.parseToOffsetDateTime(rStartDate,true);
+        OffsetDateTime registrationEndDate = iUtil.parseToOffsetDateTime(rEndDate, false);
+        OffsetDateTime updateStartDate = iUtil.parseToOffsetDateTime(uStartDate,true);
+        OffsetDateTime updateEndDate = iUtil.parseToOffsetDateTime(uEndDate,false);
         CompletableFuture<Page<DeliveryZoneDistrictDTO>> result = iDeliveryZoneDistrict.list(
                 deliveryZone,
                 district,

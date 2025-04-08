@@ -94,5 +94,5 @@ public interface OrderingRepository extends JpaRepository<Ordering, UUID> {
     Long countByClientId(UUID clientId);
 
     @Query("SELECT o FROM Ordering o where o.courierId = :courierId")
-    Ordering findByCourierId(UUID courierId);
+    List<Ordering> findByCourierId(UUID courierId);
 }

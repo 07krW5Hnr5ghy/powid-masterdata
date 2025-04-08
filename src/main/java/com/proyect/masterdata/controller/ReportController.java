@@ -51,13 +51,15 @@ public class ReportController {
 
     @GetMapping("daily-sale")
     private ResponseEntity<byte[]> dailySale(
-            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateStart,
-            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateEnd,
+            @RequestParam(value = "registrationStartDate",required = false) String rStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) String rEndDate,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        OffsetDateTime registrationStartDate = iUtil.parseToOffsetDateTime(rStartDate,true);
+        OffsetDateTime registrationEndDate = iUtil.parseToOffsetDateTime(rEndDate, false);
         CompletableFuture<ByteArrayInputStream> result = iReport.dailySalesSummary(
-                registrationDateStart,
-                registrationDateEnd,
+                registrationStartDate,
+                registrationEndDate,
                 user
         );
         HttpHeaders headers = new HttpHeaders();
@@ -70,13 +72,15 @@ public class ReportController {
 
     @GetMapping("seller")
     private ResponseEntity<byte[]> salesSeller(
-            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateStart,
-            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateEnd,
+            @RequestParam(value = "registrationStartDate",required = false) String rStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) String rEndDate,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        OffsetDateTime registrationStartDate = iUtil.parseToOffsetDateTime(rStartDate,true);
+        OffsetDateTime registrationEndDate = iUtil.parseToOffsetDateTime(rEndDate, false);
         CompletableFuture<ByteArrayInputStream> result = iReport.salesBySellerSummary(
-                registrationDateStart,
-                registrationDateEnd,
+                registrationStartDate,
+                registrationEndDate,
                 user
         );
         HttpHeaders headers = new HttpHeaders();
@@ -89,13 +93,15 @@ public class ReportController {
 
     @GetMapping("brand")
     private ResponseEntity<byte[]> salesBrand(
-            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateStart,
-            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateEnd,
+            @RequestParam(value = "registrationStartDate",required = false) String rStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) String rEndDate,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        OffsetDateTime registrationStartDate = iUtil.parseToOffsetDateTime(rStartDate,true);
+        OffsetDateTime registrationEndDate = iUtil.parseToOffsetDateTime(rEndDate, false);
         CompletableFuture<ByteArrayInputStream> result = iReport.salesByBrandSummary(
-                registrationDateStart,
-                registrationDateEnd,
+                registrationStartDate,
+                registrationEndDate,
                 user
         );
         HttpHeaders headers = new HttpHeaders();
@@ -108,13 +114,15 @@ public class ReportController {
 
     @GetMapping("brand/daily")
     private ResponseEntity<byte[]> salesBrandDaily(
-            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateStart,
-            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateEnd,
+            @RequestParam(value = "registrationStartDate",required = false) String rStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) String rEndDate,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        OffsetDateTime registrationStartDate = iUtil.parseToOffsetDateTime(rStartDate,true);
+        OffsetDateTime registrationEndDate = iUtil.parseToOffsetDateTime(rEndDate, false);
         CompletableFuture<ByteArrayInputStream> result = iReport.dailySalesByBrandSummary(
-                registrationDateStart,
-                registrationDateEnd,
+                registrationStartDate,
+                registrationEndDate,
                 user
         );
         HttpHeaders headers = new HttpHeaders();
@@ -127,13 +135,15 @@ public class ReportController {
 
     @GetMapping("status")
     private ResponseEntity<byte[]> salesStatus(
-            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateStart,
-            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateEnd,
+            @RequestParam(value = "registrationStartDate",required = false) String rStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) String rEndDate,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        OffsetDateTime registrationStartDate = iUtil.parseToOffsetDateTime(rStartDate,true);
+        OffsetDateTime registrationEndDate = iUtil.parseToOffsetDateTime(rEndDate, false);
         CompletableFuture<ByteArrayInputStream> result = iReport.salesByStatusSummary(
-                registrationDateStart,
-                registrationDateEnd,
+                registrationStartDate,
+                registrationEndDate,
                 user
         );
         HttpHeaders headers = new HttpHeaders();
@@ -146,13 +156,15 @@ public class ReportController {
 
     @GetMapping("category")
     private ResponseEntity<byte[]> salesCategory(
-            @RequestParam("registrationDateStart") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateStart,
-            @RequestParam("registrationDateEnd") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationDateEnd,
+            @RequestParam(value = "registrationStartDate",required = false) String rStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) String rEndDate,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        OffsetDateTime registrationStartDate = iUtil.parseToOffsetDateTime(rStartDate,true);
+        OffsetDateTime registrationEndDate = iUtil.parseToOffsetDateTime(rEndDate, false);
         CompletableFuture<ByteArrayInputStream> result = iReport.salesByCategory(
-                registrationDateStart,
-                registrationDateEnd,
+                registrationStartDate,
+                registrationEndDate,
                 user
         );
         HttpHeaders headers = new HttpHeaders();

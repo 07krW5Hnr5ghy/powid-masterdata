@@ -91,6 +91,7 @@ public class Seeder implements CommandLineRunner {
         private final IDeliveryZone iDeliveryZone;
         private final IDeliveryZoneDistrict iDeliveryZoneDistrict;
         private final IKardexOperationType iKardexOperationType;
+        private final IPaymentMetodClient iPaymentMetodClient;
         @Override
         public void run(String... args) throws Exception {
 
@@ -1425,6 +1426,7 @@ public class Seeder implements CommandLineRunner {
                         iOrderState.save("en ruta", "#004d80", adminUser.getUsername());
                         iOrderState.save("llamado", "#008080", adminUser.getUsername());
                         iOrderState.save("cancelado", "#f5222d", adminUser.getUsername());
+                        iOrderState.save("entrega parcial","#FFCC00", adminUser.getUsername());
 
                         // payment state
                         iOrderPaymentState.save("por recaudar", adminUser.getUsername());
@@ -1468,6 +1470,7 @@ public class Seeder implements CommandLineRunner {
                         iOrderPaymentMethod.save("canje", adminUser.getUsername());
                         iOrderPaymentMethod.save("interbank", adminUser.getUsername());
                         iOrderPaymentMethod.save("banco de la nacion", adminUser.getUsername());
+
 
                         iPurchasePaymentMethod.save("yape", adminUser.getUsername());
                         iPurchasePaymentMethod.save("pos", adminUser.getUsername());
@@ -2020,6 +2023,11 @@ public class Seeder implements CommandLineRunner {
                                         .province("LIMA")
                                         .district("LIMA")
                                 .build(), adminUser.getUsername());
+
+                        // pyment type clinet
+                        iPaymentMetodClient.save("bcp","191-23456789012",adminUser.getUsername(),"CCI BCP: 002-19112345678901234, Titular: Juan Pérez");
+                        iPaymentMetodClient.save("yape","954234123",adminUser.getUsername(),"Titular: Juan Pérez – Verificar nombre al enviar");
+                        iPaymentMetodClient.save("plin","985675656",adminUser.getUsername(),"Titular: Ana Rodríguez – Banco Interbank");
 
                         iColor.save("BLANCO", "BLA", "JOELC");
                         iColor.save("NEGRO", "NEG", "JOELC");

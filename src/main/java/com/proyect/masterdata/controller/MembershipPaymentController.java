@@ -3,6 +3,7 @@ package com.proyect.masterdata.controller;
 import com.proyect.masterdata.dto.MembershipPaymentDTO;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IMembershipPayment;
+import com.proyect.masterdata.services.IUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -22,6 +23,7 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class MembershipPaymentController {
     private final IMembershipPayment iMembershipPayment;
+    private final IUtil iUtil;
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:MEMBERSHIP_PAYMENT_GET')")
     public ResponseEntity<Page<MembershipPaymentDTO>> list(
@@ -31,15 +33,19 @@ public class MembershipPaymentController {
             @RequestParam(value = "paymentGatewayFee", required = false) Double paymentGatewayFee,
             @RequestParam(value = "taxAmount", required = false) Double taxAmount,
             @RequestParam(value = "paymentGateway", required = false) String paymentGateway,
-            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
-            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
-            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateStartDate,
-            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateEndDate,
+            @RequestParam(value = "registrationStartDate",required = false) String rStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) String rEndDate,
+            @RequestParam(value = "updateStartDate",required = false) String uStartDate,
+            @RequestParam(value = "updateEndDate",required = false) String uEndDate,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        OffsetDateTime registrationStartDate = iUtil.parseToOffsetDateTime(rStartDate,true);
+        OffsetDateTime registrationEndDate = iUtil.parseToOffsetDateTime(rEndDate, false);
+        OffsetDateTime updateStartDate = iUtil.parseToOffsetDateTime(uStartDate,true);
+        OffsetDateTime updateEndDate = iUtil.parseToOffsetDateTime(uEndDate,false);
         CompletableFuture<Page<MembershipPaymentDTO>> result = iMembershipPayment.list(
                 user,
                 grossAmount,

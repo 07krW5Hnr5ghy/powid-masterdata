@@ -31,6 +31,7 @@ public class DeliveryManifestRepositoryCustomImpl implements DeliveryManifestRep
             String warehouse,
             String courier,
             String courierDni,
+            String courierUser,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -53,6 +54,7 @@ public class DeliveryManifestRepositoryCustomImpl implements DeliveryManifestRep
                 warehouse,
                 courier,
                 courierDni,
+                courierUser,
                 open,
                 registrationStartDate,
                 registrationEndDate,
@@ -91,6 +93,7 @@ public class DeliveryManifestRepositoryCustomImpl implements DeliveryManifestRep
                 warehouse,
                 courier,
                 courierDni,
+                courierUser,
                 open,
                 registrationStartDate,
                 registrationEndDate,
@@ -106,6 +109,7 @@ public class DeliveryManifestRepositoryCustomImpl implements DeliveryManifestRep
             String warehouse,
             String courier,
             String courierDni,
+            String courierUser,
             Boolean open,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -133,6 +137,10 @@ public class DeliveryManifestRepositoryCustomImpl implements DeliveryManifestRep
 
         if(courierDni != null){
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(deliveryManifestCourierJoin.get("dni"), courierDni)));
+        }
+
+        if(courierUser != null){
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(deliveryManifestCourierJoin.get("username"), courierUser)));
         }
 
         if(manifestNumber != null){
@@ -243,6 +251,7 @@ public class DeliveryManifestRepositoryCustomImpl implements DeliveryManifestRep
             String warehouse,
             String courier,
             String courierDni,
+            String courierUser,
             Boolean open,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
@@ -262,6 +271,7 @@ public class DeliveryManifestRepositoryCustomImpl implements DeliveryManifestRep
                 warehouse,
                 courier,
                 courierDni,
+                courierUser,
                 open,
                 registrationStartDate,
                 registrationEndDate,
