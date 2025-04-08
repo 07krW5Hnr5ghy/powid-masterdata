@@ -828,11 +828,11 @@ public class OrderItemImpl implements IOrderItem {
             }
 
 
-            if(preparedProducts + orderItem.getPreparedProducts() < 0){
+            if(preparedProducts < 0){
                 throw new BadRequestExceptions(Constants.ErrorProductQuantityNegative);
             }
 
-            if(preparedProducts + orderItem.getPreparedProducts() > orderItem.getQuantity()){
+            if(preparedProducts  > orderItem.getQuantity()){
                 throw new BadRequestExceptions(Constants.ErrorProductQuantityExceeded);
             }
 
