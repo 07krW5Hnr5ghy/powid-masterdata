@@ -6,6 +6,7 @@ import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IPurchaseOrderItem;
+import com.proyect.masterdata.services.IUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -25,6 +26,7 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class PurchaseOrderItemController {
     private final IPurchaseOrderItem iPurchaseOrderItem;
+    private final IUtil iUtil;
     @PostMapping()
     public ResponseEntity<ResponseSuccess> save(
             @RequestParam("purchaseId") UUID purchaseId,
@@ -46,15 +48,19 @@ public class PurchaseOrderItemController {
             @RequestParam(value = "color", required = false) String color,
             @RequestParam(value = "size", required = false) String size,
             @RequestParam(value = "status", required = false) Boolean status,
-            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
-            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
-            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateStartDate,
-            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateEndDate,
+            @RequestParam(value = "registrationStartDate",required = false) String rStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) String rEndDate,
+            @RequestParam(value = "updateStartDate",required = false) String uStartDate,
+            @RequestParam(value = "updateEndDate",required = false) String uEndDate,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber") Integer pageNumber,
             @RequestParam(value = "pageSize") Integer pageSize
     ) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        OffsetDateTime registrationStartDate = iUtil.parseToOffsetDateTime(rStartDate,true);
+        OffsetDateTime registrationEndDate = iUtil.parseToOffsetDateTime(rEndDate, false);
+        OffsetDateTime updateStartDate = iUtil.parseToOffsetDateTime(uStartDate,true);
+        OffsetDateTime updateEndDate = iUtil.parseToOffsetDateTime(uEndDate,false);
         CompletableFuture<Page<PurchaseOrderItemDTO>> result = iPurchaseOrderItem.list(
                 user,
                 orderNumber,

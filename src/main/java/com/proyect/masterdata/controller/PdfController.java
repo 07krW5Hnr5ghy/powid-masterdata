@@ -41,7 +41,7 @@ public class PdfController {
             ) throws BadRequestExceptions, ExecutionException, InterruptedException {
         CompletableFuture<InputStream> pdfStream = iPdfGenerator.generateDeliveryManifestReport(requestPdfDeliveryManifest.getManifestNumberId(), requestPdfDeliveryManifest.getTokenUser());
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition","inline;filename=pedido_"+requestPdfDeliveryManifest.getManifestNumber()+".pdf");
+        headers.add("Content-Disposition","inline;filename=guia_"+requestPdfDeliveryManifest.getManifestNumber()+".pdf");
         return ResponseEntity.ok()
                 .headers(headers)
                 .contentType(MediaType.APPLICATION_PDF)
