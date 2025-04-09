@@ -21,7 +21,7 @@ public class UtilImpl implements IUtil {
     @Override
     public OffsetDateTime parseToOffsetDateTime(String input, boolean isStart) {
         ZoneOffset defaultOffset = ZoneId.systemDefault().getRules().getOffset(Instant.now());
-
+        if (input == null) return null;
         try {
             return OffsetDateTime.parse(input);
         } catch (DateTimeParseException e) {
