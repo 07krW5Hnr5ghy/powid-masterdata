@@ -27,6 +27,9 @@ public class KardexInput {
     @CreationTimestamp
     private OffsetDateTime registrationDate;
 
+    @Column(name = "quantity")
+    private Integer quantity;
+
     @Column(name = "lot_number")
     private Long lotNumber;
 

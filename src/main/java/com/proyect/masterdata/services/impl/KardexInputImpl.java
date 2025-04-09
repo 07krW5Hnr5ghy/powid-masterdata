@@ -56,10 +56,13 @@ public class KardexInputImpl implements IKardexInput {
                             .registrationDate(OffsetDateTime.now())
                             .kardexOperationType(kardexOperationType)
                             .kardexOperationTypeId(kardexOperationType.getId())
+                            .warehouse(requestKardexInput.getWarehouse())
+                            .warehouseId(requestKardexInput.getWarehouse().getId())
+                            .quantity(requestKardexInput.getQuantity())
                     .build());
             RequestKardexBalance requestKardexBalance = RequestKardexBalance.builder()
                     .product(requestKardexInput.getProduct())
-                    .quantity(requestKardexInput.getSupplyOrderItem().getQuantity())
+                    .quantity(requestKardexInput.getQuantity())
                     .user(user)
                     .add(true)
                     .build();
