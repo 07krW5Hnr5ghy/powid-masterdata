@@ -313,22 +313,40 @@ public class OrderingImpl implements IOrdering {
                 throw new BadRequestExceptions(Constants.ErrorDiscount);
             }
 
-            try{
-                requestOrderSave.getRequestOrderItems().forEach(requestOrderItem -> {
+            try {
+                double saleAmount = 0.0;
+                for (RequestOrderItem requestOrderItem : requestOrderSave.getRequestOrderItems()) {
                     Product product = productRepository.findByIdAndStatusTrue(requestOrderItem.getProductId());
-
-                    if(product == null){
+                    ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(requestOrderItem.getProductId());
+                    if (product == null) {
                         throw new BadRequestExceptions(Constants.ErrorProduct);
                     }
 
-                    if(requestOrderItem.getQuantity() < 1){
+                    if (requestOrderItem.getQuantity() < 1) {
                         throw new BadRequestExceptions(Constants.ErrorOrderItemZero);
                     }
-                });
 
-                // si deliveryAmount + discountAmount + advancedPayment == suma(productos preparados)
-                // hay un problema porque en este modulo no se esta teniendo en cuenta los productos preparados
-                //agregar el metodo de pago en editar
+                    Discount discount1 = discountRepository.findByNameAndStatusTrue(requestOrderItem.getDiscount().toUpperCase());
+                    OrderItem orderItem = new OrderItem();
+                    orderItem.setQuantity(requestOrderItem.getQuantity());
+                    orderItem.setDiscount(discount1);
+                    orderItem.setDiscountAmount(requestOrderItem.getDiscountAmount());
+
+                    saleAmount += PricingUtil.calculateTotalPrice(orderItem, productPrice);
+                }
+
+                System.out.println("precio total de productos [saleAmount] " + saleAmount);
+                System.out.println("pago de envio [Order Delivery amount] : " +requestOrderSave.getDeliveryAmount() );
+                System.out.println("descuento [discountAmount] : "  + requestOrderSave.getDiscountAmount());
+                System.out.println("Pago adelantado [advancedPayment] : " + requestOrderSave.getAdvancedPayment());
+                if(saleAmount + requestOrderSave.getDeliveryAmount() - requestOrderSave.getDiscountAmount() < requestOrderSave.getAdvancedPayment()){
+                    throw new BadRequestExceptions("El adelanto no puede exceder al precio total");
+                }
+
+                if(saleAmount + requestOrderSave.getDeliveryAmount() - requestOrderSave.getDiscountAmount() == requestOrderSave.getAdvancedPayment()){
+                    System.out.println("Pasar a Recaudado");
+                    orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue("RECAUDADO");
+                }
 
 
                 Long newOrderNumber = orderingRepository.countByClientId(user.getClientId())+1L;
@@ -408,7 +426,8 @@ public class OrderingImpl implements IOrdering {
                     ordering.setReceiptFlag(true);
                     orderingRepository.save(ordering);
                 }
-                System.out.println(OffsetDateTime.now() + "+ " + user.getUsername() + " + " + ordering.getOrderState().getName());
+
+
                 iOrderLog.save(user,ordering,
                         OffsetDateTime.now()+
                                 " - "+
@@ -1035,6 +1054,7 @@ public class OrderingImpl implements IOrdering {
             Courier courier;
             CancellationReason cancellationReason;
             Discount discount;
+
 //            OrderStock orderStock;
 
             try{
