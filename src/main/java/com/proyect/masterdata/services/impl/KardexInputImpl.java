@@ -32,27 +32,22 @@ public class KardexInputImpl implements IKardexInput {
         User user;
         KardexOperationType kardexOperationType;
         try{
-            user = userRepository.findByUsernameAndStatusTrue(requestKardexInput.getUser().toUpperCase());
+            kardexOperationType = kardexOperationTypeRepository.findByNameAndClientId("COMPRA",requestKardexInput.getUser().getClientId());
 
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-        if(user==null){
-            throw new BadRequestExceptions(Constants.ErrorUser);
-        }else{
-            kardexOperationType = kardexOperationTypeRepository.findByNameAndClientId("COMPRA",user.getClientId());
-        }
         try {
-            Long lotNumber = kardexInputRepository.countByClientIdAndProductId(user.getClientId(),requestKardexInput.getProduct().getId());
+            Long lotNumber = kardexInputRepository.countByClientIdAndProductId(requestKardexInput.getUser().getClientId(),requestKardexInput.getProduct().getId());
             KardexInput kardexInput = kardexInputRepository.save(KardexInput.builder()
-                            .client(user.getClient())
-                            .clientId(user.getClientId())
+                            .client(requestKardexInput.getUser().getClient())
+                            .clientId(requestKardexInput.getUser().getClientId())
                             .lotNumber(lotNumber)
                             .product(requestKardexInput.getProduct())
                             .productId(requestKardexInput.getProduct().getId())
-                            .user(user)
-                            .userId(user.getId())
+                            .user(requestKardexInput.getUser())
+                            .userId(requestKardexInput.getUser().getId())
                             .registrationDate(OffsetDateTime.now())
                             .kardexOperationType(kardexOperationType)
                             .kardexOperationTypeId(kardexOperationType.getId())
@@ -63,7 +58,7 @@ public class KardexInputImpl implements IKardexInput {
             RequestKardexBalance requestKardexBalance = RequestKardexBalance.builder()
                     .product(requestKardexInput.getProduct())
                     .quantity(requestKardexInput.getQuantity())
-                    .user(user)
+                    .user(requestKardexInput.getUser())
                     .add(true)
                     .build();
             iKardexBalance.save(requestKardexBalance);
