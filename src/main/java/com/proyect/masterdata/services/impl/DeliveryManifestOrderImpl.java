@@ -37,12 +37,13 @@ public class DeliveryManifestOrderImpl implements IDeliveryManifestOrder {
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(requestDeliveryManifestOrder.getUsername().toUpperCase());
-                deliveryManifest = deliveryManifestRepository.findById(requestDeliveryManifestOrder.getOrderId()).orElse(null);
+                deliveryManifest = deliveryManifestRepository.findById(requestDeliveryManifestOrder.getDeliveryManifestId()).orElse(null);
                 ordering = orderingRepository.findById(requestDeliveryManifestOrder.getOrderId()).orElse(null);
                 orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestDeliveryManifestOrder.getPaymentMethod().toUpperCase());
             }catch (RuntimeException e){
+                e.printStackTrace();
                 log.error(e.getMessage());
-                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+                throw new  InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
@@ -71,6 +72,8 @@ public class DeliveryManifestOrderImpl implements IDeliveryManifestOrder {
                         .updateDate(OffsetDateTime.now())
                         .userId(user.getId())
                         .user(user)
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
                         .observations(requestDeliveryManifestOrder.getObservations()!=null? requestDeliveryManifestOrder.getObservations():"Sin observaciones")
                         .receivedAmount(requestDeliveryManifestOrder.getReceivedAmount()!=null? requestDeliveryManifestOrder.getReceivedAmount():0.00)
                         .deliveryFeeCollected(requestDeliveryManifestOrder.getDeliveryFeeCollected())
@@ -104,6 +107,7 @@ public class DeliveryManifestOrderImpl implements IDeliveryManifestOrder {
                         .message(Constants.register)
                         .build();
             }catch (RuntimeException e){
+                e.printStackTrace();
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
             }
