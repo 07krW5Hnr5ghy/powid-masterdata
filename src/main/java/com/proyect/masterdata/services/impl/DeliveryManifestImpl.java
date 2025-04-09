@@ -212,19 +212,19 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 deliveryManifest = deliveryManifestRepository.findById(deliveryManifestId).orElse(null);
                 client = clientRepository.findByIdAndStatusTrue(user.getClientId());
-//                paymentMetodClientDTOS = paymentMetodClientRepository.findByClientId(client.getId())
-//                        .stream()
-//                        .map( paymentMetod -> {
-//                            String namePaymentMethod = orderPaymentMethodRepository.findById(
-//                                    paymentMetod.getPaymentMethodId()
-//                            ).get().getName();
-//                            return PaymentMetodClientDTO.builder()
-//                                    .id(paymentMetod.getId())
-//                                    .nameAccount(namePaymentMethod)
-//                                    .detailAccount(paymentMetod.getAccountDetail())
-//                                    .observationsAccount(paymentMetod.getObservations())
-//                                    .build();
-//                        }).toList();
+                paymentMetodClientDTOS = paymentMetodClientRepository.findByClientId(client.getId())
+                        .stream()
+                        .map( paymentMetod -> {
+                            String namePaymentMethod = orderPaymentMethodRepository.findById(
+                                    paymentMetod.getPaymentMethodId()
+                            ).get().getName();
+                            return PaymentMetodClientDTO.builder()
+                                    .id(paymentMetod.getId())
+                                    .nameAccount(namePaymentMethod)
+                                    .detailAccount(paymentMetod.getAccountDetail())
+                                    .observationsAccount(paymentMetod.getObservations())
+                                    .build();
+                        }).toList();
             }catch (RuntimeException e){
                 e.printStackTrace();
                 log.error(e.getMessage());

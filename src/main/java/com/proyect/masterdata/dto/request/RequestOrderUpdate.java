@@ -17,4 +17,8 @@ public class RequestOrderUpdate {
     public String paymentState;
     public String courier;
     public String cancellationReason;
+    private Double deliveryAmount;
+    private Double advancedPayment;
+    private String discount;
+    private Double discountAmount;
 }
