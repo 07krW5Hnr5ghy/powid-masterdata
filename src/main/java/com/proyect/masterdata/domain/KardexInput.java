@@ -27,9 +27,6 @@ public class KardexInput {
     @CreationTimestamp
     private OffsetDateTime registrationDate;
 
-    @Column(name = "supply_order_item_id")
-    private UUID supplyOrderItemId;
-
     @Column(name = "lot_number")
     private Long lotNumber;
 
@@ -45,6 +42,9 @@ public class KardexInput {
     @Column(name = "user_id")
     private UUID userId;
 
+    @Column(name = "warehouse_id")
+    private UUID warehouseId;
+
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
@@ -53,10 +53,6 @@ public class KardexInput {
     @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name="supply_order_item_id",columnDefinition = "supplyOrderItemId",insertable = false,updatable = false)
-    private SupplyOrderItem supplyOrderItem;
-
     @ManyToOne()
     @JoinColumn(name="kardex_operation_type_id",columnDefinition = "kardexOperationTypeId",insertable = false,updatable = false)
     private KardexOperationType kardexOperationType;
@@ -64,4 +60,8 @@ public class KardexInput {
     @ManyToOne()
     @JoinColumn(name="product_id",columnDefinition = "productId",insertable = false,updatable = false)
     private Product product;
+
+    @ManyToOne()
+    @JoinColumn(name="warehouse_id",columnDefinition = "warehouseId",insertable = false,updatable = false)
+    private Warehouse warehouse;
 }
