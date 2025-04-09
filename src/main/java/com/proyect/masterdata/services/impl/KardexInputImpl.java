@@ -54,8 +54,6 @@ public class KardexInputImpl implements IKardexInput {
                             .user(user)
                             .userId(user.getId())
                             .registrationDate(OffsetDateTime.now())
-                            .supplyOrderItem(requestKardexInput.getSupplyOrderItem())
-                            .supplyOrderItemId(requestKardexInput.getSupplyOrderItem().getId())
                             .kardexOperationType(kardexOperationType)
                             .kardexOperationTypeId(kardexOperationType.getId())
                     .build());
