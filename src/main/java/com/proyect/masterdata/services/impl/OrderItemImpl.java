@@ -15,6 +15,7 @@ import com.proyect.masterdata.services.IOrderItem;
 import com.proyect.masterdata.services.IOrderLog;
 import com.proyect.masterdata.services.IUtil;
 import com.proyect.masterdata.utils.Constants;
+import com.proyect.masterdata.utils.PricingUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.Page;
@@ -210,8 +211,6 @@ public class OrderItemImpl implements IOrderItem {
                 throw new BadRequestExceptions(Constants.ErrorWarehouseStock);
             }
 
-
-
             try{
                 Integer stockUnits = 0;
 
@@ -236,8 +235,6 @@ public class OrderItemImpl implements IOrderItem {
                             .itemStockList(checkStockItemDTOList)
                             .build();
                 }
-
-
 
 //                if(quantity > warehouseStock.getQuantity()){
 //                    return ResponseCheckStockItem.builder()
@@ -350,7 +347,6 @@ public class OrderItemImpl implements IOrderItem {
                         .build();
             }
 
-
             if(user == null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }
@@ -384,9 +380,6 @@ public class OrderItemImpl implements IOrderItem {
                 throw new BadRequestExceptions(Constants.ErrorDiscount);
             }
 
-
-
-
             try{
                 OrderItem newOrderItem = orderItemRepository.save(OrderItem.builder()
                         .ordering(ordering)
@@ -396,6 +389,7 @@ public class OrderItemImpl implements IOrderItem {
                         .client(user.getClient())
                         .clientId(user.getClientId())
                         .discount(discount)
+                        .preparedProducts(0)
                         .discountId(discount.getId())
                         .discountAmount(requestOrderItem.getDiscountAmount())
                         .observations(requestOrderItem.getObservations().toUpperCase())
@@ -403,10 +397,10 @@ public class OrderItemImpl implements IOrderItem {
                         .productId(product.getId())
                         .quantity(requestOrderItem.getQuantity())
                         .registrationDate(OffsetDateTime.now())
-                                .selectOrderStatus(false)
+                        .selectOrderStatus(false)
                         .updateDate(OffsetDateTime.now())
-                                .user(user)
-                                .userId(user.getId())
+                        .user(user)
+                        .userId(user.getId())
                         .build());
                 iAudit.save("ADD_ORDER_ITEM","PRODUCTO "+iUtil.buildProductSku(newOrderItem.getProduct())+" DE PEDIDO "+newOrderItem.getOrderId()+" CON "+newOrderItem.getQuantity()+" UNIDADES.",newOrderItem.getOrderId().toString(),user.getUsername());
                 return ResponseSuccess.builder()
@@ -451,9 +445,7 @@ public class OrderItemImpl implements IOrderItem {
             if(product == null){
                 throw new BadRequestExceptions(Constants.ErrorProduct);
             }else {
-                System.out.println("Imprimiendo orden Item");
                 orderItem  = orderItemRepository.findByOrderIdAndProductId(ordering.getId(),product.getId());
-                System.out.println(orderItem);
             }
 
             if(orderItem == null ){
@@ -471,7 +463,6 @@ public class OrderItemImpl implements IOrderItem {
                 orderItem.setDiscountAmount(requestOrderItem.getDiscountAmount());
                 orderItem.setUpdateDate(OffsetDateTime.now());
                 orderItem.setObservations(requestOrderItem.getObservations().toUpperCase());
-                System.out.println(orderItem);
                 orderItemRepository.updateOrderItemFields(
                         orderItem.getId(),
                         requestOrderItem.getQuantity(),
@@ -479,7 +470,6 @@ public class OrderItemImpl implements IOrderItem {
                         requestOrderItem.getObservations().toUpperCase(),
                         discount.getId(),
                         OffsetDateTime.now());
-                //orderItemRepository.save(orderItem);
                 iOrderLog.save(
                         user,
                         ordering,
@@ -574,18 +564,8 @@ public class OrderItemImpl implements IOrderItem {
             List<OrderItemDTO> orderItemDTOS = pageOrderItem.getContent().stream().map(orderItem -> {
                 List<String> productPictures = productPictureRepository.findAlByClientIdAndProductId(clientId,orderItem.getProductId()).stream().map(ProductPicture::getProductPictureUrl).toList();
                 ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
-                Double totalPrice = null;
-                if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
-                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
-                }
-
-                if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
-                }
-
-                if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
-                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
-                }
+                Double totalPrice = PricingUtil.calculateTotalPrice(orderItem,productPrice);
+                Double totalPricePrepared = PricingUtil.calculateTotalPriceUsingPreparedProducts(orderItem,productPrice);
 
                 return OrderItemDTO.builder()
                         .id(orderItem.getId())
@@ -610,6 +590,7 @@ public class OrderItemImpl implements IOrderItem {
                         .orderId(orderItem.getOrderId())
                         .model(orderItem.getProduct().getModel().getName())
                         .totalPrice(totalPrice)
+                        .totalPricePrepared(totalPricePrepared)
                         .observations(orderItem.getObservations())
                         .registrationDate(orderItem.getRegistrationDate())
                         .updateDate(orderItem.getUpdateDate())
@@ -636,18 +617,9 @@ public class OrderItemImpl implements IOrderItem {
             }
             return orderItemList.stream().map(orderItem -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
-                Double totalPrice = null;
-                if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
-                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
-                }
+                Double totalPrice = PricingUtil.calculateTotalPrice(orderItem,productPrice);
+                Double totalPricePrepared = PricingUtil.calculateTotalPriceUsingPreparedProducts(orderItem,productPrice);
 
-                if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
-                }
-
-                if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
-                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
-                }
                 return OrderItemDTO.builder()
                         .id(orderItem.getId())
                         .productId(orderItem.getProductId())
@@ -670,6 +642,7 @@ public class OrderItemImpl implements IOrderItem {
                         .discountAmount(orderItem.getDiscountAmount())
                         .discount(orderItem.getDiscount().getName())
                         .totalPrice(totalPrice)
+                        .totalPricePrepared(totalPricePrepared)
                         .build();
             }).toList();
         });
@@ -692,18 +665,9 @@ public class OrderItemImpl implements IOrderItem {
             }
             return orderItemList.stream().map(orderItem -> {
                 ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
-                Double totalPrice = null;
-                if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
-                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
-                }
+                Double totalPrice = PricingUtil.calculateTotalPrice(orderItem,productPrice);
+                Double totalPricePrepared = PricingUtil.calculateTotalPriceUsingPreparedProducts(orderItem,productPrice);
 
-                if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
-                }
-
-                if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
-                    totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
-                }
                 return OrderItemDTO.builder()
                         .id(orderItem.getId())
                         .productId(orderItem.getProductId())
@@ -727,6 +691,7 @@ public class OrderItemImpl implements IOrderItem {
                         .discountAmount(orderItem.getDiscountAmount())
                         .discount(orderItem.getDiscount().getName())
                         .totalPrice(totalPrice)
+                        .totalPricePrepared(totalPricePrepared)
                         .build();
             }).toList();
         });
@@ -773,7 +738,6 @@ public class OrderItemImpl implements IOrderItem {
                 orderItem.setUser(user);
                 orderItem.setUserId(user.getId());
 
-                //orderItemRepository.save(orderItem);
                 orderItemRepository.deleteAndActivateOrderItemLogically(
                         orderId,
                         productId,

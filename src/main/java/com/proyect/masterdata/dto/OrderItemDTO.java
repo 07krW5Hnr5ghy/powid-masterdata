@@ -32,6 +32,7 @@ public class OrderItemDTO {
     private String discount;
     private Double discountAmount;
     private Double totalPrice;
+    private Double totalPricePrepared;
     private Boolean selectOrderStatus;
     private Integer preparedProducts;
     private Integer deliveredProducts;
