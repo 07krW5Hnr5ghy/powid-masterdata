@@ -13,6 +13,7 @@ import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.*;
 import com.proyect.masterdata.utils.Constants;
+import com.proyect.masterdata.utils.PricingUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -312,22 +313,40 @@ public class OrderingImpl implements IOrdering {
                 throw new BadRequestExceptions(Constants.ErrorDiscount);
             }
 
-            try{
-                requestOrderSave.getRequestOrderItems().forEach(requestOrderItem -> {
+            try {
+                double saleAmount = 0.0;
+                for (RequestOrderItem requestOrderItem : requestOrderSave.getRequestOrderItems()) {
                     Product product = productRepository.findByIdAndStatusTrue(requestOrderItem.getProductId());
-
-                    if(product == null){
+                    ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(requestOrderItem.getProductId());
+                    if (product == null) {
                         throw new BadRequestExceptions(Constants.ErrorProduct);
                     }
 
-                    if(requestOrderItem.getQuantity() < 1){
+                    if (requestOrderItem.getQuantity() < 1) {
                         throw new BadRequestExceptions(Constants.ErrorOrderItemZero);
                     }
-                });
 
-                // si deliveryAmount + discountAmount + advancedPayment == suma(productos preparados)
-                // hay un problema porque en este modulo no se esta teniendo en cuenta los productos preparados
-                //agregar el metodo de pago en editar
+                    Discount discount1 = discountRepository.findByNameAndStatusTrue(requestOrderItem.getDiscount().toUpperCase());
+                    OrderItem orderItem = new OrderItem();
+                    orderItem.setQuantity(requestOrderItem.getQuantity());
+                    orderItem.setDiscount(discount1);
+                    orderItem.setDiscountAmount(requestOrderItem.getDiscountAmount());
+
+                    saleAmount += PricingUtil.calculateTotalPrice(orderItem, productPrice);
+                }
+
+                System.out.println("precio total de productos [saleAmount] " + saleAmount);
+                System.out.println("pago de envio [Order Delivery amount] : " +requestOrderSave.getDeliveryAmount() );
+                System.out.println("descuento [discountAmount] : "  + requestOrderSave.getDiscountAmount());
+                System.out.println("Pago adelantado [advancedPayment] : " + requestOrderSave.getAdvancedPayment());
+                if(saleAmount + requestOrderSave.getDeliveryAmount() - requestOrderSave.getDiscountAmount() < requestOrderSave.getAdvancedPayment()){
+                    throw new BadRequestExceptions("El adelanto no puede exceder al precio total");
+                }
+
+                if(saleAmount + requestOrderSave.getDeliveryAmount() - requestOrderSave.getDiscountAmount() == requestOrderSave.getAdvancedPayment()){
+                    System.out.println("Pasar a Recaudado");
+                    orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue("RECAUDADO");
+                }
 
 
                 Long newOrderNumber = orderingRepository.countByClientId(user.getClientId())+1L;
@@ -407,7 +426,8 @@ public class OrderingImpl implements IOrdering {
                     ordering.setReceiptFlag(true);
                     orderingRepository.save(ordering);
                 }
-                System.out.println(OffsetDateTime.now() + "+ " + user.getUsername() + " + " + ordering.getOrderState().getName());
+
+
                 iOrderLog.save(user,ordering,
                         OffsetDateTime.now()+
                                 " - "+
@@ -586,18 +606,21 @@ public class OrderingImpl implements IOrdering {
                 List<String> courierPictures = courierPictureRepository.findAllByOrderId(order.getId()).stream().map(CourierPicture::getPictureUrl).toList();
                 List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndStatusTrue(order.getId());
 
-                double saleAmount = 0.00;
+                double saleAmount = 0.0;
+                double saleAmountPrepaid = 0.0;
                 for(OrderItem orderItem : orderItems){
                     ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
-                    if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
-                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - ((productPrice.getUnitSalePrice() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
-                    }
-                    if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
-                    }
-                    if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
-                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity());
-                    }
+                    saleAmount += PricingUtil.calculateTotalPrice(orderItem, productPrice);
+                    saleAmountPrepaid += PricingUtil.calculateTotalPriceUsingPreparedProducts(orderItem, productPrice);
+//                    if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
+//                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - ((productPrice.getUnitSalePrice() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
+//                    }
+//                    if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+//                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
+//                    }
+//                    if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+//                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+//                    }
                 }
                 double totalDuePayment=0;
                 if(Objects.equals(order.getDiscount().getName(), "PORCENTAJE")){
@@ -638,6 +661,7 @@ public class OrderingImpl implements IOrdering {
                         .courierPictures(courierPictures)
                         .observations(order.getObservations())
                         .saleAmount(BigDecimal.valueOf(saleAmount).setScale(2, RoundingMode.HALF_EVEN))
+                        .saleAmountPrepaid(BigDecimal.valueOf(saleAmountPrepaid).setScale(2, RoundingMode.HALF_EVEN))
                         .advancedPayment(BigDecimal.valueOf(order.getAdvancedPayment()).setScale(2, RoundingMode.HALF_EVEN))
                         .duePayment(BigDecimal.valueOf(totalDuePayment).setScale(2,RoundingMode.HALF_EVEN))
                         .deliveryAmount(BigDecimal.valueOf(order.getDeliveryAmount()).setScale(2,RoundingMode.HALF_EVEN))
@@ -652,18 +676,19 @@ public class OrderingImpl implements IOrdering {
                         .orderItemDTOS(orderItems.stream().map(orderItem -> {
                             ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
                             List<ProductPicture> productPictures = productPictureRepository.findAlByClientIdAndProductId(clientId,orderItem.getProductId());
-                            Double totalPrice = null;
-                            if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
-                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
-                            }
-
-                            if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
-                            }
-
-                            if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
-                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
-                            }
+                            Double totalPrice = PricingUtil.calculateTotalPrice(orderItem, productPrice);
+                            Double totalPricePrepared = PricingUtil.calculateTotalPriceUsingPreparedProducts(orderItem,productPrice);
+//                            if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
+//                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
+//                            }
+//
+//                            if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+//                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
+//                            }
+//
+//                            if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+//                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+//                            }
                             String finalSku = iUtil.buildProductSku(orderItem.getProduct());
                             return OrderItemDTO.builder()
                                     .id(orderItem.getId())
@@ -679,6 +704,7 @@ public class OrderingImpl implements IOrdering {
                                     .preparedProducts(orderItem.getPreparedProducts())
                                     .deliveredProducts(orderItem.getDeliveredProducts())
                                     .unit(orderItem.getProduct().getUnit().getName())
+                                    .totalPricePrepared(totalPricePrepared)
                                     .observations(orderItem.getObservations())
                                     .quantity(orderItem.getQuantity())
                                     .size(orderItem.getProduct().getSize().getName())
@@ -788,18 +814,19 @@ public class OrderingImpl implements IOrdering {
                         .orderItemDTOS(orderItems.stream().map(orderItem -> {
                             ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
                             List<ProductPicture> productPictures = productPictureRepository.findAlByClientIdAndProductId(clientId,orderItem.getProductId());
-                            Double totalPrice = null;
-                            if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
-                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
-                            }
-
-                            if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
-                            }
-
-                            if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
-                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
-                            }
+                            Double totalPrice = PricingUtil.calculateTotalPrice(orderItem, productPrice);
+                            Double totalPricePrepared = PricingUtil.calculateTotalPriceUsingPreparedProducts(orderItem,productPrice);
+//                            if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
+//                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
+//                            }
+//
+//                            if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+//                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
+//                            }
+//
+//                            if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+//                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
+//                            }
                             String finalSku = iUtil.buildProductSku(orderItem.getProduct());
                             return OrderItemDTO.builder()
                                     .id(orderItem.getId())
@@ -820,6 +847,7 @@ public class OrderingImpl implements IOrdering {
                                     .pictures(productPictures.stream().map(ProductPicture::getProductPictureUrl).toList())
                                     .unitPrice(productPrice.getUnitSalePrice())
                                     .totalPrice(totalPrice)
+                                    .totalPricePrepared(totalPricePrepared)
                                     .nameProduct(orderItem.getProduct().getName())
                                     .color(orderItem.getProduct().getColor().getName())
                                     .category(orderItem.getProduct().getSubCategoryProduct().getCategoryProduct().getName())
@@ -1026,6 +1054,7 @@ public class OrderingImpl implements IOrdering {
             Courier courier;
             CancellationReason cancellationReason;
             Discount discount;
+
 //            OrderStock orderStock;
 
             try{

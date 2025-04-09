@@ -212,19 +212,23 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 deliveryManifest = deliveryManifestRepository.findById(deliveryManifestId).orElse(null);
                 client = clientRepository.findByIdAndStatusTrue(user.getClientId());
-                paymentMetodClientDTOS = paymentMetodClientRepository.findByClientId(client.getId())
-                        .stream()
-                        .map( paymentMetod -> {
-                            String namePaymentMethod = orderPaymentMethodRepository.findById(
-                                    paymentMetod.getPaymentMethodId()
-                            ).get().getName();
-                            return PaymentMetodClientDTO.builder()
-                                    .id(paymentMetod.getId())
-                                    .nameAccount(namePaymentMethod)
-                                    .detailAccount(paymentMetod.getAccountDetail())
-                                    .observationsAccount(paymentMetod.getObservations())
-                                    .build();
-                        }).toList();
+//                paymentMetodClientDTOS = Optional.ofNullable(paymentMetodClientRepository.findByClientId(client.getId()))
+//                        .orElse(Collections.emptyList())
+//                        .stream()
+//                        .map(paymentMetod -> {
+//                            String namePaymentMethod = orderPaymentMethodRepository.findById(paymentMetod.getPaymentMethodId())
+//                                    .map(OrderPaymentMethod::getName)
+//                                    .orElse("Nombre no disponible");
+//
+//                            return PaymentMetodClientDTO.builder()
+//                                    .id(paymentMetod.getId())
+//                                    .nameAccount(namePaymentMethod)
+//                                    .detailAccount(paymentMetod.getAccountDetail())
+//                                    .observationsAccount(paymentMetod.getObservations())
+//                                    .build();
+//                        })
+//                        .toList();
+
             }catch (RuntimeException e){
                 e.printStackTrace();
                 log.error(e.getMessage());
@@ -593,19 +597,22 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                             open
                 );
 
-//                paymentMetodClientDTOS = paymentMetodClientRepository.findByClientId(clientId)
+//                paymentMetodClientDTOS = Optional.ofNullable(paymentMetodClientRepository.findByClientId(clientId))
+//                        .orElse(Collections.emptyList())
 //                        .stream()
-//                        .map( paymentMetod -> {
-//                            String namePaymentMethod = orderPaymentMethodRepository.findById(
-//                                    paymentMetod.getPaymentMethodId()
-//                            ).get().getName();
+//                        .map(paymentMetod -> {
+//                            String namePaymentMethod = orderPaymentMethodRepository.findById(paymentMetod.getPaymentMethodId())
+//                                    .map(OrderPaymentMethod::getName)
+//                                    .orElse("Nombre no disponible");
+//
 //                            return PaymentMetodClientDTO.builder()
 //                                    .id(paymentMetod.getId())
 //                                    .nameAccount(namePaymentMethod)
 //                                    .detailAccount(paymentMetod.getAccountDetail())
 //                                    .observationsAccount(paymentMetod.getObservations())
 //                                    .build();
-//                        }).toList();
+//                        })
+//                        .toList();
 
             }catch (RuntimeException e){
                 log.error(e.getMessage());
@@ -897,19 +904,22 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 Set<Long> uniqueOrderNumbers = new HashSet<>();
                 double[] productAmountPerManifest = {0.00};
                 List<DeliveryManifestOrderDTO> deliveryManifestOrderDTOS = new ArrayList<>();
-//                paymentMetodClientDTOS = paymentMetodClientRepository.findByClientId(lastDeliveryManifest.getClientId())
+//                paymentMetodClientDTOS = Optional.ofNullable(paymentMetodClientRepository.findByClientId(lastDeliveryManifest.getClientId()))
+//                        .orElse(Collections.emptyList())
 //                        .stream()
-//                        .map( paymentMetod -> {
-//                            String namePaymentMethod = orderPaymentMethodRepository.findById(
-//                                    paymentMetod.getPaymentMethodId()
-//                            ).get().getName();
+//                        .map(paymentMetod -> {
+//                            String namePaymentMethod = orderPaymentMethodRepository.findById(paymentMetod.getPaymentMethodId())
+//                                    .map(OrderPaymentMethod::getName)
+//                                    .orElse("Nombre no disponible");
+//
 //                            return PaymentMetodClientDTO.builder()
 //                                    .id(paymentMetod.getId())
 //                                    .nameAccount(namePaymentMethod)
 //                                    .detailAccount(paymentMetod.getAccountDetail())
 //                                    .observationsAccount(paymentMetod.getObservations())
 //                                    .build();
-//                        }).toList();
+//                        })
+//                        .toList();
                 int[] deliveryManifestProductQuantity = {0};
                 int[] deliveryManifestDeliveredQuantity = {0};
                 int[] deliveryManifestCollectedQuantity = {0};

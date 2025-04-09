@@ -41,6 +41,7 @@ public class OrderDTO {
     private List<String> courierPictures;
     private Boolean deliveryFlag;
     private BigDecimal saleAmount;
+    private BigDecimal saleAmountPrepaid;
     private BigDecimal deliveryAmount;
     private BigDecimal advancedPayment;
     private BigDecimal duePayment;
