@@ -1,7 +1,7 @@
 package com.proyect.masterdata.dto.request;
 
 import com.proyect.masterdata.domain.Product;
-import com.proyect.masterdata.domain.SupplyOrderItem;
+import com.proyect.masterdata.domain.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,8 +11,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class RequestKardexOutput {
-    private String user;
-    private Integer quantity;
+public class RequestKardexBalance {
+    private User user;
     private Product product;
+    private Integer quantity;
+    private Boolean add;
 }

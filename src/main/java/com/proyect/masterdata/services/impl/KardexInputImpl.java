@@ -3,12 +3,14 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.KardexInput;
 import com.proyect.masterdata.domain.KardexOperationType;
 import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.dto.request.RequestKardexBalance;
 import com.proyect.masterdata.dto.request.RequestKardexInput;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.repository.KardexInputRepository;
 import com.proyect.masterdata.repository.KardexOperationTypeRepository;
 import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.services.IKardexBalance;
 import com.proyect.masterdata.services.IKardexInput;
 import com.proyect.masterdata.utils.Constants;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ public class KardexInputImpl implements IKardexInput {
     private final UserRepository userRepository;
     private final KardexInputRepository kardexInputRepository;
     private final KardexOperationTypeRepository kardexOperationTypeRepository;
+    private final IKardexBalance iKardexBalance;
     @Override
     public KardexInput save(RequestKardexInput requestKardexInput) throws BadRequestExceptions, InternalErrorExceptions {
         User user;
@@ -42,7 +45,7 @@ public class KardexInputImpl implements IKardexInput {
         }
         try {
             Long lotNumber = kardexInputRepository.countByClientIdAndProductId(user.getClientId(),requestKardexInput.getProduct().getId());
-            return kardexInputRepository.save(KardexInput.builder()
+            KardexInput kardexInput = kardexInputRepository.save(KardexInput.builder()
                             .client(user.getClient())
                             .clientId(user.getClientId())
                             .lotNumber(lotNumber)
@@ -56,6 +59,14 @@ public class KardexInputImpl implements IKardexInput {
                             .kardexOperationType(kardexOperationType)
                             .kardexOperationTypeId(kardexOperationType.getId())
                     .build());
+            RequestKardexBalance requestKardexBalance = RequestKardexBalance.builder()
+                    .product(requestKardexInput.getProduct())
+                    .quantity(requestKardexInput.getSupplyOrderItem().getQuantity())
+                    .user(user)
+                    .add(true)
+                    .build();
+            iKardexBalance.save(requestKardexBalance);
+            return kardexInput;
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

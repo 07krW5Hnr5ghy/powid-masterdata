@@ -30,8 +30,9 @@ public class KardexBalance {
     @CreationTimestamp
     private OffsetDateTime registrationDate;
 
-    @Column(name = "kardex_input_id")
-    private UUID kardexInputId;
+    @Column(name = "update_date")
+    @CreationTimestamp
+    private OffsetDateTime updateDate;
 
     @Column(name = "lot_number")
     private Long lotNumber;
@@ -42,6 +43,9 @@ public class KardexBalance {
     @Column(name = "user_id")
     private UUID userId;
 
+    @Column(name = "product_id")
+    private UUID productId;
+
     @ManyToOne()
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
@@ -51,7 +55,6 @@ public class KardexBalance {
     private User user;
 
     @ManyToOne()
-    @JoinColumn(name="kardex_input_id",columnDefinition = "kardexInputId",insertable = false,updatable = false)
-    private KardexInput kardexInput;
-
+    @JoinColumn(name="product_id",columnDefinition = "productId",insertable = false,updatable = false)
+    private Product product;
 }
