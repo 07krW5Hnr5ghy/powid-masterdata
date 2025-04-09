@@ -2104,12 +2104,12 @@ public class Seeder implements CommandLineRunner {
 //                        iSupplierType.save("interno", "JOELC");
 //                        iSupplierType.save("distribucion", "JOELC");
 
-                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
-                                .categoryName("ROPA")
-                                .sku("BLS")
-                                .name("BLUSA")
-                                .tokenUser("JOELC")
-                                .build());
+//                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
+//                                .categoryName("ROPA")
+//                                .sku("BLS")
+//                                .name("BLUSA")
+//                                .tokenUser("JOELC")
+//                                .build());
 //                        iSubCategoryProduct.save(RequestSubCategoryProduct.builder()
 //                                .categoryName("ROPA")
 //                                .sku("CS")
