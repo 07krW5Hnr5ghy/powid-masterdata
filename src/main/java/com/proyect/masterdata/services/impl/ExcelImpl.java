@@ -910,10 +910,12 @@ public class ExcelImpl implements IExcel {
     public CompletableFuture<ResponseSuccess> product(MultipartFile multipartFile, String tokenUser) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
-
+            Warehouse warehouse;
             try {
                 user = userRepository
                         .findByUsernameAndStatusTrue(tokenUser.toUpperCase());
+                // almacen para cargar el inventario negativo
+                warehouse = warehouseRepository.findByNameAndStatusTrue("ALMACEN ARANNI");
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 e.printStackTrace();
@@ -1137,8 +1139,7 @@ public class ExcelImpl implements IExcel {
                                 .message(Constants.ErrorProductExists+" en linea: "+(j+1)+".")
                                 .build();
                     }
-                    if(!names.add(product.getName())||
-                            !uniqueCombinations.add(iUtil.buildProductSku(product))){
+                    if(!uniqueCombinations.add(iUtil.buildProductSku(product))){
                         hasDuplicate = true;
                     }
                     if(hasDuplicate){
@@ -1151,6 +1152,9 @@ public class ExcelImpl implements IExcel {
                         productPrice.setProductId(storedProduct.getId());
                         productPrice.setProduct(storedProduct);
                         productPriceRepository.save(productPrice);
+                        // setear el inventario en cero mientras se implementa el kardex
+                        iGeneralStock.in(storedProduct,0,user.getUsername());
+                        iWarehouseStock.in(warehouse,storedProduct,0,user);
                         iAudit.save("ADD_PRODUCT_EXCEL","PRODUCTO "+product.getName()+" CREADO POR EXCEL.",product.getName(),user.getUsername());
                     }
                 }

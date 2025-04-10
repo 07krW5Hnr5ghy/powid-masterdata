@@ -104,7 +104,8 @@ public class Constants {
     public static final String tableSubCategoryProduct = "sub_category_product";
     public static final String tablePurchasePaymentType = "purchase_payment_type";
     public static final String tableDeliveryManifest = "delivery_manifest";
-    public static final String tableDeliveryManifestItems = "delivery_manifest_items";
+    public static final String tablePaymentMetodClient = "payment_metod_client";
+    public static final String tableDeliveryManifestItems = "delivery_manifest_item";
     public static final String tableDeliveryStatus = "delivery_status";
     public static final String tableOrderLog = "order_log";
     public static final String tableDeliveryCompany = "delivery_company";
@@ -119,6 +120,11 @@ public class Constants {
     public static final String tablePurchasePaymentMethod = "purchase_payment_method";
     public static final String tableDeliveryZone = "delivery_zone";
     public static final String tableDeliveryZoneDistrict = "delivery_zone_district";
+    public static final String tableKardexInput = "kardex_input";
+    public static final String tableKardexOuput = "kardex_output";
+    public static final String tableKardexOperationType = "kardex_operation_type";
+    public static final String tableKardexBalance = "kardex_balance";
+    public static final String tableDeliveryManifestOrder = "delivery_manifest_order";
     // messages
     public static final String register = "registro exitoso";
     public static final String update = "edicion exitosa";
@@ -128,6 +134,7 @@ public class Constants {
     public static final String ErrorWhileUpdating = "Error editando";
     public static final String ErrorWhenDeleting = "Error eliminando";
 
+    public static final String ErrorEmptyField = "El campo no puede estar vacío";
     public static final String ErrorUser = "El usuario no esta registrado";
     public static final String ErrorUserExist = "El usuario ya fue registrado";
     public static final String ErrorUserDniExist = "El dni ya fue registrado";
@@ -152,6 +159,7 @@ public class Constants {
     public static final String ErrorPaymentMethodExists = "El metodo ya fue registrado";
     public static final String ErrorPaymentState = "El estado de pago no esta registrado";
     public static final String ErrorPaymentStateExists = "El estado de pago ya fue registrado";
+    public static final String ErrorPaymentDateAccountExists = "La cuenta ya fue registrado";
     public static final String ErrorSaleChannel = "El canal de venta no esta registrado";
     public static final String ErrorSaleChannelExists = "El canal de venta ya fue registrado";
     public static final String ErrorSize = "El tamaño no esta registrado";
@@ -353,4 +361,12 @@ public class Constants {
     public static final String ErrorDeliveryZoneDistrict = "Distrito de zona de entrega no esta registrado";
     public static final String ErrorDeliveryZoneDistrictExists = "Distrito de zona de entrega ya fue registrado";
     public static final String ErrorDeliveryManifestNoResults = "No se encontraron guias de motorizado";
+    public static final String ErrorKardexOperationType = "Operacion de Kardex no esta registrado";
+    public static final String ErrorKardexOperationTypeExists = "Operacion de kardex ya fue registrado";
+    public static final String ErrorDeliveryManifestOrder = "Comentario y/o monto recibido no esta registrado";
+    public static final String ErrorDeliveryManifestOrderExist = "Comentario y/o monto recibido ya fue registrado";
+    public static final String ErrorProductQuantityNegative = "Cantida de productos preparados no puede ser negativo";
+    public static final String ErrorProductQuantityExceeded = "Cantida de productos preparados no puede exeder la cantidad total";
+    public static final String ErrorDeliveryManifestItemDeliveredQuantity = "Cantidad de producto entregado no puede ser mayor a cantidad de producto preparado";
+    public static final String ErrorDeliveryManifestItemCollectedQuantity = "Cantidad de producto cobrado no puede ser mayor a cantidad de producto preparado";
 }

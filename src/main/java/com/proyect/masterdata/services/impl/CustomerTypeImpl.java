@@ -169,7 +169,8 @@ public class CustomerTypeImpl implements ICustomerType {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<CustomerType> customerTypePage;
             try {
@@ -178,47 +179,12 @@ public class CustomerTypeImpl implements ICustomerType {
                         registrationStartDate,
                         registrationEndDate,
                         updateStartDate,
-                        updateStartDate,
+                        updateEndDate,
                         sort,
                         sortColumn,
                         pageNumber,
                         pageSize,
-                        true);
-            }catch (RuntimeException e){
-                log.error(e.getMessage());
-                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            }
-            if(customerTypePage.isEmpty()){
-                return new PageImpl<>(Collections.emptyList());
-            }
-            List<CustomerTypeDTO> customerTypeDTOs = customerTypePage.getContent().stream().map(customerType -> CustomerTypeDTO.builder()
-                    .status(customerType.getStatus())
-                    .id(customerType.getId())
-                    .user(customerType.getUser().getUsername())
-                    .name(customerType.getName())
-                    .registrationDate(customerType.getRegistrationDate())
-                    .updateDate(customerType.getUpdateDate())
-                    .build()).toList();
-            return new PageImpl<>(customerTypeDTOs,customerTypePage.getPageable(),customerTypePage.getTotalElements());
-        });
-    }
-
-    @Override
-    public CompletableFuture<Page<CustomerTypeDTO>> listFalse(String name, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws BadRequestExceptions, InternalErrorExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            Page<CustomerType> customerTypePage;
-            try {
-                customerTypePage = customerTypeRepositoryCustom.searchForCustomerType(
-                        name,
-                        registrationStartDate,
-                        registrationEndDate,
-                        updateStartDate,
-                        updateStartDate,
-                        sort,
-                        sortColumn,
-                        pageNumber,
-                        pageSize,
-                        false);
+                        status);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

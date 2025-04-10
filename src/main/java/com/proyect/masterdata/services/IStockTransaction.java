@@ -15,6 +15,7 @@ import java.util.concurrent.CompletableFuture;
 public interface IStockTransaction {
     StockTransaction save(String serial, Warehouse warehouse, List<RequestStockTransactionItem> requestStockTransactionItemList, String stockTransactionType, User user) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<StockTransaction> saveAsync(String serial, Warehouse warehouse, List<RequestStockTransactionItem> requestStockTransactionItemList, String stockTransactionType, User user) throws BadRequestExceptions, InternalErrorExceptions;
+    StockTransaction addStockTransaction(String serial, Warehouse warehouse, List<RequestStockTransactionItem> requestStockTransactionItemList, String stockTransactionType, User user) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<Page<StockTransactionDTO>> list(
             String user,
             List<String> serials,

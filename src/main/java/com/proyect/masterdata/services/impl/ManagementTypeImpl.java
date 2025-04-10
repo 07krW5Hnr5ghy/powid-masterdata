@@ -155,7 +155,8 @@ public class ManagementTypeImpl implements IManagementType {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
+            Integer pageSize,
+            Boolean status) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<ManagementType> managementTypePage;
             try {
@@ -164,12 +165,12 @@ public class ManagementTypeImpl implements IManagementType {
                         registrationStartDate,
                         registrationEndDate,
                         updateStartDate,
-                        updateStartDate,
+                        updateEndDate,
                         sort,
                         sortColumn,
                         pageNumber,
                         pageSize,
-                        true);
+                        status);
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -181,40 +182,6 @@ public class ManagementTypeImpl implements IManagementType {
                     .status(managementType.getStatus())
                     .id(managementType.getId())
                     .user(managementType.getUser().getUsername())
-                    .name(managementType.getName())
-                    .registrationDate(managementType.getRegistrationDate())
-                    .updateDate(managementType.getUpdateDate())
-                    .build()
-            ).toList();
-            return new PageImpl<>(managementTypeDTOs,managementTypePage.getPageable(),managementTypePage.getTotalElements());
-        });
-    }
-
-    @Override
-    public CompletableFuture<Page<ManagementTypeDTO>> listFalse(String name, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws InternalErrorExceptions, BadRequestExceptions {
-        return CompletableFuture.supplyAsync(()->{
-            Page<ManagementType> managementTypePage;
-            try {
-                managementTypePage = managementTypeRepositoryCustom.searchForManagementType(
-                        name,
-                        registrationStartDate,
-                        registrationEndDate,
-                        updateStartDate,
-                        updateStartDate,
-                        sort,
-                        sortColumn,
-                        pageNumber,
-                        pageSize,
-                        false);
-            }catch (RuntimeException e){
-                log.error(e.getMessage());
-                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-            }
-            if(managementTypePage.isEmpty()){
-                return new PageImpl<>(Collections.emptyList());
-            }
-            List<ManagementTypeDTO> managementTypeDTOs = managementTypePage.getContent().stream().map(managementType -> ManagementTypeDTO.builder()
-                    .status(managementType.getStatus())
                     .name(managementType.getName())
                     .registrationDate(managementType.getRegistrationDate())
                     .updateDate(managementType.getUpdateDate())

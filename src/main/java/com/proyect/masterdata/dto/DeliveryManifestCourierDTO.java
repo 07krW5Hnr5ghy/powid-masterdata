@@ -15,6 +15,7 @@ import java.util.UUID;
 public class DeliveryManifestCourierDTO {
     private UUID deliveryManifestId;
     private UUID courierId;
+    //private UUID stockTransactionId;
     private Long manifestNumber;
     private String warehouse;
     private Boolean open;

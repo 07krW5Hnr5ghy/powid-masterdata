@@ -4,6 +4,7 @@ import com.proyect.masterdata.dto.MembershipDTO;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IMembership;
+import com.proyect.masterdata.services.IUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -24,20 +25,26 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class MembershipController {
     private final IMembership iMembership;
+    private final IUtil iUtil;
     @GetMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:MEMBERSHIP_GET')")
     public ResponseEntity<Page<MembershipDTO>> list(
             @RequestParam(value = "user") String user,
             @RequestParam(value = "membershipState", required = false) String membershipState,
             @RequestParam(value = "subscription", required = false) String subscription,
-            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
-            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
-            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateStartDate,
-            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateEndDate,
+            @RequestParam(value = "registrationStartDate",required = false) String rStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) String rEndDate,
+            @RequestParam(value = "updateStartDate",required = false) String uStartDate,
+            @RequestParam(value = "updateEndDate",required = false) String uEndDate,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
+            @RequestParam("pageSize") Integer pageSize,
+            @RequestParam(value="status",required = false) Boolean status) throws BadRequestExceptions, ExecutionException, InterruptedException {
+        OffsetDateTime registrationStartDate = iUtil.parseToOffsetDateTime(rStartDate,true);
+        OffsetDateTime registrationEndDate = iUtil.parseToOffsetDateTime(rEndDate, false);
+        OffsetDateTime updateStartDate = iUtil.parseToOffsetDateTime(uStartDate,true);
+        OffsetDateTime updateEndDate = iUtil.parseToOffsetDateTime(uEndDate,false);
         CompletableFuture<Page<MembershipDTO>> result = iMembership.list(
                 user,
                 membershipState,
@@ -49,24 +56,8 @@ public class MembershipController {
                 sort,
                 sortColumn,
                 pageNumber,
-                pageSize);
-        return new ResponseEntity<>(result.get(), HttpStatus.OK);
-    }
-    @GetMapping("status-false")
-    //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION','ROLE:BUSINESS') and hasAuthority('ACCESS:MEMBERSHIP_GET')")
-    public ResponseEntity<Page<MembershipDTO>> listFalse(
-            @RequestParam(value = "user") String user,
-            @RequestParam(value = "membershipState", required = false) String membershipState,
-            @RequestParam(value = "subscription", required = false) String subscription,
-            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
-            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
-            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateStartDate,
-            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateEndDate,
-            @RequestParam(value = "sort", required = false) String sort,
-            @RequestParam(value = "sortColumn", required = false) String sortColumn,
-            @RequestParam("pageNumber") Integer pageNumber,
-            @RequestParam("pageSize") Integer pageSize) throws BadRequestExceptions, ExecutionException, InterruptedException {
-        CompletableFuture<Page<MembershipDTO>> result = iMembership.list(user,membershipState, subscription,registrationStartDate,registrationEndDate,updateStartDate,updateEndDate, sort, sortColumn, pageNumber, pageSize);
+                pageSize,
+                status);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
 }

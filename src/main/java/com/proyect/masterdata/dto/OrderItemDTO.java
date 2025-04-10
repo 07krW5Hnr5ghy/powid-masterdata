@@ -1,5 +1,6 @@
 package com.proyect.masterdata.dto;
 
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,6 +23,7 @@ public class OrderItemDTO {
     private String model;
     private String color;
     private String size;
+    private String nameProduct;
     private String category;
     private String subCategory;
     private String unit;
@@ -30,7 +32,10 @@ public class OrderItemDTO {
     private String discount;
     private Double discountAmount;
     private Double totalPrice;
+    private Double totalPricePrepared;
     private Boolean selectOrderStatus;
+    private Integer preparedProducts;
+    private Integer deliveredProducts;
     private String observations;
     private List<String> pictures;
     private OffsetDateTime registrationDate;

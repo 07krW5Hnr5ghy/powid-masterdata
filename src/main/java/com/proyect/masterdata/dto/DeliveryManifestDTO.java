@@ -17,7 +17,7 @@ public class DeliveryManifestDTO {
     private UUID id;
     private String user;
     private Long manifestNumber;
-    private List<DeliveryManifestItemDTO> deliveryManifestItemDTOS;
+    private List<DeliveryManifestOrderDTO> deliveryManifestOrderDTOS;
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
     private String courier;
@@ -31,4 +31,8 @@ public class DeliveryManifestDTO {
     private Double payableAmount;
     private String observations;
     private Double productValue;
+    private List<PaymentMetodClientDTO> paymentMetodClientDTOS;
+    private Integer deliveredQuantity;
+    private Integer totalQuantity;
+    private Integer collectedQuantity;
 }

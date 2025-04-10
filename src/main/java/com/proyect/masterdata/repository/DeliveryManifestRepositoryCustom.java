@@ -15,6 +15,7 @@ public interface DeliveryManifestRepositoryCustom {
             String warehouse,
             String courier,
             String courierDni,
+            String courierUser,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,

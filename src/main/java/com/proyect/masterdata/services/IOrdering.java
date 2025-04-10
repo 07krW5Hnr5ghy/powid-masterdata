@@ -50,4 +50,5 @@ public interface IOrdering {
             MultipartFile[] courierPictures,
             String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
     CompletableFuture<OrderDTO> selectOrder(UUID orderId,String username) throws InternalErrorExceptions,BadRequestExceptions;
+    CompletableFuture<ResponseSuccess> uploadPhotos(UUID orderId, MultipartFile[] receipts,MultipartFile[] courierPictures,String tokenUser) throws InternalErrorExceptions, BadRequestExceptions;
 }

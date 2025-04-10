@@ -7,6 +7,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
 import com.proyect.masterdata.services.IDeliveryManifest;
+import com.proyect.masterdata.services.IUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -25,6 +26,7 @@ import java.util.concurrent.ExecutionException;
 @AllArgsConstructor
 public class DeliveryManifestController {
     private final IDeliveryManifest iDeliveryManifest;
+    private final IUtil iUtil;
     @PostMapping()
     public ResponseEntity<ResponseSuccess> save(
             @RequestBody()RequestDeliveryManifest requestDeliveryManifest
@@ -42,6 +44,15 @@ public class DeliveryManifestController {
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
+    @PutMapping("/add/{deliveryManifestId}")
+    public ResponseEntity<ResponseSuccess> addOrderDeliveryManifest(
+            @PathVariable UUID deliveryManifestId,
+            @RequestBody() RequestDeliveryManifest requestDeliveryManifest
+    ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iDeliveryManifest.addOrderDeliveryManifest(requestDeliveryManifest,deliveryManifestId, 1L);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
     @GetMapping("/check/{courierId}")
     public ResponseEntity<DeliveryManifestCourierDTO> checkCourierToDeliveryManifest(
             @PathVariable UUID courierId
@@ -50,14 +61,34 @@ public class DeliveryManifestController {
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 
-    @PutMapping("/{deliveryManifestId}")
+    @PutMapping("/close")
     public ResponseEntity<ResponseSuccess> closeManifest(
-            @PathVariable UUID deliveryManifestId,
+            @RequestParam("deliveryManifestId") UUID deliveryManifestId,
             @RequestParam("user") String user
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
         CompletableFuture<ResponseSuccess> result = iDeliveryManifest.closeDeliveryManifest(deliveryManifestId,user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+
+    @PutMapping("/confirm")
+    public ResponseEntity<ResponseSuccess> confirmManifest(
+            @RequestParam("user") String user,
+            @RequestParam("deliveryManifestId")UUID deliveryManifestId,
+            @RequestParam("totalMoneyReceived") Double totalMoneyReceived,
+            @RequestParam("namePaymentMethod") String namePaymentMethod,
+            @RequestParam("observationsCourier") String observationsCourier,
+            @RequestParam("confirmedOperations") boolean confirmedOperations
+    )throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iDeliveryManifest.confirmDeliveryManifest(
+                user,
+                deliveryManifestId,
+                totalMoneyReceived,
+                namePaymentMethod,
+                observationsCourier,
+                confirmedOperations);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
+    }
+
     @GetMapping()
     public ResponseEntity<Page<DeliveryManifestDTO>> list(
             @RequestParam(value = "user", required = true) String user,
@@ -65,22 +96,28 @@ public class DeliveryManifestController {
             @RequestParam(value = "warehouse",required = false) String warehouse,
             @RequestParam(value = "courier",required = false) String courier,
             @RequestParam(value = "courierDni",required = false) String courierDni,
-            @RequestParam(value = "registrationStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationStartDate,
-            @RequestParam(value = "registrationEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime registrationEndDate,
-            @RequestParam(value = "updateStartDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateStartDate,
-            @RequestParam(value = "updateEndDate",required = false) @DateTimeFormat(iso=DateTimeFormat.ISO.DATE) OffsetDateTime updateEndDate,
+            @RequestParam(value = "courierUser",required = false) String courierUser,
+            @RequestParam(value = "registrationStartDate",required = false) String rStartDate,
+            @RequestParam(value = "registrationEndDate",required = false) String rEndDate,
+            @RequestParam(value = "updateStartDate",required = false) String uStartDate,
+            @RequestParam(value = "updateEndDate",required = false) String uEndDate,
             @RequestParam(value = "sort", required = false) String sort,
             @RequestParam(value = "sortColumn", required = false) String sortColumn,
             @RequestParam(value = "pageNumber", required = true) Integer pageNumber,
             @RequestParam(value = "pageSize", required = true) Integer pageSize,
             @RequestParam(value = "open", required = false) Boolean open
     ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
+        OffsetDateTime registrationStartDate = iUtil.parseToOffsetDateTime(rStartDate,true);
+        OffsetDateTime registrationEndDate = iUtil.parseToOffsetDateTime(rEndDate, false);
+        OffsetDateTime updateStartDate = iUtil.parseToOffsetDateTime(uStartDate,true);
+        OffsetDateTime updateEndDate = iUtil.parseToOffsetDateTime(uEndDate,false);
         CompletableFuture<Page<DeliveryManifestDTO>> result = iDeliveryManifest.list(
                 user,
                 manifestNumber,
                 warehouse,
                 courier,
                 courierDni,
+                courierUser,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -100,4 +137,6 @@ public class DeliveryManifestController {
         CompletableFuture<DeliveryManifestDTO> result = iDeliveryManifest.getLastDeliveryManifestByCourier(user);
         return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
+
+
 }

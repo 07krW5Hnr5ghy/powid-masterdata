@@ -132,10 +132,10 @@ public class CancellationReasonImpl implements ICancellationReason {
             String sort, 
             String sortColumn, 
             Integer pageNumber,
-            Integer pageSize) throws BadRequestExceptions {
+            Integer pageSize,
+            Boolean status) throws BadRequestExceptions {
         return CompletableFuture.supplyAsync(() -> {
             Page<CancellationReason> cancellationReasonPage;
-
             try {
                 cancellationReasonPage = cancellationReasonRepositoryCustom.searchForCancellationReason(
                         name,
@@ -147,38 +147,7 @@ public class CancellationReasonImpl implements ICancellationReason {
                         sortColumn,
                         pageNumber,
                         pageSize,
-                        true);
-            } catch (RuntimeException e) {
-                log.error(e.getMessage());
-                throw new BadRequestExceptions(Constants.ResultsFound);
-            }
-
-            if (cancellationReasonPage.isEmpty()) {
-                return new PageImpl<>(Collections.emptyList());
-            }
-
-            List<CancellationReasonDTO> cancellationReasonDTOs = cancellationReasonPage.getContent().stream().map(cancellationReason -> CancellationReasonDTO.builder()
-                    .status(cancellationReason.getStatus())
-                    .id(cancellationReason.getId())
-                    .user(cancellationReason.getUser().getUsername())
-                    .name(cancellationReason.getName())
-                    .registrationDate(cancellationReason.getRegistrationDate())
-                    .updateDate(cancellationReason.getUpdateDate())
-                    .build()).toList();
-
-            return new PageImpl<>(cancellationReasonDTOs, cancellationReasonPage.getPageable(),
-                    cancellationReasonPage.getTotalElements());
-        });
-    }
-
-    @Override
-    public CompletableFuture<Page<CancellationReasonDTO>> listFalse(String name,OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber,
-                                                     Integer pageSize) throws BadRequestExceptions {
-        return CompletableFuture.supplyAsync(() -> {
-            Page<CancellationReason> cancellationReasonPage;
-
-            try {
-                cancellationReasonPage = cancellationReasonRepositoryCustom.searchForCancellationReason(name,registrationStartDate,registrationEndDate,updateStartDate,updateStartDate, sort, sortColumn, pageNumber, pageSize, false);
+                        status);
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new BadRequestExceptions(Constants.ResultsFound);

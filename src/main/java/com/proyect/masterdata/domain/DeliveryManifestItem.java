@@ -26,8 +26,11 @@ public class DeliveryManifestItem {
     @Column(name = "quantity")
     private Integer quantity;
 
-    @Column(name = "collected")
-    private Boolean collected;
+    @Column(name = "delivered_quantity")
+    private Integer deliveredQuantity;
+
+    @Column(name = "collected_quantity")
+    private Integer collectedQuantity;
 
     @Column(name = "delivery_manifest_id")
     private UUID deliveryManifestId;
@@ -43,9 +46,6 @@ public class DeliveryManifestItem {
 
     @Column(name = "client_id")
     private UUID clientId;
-
-    @Column(name="delivered")
-    private Boolean delivered;
 
     @Column(name = "registration_date")
     @CreationTimestamp
