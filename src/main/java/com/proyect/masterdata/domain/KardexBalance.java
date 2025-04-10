@@ -26,6 +26,9 @@ public class KardexBalance {
     @Column(name = "quantity")
     private Integer quantity;
 
+    @Column(name = "unit_price")
+    private Double unitPrice;
+
     @Column(name = "registration_date")
     @CreationTimestamp
     private OffsetDateTime registrationDate;

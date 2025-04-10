@@ -30,6 +30,9 @@ public class KardexInput {
     @Column(name = "quantity")
     private Integer quantity;
 
+    @Column(name = "unit_price")
+    private Double unitPrice;
+
     @Column(name = "lot_number")
     private Long lotNumber;
 

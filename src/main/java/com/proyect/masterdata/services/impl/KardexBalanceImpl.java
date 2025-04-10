@@ -37,6 +37,7 @@ public class KardexBalanceImpl implements IKardexBalance {
                                 .userId(requestKardexBalance.getUser().getId())
                                 .client(requestKardexBalance.getUser().getClient())
                                 .clientId(requestKardexBalance.getUser().getClientId())
+                                .unitPrice(requestKardexBalance.getUnitPrice())
                         .build());
             }
 

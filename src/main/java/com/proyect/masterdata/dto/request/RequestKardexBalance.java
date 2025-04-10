@@ -16,4 +16,5 @@ public class RequestKardexBalance {
     private Product product;
     private Integer quantity;
     private Boolean add;
+    private Double unitPrice;
 }

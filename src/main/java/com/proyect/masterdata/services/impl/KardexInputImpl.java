@@ -29,7 +29,6 @@ public class KardexInputImpl implements IKardexInput {
     private final IKardexBalance iKardexBalance;
     @Override
     public KardexInput save(RequestKardexInput requestKardexInput) throws BadRequestExceptions, InternalErrorExceptions {
-        User user;
         KardexOperationType kardexOperationType;
         try{
             kardexOperationType = kardexOperationTypeRepository.findByNameAndClientId("COMPRA",requestKardexInput.getUser().getClientId());
@@ -54,11 +53,13 @@ public class KardexInputImpl implements IKardexInput {
                             .warehouse(requestKardexInput.getWarehouse())
                             .warehouseId(requestKardexInput.getWarehouse().getId())
                             .quantity(requestKardexInput.getQuantity())
+                            .unitPrice(requestKardexInput.getUnitPrice())
                     .build());
             RequestKardexBalance requestKardexBalance = RequestKardexBalance.builder()
                     .product(requestKardexInput.getProduct())
                     .quantity(requestKardexInput.getQuantity())
                     .user(requestKardexInput.getUser())
+                    .unitPrice(requestKardexInput.getUnitPrice())
                     .add(true)
                     .build();
             iKardexBalance.save(requestKardexBalance);
