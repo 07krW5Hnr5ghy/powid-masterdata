@@ -1,6 +1,6 @@
 package com.proyect.masterdata;
 
-//import com.proyect.masterdata.seeder.Seeder;
+import com.proyect.masterdata.seeder.Seeder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
@@ -12,7 +12,7 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class MasterdataApplication {
 
-	//private final Seeder seeder;
+	private final Seeder seeder;
 
 	public static void main(String[] args) {
 
