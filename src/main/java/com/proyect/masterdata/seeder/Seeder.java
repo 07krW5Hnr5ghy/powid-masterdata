@@ -1720,14 +1720,14 @@ public class Seeder implements CommandLineRunner {
                         iDeliveryZoneDistrict.save("PERIFERICA","PACHACAMAC","LIMA",adminUser.getUsername());
 
                         //moock Brand
-//                        iBrand.save("ADIDAS", adminUser.getUsername(), "Ax001");
-//                        iBrand.save("NIKE", adminUser.getUsername(), "Nx001");
-//                        iBrand.save("GUCCI", adminUser.getUsername(), "Gx001");
-//                        iBrand.save("ZARA", adminUser.getUsername(), "Zx001");
+                        iBrand.save("ADIDAS", adminUser.getUsername(), "Ax001");
+                        iBrand.save("NIKE", adminUser.getUsername(), "Nx001");
+                        iBrand.save("GUCCI", adminUser.getUsername(), "Gx001");
+                        iBrand.save("ZARA", adminUser.getUsername(), "Zx001");
 
                         //MOOK MODELS
-//                        iModel.save(new RequestModel("Air Force 1", "ADIDAS", "AR001Z", adminUser.getUsername()));
-//                        iModel.save(new RequestModel("Superstar", "NIKE", "NC001CS", adminUser.getUsername()));
+                        iModel.save(new RequestModel("Air Force 1", "ADIDAS", "AR001Z", adminUser.getUsername()));
+                        iModel.save(new RequestModel("Superstar", "NIKE", "NC001CS", adminUser.getUsername()));
                         //iModel.save(new RequestModel("Air Force 1","ADIDAS","AR001Z",adminUser.getUsername()));
                         //iModel.save(new RequestModel("Air Force 1","ADIDAS","AR001Z",adminUser.getUsername()));
                         //iModel.save(new RequestModel("Air Force 1","ADIDAS","AR001Z",adminUser.getUsername()));
