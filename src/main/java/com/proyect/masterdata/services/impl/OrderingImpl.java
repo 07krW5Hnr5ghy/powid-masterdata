@@ -1388,7 +1388,7 @@ public class OrderingImpl implements IOrdering {
 
     @Override
     public CompletableFuture<ResponseSuccess> uploadPhotos(UUID orderId, MultipartFile[] receipts, MultipartFile[] courierPictures, String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
-        Path folderOrders = Paths.get(urlPathServer+"/home/orders");
+        Path folderOrders = Paths.get(urlPathServer+"/uploads/orders");
         Path folderCouriers = Paths.get(urlPathServer+"/uploads/couriers/");
         return CompletableFuture.supplyAsync(()->{
             User user;
