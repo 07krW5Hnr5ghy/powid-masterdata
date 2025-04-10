@@ -49,6 +49,9 @@ public class KardexBalance {
     @Column(name = "product_id")
     private UUID productId;
 
+    @Column(name = "warehouse_id")
+    private UUID warehouseId;
+
     @ManyToOne()
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
@@ -60,4 +63,8 @@ public class KardexBalance {
     @ManyToOne()
     @JoinColumn(name="product_id",columnDefinition = "productId",insertable = false,updatable = false)
     private Product product;
+
+    @ManyToOne()
+    @JoinColumn(name="warehouse_id",columnDefinition = "warehouseId",insertable = false,updatable = false)
+    private Warehouse warehouse;
 }

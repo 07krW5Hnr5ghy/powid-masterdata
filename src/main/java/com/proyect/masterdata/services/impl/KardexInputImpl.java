@@ -38,7 +38,7 @@ public class KardexInputImpl implements IKardexInput {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
         try {
-            Long lotNumber = kardexInputRepository.countByClientIdAndProductId(requestKardexInput.getUser().getClientId(),requestKardexInput.getProduct().getId());
+            Long lotNumber = kardexInputRepository.countByClientIdAndProductIdAndWarehouseId(requestKardexInput.getUser().getClientId(),requestKardexInput.getProduct().getId(),requestKardexInput.getWarehouse().getId())+1L;
             KardexInput kardexInput = kardexInputRepository.save(KardexInput.builder()
                             .client(requestKardexInput.getUser().getClient())
                             .clientId(requestKardexInput.getUser().getClientId())
@@ -60,6 +60,7 @@ public class KardexInputImpl implements IKardexInput {
                     .quantity(requestKardexInput.getQuantity())
                     .user(requestKardexInput.getUser())
                     .unitPrice(requestKardexInput.getUnitPrice())
+                    .lotNumber(kardexInput.getLotNumber())
                     .add(true)
                     .build();
             iKardexBalance.save(requestKardexBalance);

@@ -10,6 +10,6 @@ import java.util.UUID;
 
 @Repository
 public interface KardexInputRepository extends JpaRepository<KardexInput, UUID> {
-    Long countByClientIdAndProductId(UUID clientId,UUID productId);
+    Long countByClientIdAndProductIdAndWarehouseId(UUID clientId,UUID productId,UUID warehouseId);
 
 }

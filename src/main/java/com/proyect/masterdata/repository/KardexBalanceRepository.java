@@ -17,12 +17,14 @@ public interface KardexBalanceRepository extends JpaRepository<KardexBalance, UU
             FROM KardexBalance kb 
             WHERE kb.clientId = :clientId AND
             kb.productId = :productId AND
+            kb.warehouseId = :warehouseId AND
             kb.quantity > 0
             ORDER BY kb.registrationDate ASC
             """)
-    KardexBalance findOldestByClientIdAndProductIdWithStock(
+    KardexBalance findOldestByClientIdAndProductIdAndWarehouseIdWithStock(
             @Param("clientId") UUID clientId,
-            @Param("productId") UUID productId
+            @Param("productId") UUID productId,
+            @Param("warehouseId") UUID warehouseId
     );
     Long countByClientIdAndProductId(UUID clientId,UUID productId);
 }

@@ -2,6 +2,7 @@ package com.proyect.masterdata.dto.request;
 
 import com.proyect.masterdata.domain.Product;
 import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.domain.Warehouse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,4 +18,6 @@ public class RequestKardexBalance {
     private Integer quantity;
     private Boolean add;
     private Double unitPrice;
+    private Long lotNumber;
+    private Warehouse warehouse;
 }
