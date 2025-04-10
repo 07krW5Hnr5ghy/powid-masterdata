@@ -46,11 +46,19 @@ public class KardexBalanceImpl implements IKardexBalance {
                         .build());
             }
 
+            if(kardexBalance!=null&&requestKardexBalance.getAdd()){
+                kardexBalance.setQuantity(kardexBalance.getQuantity()+requestKardexBalance.getQuantity());
+            }
+
             if(kardexBalance!=null){
                 if(requestKardexBalance.getAdd()){
                     kardexBalance.setQuantity(kardexBalance.getQuantity()+requestKardexBalance.getQuantity());
                 }else{
-                    kardexBalance.setQuantity(kardexBalance.getQuantity()-requestKardexBalance.getQuantity());
+                    Integer leftQuantity = requestKardexBalance.getQuantity();
+
+                    if(kardexBalance.getQuantity()>requestKardexBalance.getQuantity()){
+                        kardexBalance.setQuantity(kardexBalance.getQuantity()-requestKardexBalance.getQuantity());
+                    }
                 }
                 kardexBalance.setUpdateDate(OffsetDateTime.now());
                 kardexBalanceResult = kardexBalanceRepository.save(kardexBalance);
