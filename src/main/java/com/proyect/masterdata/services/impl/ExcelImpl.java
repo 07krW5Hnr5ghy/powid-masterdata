@@ -962,24 +962,28 @@ public class ExcelImpl implements IExcel {
                             break;
                         }
                         if((i>=1) && (row.getCell(0).getCellType() == STRING) && (ii==0)){
-                            product = productRepository.findByNameAndClientId(row.getCell(0).getRichStringCellValue().getString().toUpperCase(),user.getClientId());
-                            if(product!=null){
-                                return ResponseSuccess.builder()
-                                        .code(400)
-                                        .message(Constants.ErrorProductExists+" en linea: "+(i+1)+" con valor: " + row.getCell(0).getRichStringCellValue().getString().toUpperCase() + ".")
-                                        .build();
+//                            product = productRepository.findByNameAndClientId(row.getCell(0).getRichStringCellValue().getString().toUpperCase(),user.getClientId());
+//                            if(product!=null){
+//                                return ResponseSuccess.builder()
+//                                        .code(400)
+//                                        .message(Constants.ErrorProductExists+" en linea: "+(i+1)+" con valor: " + row.getCell(0).getRichStringCellValue().getString().toUpperCase() + ".")
+//                                        .build();
+//                            }
+                            if(!row.getCell(0).getRichStringCellValue().getString().isEmpty()){
+                                newProduct.setName(row.getCell(0).getStringCellValue().toUpperCase());
                             }
-                            newProduct.setName(row.getCell(0).getStringCellValue().toUpperCase());
                         }
                         if((i>=1) && (row.getCell(0).getCellType() == NUMERIC) && (ii==0)){
-                            product = productRepository.findByNameAndClientId(String.valueOf((int) (row.getCell(0).getNumericCellValue())),user.getClientId());
-                            if(product!=null){
-                                return ResponseSuccess.builder()
-                                        .code(400)
-                                        .message(Constants.ErrorProductExists+" en linea: "+(i+1)+" con valor: " + row.getCell(0).getRichStringCellValue().getString().toUpperCase() + ".")
-                                        .build();
+//                            product = productRepository.findByNameAndClientId(String.valueOf((int) (row.getCell(0).getNumericCellValue())),user.getClientId());
+//                            if(product!=null){
+//                                return ResponseSuccess.builder()
+//                                        .code(400)
+//                                        .message(Constants.ErrorProductExists+" en linea: "+(i+1)+" con valor: " + row.getCell(0).getRichStringCellValue().getString().toUpperCase() + ".")
+//                                        .build();
+//                            }
+                            if(row.getCell(0).getNumericCellValue()!=0){
+                                newProduct.setName(String.valueOf((int) (row.getCell(0).getNumericCellValue())));
                             }
-                            newProduct.setName(String.valueOf((int) (row.getCell(0).getNumericCellValue())));
                         }
                         if((i>=1)&&(row.getCell(2).getCellType() == STRING) && (ii==2)){
                             model = modelRepository.findByNameAndClientIdAndStatusTrue(row.getCell(2).getRichStringCellValue().getString().toUpperCase(),user.getClientId());
