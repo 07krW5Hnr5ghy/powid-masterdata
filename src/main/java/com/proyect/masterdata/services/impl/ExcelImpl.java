@@ -962,31 +962,35 @@ public class ExcelImpl implements IExcel {
                             break;
                         }
                         if((i>=1) && (row.getCell(0).getCellType() == STRING) && (ii==0)){
-                            product = productRepository.findByNameAndClientId(row.getCell(0).getRichStringCellValue().getString().toUpperCase(),user.getClientId());
-                            if(product!=null){
-                                return ResponseSuccess.builder()
-                                        .code(400)
-                                        .message(Constants.ErrorProductExists+" en linea: "+(i+1)+".")
-                                        .build();
+//                            product = productRepository.findByNameAndClientId(row.getCell(0).getRichStringCellValue().getString().toUpperCase(),user.getClientId());
+//                            if(product!=null){
+//                                return ResponseSuccess.builder()
+//                                        .code(400)
+//                                        .message(Constants.ErrorProductExists+" en linea: "+(i+1)+" con valor: " + row.getCell(0).getRichStringCellValue().getString().toUpperCase() + ".")
+//                                        .build();
+//                            }
+                            if(!row.getCell(0).getRichStringCellValue().getString().isEmpty()){
+                                newProduct.setName(row.getCell(0).getStringCellValue().toUpperCase());
                             }
-                            newProduct.setName(row.getCell(0).getStringCellValue().toUpperCase());
                         }
                         if((i>=1) && (row.getCell(0).getCellType() == NUMERIC) && (ii==0)){
-                            product = productRepository.findByNameAndClientId(String.valueOf((int) (row.getCell(0).getNumericCellValue())),user.getClientId());
-                            if(product!=null){
-                                return ResponseSuccess.builder()
-                                        .code(400)
-                                        .message(Constants.ErrorProductExists+" en linea: "+(i+1)+".")
-                                        .build();
+//                            product = productRepository.findByNameAndClientId(String.valueOf((int) (row.getCell(0).getNumericCellValue())),user.getClientId());
+//                            if(product!=null){
+//                                return ResponseSuccess.builder()
+//                                        .code(400)
+//                                        .message(Constants.ErrorProductExists+" en linea: "+(i+1)+" con valor: " + row.getCell(0).getRichStringCellValue().getString().toUpperCase() + ".")
+//                                        .build();
+//                            }
+                            if(row.getCell(0).getNumericCellValue()!=0){
+                                newProduct.setName(String.valueOf((int) (row.getCell(0).getNumericCellValue())));
                             }
-                            newProduct.setName(String.valueOf((int) (row.getCell(0).getNumericCellValue())));
                         }
                         if((i>=1)&&(row.getCell(2).getCellType() == STRING) && (ii==2)){
                             model = modelRepository.findByNameAndClientIdAndStatusTrue(row.getCell(2).getRichStringCellValue().getString().toUpperCase(),user.getClientId());
                             if(model == null){
                                 return ResponseSuccess.builder()
                                         .code(400)
-                                        .message(Constants.ErrorModel+" en linea: "+(i+1)+".")
+                                        .message(Constants.ErrorModel+" en linea: "+(i+1)+" con valor: " + row.getCell(2).getRichStringCellValue().getString().toUpperCase() + ".")
                                         .build();
                             }
                             newProduct.setModel(model);
@@ -997,7 +1001,7 @@ public class ExcelImpl implements IExcel {
                             if(color==null){
                                 return ResponseSuccess.builder()
                                         .code(400)
-                                        .message(Constants.ErrorColor+" en linea: "+(i+1)+".")
+                                        .message(Constants.ErrorColor+" en linea: "+(i+1)+" con valor: " + row.getCell(3).getRichStringCellValue().getString().toUpperCase() + ".")
                                         .build();
                             }
                             newProduct.setColor(color);
@@ -1011,7 +1015,7 @@ public class ExcelImpl implements IExcel {
                             if(subCategoryProduct==null){
                                 return ResponseSuccess.builder()
                                         .code(400)
-                                        .message(Constants.ErrorSubCategoryProduct+" en linea: "+(i+1)+".")
+                                        .message(Constants.ErrorSubCategoryProduct+" en linea: "+(i+1)+" con valor: " + row.getCell(5).getRichStringCellValue().getString().toUpperCase() + ".")
                                         .build();
                             }
                             newProduct.setSubCategoryProduct(subCategoryProduct);
@@ -1022,14 +1026,14 @@ public class ExcelImpl implements IExcel {
                             if(size==null){
                                 return ResponseSuccess.builder()
                                         .code(400)
-                                        .message(Constants.ErrorSize+" en linea: "+(i+1)+".")
+                                        .message(Constants.ErrorSize+" en linea: "+(i+1)+" con valor: " + row.getCell(6).getRichStringCellValue().getString().toUpperCase() + ".")
                                         .build();
                             }
 
                             if(!Objects.equals(size.getSizeTypeId(), subCategoryProduct.getCategoryProduct().getSizeTypeId())){
                                 return ResponseSuccess.builder()
                                         .code(400)
-                                        .message(Constants.ErrorSizeTypeCategoryProduct+" en linea: "+(i+1)+".")
+                                        .message(Constants.ErrorSizeTypeCategoryProduct+" en linea: "+(i+1)+" con valor: " + row.getCell(6).getRichStringCellValue().getString().toUpperCase() + ".")
                                         .build();
                             }
                             newProduct.setSize(size);
@@ -1040,13 +1044,13 @@ public class ExcelImpl implements IExcel {
                             if(size==null){
                                 return ResponseSuccess.builder()
                                         .code(400)
-                                        .message(Constants.ErrorSize+" en linea: "+(i+1)+".")
+                                        .message(Constants.ErrorSize+" en linea: "+(i+1)+" con valor: " + row.getCell(6).getNumericCellValue() + ".")
                                         .build();
                             }
                             if(!Objects.equals(size.getSizeTypeId(), subCategoryProduct.getCategoryProduct().getSizeTypeId())){
                                 return ResponseSuccess.builder()
                                         .code(400)
-                                        .message(Constants.ErrorSizeTypeCategoryProduct+" en linea: "+(i+1)+".")
+                                        .message(Constants.ErrorSizeTypeCategoryProduct+" en linea: "+(i+1)+" con valor: " + row.getCell(6).getNumericCellValue() + ".")
                                         .build();
                             }
                             newProduct.setSize(size);
@@ -1057,7 +1061,7 @@ public class ExcelImpl implements IExcel {
                             if(unit==null){
                                 return ResponseSuccess.builder()
                                         .code(400)
-                                        .message(Constants.ErrorUnit+" en linea: "+(i+1)+".")
+                                        .message(Constants.ErrorUnit+" en linea: "+(i+1)+" con valor: " + row.getCell(7).getRichStringCellValue().getString().toUpperCase() + ".")
                                         .build();
                             }
                             newProduct.setUnit(unit);
@@ -1067,7 +1071,7 @@ public class ExcelImpl implements IExcel {
                             if(row.getCell(8).getNumericCellValue() < 0.01){
                                 return ResponseSuccess.builder()
                                         .code(400)
-                                        .message(Constants.ErrorProductPriceZero+" en linea: "+(i+1)+".")
+                                        .message(Constants.ErrorProductPriceZero+" en linea: "+(i+1)+" con valor: " + row.getCell(8).getRichStringCellValue().getString().toUpperCase() + ".")
                                         .build();
                             }
                             productPrice.setUnitSalePrice(row.getCell(8).getNumericCellValue());
@@ -1298,7 +1302,7 @@ public class ExcelImpl implements IExcel {
                             if(brand==null){
                                 return ResponseSuccess.builder()
                                         .code(400)
-                                        .message(Constants.ErrorBrand+" en linea: "+(i+1)+".")
+                                        .message(Constants.ErrorBrand+" en linea: "+(i+1)+" con valor: " + row.getCell(0).getRichStringCellValue().getString().toUpperCase() + ".")
                                         .build();
                             }
                             newModel.setBrand(brand);
@@ -1309,7 +1313,7 @@ public class ExcelImpl implements IExcel {
                             if(model!=null){
                                 return ResponseSuccess.builder()
                                         .code(400)
-                                        .message(Constants.ErrorModelExists+" en linea: "+(i+1)+".")
+                                        .message(Constants.ErrorModelExists+" en linea: "+(i+1)+" con valor: " + row.getCell(1).getRichStringCellValue().getString().toUpperCase() + ".")
                                         .build();
                             }
                             newModel.setName(cell.getRichStringCellValue().getString().toUpperCase());
@@ -1319,7 +1323,7 @@ public class ExcelImpl implements IExcel {
                             if(model!=null){
                                 return ResponseSuccess.builder()
                                         .code(400)
-                                        .message(Constants.ErrorModelExists+" en linea: "+(i+1)+".")
+                                        .message(Constants.ErrorModelExists+" en linea: "+(i+1)+" con valor: " + row.getCell(2).getRichStringCellValue().getString().toUpperCase() + ".")
                                         .build();
                             }
                             newModel.setSku(cell.getRichStringCellValue().getString().toUpperCase());
