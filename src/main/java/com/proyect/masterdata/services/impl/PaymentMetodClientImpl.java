@@ -73,10 +73,16 @@ public class PaymentMetodClientImpl implements IPaymentMetodClient {
                     .build());
 
             iAudit.save("ADD_P","PEDIDO "+paymentMetodClientSave.getId()+" CREADO.",paymentMetodClientSave.getId().toString(),user.getUsername());
+            return ResponseSuccess.builder()
+                    .message(Constants.register)
+                    .code(200)
+                    .build();
         } catch (RuntimeException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
-
-        return null;
     }
+
+
+
 }
