@@ -563,7 +563,7 @@ public class OrderItemImpl implements IOrderItem {
             }
             List<OrderItemDTO> orderItemDTOS = pageOrderItem.getContent().stream().map(orderItem -> {
                 List<String> productPictures = productPictureRepository.findAlByClientIdAndProductId(clientId,orderItem.getProductId()).stream().map(ProductPicture::getProductPictureUrl).toList();
-                ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
                 Double totalPrice = PricingUtil.calculateTotalPrice(orderItem,productPrice);
                 Double totalPricePrepared = PricingUtil.calculateTotalPriceUsingPreparedProducts(orderItem,productPrice);
 
