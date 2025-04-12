@@ -254,7 +254,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 uniqueOrderNumbers.add(deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber());
                                 orders.add(deliveryManifestItem.getOrderItem().getOrdering());
                             }
-                            ProductPrice productPrice = productPriceRepository.findByProductId(deliveryManifestItem.getOrderItem().getProductId());
+                            ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(deliveryManifestItem.getOrderItem().getProductId());
                             Double totalPrice = null;
                             if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "PORCENTAJE")){
                                 totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getQuantity())-((productPrice.getUnitSalePrice() * deliveryManifestItem.getQuantity())*(deliveryManifestItem.getOrderItem().getDiscountAmount()/100));
@@ -641,7 +641,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                     orders.add(ordering);
                                 }
 
-                                ProductPrice productPrice = productPriceRepository.findByProductId(deliveryManifestItem.getProductId());
+                                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(deliveryManifestItem.getProductId());
                                 List<Object[]> orderItems = orderItemRepository.findOrderItemDetailsByIdAndClientId(deliveryManifestItem.getOrderItemId(),clientId);
                                 Double totalPrice = null;
                                 for(Object[] orderItem:orderItems){
@@ -929,7 +929,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 uniqueOrderNumbers.add(deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber());
                                 orders.add(deliveryManifestItem.getOrderItem().getOrdering());
                             }
-                            ProductPrice productPrice = productPriceRepository.findByProductId(deliveryManifestItem.getOrderItem().getProductId());
+                            ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(deliveryManifestItem.getOrderItem().getProductId());
                             Double totalPrice = null;
                             if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "PORCENTAJE")){
                                 totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts())-((productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts())*(deliveryManifestItem.getOrderItem().getDiscountAmount()/100));
