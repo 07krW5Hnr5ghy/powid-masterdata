@@ -311,6 +311,7 @@
 //                        iAuditEvent.save("ACTIVATE_MODEL",adminUser.getUsername());
 //                        iAuditEvent.save("ACTIVATE_MODULE",adminUser.getUsername());
 //                        iAuditEvent.save("ACTIVATE_ORDER_ITEM","JROMERO");
+//                        iAuditEvent.save("ACTIVATE_ORDER_DELIVERY_STATUS",adminUser.getUsername());
 //                        iAuditEvent.save("ACTIVATE_ORDER_PAYMENT_METHOD",adminUser.getUsername());
 //                        iAuditEvent.save("ACTIVATE_ORDER_PAYMENT_STATE",adminUser.getUsername());
 //                        iAuditEvent.save("ACTIVATE_ORDER_RETURN_ITEM",adminUser.getUsername());
@@ -382,6 +383,7 @@
 //                        iAuditEvent.save("ADD_MODULE",adminUser.getUsername());
 //                        iAuditEvent.save("ADD_ORDER",adminUser.getUsername());
 //                        iAuditEvent.save("ADD_ORDER_CONTACTED",adminUser.getUsername());
+//                        iAuditEvent.save("ADD_ORDER_DELIVERY_STATUS",adminUser.getUsername());
 //                        iAuditEvent.save("ADD_ORDER_ITEM",adminUser.getUsername());
 //                        iAuditEvent.save("ADD_ORDER_PAYMENT_METHOD",adminUser.getUsername());
 //                        iAuditEvent.save("ADD_ORDER_PAYMENT_RECEIPT",adminUser.getUsername());
@@ -468,6 +470,7 @@
 //                        iAuditEvent.save("DELETE_MEMBERSHIP_STATE",adminUser.getUsername());
 //                        iAuditEvent.save("DELETE_MODEL",adminUser.getUsername());
 //                        iAuditEvent.save("DELETE_MODULE",adminUser.getUsername());
+//                        iAuditEvent.save("DELETE_ORDER_DELIVERY_STATUS",adminUser.getUsername());
 //                        iAuditEvent.save("DELETE_ORDER_ITEM",adminUser.getUsername());
 //                        iAuditEvent.save("DELETE_ORDER_PAYMENT_METHOD",adminUser.getUsername());
 //                        iAuditEvent.save("DELETE_ORDER_PAYMENT_STATE",adminUser.getUsername());
