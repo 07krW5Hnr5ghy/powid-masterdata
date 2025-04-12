@@ -674,7 +674,8 @@ public class OrderingImpl implements IOrdering {
                         .deliveryFlag(order.getDeliveryFlag())
                         .orderStateColor(order.getOrderState().getHexColor())
                         .orderItemDTOS(orderItems.stream().map(orderItem -> {
-                            ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+
+                            ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
                             List<ProductPicture> productPictures = productPictureRepository.findAlByClientIdAndProductId(clientId,orderItem.getProductId());
                             Double totalPrice = PricingUtil.calculateTotalPrice(orderItem, productPrice);
                             Double totalPricePrepared = PricingUtil.calculateTotalPriceUsingPreparedProducts(orderItem,productPrice);
