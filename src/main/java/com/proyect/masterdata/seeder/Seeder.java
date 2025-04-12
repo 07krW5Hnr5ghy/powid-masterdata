@@ -1,3 +1,4 @@
+
 package com.proyect.masterdata.seeder;
 
 import com.proyect.masterdata.domain.*;
@@ -1748,139 +1749,6 @@ public class Seeder implements CommandLineRunner {
 
                         iCourier.save(requestCourier, adminUser.getUsername());
 
-
-
-
-
-//                        User courierUser = userRepository.save(User.builder()
-//                                .username("IGOR")
-//                                .name("igor")
-//                                .surname("igorrc")
-//                                .dni("74439864")
-//                                .email("igor.ramos.c@gmail.com")
-//                                .address("cr 12 h 34")
-//                                .gender("M")
-//                                .district(district)
-//                                .districtId(district.getId())
-//                                .client(systemClient)
-//                                .clientId(systemClient.getId())
-//                                .mobile("929417416")
-//                                .password(passwordEncoder.encode("n>53F-8W5L7Dw+"))
-//                                .status(true)
-//                                .registrationDate(OffsetDateTime.now())
-//                                .updateDate(OffsetDateTime.now())
-//                                .build());
-
-//
-
-                        /*
-                        *.name("JOEL")
-                                        .surname("COILA OSNAYO")
-                                        .ruc("20609605601")
-                                        .dni("1111111")
-                                        .business("CORPORACION ARANNI S.A.C")
-                                        .mobile("947424006")
-                                        .address("Iquique 807 - breña")
-                                        .email("joel@aranni.com.pe")
-                        * */
-
-
-//
-
-
-                        //iRole.save("COURIER",courierUser.getUsername());
-//                        iAuthentication.registerNewClient(RequestOnboarding.builder()
-//                                        .name("igor")
-//                                .build());
-//
-//
-//                    iCustomer.save(RequestCustomer.builder()
-//                                    .address("quepepampa")
-//                                    .customerType("TRADICIONAL")
-//                                    .district("HUARAL")
-//                                    .instagram("rodirgocvb")
-//                                    .name("rodrigo")
-//                                    .phone("987654234")
-//                                    .province("HUARAL")
-//                                    .reference("colegio")
-//                                    .tokenUser("JCOILA")
-//                                    .dni("23465476")
-//                            .build());
-
-                        //                        iUser.save(RequestUser.builder()
-//                                .address("asasa")
-//                                .district("SANTA CRUZ DE ANDAMARCA")
-//                                .dni("87634576")
-//                                .email("joel.d@gmail.com")
-//                                .gender("M")
-//                                .name("joel")
-//                                .password("n>53F-8W5L7Dw+")
-//                                .mobile("947424006")
-//                                .province("HUARAL")
-//                                .roleName("NEGOCIO")
-//                                .surname("coila")
-//                                .user("joelc")
-//                                .tokenUser("JROMERO")
-//                                .build());
-
-
-//                        iAuthentication.registerNewClient(
-//                                RequestOnboarding.builder()
-//                                        .username("JOELC")
-//                                        .name("joel")
-//                                        .surname("coila")
-//                                        .email("joel.coila@gmail.com")
-//                                        .address("lima peru")
-//                                        .mobile("934765123")
-//                                        .dni("27623465")
-//                                        .category("MODA")
-//                                        .users("0-5")
-//                                        .ecommerce(true)
-//                                        .billing(true)
-//                                        .comment("hola mundo registrando desdepostaman")
-//                                        .businessName("CORPORACION ARANNI S.A.C")
-//                                        .businessRuc("20456554328")
-//                                        .gender("M")
-//                                        .password("n>53F-8W5L7Dw+")
-//                                        .province("HUARAL")
-//                                        .district("HUARAL")
-//                                        .store("ARANNI STORE")
-//                                        .storeUrl("www.aranni.store.com")
-//                                        .storeType("WOOCOMMERCE")
-//                                        .closingChannels(Arrays.asList("INSTAGRAM"))
-//                                        .modules(Arrays.asList("MÓDULO DE VENTAS", "MÓDULO DE GESTIÓN"))
-//                                        .entryChannel("INSTAGRAM")
-//                                        .demo(true)
-//                                        .build()
-//                        ).get();
-
-//                        iUser.save(RequestUser.builder()
-//                                .address("asasa")
-//                                .district("HUARAL")
-//                                .dni("74439864")
-//                                .email("igor.r@gmail.com")
-//                                .gender("M")
-//                                .name("igor")
-//                                .password("n>53F-8W5L7Dw+")
-//                                .mobile("929417416")
-//                                .province("HUARAL")
-//                                .roleName("COURIER")
-//                                .surname("ramos")
-//                                .user("igorrc")
-//                                .tokenUser("JOELC")
-//                                .build()).getCode();
-//
-//
-//
-//                        iCourier.save(RequestCourier.builder()
-//                                .company("ARANNI COMPANY")
-//                                .phone("929417416")
-//                                .plate("000-fd")
-//                                .address("HUARAL")
-//                                .courier("igorrc")
-//                                .build(), "JOELC").get();
-                        iDeliveryCompany.save("ARANNI COMPANY", adminUser.getUsername()).get();
-//
                         iCourier.saveCourierToUser(RequestCourierUser.builder()
                                         .company("ARANNI COMPANY")
                                         .plate("000-fd")
@@ -2031,6 +1899,108 @@ public class Seeder implements CommandLineRunner {
                         iPaymentMetodClient.save("bcp","191-23456789012",adminUser.getUsername(),"CCI BCP: 002-19112345678901234, Titular: Juan Pérez");
                         iPaymentMetodClient.save("yape","954234123",adminUser.getUsername(),"Titular: Juan Pérez – Verificar nombre al enviar");
                         iPaymentMetodClient.save("plin","985675656",adminUser.getUsername(),"Titular: Ana Rodríguez – Banco Interbank");
+
+                        iColor.save("BLANCO", "BLA", "JOELC");
+                        iColor.save("NEGRO", "NEG", "JOELC");
+                        iColor.save("HUESO", "HUE", "JOELC");
+                        iColor.save("PERLA", "PER", "JOELC");
+                        iColor.save("BEIGE", "BEI", "JOELC");
+                        iColor.save("CAMEL", "CAM", "JOELC");
+                        iColor.save("VERDE", "VER", "JOELC");
+                        iColor.save("VINO", "VIN", "JOELC");
+                        iColor.save("ROJO", "ROJ", "JOELC");
+                        iColor.save("NUDE", "NUD", "JOELC");
+                        iColor.save("GRIS", "GRI", "JOELC");
+                        iColor.save("MORADO", "MOR", "JOELC");
+                        iColor.save("AZUL", "AZU", "JOELC");
+                        iColor.save("AMARILLO", "AMA", "JOELC");
+                        iColor.save("NARANJA", "NAR", "JOELC");
+                        iColor.save("ACERO", "ACE", "JOELC");
+                        iColor.save("JADE", "JAD", "JOELC");
+                        iColor.save("COMBINADO", "COM", "JOELC");
+
+                        iDeliveryZone.save("CENTRO","JOELC");
+                        iDeliveryZone.save("SUR","JOELC");
+                        iDeliveryZone.save("NORTE","JOELC");
+                        iDeliveryZone.save("CALLAO","JOELC");
+                        iDeliveryZone.save("ESTE 1","JOELC");
+                        iDeliveryZone.save("PERIFERICA","JOELC");
+                        iDeliveryZone.save("PROVINCIA","JOELC");
+//                        RequestStoreSave requestStore2 = RequestStoreSave.builder()
+//                                .name("kunca")
+//                                .url("https://kunca.pe")
+//                                .storeType("otro")
+//                                .build();
+//                        iStore.save(requestStore2, adminUser.getUsername());
+
+//                        iCustomer.save(RequestCustomer.builder()
+//                                .address("quepepampa")
+//                                .customerType("TRADICIONAL")
+//                                .province("HUARAL")
+//                                .district("HUARAL")
+//                                .instagram("rodirgocvb")
+//                                .name("rodrigo")
+//                                .phone("987654234")
+//                                .province("HUARAL")
+//                                .reference("colegio")
+//                                .tokenUser(adminUser.getUsername())
+//                                .dni("23465476")
+//                                .build());
+
+//                        iCustomer.save(RequestCustomer.builder()
+//                                .address("quepepampa")
+//                                .customerType("TRADICIONAL")
+//                                .province("HUARAL")
+//                                .district("HUARAL")
+//                                .instagram("Jhondhc")
+//                                .name("jhon")
+//                                .phone("993634234")
+//                                .province("HUARAL")
+//                                .reference("caserio julio")
+//                                .tokenUser(adminUser.getUsername())
+//                                .dni("64435276")
+//                                .build());
+
+//                    iCustomer.save(RequestCustomer.builder()
+//                            .address("quepepampa")
+//                            .customerType("TRADICIONAL")
+//                            .province("HUARAL")
+//                            .district("HUARAL")
+//                            .instagram("loloyfs")
+//                            .name("loloy")
+//                            .phone("912644234")
+//                            .province("HUARAL")
+//                            .reference("por adsd")
+//                            .tokenUser(adminUser.getUsername())
+//                            .dni("23527634")
+//                            .build());
+
+//                        iWarehouse.save(RequestWarehouse.builder()
+//                                .name("almacen aranni")
+//                                .address("Lima")
+//                                .phone("934764345")
+//                                .contact("joel coila")
+//                                .reference("cerca del estadio")
+//                                .build(), adminUser.getUsername());
+
+                        //iSupplierType.save("TELA",adminUser.getUsername());
+
+//                        iSupplier.save(RequestSupplier.builder()
+//                                        .businessName("aranni busines")
+//                                        .ruc("10456789123")
+//                                        .country("PERÚ")
+//                                        .location("LIMA")
+//                                        .phone("929332234")
+//                                        .email("aranni.corp@gmail.com")
+//                                        .supplierType("TELA")
+//                                        .province("LIMA")
+//                                        .district("LIMA")
+//                                .build(), adminUser.getUsername());
+
+                        // pyment type clinet
+                        //iPaymentMetodClient.save("bcp","191-23456789012",adminUser.getUsername(),"CCI BCP: 002-19112345678901234, Titular: Juan Pérez");
+                        //iPaymentMetodClient.save("yape","954234123",adminUser.getUsername(),"Titular: Juan Pérez – Verificar nombre al enviar");
+                        //iPaymentMetodClient.save("plin","985675656",adminUser.getUsername(),"Titular: Ana Rodríguez – Banco Interbank");
 
 //                        iColor.save("BLANCO", "BLA", "JOELC");
 //                        iColor.save("NEGRO", "NEG", "JOELC");
