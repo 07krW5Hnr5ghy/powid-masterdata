@@ -1296,7 +1296,7 @@ public class OrderingImpl implements IOrdering {
                         .closingChannel(ordering.getClosingChannel().getName())
                         .paymentState(ordering.getOrderPaymentState().getName())
                         .orderStatus(ordering.getOrderState().getName())
-                        .courierPictures(courierPictures.stream().map(courierPicture -> courierPicture.getPictureUrl().toUpperCase()).toList())
+                        .courierPictures(courierPictures.stream().map(CourierPicture::getPictureUrl).toList())
                         .paymentMethod(ordering.getOrderPaymentMethod().getName())
                         .paymentReceipts(orderPaymentReceipts.stream().map(OrderPaymentReceipt::getPaymentReceiptUrl).toList())
                         .courier(ordering.getCourier().getName())
