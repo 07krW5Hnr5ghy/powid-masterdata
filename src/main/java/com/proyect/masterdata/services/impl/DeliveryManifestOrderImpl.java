@@ -26,6 +26,7 @@ public class DeliveryManifestOrderImpl implements IDeliveryManifestOrder {
     private final OrderingRepository orderingRepository;
     private final IOrderLog iOrderLog;
     private final OrderPaymentMethodRepository orderPaymentMethodRepository;
+    private final OrderDeliveryStatusRepository orderDeliveryStatusRepository;
     @Override
     public CompletableFuture<ResponseSuccess> save(RequestDeliveryManifestOrder requestDeliveryManifestOrder) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -34,6 +35,7 @@ public class DeliveryManifestOrderImpl implements IDeliveryManifestOrder {
             User user;
             Ordering ordering;
             OrderPaymentMethod orderPaymentMethod;
+            OrderDeliveryStatus orderDeliveryStatus;
 
             try {
                 user = userRepository.findByUsernameAndStatusTrue(requestDeliveryManifestOrder.getUsername().toUpperCase());
@@ -47,6 +49,8 @@ public class DeliveryManifestOrderImpl implements IDeliveryManifestOrder {
             }
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                orderDeliveryStatus = orderDeliveryStatusRepository.findByNameAndClientIdAndStatusTrue("POR ENTREGAR",user.getClientId());
             }
             if(ordering==null){
                 throw new BadRequestExceptions(Constants.ErrorOrdering);
@@ -61,6 +65,9 @@ public class DeliveryManifestOrderImpl implements IDeliveryManifestOrder {
             }
             if(orderPaymentMethod==null){
                 throw new BadRequestExceptions(Constants.ErrorPaymentMethod);
+            }
+            if(orderDeliveryStatus==null){
+                throw new BadRequestExceptions(Constants.ErrorOrderDeliveryStatus);
             }
             try {
                 DeliveryManifestOrder newDeliveryManifestOrder = DeliveryManifestOrder.builder()
@@ -80,6 +87,8 @@ public class DeliveryManifestOrderImpl implements IDeliveryManifestOrder {
                         .orderPaymentMethod(orderPaymentMethod)
                         .paymentMethodId(orderPaymentMethod.getId())
                         .delivered(requestDeliveryManifestOrder.getDelivered())
+                        .orderDeliveryStatus(orderDeliveryStatus)
+                        .orderDeliveryStatusId(orderDeliveryStatus.getId())
                         .build();
                 if(requestDeliveryManifestOrder.getObservations() != null && requestDeliveryManifestOrder.getReceivedAmount() != null){
                     iOrderLog.save(user,ordering,
