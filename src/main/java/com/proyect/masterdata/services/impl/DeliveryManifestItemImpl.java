@@ -348,14 +348,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                 Long deliveredOrderCount = 0L;
                 Set<UUID> uniqueOrderNumbersDeliveredOrders = new HashSet<>();
                 for(Object[] result : deliveredOrders){
-                    UUID deliveryManifestId = (UUID) result[0];
                     UUID orderId = (UUID) result[1];
-                    Long deliveredCount = (Long) result[2];
-                    deliveredOrdersCountDTOS.add(DeliveredOrdersCountDTO.builder()
-                                    .deliveredCount(deliveredCount)
-                                    .orderId(orderId)
-                                    .deliveredManifestId(deliveryManifestId)
-                            .build());
                     uniqueOrderNumbersDeliveredOrders.add(orderId);
                 }
                 for(UUID ignored :uniqueOrderNumbersDeliveredOrders){
@@ -401,7 +394,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                             totalDuePayment = (saleAmount+order.getDeliveryAmount())-order.getAdvancedPayment();
                         }
                         System.out.println(totalDuePayment);
-                        unCollectedAmount+=totalDuePayment;
+                        unCollectedAmount+= Math.max(totalDuePayment, 0.00);
                     }
                 }
                 System.out.println(unCollectedAmount);
