@@ -88,7 +88,7 @@ public class DeliveryManifestOrderImpl implements IDeliveryManifestOrder {
                         .deliveryFeeCollected(requestDeliveryManifestOrder.getDeliveryFeeCollected())
                         .orderPaymentMethod(orderPaymentMethod)
                         .paymentMethodId(orderPaymentMethod.getId())
-                        .delivered(requestDeliveryManifestOrder.getDelivered())
+                        .delivered(false)
                         .orderDeliveryStatus(orderDeliveryStatus)
                         .orderDeliveryStatusId(orderDeliveryStatus.getId())
                         .build();
