@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.request.RequestDeliveryManifestOrder;
+import com.proyect.masterdata.dto.request.RequestDeliveryManifestOrderMark;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -14,6 +15,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -114,6 +116,42 @@ public class DeliveryManifestOrderImpl implements IDeliveryManifestOrder {
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
+                        .build();
+            }catch (RuntimeException e){
+                e.printStackTrace();
+                log.error(e.getMessage());
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+        });
+    }
+
+    @Override
+    public CompletableFuture<ResponseSuccess> markDeliveredOperationsOrders(RequestDeliveryManifestOrderMark requestDeliveryManifestOrderMark) throws BadRequestExceptions, InternalErrorExceptions {
+        return CompletableFuture.supplyAsync(()->{
+            User user;
+            try{
+                user = userRepository.findByUsernameAndStatusTrue(requestDeliveryManifestOrderMark.getUsername().toUpperCase());
+            }catch (RuntimeException e){
+                log.error(e.getMessage());
+                e.printStackTrace();
+                throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+            }
+            if(user==null){
+                throw new BadRequestExceptions(Constants.ErrorUser);
+            }
+            try {
+                for(UUID orderId: requestDeliveryManifestOrderMark.getOrderIds()){
+                    DeliveryManifestOrder deliveryManifestOrder = deliveryManifestOrderRepository.findByDeliveryManifestIdAndOrderIdAndClientId(
+                            requestDeliveryManifestOrderMark.getDeliveryManifestId(),
+                            orderId,
+                            user.getClientId()
+                    );
+                    deliveryManifestOrder.setDelivered(true);
+                    deliveryManifestOrderRepository.save(deliveryManifestOrder);
+                }
+                return ResponseSuccess.builder()
+                        .message(Constants.update)
+                        .code(200)
                         .build();
             }catch (RuntimeException e){
                 e.printStackTrace();
