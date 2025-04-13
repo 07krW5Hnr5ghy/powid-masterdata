@@ -58,6 +58,9 @@ public class DeliveryManifestOrder {
     @Column(name="payment_method_id")
     private UUID paymentMethodId;
 
+    @Column(name="order_delivery_status_id")
+    private UUID orderDeliveryStatusId;
+
     @ManyToOne()
     @JoinColumn(name="user_id",columnDefinition = "userId",insertable = false,updatable = false)
     private User user;
@@ -77,5 +80,9 @@ public class DeliveryManifestOrder {
     @ManyToOne()
     @JoinColumn(name = "payment_method_id",columnDefinition = "paymentMethodId",insertable = false,updatable = false)
     private OrderPaymentMethod orderPaymentMethod;
+
+    @ManyToOne()
+    @JoinColumn(name = "order_delivery_status_id",columnDefinition = "orderDeliveryStatusId",insertable = false,updatable = false)
+    private OrderDeliveryStatus orderDeliveryStatus;
 
 }

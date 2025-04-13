@@ -20,4 +20,5 @@ public class RequestDeliveryManifestOrder {
     Boolean deliveryFeeCollected;
     String paymentMethod;
     Boolean delivered;
+    String orderDeliveryStatus;
 }
