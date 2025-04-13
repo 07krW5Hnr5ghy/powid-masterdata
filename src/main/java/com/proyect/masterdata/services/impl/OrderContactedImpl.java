@@ -308,7 +308,7 @@ public class OrderContactedImpl implements IOrderContacted {
                         .orderStateColor(orderContacted.getOrdering().getOrderState().getHexColor())
                         .contacted(orderContacted.getContacted())
                         .orderItemDTOS(orderItems.stream().map(orderItem -> {
-                            ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+                            ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
                             List<ProductPicture> productPictures = productPictureRepository.findAlByClientIdAndProductId(clientId, orderItem.getProductId());
                             Double totalPrice = null;
                             if (Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
