@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.request.RequestDeliveryManifestOrder;
+import com.proyect.masterdata.dto.request.RequestDeliveryManifestOrderMark;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -26,5 +27,12 @@ public class DeliveryManifestOrderController {
         //System.out.println(requestDeliveryManifest);
         CompletableFuture<ResponseSuccess> result = iDeliveryManifestOrder.save(requestDeliveryManifestOrder);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+    @PutMapping()
+    public ResponseEntity<ResponseSuccess> markOrders(
+            @RequestBody()RequestDeliveryManifestOrderMark requestDeliveryManifestOrderMark
+            ) throws BadRequestExceptions, InternalErrorExceptions, ExecutionException, InterruptedException {
+        CompletableFuture<ResponseSuccess> result = iDeliveryManifestOrder.markDeliveredOperationsOrders(requestDeliveryManifestOrderMark);
+        return new ResponseEntity<>(result.get(),HttpStatus.OK);
     }
 }

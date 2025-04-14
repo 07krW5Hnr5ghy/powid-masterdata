@@ -55,12 +55,12 @@ public interface    DeliveryManifestItemRepository extends JpaRepository<Deliver
             @Param("clientId") UUID clientId
     );
     @Query("""
-    SELECT dmi.deliveryManifest.id, oi.orderId, 
-           COUNT(CASE WHEN dmi.deliveredQuantity > 0 THEN 1 END) AS deliveredCount
+    SELECT dmi.deliveryManifest.id, oi.orderId
     FROM DeliveryManifestItem dmi
     JOIN dmi.deliveryManifest dm
     JOIN dmi.orderItem oi
     WHERE dm.courier.id = :courierId
+    AND dmi.deliveredQuantity > 0
     AND dmi.registrationDate BETWEEN :startDate AND :endDate
     GROUP BY dmi.deliveryManifest.id, oi.orderId
     """)

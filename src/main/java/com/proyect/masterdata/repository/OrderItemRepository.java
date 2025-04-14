@@ -165,12 +165,12 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
     @Query("UPDATE OrderItem o SET " +
             "o.status = :status, " +
             "o.updateDate = :updateDate " +
-            "WHERE o.userId = :userId AND o.orderId = :orderId AND o.productId = :productId")
+            "WHERE o.orderId = :orderId AND o.productId = :productId")
     void deleteAndActivateOrderItemLogically (
             @Param("orderId") UUID orderId,
             @Param("productId") UUID productId,
             @Param("updateDate") OffsetDateTime updateDate,
-            @Param("userId") UUID userId,
+            //@Param("userId") UUID userId,
             @Param("status") boolean status
     );
 
@@ -179,11 +179,10 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
     @Query("UPDATE OrderItem o SET " +
                     "o.updateDate = :updateDate, " +
                     "o.preparedProducts = :preparedProducts " +
-                    "WHERE o.userId = :userId AND o.orderId = :orderId AND o.id = :orderItemId")
+                    "WHERE o.orderId = :orderId AND o.id = :orderItemId")
     void selectPreparedOrderItem (
             @Param("orderId") UUID orderId,
             @Param("orderItemId") UUID orderItemId,
-            @Param("userId") UUID userId,
             @Param("updateDate") OffsetDateTime updateDate,
             @Param("preparedProducts") Integer preparedProducts
     );
