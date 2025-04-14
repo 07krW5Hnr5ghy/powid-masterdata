@@ -1019,6 +1019,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                             .district(order.getCustomer().getDistrict().getName())
                             .province(order.getCustomer().getDistrict().getProvince().getName())
                             .deliveryFeeAmount(order.getDeliveryAmount())
+                            .deliveryManifestId(lastDeliveryManifest.getId())
                             .build();
 
                     DeliveryManifestOrder deliveryManifestOrder = deliveryManifestOrderRepository.findByDeliveryManifestIdAndOrderIdAndClientId(
