@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
@@ -18,10 +19,10 @@ public interface KardexBalanceRepository extends JpaRepository<KardexBalance, UU
             WHERE kb.clientId = :clientId AND
             kb.productId = :productId AND
             kb.warehouseId = :warehouseId AND
-            kb.quantity > 0
+            kb.remainingQuantity > 0
             ORDER BY kb.registrationDate ASC
             """)
-    KardexBalance findOldestByClientIdAndProductIdAndWarehouseIdWithStock(
+    List<KardexBalance> findAllByClientIdAndProductIdAndWarehouseIdWithStock(
             @Param("clientId") UUID clientId,
             @Param("productId") UUID productId,
             @Param("warehouseId") UUID warehouseId

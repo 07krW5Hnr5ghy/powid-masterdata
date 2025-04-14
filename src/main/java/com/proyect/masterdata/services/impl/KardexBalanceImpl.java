@@ -12,6 +12,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -21,10 +22,9 @@ public class KardexBalanceImpl implements IKardexBalance {
     private final KardexBalanceRepository kardexBalanceRepository;
     @Override
     public KardexBalance save(RequestKardexBalance requestKardexBalance) throws BadRequestExceptions, InternalErrorExceptions {
-        KardexBalance kardexBalance;
         KardexBalance kardexBalanceResult = null;
         try{
-            kardexBalance = kardexBalanceRepository.findOldestByClientIdAndProductIdAndWarehouseIdWithStock(
+            List<KardexBalance> kardexBalanceList = kardexBalanceRepository.findAllByClientIdAndProductIdAndWarehouseIdWithStock(
                     requestKardexBalance.getUser().getClientId(),
                     requestKardexBalance.getProduct().getId(),
                     requestKardexBalance.getWarehouse().getId()
@@ -32,7 +32,7 @@ public class KardexBalanceImpl implements IKardexBalance {
             
             if(kardexBalance==null&&requestKardexBalance.getAdd()){
                 kardexBalanceResult = kardexBalanceRepository.save(KardexBalance.builder()
-                                .quantity(requestKardexBalance.getQuantity())
+                                .remainingQuantity(requestKardexBalance.getQuantity())
                                 .lotNumber(requestKardexBalance.getLotNumber())
                                 .user(requestKardexBalance.getUser())
                                 .userId(requestKardexBalance.getUser().getId())
@@ -47,17 +47,17 @@ public class KardexBalanceImpl implements IKardexBalance {
             }
 
             if(kardexBalance!=null&&requestKardexBalance.getAdd()){
-                kardexBalance.setQuantity(kardexBalance.getQuantity()+requestKardexBalance.getQuantity());
+                kardexBalance.setRemainingQuantity(kardexBalance.getRemainingQuantity()+requestKardexBalance.getQuantity());
             }
 
             if(kardexBalance!=null){
                 if(requestKardexBalance.getAdd()){
-                    kardexBalance.setQuantity(kardexBalance.getQuantity()+requestKardexBalance.getQuantity());
+                    kardexBalance.setRemainingQuantity(kardexBalance.getRemainingQuantity()+requestKardexBalance.getQuantity());
                 }else{
                     Integer leftQuantity = requestKardexBalance.getQuantity();
 
-                    if(kardexBalance.getQuantity()>requestKardexBalance.getQuantity()){
-                        kardexBalance.setQuantity(kardexBalance.getQuantity()-requestKardexBalance.getQuantity());
+                    if(kardexBalance.getRemainingQuantity()>requestKardexBalance.getQuantity()){
+                        kardexBalance.setRemainingQuantity(kardexBalance.getRemainingQuantity()-requestKardexBalance.getQuantity());
                     }
                 }
                 kardexBalance.setUpdateDate(OffsetDateTime.now());

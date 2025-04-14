@@ -23,8 +23,8 @@ public class KardexBalance {
     @Column(name = "kardex_balance_id")
     private UUID id;
 
-    @Column(name = "quantity")
-    private Integer quantity;
+    @Column(name = "remaining_quantity")
+    private Integer remainingQuantity;
 
     @Column(name = "unit_price")
     private Double unitPrice;
