@@ -53,7 +53,7 @@ public class DeliveryManifestOrderImpl implements IDeliveryManifestOrder {
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
             }else{
-                orderDeliveryStatus = orderDeliveryStatusRepository.findByNameAndClientIdAndStatusTrue("POR ENTREGAR",user.getClientId());
+                orderDeliveryStatus = orderDeliveryStatusRepository.findByNameAndClientIdAndStatusTrue(requestDeliveryManifestOrder.getOrderDeliveryStatus(),user.getClientId());
             }
             if(ordering==null){
                 throw new BadRequestExceptions(Constants.ErrorOrdering);
@@ -84,7 +84,7 @@ public class DeliveryManifestOrderImpl implements IDeliveryManifestOrder {
                             .clientId(user.getClientId())
                             .observations(requestDeliveryManifestOrder.getObservations()!=null? requestDeliveryManifestOrder.getObservations():"Sin observaciones")
                             .receivedAmount(requestDeliveryManifestOrder.getReceivedAmount()!=null? requestDeliveryManifestOrder.getReceivedAmount():0.00)
-                            .deliveryFeeCollected(requestDeliveryManifestOrder.getDeliveryFeeCollected())
+                            .deliveryFeeCollected(false)
                             .orderPaymentMethod(orderPaymentMethod)
                             .paymentMethodId(orderPaymentMethod.getId())
                             .delivered(false)
@@ -106,7 +106,7 @@ public class DeliveryManifestOrderImpl implements IDeliveryManifestOrder {
                     deliveryManifestOrder.setClient(user.getClient());
                     deliveryManifestOrder.setClientId(user.getClientId());
                     deliveryManifestOrder.setReceivedAmount(requestDeliveryManifestOrder.getReceivedAmount()!=null? requestDeliveryManifestOrder.getReceivedAmount():0.00);
-                    deliveryManifestOrder.setDeliveryFeeCollected(requestDeliveryManifestOrder.getDeliveryFeeCollected());
+                    deliveryManifestOrder.setDeliveryFeeCollected(false);
                     deliveryManifestOrder.setOrderPaymentMethod(orderPaymentMethod);
                     deliveryManifestOrder.setPaymentMethodId(orderPaymentMethod.getId());
                 }

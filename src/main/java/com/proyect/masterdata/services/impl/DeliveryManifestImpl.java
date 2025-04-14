@@ -352,14 +352,12 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                     if(deliveryManifestOrder!=null){
                         deliveryManifestOrderDTO.setReceivedAmount(deliveryManifestOrder.getReceivedAmount());
                         deliveryManifestOrderDTO.setObservations(deliveryManifestOrder.getObservations());
-                        deliveryManifestOrderDTO.setDeliveryFeeCollected(deliveryManifestOrder.getDeliveryFeeCollected());
                         deliveryManifestOrderDTO.setPaymentMethod(deliveryManifestOrder.getOrderPaymentMethod().getName());
                         deliveryManifestOrderDTO.setDelivered(deliveryManifestOrder.getDelivered());
                         deliveryManifestOrderDTO.setOrderDeliveryStatus(deliveryManifestOrder.getOrderDeliveryStatus().getName());
                     }else{
                         deliveryManifestOrderDTO.setReceivedAmount(0.00);
                         deliveryManifestOrderDTO.setObservations("Sin observaciones");
-                        deliveryManifestOrderDTO.setDeliveryFeeCollected(false);
                         deliveryManifestOrderDTO.setPaymentMethod("SIN SELECCIONAR");
                         deliveryManifestOrderDTO.setDelivered(false);
                         deliveryManifestOrderDTO.setOrderDeliveryStatus("POR ENTREGAR");
@@ -746,14 +744,12 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         if(deliveryManifestOrder!=null){
                             deliveryManifestOrderDTO.setReceivedAmount(deliveryManifestOrder.getReceivedAmount());
                             deliveryManifestOrderDTO.setObservations(deliveryManifestOrder.getObservations());
-                            deliveryManifestOrderDTO.setDeliveryFeeCollected(deliveryManifestOrder.getDeliveryFeeCollected());
                             deliveryManifestOrderDTO.setPaymentMethod(deliveryManifestOrder.getOrderPaymentMethod().getName());
                             deliveryManifestOrderDTO.setDelivered(deliveryManifestOrder.getDelivered());
                             deliveryManifestOrderDTO.setOrderDeliveryStatus(deliveryManifestOrder.getOrderDeliveryStatus().getName());
                         }else{
                             deliveryManifestOrderDTO.setReceivedAmount(0.00);
                             deliveryManifestOrderDTO.setObservations("Sin observaciones");
-                            deliveryManifestOrderDTO.setDeliveryFeeCollected(false);
                             deliveryManifestOrderDTO.setPaymentMethod("SIN SELECCIONAR");
                             deliveryManifestOrderDTO.setDelivered(false);
                             deliveryManifestOrderDTO.setOrderDeliveryStatus("POR ENTREGAR");
@@ -1033,14 +1029,12 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                     if(deliveryManifestOrder!=null){
                         deliveryManifestOrderDTO.setReceivedAmount(deliveryManifestOrder.getReceivedAmount());
                         deliveryManifestOrderDTO.setObservations(deliveryManifestOrder.getObservations());
-                        deliveryManifestOrderDTO.setDeliveryFeeCollected(deliveryManifestOrder.getDeliveryFeeCollected());
                         deliveryManifestOrderDTO.setPaymentMethod(deliveryManifestOrder.getOrderPaymentMethod().getName());
                         deliveryManifestOrderDTO.setDelivered(deliveryManifestOrder.getDelivered());
                         deliveryManifestOrderDTO.setOrderDeliveryStatus(deliveryManifestOrder.getOrderDeliveryStatus().getName());
                     }else{
                         deliveryManifestOrderDTO.setReceivedAmount(0.00);
                         deliveryManifestOrderDTO.setObservations("Sin observaciones");
-                        deliveryManifestOrderDTO.setDeliveryFeeCollected(false);
                         deliveryManifestOrderDTO.setPaymentMethod("SIN SELECCIONAR");
                         deliveryManifestOrderDTO.setDelivered(false);
                         deliveryManifestOrderDTO.setOrderDeliveryStatus("POR ENTREGAR");
