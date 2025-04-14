@@ -254,7 +254,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 uniqueOrderNumbers.add(deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber());
                                 orders.add(deliveryManifestItem.getOrderItem().getOrdering());
                             }
-                            ProductPrice productPrice = productPriceRepository.findByProductId(deliveryManifestItem.getOrderItem().getProductId());
+                            ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(deliveryManifestItem.getOrderItem().getProductId());
                             Double totalPrice = null;
                             if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "PORCENTAJE")){
                                 totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getQuantity())-((productPrice.getUnitSalePrice() * deliveryManifestItem.getQuantity())*(deliveryManifestItem.getOrderItem().getDiscountAmount()/100));
@@ -352,15 +352,15 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                     if(deliveryManifestOrder!=null){
                         deliveryManifestOrderDTO.setReceivedAmount(deliveryManifestOrder.getReceivedAmount());
                         deliveryManifestOrderDTO.setObservations(deliveryManifestOrder.getObservations());
-                        deliveryManifestOrderDTO.setDeliveryFeeCollected(deliveryManifestOrder.getDeliveryFeeCollected());
                         deliveryManifestOrderDTO.setPaymentMethod(deliveryManifestOrder.getOrderPaymentMethod().getName());
                         deliveryManifestOrderDTO.setDelivered(deliveryManifestOrder.getDelivered());
+                        deliveryManifestOrderDTO.setOrderDeliveryStatus(deliveryManifestOrder.getOrderDeliveryStatus().getName());
                     }else{
                         deliveryManifestOrderDTO.setReceivedAmount(0.00);
                         deliveryManifestOrderDTO.setObservations("Sin observaciones");
-                        deliveryManifestOrderDTO.setDeliveryFeeCollected(false);
                         deliveryManifestOrderDTO.setPaymentMethod("SIN SELECCIONAR");
                         deliveryManifestOrderDTO.setDelivered(false);
+                        deliveryManifestOrderDTO.setOrderDeliveryStatus("POR ENTREGAR");
                     }
                     deliveryManifestOrderDTOS.add(deliveryManifestOrderDTO);
                 }
@@ -641,7 +641,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                     orders.add(ordering);
                                 }
 
-                                ProductPrice productPrice = productPriceRepository.findByProductId(deliveryManifestItem.getProductId());
+                                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(deliveryManifestItem.getProductId());
                                 List<Object[]> orderItems = orderItemRepository.findOrderItemDetailsByIdAndClientId(deliveryManifestItem.getOrderItemId(),clientId);
                                 Double totalPrice = null;
                                 for(Object[] orderItem:orderItems){
@@ -744,15 +744,15 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         if(deliveryManifestOrder!=null){
                             deliveryManifestOrderDTO.setReceivedAmount(deliveryManifestOrder.getReceivedAmount());
                             deliveryManifestOrderDTO.setObservations(deliveryManifestOrder.getObservations());
-                            deliveryManifestOrderDTO.setDeliveryFeeCollected(deliveryManifestOrder.getDeliveryFeeCollected());
                             deliveryManifestOrderDTO.setPaymentMethod(deliveryManifestOrder.getOrderPaymentMethod().getName());
                             deliveryManifestOrderDTO.setDelivered(deliveryManifestOrder.getDelivered());
+                            deliveryManifestOrderDTO.setOrderDeliveryStatus(deliveryManifestOrder.getOrderDeliveryStatus().getName());
                         }else{
                             deliveryManifestOrderDTO.setReceivedAmount(0.00);
                             deliveryManifestOrderDTO.setObservations("Sin observaciones");
-                            deliveryManifestOrderDTO.setDeliveryFeeCollected(false);
                             deliveryManifestOrderDTO.setPaymentMethod("SIN SELECCIONAR");
                             deliveryManifestOrderDTO.setDelivered(false);
+                            deliveryManifestOrderDTO.setOrderDeliveryStatus("POR ENTREGAR");
                         }
                         if(!deliveryManifestOrderDTO.getDeliveryManifestItemDTOList().isEmpty()){ // porque se esta obteniendo un delivery manifest con imtens vacios
                             deliveryManifestOrderDTOS.add(deliveryManifestOrderDTO);
@@ -929,7 +929,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 uniqueOrderNumbers.add(deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber());
                                 orders.add(deliveryManifestItem.getOrderItem().getOrdering());
                             }
-                            ProductPrice productPrice = productPriceRepository.findByProductId(deliveryManifestItem.getOrderItem().getProductId());
+                            ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(deliveryManifestItem.getOrderItem().getProductId());
                             Double totalPrice = null;
                             if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "PORCENTAJE")){
                                 totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts())-((productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts())*(deliveryManifestItem.getOrderItem().getDiscountAmount()/100));
@@ -1019,6 +1019,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                             .district(order.getCustomer().getDistrict().getName())
                             .province(order.getCustomer().getDistrict().getProvince().getName())
                             .deliveryFeeAmount(order.getDeliveryAmount())
+                            .deliveryManifestId(lastDeliveryManifest.getId())
                             .build();
 
                     DeliveryManifestOrder deliveryManifestOrder = deliveryManifestOrderRepository.findByDeliveryManifestIdAndOrderIdAndClientId(
@@ -1029,15 +1030,15 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                     if(deliveryManifestOrder!=null){
                         deliveryManifestOrderDTO.setReceivedAmount(deliveryManifestOrder.getReceivedAmount());
                         deliveryManifestOrderDTO.setObservations(deliveryManifestOrder.getObservations());
-                        deliveryManifestOrderDTO.setDeliveryFeeCollected(deliveryManifestOrder.getDeliveryFeeCollected());
                         deliveryManifestOrderDTO.setPaymentMethod(deliveryManifestOrder.getOrderPaymentMethod().getName());
                         deliveryManifestOrderDTO.setDelivered(deliveryManifestOrder.getDelivered());
+                        deliveryManifestOrderDTO.setOrderDeliveryStatus(deliveryManifestOrder.getOrderDeliveryStatus().getName());
                     }else{
                         deliveryManifestOrderDTO.setReceivedAmount(0.00);
                         deliveryManifestOrderDTO.setObservations("Sin observaciones");
-                        deliveryManifestOrderDTO.setDeliveryFeeCollected(false);
                         deliveryManifestOrderDTO.setPaymentMethod("SIN SELECCIONAR");
                         deliveryManifestOrderDTO.setDelivered(false);
+                        deliveryManifestOrderDTO.setOrderDeliveryStatus("POR ENTREGAR");
                     }
                     deliveryManifestOrderDTOS.add(deliveryManifestOrderDTO);
                 }

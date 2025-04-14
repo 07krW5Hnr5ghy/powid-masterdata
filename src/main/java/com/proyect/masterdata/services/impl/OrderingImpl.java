@@ -674,7 +674,7 @@ public class OrderingImpl implements IOrdering {
                         .deliveryFlag(order.getDeliveryFlag())
                         .orderStateColor(order.getOrderState().getHexColor())
                         .orderItemDTOS(orderItems.stream().map(orderItem -> {
-                            ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+                            ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
                             List<ProductPicture> productPictures = productPictureRepository.findAlByClientIdAndProductId(clientId,orderItem.getProductId());
                             Double totalPrice = PricingUtil.calculateTotalPrice(orderItem, productPrice);
                             Double totalPricePrepared = PricingUtil.calculateTotalPriceUsingPreparedProducts(orderItem,productPrice);
@@ -1262,7 +1262,7 @@ public class OrderingImpl implements IOrdering {
                 List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndStatusTrue(ordering.getId());
                 double saleAmount = 0.00;
                 for(OrderItem orderItem : orderItems){
-                    ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+                    ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
                     if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
                         saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - ((productPrice.getUnitSalePrice() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
                     }
@@ -1327,7 +1327,7 @@ public class OrderingImpl implements IOrdering {
                         .deliveryFlag(ordering.getDeliveryFlag())
                         .orderStateColor(ordering.getOrderState().getHexColor())
                         .orderItemDTOS(orderItems.stream().map(orderItem -> {
-                            ProductPrice productPrice = productPriceRepository.findByProductId(orderItem.getProductId());
+                            ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
                             List<ProductPicture> productPictures = productPictureRepository.findAlByClientIdAndProductId(user.getClientId(),orderItem.getProductId());
                             Double totalPrice = null;
                             if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
