@@ -15,6 +15,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
@@ -62,9 +63,6 @@ public class DeliveryManifestOrderImpl implements IDeliveryManifestOrder {
             }else{
                 deliveryManifestOrder = deliveryManifestOrderRepository.findByDeliveryManifestIdAndOrderIdAndClientId(deliveryManifest.getId(),ordering.getId(),user.getClientId());
             }
-            if(deliveryManifestOrder!=null){
-                throw new BadRequestExceptions(Constants.ErrorDeliveryManifestOrderExist);
-            }
             if(orderPaymentMethod==null){
                 throw new BadRequestExceptions(Constants.ErrorPaymentMethod);
             }
@@ -72,26 +70,46 @@ public class DeliveryManifestOrderImpl implements IDeliveryManifestOrder {
                 throw new BadRequestExceptions(Constants.ErrorOrderDeliveryStatus);
             }
             try {
-                DeliveryManifestOrder newDeliveryManifestOrder = DeliveryManifestOrder.builder()
-                        .orderId(ordering.getId())
-                        .ordering(ordering)
-                        .deliveryManifestId(deliveryManifest.getId())
-                        .deliveryManifest(deliveryManifest)
-                        .registrationDate(OffsetDateTime.now())
-                        .updateDate(OffsetDateTime.now())
-                        .userId(user.getId())
-                        .user(user)
-                        .client(user.getClient())
-                        .clientId(user.getClientId())
-                        .observations(requestDeliveryManifestOrder.getObservations()!=null? requestDeliveryManifestOrder.getObservations():"Sin observaciones")
-                        .receivedAmount(requestDeliveryManifestOrder.getReceivedAmount()!=null? requestDeliveryManifestOrder.getReceivedAmount():0.00)
-                        .deliveryFeeCollected(requestDeliveryManifestOrder.getDeliveryFeeCollected())
-                        .orderPaymentMethod(orderPaymentMethod)
-                        .paymentMethodId(orderPaymentMethod.getId())
-                        .delivered(false)
-                        .orderDeliveryStatus(orderDeliveryStatus)
-                        .orderDeliveryStatusId(orderDeliveryStatus.getId())
-                        .build();
+                if(deliveryManifestOrder==null){
+                    deliveryManifestOrder = DeliveryManifestOrder.builder()
+                            .orderId(ordering.getId())
+                            .ordering(ordering)
+                            .deliveryManifestId(deliveryManifest.getId())
+                            .deliveryManifest(deliveryManifest)
+                            .registrationDate(OffsetDateTime.now())
+                            .updateDate(OffsetDateTime.now())
+                            .userId(user.getId())
+                            .user(user)
+                            .client(user.getClient())
+                            .clientId(user.getClientId())
+                            .observations(requestDeliveryManifestOrder.getObservations()!=null? requestDeliveryManifestOrder.getObservations():"Sin observaciones")
+                            .receivedAmount(requestDeliveryManifestOrder.getReceivedAmount()!=null? requestDeliveryManifestOrder.getReceivedAmount():0.00)
+                            .deliveryFeeCollected(requestDeliveryManifestOrder.getDeliveryFeeCollected())
+                            .orderPaymentMethod(orderPaymentMethod)
+                            .paymentMethodId(orderPaymentMethod.getId())
+                            .delivered(false)
+                            .orderDeliveryStatus(orderDeliveryStatus)
+                            .orderDeliveryStatusId(orderDeliveryStatus.getId())
+                            .build();
+                }else{
+                    deliveryManifestOrder.setOrdering(ordering);
+                    deliveryManifestOrder.setOrderId(ordering.getId());
+                    deliveryManifestOrder.setDeliveryManifest(deliveryManifest);
+                    deliveryManifestOrder.setDeliveryManifestId(deliveryManifest.getId());
+                    deliveryManifestOrder.setDelivered(false);
+                    deliveryManifestOrder.setOrderDeliveryStatus(orderDeliveryStatus);
+                    deliveryManifestOrder.setOrderDeliveryStatusId(orderDeliveryStatus.getId());
+                    deliveryManifestOrder.setObservations(requestDeliveryManifestOrder.getObservations()!=null? requestDeliveryManifestOrder.getObservations():"Sin observaciones");
+                    deliveryManifestOrder.setUpdateDate(OffsetDateTime.now());
+                    deliveryManifestOrder.setUser(user);
+                    deliveryManifestOrder.setUserId(user.getId());
+                    deliveryManifestOrder.setClient(user.getClient());
+                    deliveryManifestOrder.setClientId(user.getClientId());
+                    deliveryManifestOrder.setReceivedAmount(requestDeliveryManifestOrder.getReceivedAmount()!=null? requestDeliveryManifestOrder.getReceivedAmount():0.00);
+                    deliveryManifestOrder.setDeliveryFeeCollected(requestDeliveryManifestOrder.getDeliveryFeeCollected());
+                    deliveryManifestOrder.setOrderPaymentMethod(orderPaymentMethod);
+                    deliveryManifestOrder.setPaymentMethodId(orderPaymentMethod.getId());
+                }
                 if(requestDeliveryManifestOrder.getObservations() != null && requestDeliveryManifestOrder.getReceivedAmount() != null){
                     iOrderLog.save(user,ordering,
                             "Observaciones de guia de motorizado # "
@@ -112,7 +130,7 @@ public class DeliveryManifestOrderImpl implements IDeliveryManifestOrder {
                                     + requestDeliveryManifestOrder.getReceivedAmount() + " ."
                     );
                 }
-                deliveryManifestOrderRepository.save(newDeliveryManifestOrder);
+                deliveryManifestOrderRepository.save(deliveryManifestOrder);
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
@@ -129,6 +147,9 @@ public class DeliveryManifestOrderImpl implements IDeliveryManifestOrder {
     public CompletableFuture<ResponseSuccess> markDeliveredOperationsOrders(RequestDeliveryManifestOrderMark requestDeliveryManifestOrderMark) throws BadRequestExceptions, InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             User user;
+            OrderDeliveryStatus orderDeliveryStatus;
+            DeliveryManifest deliveryManifest;
+            DeliveryManifestOrder deliveryManifestOrder = null;
             try{
                 user = userRepository.findByUsernameAndStatusTrue(requestDeliveryManifestOrderMark.getUsername().toUpperCase());
             }catch (RuntimeException e){
@@ -138,17 +159,75 @@ public class DeliveryManifestOrderImpl implements IDeliveryManifestOrder {
             }
             if(user==null){
                 throw new BadRequestExceptions(Constants.ErrorUser);
+            }else{
+                orderDeliveryStatus = orderDeliveryStatusRepository.findByNameAndClientIdAndStatusTrue(
+                        "POR ENTREGAR",
+                        user.getClientId()
+                );
+                deliveryManifest = deliveryManifestRepository.findById(requestDeliveryManifestOrderMark.getDeliveryManifestId()).orElse(null);
+            }
+            if(deliveryManifest==null){
+                throw new BadRequestExceptions(Constants.ErrorDeliveryManifest);
             }
             try {
                 for(UUID orderId: requestDeliveryManifestOrderMark.getOrderIds()){
-                    DeliveryManifestOrder deliveryManifestOrder = deliveryManifestOrderRepository.findByDeliveryManifestIdAndOrderIdAndClientId(
+                    deliveryManifestOrder = deliveryManifestOrderRepository.findByDeliveryManifestIdAndOrderIdAndClientId(
                             requestDeliveryManifestOrderMark.getDeliveryManifestId(),
                             orderId,
                             user.getClientId()
                     );
-                    deliveryManifestOrder.setDelivered(true);
-                    deliveryManifestOrderRepository.save(deliveryManifestOrder);
+                    Ordering ordering = orderingRepository.findByClientIdAndId(user.getClientId(),orderId);
+
+                    if(deliveryManifestOrder!=null&&!deliveryManifestOrder.getDelivered()){
+                        deliveryManifestOrderRepository.setDeliveryManifestOrderDeliveredTrue(
+                                orderId,
+                                deliveryManifest.getId(),
+                                user.getClientId()
+                        );
+                    }
+                    if(deliveryManifestOrder==null){
+                        deliveryManifestOrderRepository.save(DeliveryManifestOrder.builder()
+                                        .orderDeliveryStatus(orderDeliveryStatus)
+                                        .orderDeliveryStatusId(orderDeliveryStatus.getId())
+                                        .delivered(true)
+                                        .orderId(ordering.getId())
+                                        .ordering(ordering)
+                                        .deliveryManifest(deliveryManifest)
+                                        .deliveryManifestId(deliveryManifest.getId())
+                                        .deliveryFeeCollected(false)
+                                        .clientId(user.getClientId())
+                                        .client(user.getClient())
+                                        .userId(user.getId())
+                                        .user(user)
+                                        .receivedAmount(0.00)
+                                        .registrationDate(OffsetDateTime.now())
+                                        .observations("SIN OBSERVACIONES")
+                                        .orderPaymentMethod(ordering.getOrderPaymentMethod())
+                                        .paymentMethodId(ordering.getPaymentMethodId())
+                                .build());
+                    }
+                    if(deliveryManifestOrder!= null && deliveryManifestOrder.getObservations() != null && deliveryManifestOrder.getReceivedAmount() != null){
+                        iOrderLog.save(user,ordering,
+                                "Observaciones de guia de motorizado # "
+                                        + deliveryManifest.getManifestNumber() + " registradas : "
+                                        + deliveryManifestOrder.getObservations() + " y monto recibido de : $"
+                                        + deliveryManifestOrder.getReceivedAmount() + " ."
+                        );
+                    }else if(deliveryManifestOrder!= null && deliveryManifestOrder.getObservations()!=null){
+                        iOrderLog.save(user,ordering,
+                                "Observaciones de guia de motorizado # "
+                                        + deliveryManifest.getManifestNumber() + " registradas : "
+                                        + deliveryManifestOrder.getObservations() + " ."
+                        );
+                    }else if(deliveryManifestOrder!= null && deliveryManifestOrder.getReceivedAmount() != null){
+                        iOrderLog.save(user,ordering,
+                                "Monto recibido en guia de motorizado # "
+                                        + deliveryManifest.getManifestNumber() + " de : $"
+                                        + deliveryManifestOrder.getReceivedAmount() + " ."
+                        );
+                    }
                 }
+
                 return ResponseSuccess.builder()
                         .message(Constants.update)
                         .code(200)

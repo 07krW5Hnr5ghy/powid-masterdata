@@ -15,7 +15,6 @@ import java.util.UUID;
 public class OrderDeliveryStatusDTO {
     private String name;
     private String user;
-    private String sku;
     private UUID id;
     private OffsetDateTime registrationDate;
     private OffsetDateTime updateDate;
