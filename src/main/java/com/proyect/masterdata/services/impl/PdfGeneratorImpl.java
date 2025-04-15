@@ -260,6 +260,8 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                                     .orderItemAmount(totalPrice)
                                     .product(deliveryManifestItem.getCustomerName())
                                     .orderId(deliveryManifestItem.getOrderId())
+                                    .dni(deliveryManifestItem.getDni())
+                                    .address(deliveryManifestItem.getAddress())
                                     .build();
                         }).toList();
                 double totalOrdersSaleAmount = 0.00;
