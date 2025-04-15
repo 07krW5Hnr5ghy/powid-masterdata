@@ -232,7 +232,6 @@ public class UserImpl implements IUser {
         });
     }
 
-
     @Override
     public CompletableFuture<UserDTO> update(RequestUserSave requestUserSave, String tokenUser)
             throws BadRequestExceptions, InternalErrorExceptions {
@@ -576,5 +575,7 @@ public class UserImpl implements IUser {
                     .collect(Collectors.toList());
         });
     }
+
+
 
 }
