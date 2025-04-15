@@ -24,13 +24,8 @@ public class KardexBalanceImpl implements IKardexBalance {
     public KardexBalance save(RequestKardexBalance requestKardexBalance) throws BadRequestExceptions, InternalErrorExceptions {
         KardexBalance kardexBalanceResult = null;
         try{
-            List<KardexBalance> kardexBalanceList = kardexBalanceRepository.findAllByClientIdAndProductIdAndWarehouseIdWithStock(
-                    requestKardexBalance.getUser().getClientId(),
-                    requestKardexBalance.getProduct().getId(),
-                    requestKardexBalance.getWarehouse().getId()
-            );
-            
-            if(kardexBalance==null&&requestKardexBalance.getAdd()){
+
+            if(requestKardexBalance.getAdd()){
                 kardexBalanceResult = kardexBalanceRepository.save(KardexBalance.builder()
                                 .remainingQuantity(requestKardexBalance.getQuantity())
                                 .lotNumber(requestKardexBalance.getLotNumber())
@@ -44,24 +39,28 @@ public class KardexBalanceImpl implements IKardexBalance {
                                 .registrationDate(OffsetDateTime.now())
                                 .updateDate(OffsetDateTime.now())
                         .build());
-            }
+            }else{
+                int remainingToDeduct = requestKardexBalance.getQuantity();
+                List<KardexBalance> kardexBalanceList = kardexBalanceRepository.findAllByClientIdAndProductIdAndWarehouseIdWithStock(
+                        requestKardexBalance.getUser().getClientId(),
+                        requestKardexBalance.getProduct().getId(),
+                        requestKardexBalance.getWarehouse().getId()
+                );
+                for (KardexBalance kardexBalance : kardexBalanceList) {
+                    if (remainingToDeduct <= 0) break;
 
-            if(kardexBalance!=null&&requestKardexBalance.getAdd()){
-                kardexBalance.setRemainingQuantity(kardexBalance.getRemainingQuantity()+requestKardexBalance.getQuantity());
-            }
+                    int available = kardexBalance.getRemainingQuantity();
 
-            if(kardexBalance!=null){
-                if(requestKardexBalance.getAdd()){
-                    kardexBalance.setRemainingQuantity(kardexBalance.getRemainingQuantity()+requestKardexBalance.getQuantity());
-                }else{
-                    Integer leftQuantity = requestKardexBalance.getQuantity();
-
-                    if(kardexBalance.getRemainingQuantity()>requestKardexBalance.getQuantity()){
-                        kardexBalance.setRemainingQuantity(kardexBalance.getRemainingQuantity()-requestKardexBalance.getQuantity());
+                    if (available >= remainingToDeduct) {
+                        kardexBalance.setRemainingQuantity(available - remainingToDeduct);
+                        remainingToDeduct = 0;
+                    } else {
+                        kardexBalance.setRemainingQuantity(0);
+                        remainingToDeduct -= available;
                     }
+
+                    kardexBalanceRepository.save(kardexBalance);
                 }
-                kardexBalance.setUpdateDate(OffsetDateTime.now());
-                kardexBalanceResult = kardexBalanceRepository.save(kardexBalance);
             }
             return kardexBalanceResult;
         }catch (RuntimeException e){
