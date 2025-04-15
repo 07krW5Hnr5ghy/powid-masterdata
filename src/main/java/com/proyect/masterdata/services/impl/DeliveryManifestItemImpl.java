@@ -1,11 +1,9 @@
 package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
-import com.proyect.masterdata.dto.CourierDTO;
-import com.proyect.masterdata.dto.CourierProfileDTO;
-import com.proyect.masterdata.dto.DeliveredOrdersCountDTO;
-import com.proyect.masterdata.dto.DeliveryManifestItemDTO;
+import com.proyect.masterdata.dto.*;
 import com.proyect.masterdata.dto.projections.DeliveryManifestItemDTOP;
+import com.proyect.masterdata.dto.projections.DeliveryManifestItemProjection;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -249,7 +247,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
             Integer pageNumber,
             Integer pageSize) {
         return CompletableFuture.supplyAsync(()->{
-            Page<DeliveryManifestItem> deliveryManifestItemPage;
+            Page<DeliveryManifestItemProjectionDTO> deliveryManifestItemPage;
             UUID clientId;
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClientId();
@@ -285,37 +283,37 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                 return new PageImpl<>(Collections.emptyList());
             }
             List<DeliveryManifestItemDTO> deliveryManifestItemDTOS = deliveryManifestItemPage.stream().map(deliveryManifestItem -> {
-                ProductPrice productPrice = productPriceRepository.findByProductId(deliveryManifestItem.getProductId());
+                ProductPrice productPrice = productPriceRepository.findClosestByProductIdAndDate(deliveryManifestItem.getProductId(),deliveryManifestItem.getRegistrationDate());
                 Double totalPrice = null;
-                if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "PORCENTAJE")){
-                    totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts())-((productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts())*(deliveryManifestItem.getOrderItem().getDiscountAmount()/100));
+                if(Objects.equals(deliveryManifestItem.getDiscountName(), "PORCENTAJE")){
+                    totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getPreparedProducts())-((productPrice.getUnitSalePrice() * deliveryManifestItem.getPreparedProducts())*(deliveryManifestItem.getDiscountAmount()/100));
                 }
 
-                if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "MONTO")){
-                    totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts())-(deliveryManifestItem.getOrderItem().getDiscountAmount());
+                if(Objects.equals(deliveryManifestItem.getDiscountName(), "MONTO")){
+                    totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getPreparedProducts())-(deliveryManifestItem.getDiscountAmount());
                 }
 
-                if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "NO APLICA")){
-                    totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts());
+                if(Objects.equals(deliveryManifestItem.getDiscountName(), "NO APLICA")){
+                    totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getPreparedProducts());
                 }
                 return DeliveryManifestItemDTO.builder()
-                        .id(deliveryManifestItem.getId())
+                        .id(deliveryManifestItem.getDeliveryManifestItemId())
                         .deliveredQuantity(deliveryManifestItem.getDeliveredQuantity())
                         .collectedQuantity(deliveryManifestItem.getCollectedQuantity())
-                        .phone(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getPhone())
-                        .district(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getDistrict().getName())
-                        .manifestNumber(deliveryManifestItem.getDeliveryManifest().getManifestNumber())
-                        .orderNumber(deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber())
+                        .phone(deliveryManifestItem.getPhone())
+                        .district(deliveryManifestItem.getDistrictName())
+                        .manifestNumber(deliveryManifestItem.getManifestNumber())
+                        .orderNumber(deliveryManifestItem.getOrderNumber())
                         .quantity(deliveryManifestItem.getQuantity())
                         .deliveredQuantity(deliveryManifestItem.getDeliveredQuantity())
                         .collectedQuantity(deliveryManifestItem.getCollectedQuantity())
-                        .customer(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getName())
-                        .skuProduct(iUtil.buildProductSku(deliveryManifestItem.getProduct()))
-                        .management(deliveryManifestItem.getOrderItem().getOrdering().getManagementType().getName())
-                        .paymentMethod(deliveryManifestItem.getOrderItem().getOrdering().getOrderPaymentMethod().getName())
-                        .paymentState(deliveryManifestItem.getOrderItem().getOrdering().getOrderPaymentState().getName())
+                        .customer(deliveryManifestItem.getCustomerName())
+                        .skuProduct(iUtil.buildProductSku(productPrice.getProduct()))
+                        .management(deliveryManifestItem.getManagementType())
+                        .paymentMethod(deliveryManifestItem.getPaymentMethod())
+                        .paymentState(deliveryManifestItem.getPaymentState())
                         .orderItemAmount(totalPrice)
-                        .product(deliveryManifestItem.getProduct().getName())
+                        .product(productPrice.getProduct().getName())
                         .build();
             }).toList();
             return new PageImpl<>(deliveryManifestItemDTOS,deliveryManifestItemPage.getPageable(),deliveryManifestItemPage.getTotalElements());

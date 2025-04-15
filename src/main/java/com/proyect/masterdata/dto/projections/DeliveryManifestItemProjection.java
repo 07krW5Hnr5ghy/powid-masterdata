@@ -1,5 +1,7 @@
 package com.proyect.masterdata.dto.projections;
 
+import com.proyect.masterdata.domain.Product;
+
 import java.util.UUID;
 
 public interface DeliveryManifestItemProjection {
@@ -20,4 +22,8 @@ public interface DeliveryManifestItemProjection {
     Integer getDeliveredQuantity();
     Integer getCollectedQuantity();
     Integer getDeliveredProducts();
+    Integer getItemQuantity();
+    String getDiscountName();
+    Integer getPreparedProducts();
+    Double getDiscountAmount();
 }
