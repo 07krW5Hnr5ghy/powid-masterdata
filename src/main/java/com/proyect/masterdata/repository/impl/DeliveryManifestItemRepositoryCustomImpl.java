@@ -1,6 +1,9 @@
 package com.proyect.masterdata.repository.impl;
 
 import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.dto.DeliveryManifestItemDTO;
+import com.proyect.masterdata.dto.DeliveryManifestItemProjectionDTO;
+import com.proyect.masterdata.dto.projections.DeliveryManifestItemProjection;
 import com.proyect.masterdata.repository.DeliveryManifestItemRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -24,11 +27,12 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
     private EntityManager entityManager;
 
     @Override
-    public Page<DeliveryManifestItem> searchForDeliveryManifestItem(
+    public Page<DeliveryManifestItemProjectionDTO> searchForDeliveryManifestItem(
             UUID clientId,
             Integer quantity,
             Boolean collected,
             Long orderNumber,
+            UUID orderId,
             Long manifestNumber,
             String color,
             String size,
@@ -47,7 +51,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
             Integer pageNumber,
             Integer pageSize) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
-        CriteriaQuery<DeliveryManifestItem> criteriaQuery = criteriaBuilder.createQuery(DeliveryManifestItem.class);
+        CriteriaQuery<DeliveryManifestItemProjectionDTO> criteriaQuery = criteriaBuilder.createQuery(DeliveryManifestItemProjectionDTO.class);
         Root<DeliveryManifestItem> itemRoot = criteriaQuery.from(DeliveryManifestItem.class);
         Join<DeliveryManifestItem, Product> deliveryManifestItemProductJoin = itemRoot.join("product");
         Join<DeliveryManifestItem, DeliveryManifest> deliveryManifestItemDeliveryManifestJoin = itemRoot.join("deliveryManifest");
@@ -58,14 +62,47 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
         Join<Product,Model> productModelJoin = deliveryManifestItemProductJoin.join("model");
         Join<Model,Brand> modelBrandJoin = productModelJoin.join("brand");
         Join<OrderItem,Ordering> orderItemOrderingJoin = deliveryManifestItemOrderItemJoin.join("ordering");
+        Join<Ordering,Customer> orderingCustomerJoin = orderItemOrderingJoin.join("customer");
+        Join<Customer,District> customerDistrictJoin = orderingCustomerJoin.join("district");
+        Join<Ordering,ManagementType> orderingManagementTypeJoin = orderItemOrderingJoin.join("managementType");
+        Join<Ordering,OrderPaymentMethod> orderingOrderPaymentMethodJoin = orderItemOrderingJoin.join("orderPaymentMethod");
         Join<DeliveryManifest,Courier> deliveryManifestCourierJoin = deliveryManifestItemDeliveryManifestJoin.join("courier");
         Join<DeliveryManifest,Warehouse> deliveryManifestWarehouseJoin = deliveryManifestItemDeliveryManifestJoin.join("warehouse");
-        criteriaQuery.select(itemRoot);
+        Join<Ordering,OrderPaymentState> orderingOrderPaymentStateJoin = orderItemOrderingJoin.join("orderPaymentState");
+        Join<OrderItem,Discount>  orderItemDiscountJoin = deliveryManifestItemOrderItemJoin.join("discount");
+        criteriaQuery.select(
+                criteriaBuilder.construct(
+                        DeliveryManifestItemProjectionDTO.class,
+                        itemRoot.get("id"),
+                        deliveryManifestItemUserJoin.get("username"),
+                        deliveryManifestItemDeliveryManifestJoin.get("manifestNumber"),
+                        orderingCustomerJoin.get("phone"),
+                        customerDistrictJoin.get("name"),
+                        orderItemOrderingJoin.get("orderNumber"),
+                        itemRoot.get("productId"),
+                        itemRoot.get("quantity"),
+                        orderingManagementTypeJoin.get("name"),
+                        orderingOrderPaymentMethodJoin.get("name"),
+                        orderingOrderPaymentStateJoin.get("name"),
+                        orderItemOrderingJoin.get("id"),
+                        itemRoot.get("orderItemId"),
+                        orderingCustomerJoin.get("name"),
+                        itemRoot.get("deliveredQuantity"),
+                        itemRoot.get("collectedQuantity"),
+                        deliveryManifestItemOrderItemJoin.get("deliveredProducts"),
+                        deliveryManifestItemOrderItemJoin.get("quantity"),
+                        orderItemDiscountJoin.get("name"),
+                        deliveryManifestItemOrderItemJoin.get("preparedProducts"),
+                        deliveryManifestItemOrderItemJoin.get("discountAmount"),
+                        deliveryManifestItemOrderItemJoin.get("registrationDate")
+                )
+        );
         List<Predicate> conditions = predicate(
               clientId,
               quantity,
               collected,
               orderNumber,
+              orderId,
               manifestNumber,
               color,
               size,
@@ -82,6 +119,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
               criteriaBuilder,
               itemRoot,
               deliveryManifestItemUserJoin,
+              deliveryManifestItemOrderItemJoin,
               orderItemOrderingJoin,
               deliveryManifestItemDeliveryManifestJoin,
               productColorJoin,
@@ -107,7 +145,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
         } else {
             criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         }
-        TypedQuery<DeliveryManifestItem> orderTypedQuery = entityManager.createQuery(criteriaQuery);
+        TypedQuery<DeliveryManifestItemProjectionDTO> orderTypedQuery = entityManager.createQuery(criteriaQuery);
         orderTypedQuery.setFirstResult(pageNumber*pageSize);
         orderTypedQuery.setMaxResults(pageSize);
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
@@ -116,6 +154,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
                 quantity,
                 collected,
                 orderNumber,
+                orderId,
                 manifestNumber,
                 color,
                 size,
@@ -137,6 +176,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
             Integer quantity,
             Boolean collected,
             Long orderNumber,
+            UUID orderId,
             Long manifestNumber,
             String color,
             String size,
@@ -153,6 +193,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
             CriteriaBuilder criteriaBuilder,
             Root<DeliveryManifestItem> itemRoot,
             Join<DeliveryManifestItem,User> deliveryManifestItemUserJoin,
+            Join<DeliveryManifestItem,OrderItem> deliveryManifestItemOrderItemJoin,
             Join<OrderItem,Ordering> orderItemOrderingJoin,
             Join<DeliveryManifestItem,DeliveryManifest> deliveryManifestItemDeliveryManifestJoin,
             Join<Product,Color> productColorJoin,
@@ -163,6 +204,9 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
             Join<DeliveryManifest,Warehouse> deliveryManifestWarehouseJoin
     ){
         List<Predicate> conditions = new ArrayList<>();
+        if(orderId!=null){
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(deliveryManifestItemOrderItemJoin.get("orderId"), orderId)));
+        }
         if (clientId != null) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(deliveryManifestItemUserJoin.get("clientId"), clientId)));
         }
@@ -299,6 +343,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
             Integer quantity,
             Boolean collected,
             Long orderNumber,
+            UUID orderId,
             Long manifestNumber,
             String color,
             String size,
@@ -333,6 +378,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
                 quantity,
                 collected,
                 orderNumber,
+                orderId,
                 manifestNumber,
                 color,
                 size,
@@ -349,6 +395,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
                 criteriaBuilder,
                 itemRoot,
                 deliveryManifestItemUserJoin,
+                deliveryManifestItemOrderItemJoin,
                 orderItemOrderingJoin,
                 deliveryManifestItemDeliveryManifestJoin,
                 productColorJoin,
