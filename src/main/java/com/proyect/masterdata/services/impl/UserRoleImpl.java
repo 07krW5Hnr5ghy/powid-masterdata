@@ -39,7 +39,6 @@ public class UserRoleImpl implements IUserRole {
         User user;
         User userData;
         Role roleData;
-        System.out.println("save");
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             userData = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
@@ -62,15 +61,13 @@ public class UserRoleImpl implements IUserRole {
         }
 
         try {
-
             UserRole newUserRole = userRoleRepository.save(UserRole.builder()
                     .userId(userData.getId())
                     .roleId(roleData.getId())
-                            .role(roleData)
-                            .user(userData)
+                    .role(roleData)
+                    .user(userData)
                     .registrationDate(OffsetDateTime.now())
-                    .user(user).userId(user.getId())
-                            .status(true)
+                    .status(true)
                     .build());
             iAudit.save("ADD_USER_ROLE","ROL "+newUserRole.getRole().getName()+" PARA USUARIO "+newUserRole.getUser().getUsername()+" CREADO.",newUserRole.getUser().getUsername(),user.getUsername());
             return ResponseSuccess.builder()
@@ -89,7 +86,6 @@ public class UserRoleImpl implements IUserRole {
             User user;
             User userData;
             Role roleData;
-            System.out.println("save role asunc");
             try {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 userData = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
@@ -112,7 +108,6 @@ public class UserRoleImpl implements IUserRole {
             }
 
             try {
-
                 UserRole newUserRole = userRoleRepository.save(UserRole.builder()
                         .userId(userData.getId())
                         .user(userData)
@@ -120,9 +115,7 @@ public class UserRoleImpl implements IUserRole {
                         .role(roleData)
                         .registrationDate(OffsetDateTime.now())
                         .status(true)
-                        .user(user).userId(user.getId())
                         .build());
-                System.out.println(newUserRole);
                 iAudit.save("ADD_USER_ROLE","ROL "+newUserRole.getRole().getName()+" PARA USUARIO "+newUserRole.getUser().getUsername()+" CREADO.",newUserRole.getUser().getUsername(),user.getUsername());
                 return ResponseSuccess.builder()
                         .code(200)
@@ -172,8 +165,8 @@ public class UserRoleImpl implements IUserRole {
             try {
                 userRole.setStatus(false);
                 userRole.setUpdateDate(OffsetDateTime.now());
-                userRole.setUser(user);
-                userRole.setUserId(user.getId());
+                userRoleRepository.save(userRole);
+
                 iAudit.save("DELETE_USER_ROLE","ROL "+userRole.getRole().getName()+" PARA USUARIO "+userRole.getUser().getUsername()+" DESACTIVADO.",userRole.getUser().getUsername(),user.getUsername());
                 return ResponseDelete.builder()
                         .code(200)

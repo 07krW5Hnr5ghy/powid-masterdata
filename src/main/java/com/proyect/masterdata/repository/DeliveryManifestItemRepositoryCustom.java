@@ -1,6 +1,9 @@
 package com.proyect.masterdata.repository;
 
 import com.proyect.masterdata.domain.DeliveryManifestItem;
+import com.proyect.masterdata.dto.DeliveryManifestItemDTO;
+import com.proyect.masterdata.dto.DeliveryManifestItemProjectionDTO;
+import com.proyect.masterdata.dto.projections.DeliveryManifestItemProjection;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Repository;
 
@@ -9,11 +12,12 @@ import java.util.UUID;
 
 @Repository
 public interface DeliveryManifestItemRepositoryCustom {
-    Page<DeliveryManifestItem> searchForDeliveryManifestItem(
+    Page<DeliveryManifestItemProjectionDTO> searchForDeliveryManifestItem(
             UUID clientId,
             Integer quantity,
             Boolean collected,
             Long orderNumber,
+            UUID orderId,
             Long manifestNumber,
             String color,
             String size,

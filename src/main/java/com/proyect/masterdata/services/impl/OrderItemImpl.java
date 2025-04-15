@@ -301,7 +301,7 @@ public class OrderItemImpl implements IOrderItem {
                         orderId,
                         productId,
                         OffsetDateTime.now(),
-                        user.getId(),
+                        //user.getId(),
                         false
                 );
                 iOrderLog.save(
@@ -742,7 +742,7 @@ public class OrderItemImpl implements IOrderItem {
                         orderId,
                         productId,
                         OffsetDateTime.now(),
-                        user.getId(),
+                        //user.getId(),
                         true
                 );
                 iOrderLog.save(
@@ -804,7 +804,7 @@ public class OrderItemImpl implements IOrderItem {
                 orderItemRepository.selectPreparedOrderItem(
                         ordering.getId(),
                         orderItemId,
-                        user.getId(),
+                        //user.getId(),
                         OffsetDateTime.now(),
                         preparedProducts
                 );

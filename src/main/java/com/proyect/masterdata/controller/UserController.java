@@ -33,6 +33,7 @@ public class UserController {
         CompletableFuture<ResponseSuccess> result = iUser.saveAsync(requestUser);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
+
     @PutMapping()
     //@PreAuthorize("hasAnyAuthority('ROLE:ADMINISTRATION') and hasAuthority('ACCESS:USER_PUT')")
     public ResponseEntity<UserDTO> update(
