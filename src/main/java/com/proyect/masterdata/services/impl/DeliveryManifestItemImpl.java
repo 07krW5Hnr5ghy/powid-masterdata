@@ -314,6 +314,8 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                         .paymentState(deliveryManifestItem.getPaymentState())
                         .orderItemAmount(totalPrice)
                         .product(productPrice.getProduct().getName())
+                        .user(deliveryManifestItem.getUsername())
+                        .orderId(deliveryManifestItem.getOrderId())
                         .build();
             }).toList();
             return new PageImpl<>(deliveryManifestItemDTOS,deliveryManifestItemPage.getPageable(),deliveryManifestItemPage.getTotalElements());
