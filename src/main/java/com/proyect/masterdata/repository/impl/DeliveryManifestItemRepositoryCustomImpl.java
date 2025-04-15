@@ -32,6 +32,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
             Integer quantity,
             Boolean collected,
             Long orderNumber,
+            UUID orderId,
             Long manifestNumber,
             String color,
             String size,
@@ -101,6 +102,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
               quantity,
               collected,
               orderNumber,
+              orderId,
               manifestNumber,
               color,
               size,
@@ -117,6 +119,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
               criteriaBuilder,
               itemRoot,
               deliveryManifestItemUserJoin,
+              deliveryManifestItemOrderItemJoin,
               orderItemOrderingJoin,
               deliveryManifestItemDeliveryManifestJoin,
               productColorJoin,
@@ -151,6 +154,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
                 quantity,
                 collected,
                 orderNumber,
+                orderId,
                 manifestNumber,
                 color,
                 size,
@@ -172,6 +176,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
             Integer quantity,
             Boolean collected,
             Long orderNumber,
+            UUID orderId,
             Long manifestNumber,
             String color,
             String size,
@@ -188,6 +193,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
             CriteriaBuilder criteriaBuilder,
             Root<DeliveryManifestItem> itemRoot,
             Join<DeliveryManifestItem,User> deliveryManifestItemUserJoin,
+            Join<DeliveryManifestItem,OrderItem> deliveryManifestItemOrderItemJoin,
             Join<OrderItem,Ordering> orderItemOrderingJoin,
             Join<DeliveryManifestItem,DeliveryManifest> deliveryManifestItemDeliveryManifestJoin,
             Join<Product,Color> productColorJoin,
@@ -198,6 +204,9 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
             Join<DeliveryManifest,Warehouse> deliveryManifestWarehouseJoin
     ){
         List<Predicate> conditions = new ArrayList<>();
+        if(orderId!=null){
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(deliveryManifestItemOrderItemJoin.get("orderId"), orderId)));
+        }
         if (clientId != null) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(deliveryManifestItemUserJoin.get("clientId"), clientId)));
         }
@@ -334,6 +343,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
             Integer quantity,
             Boolean collected,
             Long orderNumber,
+            UUID orderId,
             Long manifestNumber,
             String color,
             String size,
@@ -368,6 +378,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
                 quantity,
                 collected,
                 orderNumber,
+                orderId,
                 manifestNumber,
                 color,
                 size,
@@ -384,6 +395,7 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
                 criteriaBuilder,
                 itemRoot,
                 deliveryManifestItemUserJoin,
+                deliveryManifestItemOrderItemJoin,
                 orderItemOrderingJoin,
                 deliveryManifestItemDeliveryManifestJoin,
                 productColorJoin,

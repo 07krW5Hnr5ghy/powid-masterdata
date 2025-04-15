@@ -34,6 +34,7 @@ public interface IDeliveryManifestItem {
             Integer quantity,
             Boolean collected,
             Long orderNumber,
+            UUID orderId,
             Long manifestNumber,
             String color,
             String size,
