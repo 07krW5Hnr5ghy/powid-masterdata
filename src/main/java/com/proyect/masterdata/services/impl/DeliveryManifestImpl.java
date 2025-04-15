@@ -289,6 +289,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                     .paymentState(deliveryManifestItem.getOrderItem().getOrdering().getOrderPaymentState().getName())
                                     .orderItemAmount(totalPrice)
                                     .product(deliveryManifestItem.getProduct().getName())
+                                    .orderId(deliveryManifestItem.getOrderItem().getOrderId())
                                     .build();
                         }).toList();
                 double totalOrdersSaleAmount = 0.00;
@@ -965,6 +966,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                     .paymentState(deliveryManifestItem.getOrderItem().getOrdering().getOrderPaymentState().getName())
                                     .orderItemAmount(totalPrice)
                                     .product(deliveryManifestItem.getProduct().getName())
+                                    .orderId(deliveryManifestItem.getOrderItem().getOrderId())
                                     .build();
                         }).toList();
                 double totalOrdersSaleAmount = 0.00;
