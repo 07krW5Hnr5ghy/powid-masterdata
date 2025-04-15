@@ -29,4 +29,6 @@ public class DeliveryManifestItemDTO {
     private String paymentMethod;
     private String paymentState;
     private Double orderItemAmount;
+    private String address;
+    private String dni;
 }

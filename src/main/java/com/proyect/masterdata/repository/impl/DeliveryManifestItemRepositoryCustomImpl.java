@@ -94,7 +94,9 @@ public class DeliveryManifestItemRepositoryCustomImpl implements DeliveryManifes
                         orderItemDiscountJoin.get("name"),
                         deliveryManifestItemOrderItemJoin.get("preparedProducts"),
                         deliveryManifestItemOrderItemJoin.get("discountAmount"),
-                        deliveryManifestItemOrderItemJoin.get("registrationDate")
+                        deliveryManifestItemOrderItemJoin.get("registrationDate"),
+                        orderingCustomerJoin.get("dni"),
+                        orderingCustomerJoin.get("address")
                 )
         );
         List<Predicate> conditions = predicate(

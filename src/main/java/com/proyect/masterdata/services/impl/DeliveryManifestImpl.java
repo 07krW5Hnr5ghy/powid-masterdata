@@ -290,6 +290,8 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                     .orderItemAmount(totalPrice)
                                     .product(deliveryManifestItem.getProduct().getName())
                                     .orderId(deliveryManifestItem.getOrderItem().getOrderId())
+                                    .dni(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getDni())
+                                    .address(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getAddress())
                                     .build();
                         }).toList();
                 double totalOrdersSaleAmount = 0.00;
@@ -680,6 +682,8 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                         .paymentState(deliveryManifestItem.getPaymentState())
                                         .orderItemAmount(totalPrice)
                                         .product(productPrice.getProduct().getName())
+                                        .dni(deliveryManifestItem.getDni())
+                                        .address(deliveryManifestItem.getAddress())
                                         .build();
                             }).toList();
                     totalProductAmountPerManifest[0]+=productAmountPerManifest[0];
@@ -967,6 +971,8 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                     .orderItemAmount(totalPrice)
                                     .product(deliveryManifestItem.getProduct().getName())
                                     .orderId(deliveryManifestItem.getOrderItem().getOrderId())
+                                    .dni(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getDni())
+                                    .address(deliveryManifestItem.getOrderItem().getOrdering().getCustomer().getAddress())
                                     .build();
                         }).toList();
                 double totalOrdersSaleAmount = 0.00;
