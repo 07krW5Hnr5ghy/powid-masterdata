@@ -318,6 +318,8 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                         .product(productPrice.getProduct().getName())
                         .user(deliveryManifestItem.getUsername())
                         .orderId(deliveryManifestItem.getOrderId())
+                        .address(deliveryManifestItem.getAddress())
+                        .dni(deliveryManifestItem.getDni())
                         .build();
             }).toList();
             return new PageImpl<>(deliveryManifestItemDTOS,deliveryManifestItemPage.getPageable(),deliveryManifestItemPage.getTotalElements());

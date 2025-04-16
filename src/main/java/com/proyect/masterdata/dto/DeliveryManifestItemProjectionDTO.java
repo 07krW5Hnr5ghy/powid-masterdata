@@ -35,4 +35,6 @@ public class DeliveryManifestItemProjectionDTO {
     Integer preparedProducts;
     Double discountAmount;
     OffsetDateTime registrationDate;
+    String dni;
+    String address;
 }
