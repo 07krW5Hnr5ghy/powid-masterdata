@@ -10,7 +10,7 @@ import java.util.UUID;
 @Repository
 public interface KardexInputRepositoryCustom {
     Page<KardexInput> searchForKardexInput(
-            Long clientId,
+            UUID clientId,
             Integer quantity,
             Long lotNumber,
             String product,
@@ -25,7 +25,6 @@ public interface KardexInputRepositoryCustom {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize,
-            Boolean status
+            Integer pageSize
     );
 }

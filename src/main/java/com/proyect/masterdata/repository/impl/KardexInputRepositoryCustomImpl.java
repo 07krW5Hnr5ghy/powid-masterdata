@@ -27,7 +27,7 @@ public class KardexInputRepositoryCustomImpl implements KardexInputRepositoryCus
     private EntityManager entityManager;
     @Override
     public Page<KardexInput> searchForKardexInput(
-            Long clientId,
+            UUID clientId,
             Integer quantity,
             Long lotNumber,
             String product,
@@ -42,8 +42,7 @@ public class KardexInputRepositoryCustomImpl implements KardexInputRepositoryCus
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize,
-            Boolean status) {
+            Integer pageSize) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<KardexInput> criteriaQuery = criteriaBuilder.createQuery(KardexInput.class);
         Root<KardexInput> itemRoot = criteriaQuery.from(KardexInput.class);
@@ -111,7 +110,7 @@ public class KardexInputRepositoryCustomImpl implements KardexInputRepositoryCus
         return new PageImpl<>(orderTypedQuery.getResultList(), pageable, count);
     }
     private List<Predicate> predicate(
-            Long clientId,
+            UUID clientId,
             Integer quantity,
             Long lotNumber,
             String product,
@@ -267,7 +266,7 @@ public class KardexInputRepositoryCustomImpl implements KardexInputRepositoryCus
     }
 
     private Long getOrderCount(
-            Long clientId,
+            UUID clientId,
             Integer quantity,
             Long lotNumber,
             String product,
