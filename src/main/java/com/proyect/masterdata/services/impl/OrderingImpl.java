@@ -1056,11 +1056,15 @@ public class OrderingImpl implements IOrdering {
             CancellationReason cancellationReason;
             Discount discount;
 
+            CancelledOrder cancelledOrder;
+
 //            OrderStock orderStock;
 
             try{
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 ordering = orderingRepository.findById(orderId).orElse(null);
+                System.out.println("ORDERING -> " + requestOrderUpdate.getOrderState().toUpperCase());
+                System.out.println("CANCELLATION -> " +  requestOrderUpdate.getCancellationReason());
                 orderState = orderStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getOrderState().toUpperCase());
                 orderPaymentMethod = orderPaymentMethodRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentMethod().toUpperCase());
                 orderPaymentState = orderPaymentStateRepository.findByNameAndStatusTrue(requestOrderUpdate.getPaymentState().toUpperCase());
@@ -1096,7 +1100,7 @@ public class OrderingImpl implements IOrdering {
                 throw new BadRequestExceptions(Constants.ErrorDiscount);
             }
 
-            if(
+            if (
                     requestOrderUpdate.getCancellationReason() != null &&
                             Objects.equals(requestOrderUpdate.getOrderState().toUpperCase(), "CANCELADO") &&
                             !Objects.equals(ordering.getOrderState().getName(), "ENTREGADO")
@@ -1105,16 +1109,29 @@ public class OrderingImpl implements IOrdering {
                 if(cancellationReason == null){
                     throw new BadRequestExceptions(Constants.ErrorCancellationReason);
                 }
-                cancelledOrderRepository.save(CancelledOrder.builder()
-                        .orderingId(ordering.getId())
-                        .cancellationReason(cancellationReason)
-                        .cancellationReasonId(cancellationReason.getId())
-                        .ordering(ordering)
-                        .registrationDate(OffsetDateTime.now())
-                        .updateDate(OffsetDateTime.now())
-                        .user(user)
-                        .userId(user.getId())
-                        .build());
+                cancelledOrder  = cancelledOrderRepository.findByOrderingIdAndClientId(ordering.getId(),user.getClientId());
+                if(cancelledOrder == null){
+                    cancelledOrderRepository.save(CancelledOrder.builder()
+                            .orderingId(ordering.getId())
+                            .cancellationReason(cancellationReason)
+                            .cancellationReasonId(cancellationReason.getId())
+                            .ordering(ordering)
+                            .client(ordering.getClient())
+                            .clientId(ordering.getClientId())
+                            .registrationDate(OffsetDateTime.now())
+                            .updateDate(OffsetDateTime.now())
+                            .user(user)
+                            .userId(user.getId())
+                            .build());
+                }else{
+                    cancelledOrderRepository.updateCancelledOrder(
+                            cancelledOrder.getId(),
+                            cancellationReason.getId(),
+                            ordering.getClientId(),
+                            ordering.getId(),
+                            OffsetDateTime.now()
+                    );
+                }
             }
 
             if(
