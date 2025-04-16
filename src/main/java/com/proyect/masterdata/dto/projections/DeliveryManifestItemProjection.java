@@ -2,6 +2,7 @@ package com.proyect.masterdata.dto.projections;
 
 import com.proyect.masterdata.domain.Product;
 
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 public interface DeliveryManifestItemProjection {
@@ -28,4 +29,5 @@ public interface DeliveryManifestItemProjection {
     Double getDiscountAmount();
     String getAddress();
     String getDni();
+    OffsetDateTime getOrdRegistrationDate();
 }

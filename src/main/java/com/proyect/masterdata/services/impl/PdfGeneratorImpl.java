@@ -225,7 +225,7 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                                 Ordering ordering = orderingRepository.findByClientIdAndId(user.getClientId(),deliveryManifestItem.getOrderId());
                                 orders.add(ordering);
                             }
-                            ProductPrice productPrice = productPriceRepository.findByProductId(deliveryManifestItem.getProductId());
+                            ProductPrice productPrice = productPriceRepository.findClosestByProductIdAndDate(deliveryManifestItem.getProductId(),deliveryManifestItem.getOrdRegistrationDate());
                             Double totalPrice = null;
                             List<Object[]> orderItems = orderItemRepository.findOrderItemDetailsByIdAndClientId(deliveryManifestItem.getOrderItemId(),user.getClientId());
                             for(Object[] orderItem:orderItems){
@@ -273,7 +273,7 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                     List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndStatusTrue(order.getId());
                     double saleAmount = 0.00;
                     for(OrderItem orderItem : orderItems){
-                        ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
+                        ProductPrice productPrice = productPriceRepository.findClosestByProductIdAndDate(orderItem.getProductId(),orderItem.getOrdering().getRegistrationDate());
                         if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
                             saleAmount += (productPrice.getUnitSalePrice() * orderItem.getPreparedProducts()) - ((productPrice.getUnitSalePrice() * orderItem.getPreparedProducts()) * (orderItem.getDiscountAmount() / 100));
                         }
