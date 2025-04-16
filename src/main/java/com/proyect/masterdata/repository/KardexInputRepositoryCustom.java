@@ -17,6 +17,7 @@ public interface KardexInputRepositoryCustom {
             UUID productId,
             String username,
             String warehouse,
+            Double unitPrice,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
