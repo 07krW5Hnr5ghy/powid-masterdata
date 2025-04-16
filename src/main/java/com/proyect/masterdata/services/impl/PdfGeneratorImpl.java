@@ -273,7 +273,7 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                     List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndStatusTrue(order.getId());
                     double saleAmount = 0.00;
                     for(OrderItem orderItem : orderItems){
-                        ProductPrice productPrice = productPriceRepository.findClosestByProductIdAndDate(orderItem.getProductId(),orderItem.getOrdering().getRegistrationDate());
+                        ProductPrice productPrice = productPriceRepository.findClosestByProductIdAndDate(orderItem.getProductId(), orderItem.getOrdering().getRegistrationDate().toInstant());
                         if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
                             saleAmount += (productPrice.getUnitSalePrice() * orderItem.getPreparedProducts()) - ((productPrice.getUnitSalePrice() * orderItem.getPreparedProducts()) * (orderItem.getDiscountAmount() / 100));
                         }
