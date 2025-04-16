@@ -26,4 +26,6 @@ public interface DeliveryManifestItemProjection {
     String getDiscountName();
     Integer getPreparedProducts();
     Double getDiscountAmount();
+    String getAddress();
+    String getDni();
 }
