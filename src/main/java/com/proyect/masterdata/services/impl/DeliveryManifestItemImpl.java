@@ -285,7 +285,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                 return new PageImpl<>(Collections.emptyList());
             }
             List<DeliveryManifestItemDTO> deliveryManifestItemDTOS = deliveryManifestItemPage.stream().map(deliveryManifestItem -> {
-                ProductPrice productPrice = productPriceRepository.findClosestByProductIdAndDate(deliveryManifestItem.getProductId(),deliveryManifestItem.getRegistrationDate());
+                ProductPrice productPrice = productPriceRepository.findClosestByProductIdAndDate(deliveryManifestItem.getProductId(),deliveryManifestItem.getRegistrationDate().toInstant());
                 Double totalPrice = null;
                 if(Objects.equals(deliveryManifestItem.getDiscountName(), "PORCENTAJE")){
                     totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getPreparedProducts())-((productPrice.getUnitSalePrice() * deliveryManifestItem.getPreparedProducts())*(deliveryManifestItem.getDiscountAmount()/100));
