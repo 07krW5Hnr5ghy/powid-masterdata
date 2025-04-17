@@ -328,7 +328,6 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                             order.getId(),
                             order.getClientId()
                     );
-                    System.out.println(deliveryManifestOrderDTO);
                     if(deliveryManifestOrder!=null){
                         deliveryManifestOrderDTO.setReceivedAmount(deliveryManifestOrder.getReceivedAmount());
                         deliveryManifestOrderDTO.setObservations(deliveryManifestOrder.getObservations());
@@ -360,7 +359,6 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                         .courierPhone(deliveryManifest.getCourier().getPhone())
                         .courierPlate(deliveryManifest.getCourier().getPlate())
                         .build();
-                System.out.println(deliveryManifestDTO);
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
                 PdfWriter writer = new PdfWriter(out);
                 PdfDocument pdfDoc = new PdfDocument(writer);
@@ -423,18 +421,14 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                 paidTable.addCell("Distrito").setBold();
                 //paidTable.addCell("Zona").setBold();
                 paidTable.addCell("Importe").setBold();
-                Double paidItemsAmount = 0.00;
+                Double deliveryManifestPaidAmount = 0.00;
                 int paidOrderQuantity = 0;
                 for(DeliveryManifestOrderDTO deliveryManifestOrderDTO:deliveryManifestDTO.getDeliveryManifestOrderDTOS()){
-                    System.out.println(deliveryManifestOrderDTO);
 
                     Integer packageNumbers = 0;
-                    Double paidItemsAmountOrder=0.00;
                     for(DeliveryManifestItemDTO deliveryManifestItemDTO:deliveryManifestOrderDTO.getDeliveryManifestItemDTOList()){
                         if(Objects.equals(deliveryManifestItemDTO.getPaymentState(), "RECAUDADO")){
                             packageNumbers += deliveryManifestItemDTO.getQuantity();
-                            paidItemsAmount+=deliveryManifestItemDTO.getOrderItemAmount();
-                            paidItemsAmountOrder+=deliveryManifestItemDTO.getOrderItemAmount();
                         }
                     }
 
@@ -449,8 +443,9 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                         District district = districtRepository.findByNameAndProvinceId(deliveryManifestOrderDTO.getDistrict(),province.getId());
                         DeliveryZoneDistrict deliveryZoneDistrict = deliveryZoneDistrictRepository.findByDistrictId(district.getId());
                         //paidTable.addCell(deliveryZoneDistrict != null ? deliveryZoneDistrict.getDeliveryZone().getName() : "PROVINCIA");
-                        double totalPaidItemsAmountOrder = paidItemsAmountOrder>0.00?paidItemsAmountOrder:0.00;
-                        paidTable.addCell("S/ " + totalPaidItemsAmountOrder);
+                        double totalPaidItemsAmountOrder = deliveryManifestOrderDTO.getPayableAmount()>0.00?deliveryManifestOrderDTO.getPayableAmount():0.00;
+                        paidTable.addCell("S/ " + Math.round(totalPaidItemsAmountOrder * 100.0) / 100.0);
+                        deliveryManifestPaidAmount+=totalPaidItemsAmountOrder;
                     }
                 }
 
@@ -470,16 +465,14 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                 cashOnDeliveryTable.addCell("Distrito").setBold();
                 //cashOnDeliveryTable.addCell("Zona").setBold();
                 cashOnDeliveryTable.addCell("Importe").setBold();
-                double cashOnDeliveryItemsAmount = 0.00;
+                double deliveryManifestCashOnDeliveryAmount = 0.00;
                 int cashOnDeliveryOrderQuantity = 0;
                 for(DeliveryManifestOrderDTO deliveryManifestOrderDTO:deliveryManifestDTO.getDeliveryManifestOrderDTOS()){
                     Integer packageNumbers = 0;
-                    double cashOnDeliveryItemsAmountOrder = 0.00;
+
                     for(DeliveryManifestItemDTO deliveryManifestItemDTO:deliveryManifestOrderDTO.getDeliveryManifestItemDTOList()){
                         if(Objects.equals(deliveryManifestItemDTO.getPaymentState(), "POR RECAUDAR")){
                             packageNumbers += deliveryManifestItemDTO.getQuantity();
-                            cashOnDeliveryItemsAmount+=deliveryManifestItemDTO.getOrderItemAmount();
-                            cashOnDeliveryItemsAmountOrder+=deliveryManifestItemDTO.getOrderItemAmount();
                         }
                     }
                     if(Objects.equals(deliveryManifestOrderDTO.getOrderPaymentState(), "POR RECAUDAR")){
@@ -492,9 +485,10 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                         District district = districtRepository.findByNameAndProvinceId(deliveryManifestOrderDTO.getDistrict(),province.getId());
                         DeliveryZoneDistrict deliveryZoneDistrict = deliveryZoneDistrictRepository.findByDistrictId(district.getId());
                         //cashOnDeliveryTable.addCell(deliveryZoneDistrict != null ? deliveryZoneDistrict.getDeliveryZone().getName() : "PROVINCIA");
-                        double totalCashOnDeliveryItemsAmountOrder = Math.max(cashOnDeliveryItemsAmountOrder, 0.00);
-                        cashOnDeliveryTable.addCell("S/ " + totalCashOnDeliveryItemsAmountOrder);
+                        double totalCashOnDeliveryItemsAmountOrder = deliveryManifestOrderDTO.getPayableAmount()>0.00?deliveryManifestOrderDTO.getPayableAmount():0.00;
+                        cashOnDeliveryTable.addCell("S/ " + Math.round(totalCashOnDeliveryItemsAmountOrder * 100.0) / 100.0);
                         cashOnDeliveryOrderQuantity++;
+                        deliveryManifestCashOnDeliveryAmount+=totalCashOnDeliveryItemsAmountOrder;
                     }
                 }
 
@@ -510,13 +504,13 @@ public class PdfGeneratorImpl implements IPdfGenerator {
                 summaryTable.addCell(String.valueOf(paidOrderQuantity)).setTextAlignment(TextAlignment.RIGHT);
 
                 summaryTable.addCell("TOTAL PAGADO").setFont(boldFont);
-                summaryTable.addCell("S/ " + paidItemsAmount).setTextAlignment(TextAlignment.RIGHT);
+                summaryTable.addCell("S/ " + Math.round(deliveryManifestPaidAmount * 100.0) / 100.0).setTextAlignment(TextAlignment.RIGHT);
 
                 summaryTable.addCell("No. PEDIDOS").setFont(boldFont);
                 summaryTable.addCell(Integer.toString(cashOnDeliveryOrderQuantity)).setTextAlignment(TextAlignment.RIGHT);
 
                 summaryTable.addCell("TOTAL POR COBRAR").setFont(boldFont);
-                summaryTable.addCell("S/ " + cashOnDeliveryItemsAmount).setTextAlignment(TextAlignment.RIGHT);
+                summaryTable.addCell("S/ " + Math.round(deliveryManifestCashOnDeliveryAmount * 100.0) / 100.0).setTextAlignment(TextAlignment.RIGHT);
 
                 document.add(summaryTable);
 
