@@ -1055,7 +1055,7 @@ public class OrderingImpl implements IOrdering {
             Courier courier;
             CancellationReason cancellationReason;
             Discount discount;
-
+            CancelledOrder cancelledOrder;
 //            OrderStock orderStock;
 
             try{
@@ -1105,16 +1105,29 @@ public class OrderingImpl implements IOrdering {
                 if(cancellationReason == null){
                     throw new BadRequestExceptions(Constants.ErrorCancellationReason);
                 }
-                cancelledOrderRepository.save(CancelledOrder.builder()
-                        .orderingId(ordering.getId())
-                        .cancellationReason(cancellationReason)
-                        .cancellationReasonId(cancellationReason.getId())
-                        .ordering(ordering)
-                        .registrationDate(OffsetDateTime.now())
-                        .updateDate(OffsetDateTime.now())
-                        .user(user)
-                        .userId(user.getId())
-                        .build());
+                cancelledOrder  = cancelledOrderRepository.findByOrderingIdAndClientId(ordering.getId(),user.getClientId());
+                if(cancelledOrder == null){
+                    cancelledOrderRepository.save(CancelledOrder.builder()
+                            .orderingId(ordering.getId())
+                            .cancellationReason(cancellationReason)
+                            .cancellationReasonId(cancellationReason.getId())
+                            .ordering(ordering)
+                            .client(ordering.getClient())
+                            .clientId(ordering.getClientId())
+                            .registrationDate(OffsetDateTime.now())
+                            .updateDate(OffsetDateTime.now())
+                            .user(user)
+                            .userId(user.getId())
+                            .build());
+                }else{
+                    cancelledOrderRepository.updateCancelledOrder(
+                            cancelledOrder.getId(),
+                            cancellationReason.getId(),
+                            ordering.getClientId(),
+                            ordering.getId(),
+                            OffsetDateTime.now()
+                    );
+                }
             }
 
             if(
