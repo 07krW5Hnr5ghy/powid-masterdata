@@ -300,17 +300,27 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                     List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndStatusTrue(order.getId());
                     double saleAmount = 0.00;
                     for(OrderItem orderItem : orderItems){
-                        ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
-                        if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
-                            saleAmount += (productPrice.getUnitSalePrice() * orderItem.getPreparedProducts()) - ((productPrice.getUnitSalePrice() * orderItem.getPreparedProducts()) * (orderItem.getDiscountAmount() / 100));
-                        }
-                        if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-                            saleAmount += (productPrice.getUnitSalePrice() * orderItem.getPreparedProducts()) - orderItem.getDiscountAmount();
-                        }
-                        if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
-                            saleAmount += (productPrice.getUnitSalePrice() * orderItem.getPreparedProducts());
+                        List<Object[]> deliveryManifestItems = deliveryManifestItemRepository.retrieveDeliveryManifestItemByOrderItemId(
+                                orderItem.getId(),
+                                user.getClientId()
+                        );
+                        for(Object[] dMItem :deliveryManifestItems){
+                            if(orderItem.getId().equals(dMItem[0])){
+                                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
+                                Integer units = (int) dMItem[1];
+                                if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
+                                    saleAmount += (productPrice.getUnitSalePrice() * units) - ((productPrice.getUnitSalePrice() * units) * (orderItem.getDiscountAmount() / 100));
+                                }
+                                if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                                    saleAmount += (productPrice.getUnitSalePrice() * units) - orderItem.getDiscountAmount();
+                                }
+                                if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                                    saleAmount += (productPrice.getUnitSalePrice() * units);
+                                }
+                            }
                         }
                     }
+                    System.out.println(order.getOrderNumber());
                     double totalDuePayment=0;
                     if(Objects.equals(order.getDiscount().getName(), "PORCENTAJE")){
                         totalDuePayment = (saleAmount-((saleAmount)*(order.getDiscountAmount()/100))+order.getDeliveryAmount())-order.getAdvancedPayment();
@@ -694,20 +704,28 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                     for(Ordering order:orders){
                         List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndStatusTrue(order.getId());
                         double saleAmount = 0.00;
-
                         for(OrderItem orderItem : orderItems){
-                            ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
-                            if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
-                                saleAmount += (productPrice.getUnitSalePrice() * orderItem.getPreparedProducts()) - ((productPrice.getUnitSalePrice() * orderItem.getPreparedProducts()) * (orderItem.getDiscountAmount() / 100));
+                            List<Object[]> deliveryManifestItems = deliveryManifestItemRepository.retrieveDeliveryManifestItemByOrderItemId(
+                                    orderItem.getId(),
+                                    clientId
+                            );
+                            for(Object[] dMItem :deliveryManifestItems){
+                                if(orderItem.getId().equals(dMItem[0])){
+                                    ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
+                                    Integer units = (int) dMItem[1];
+                                    if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
+                                        saleAmount += (productPrice.getUnitSalePrice() * units) - ((productPrice.getUnitSalePrice() * units) * (orderItem.getDiscountAmount() / 100));
+                                    }
+                                    if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                                        saleAmount += (productPrice.getUnitSalePrice() * units) - orderItem.getDiscountAmount();
+                                    }
+                                    if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                                        saleAmount += (productPrice.getUnitSalePrice() * units);
+                                    }
+                                }
                             }
-                            if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-                                saleAmount += (productPrice.getUnitSalePrice() * orderItem.getPreparedProducts()) - orderItem.getDiscountAmount();
-                            }
-                            if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
-                                saleAmount += (productPrice.getUnitSalePrice() * orderItem.getPreparedProducts());
-                            }
-
                         }
+                        System.out.println(order.getOrderNumber());
                         double totalDuePayment=0;
                         if(Objects.equals(order.getDiscount().getName(), "PORCENTAJE")){
                             totalDuePayment = (saleAmount-((saleAmount)*(order.getDiscountAmount()/100))+order.getDeliveryAmount())-order.getAdvancedPayment();
@@ -981,17 +999,27 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                     List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndStatusTrue(order.getId());
                     double saleAmount = 0.00;
                     for(OrderItem orderItem : orderItems){
-                        ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
-                        if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
-                            saleAmount += (productPrice.getUnitSalePrice() * orderItem.getPreparedProducts()) - ((productPrice.getUnitSalePrice() * orderItem.getPreparedProducts()) * (orderItem.getDiscountAmount() / 100));
-                        }
-                        if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-                            saleAmount += (productPrice.getUnitSalePrice() * orderItem.getPreparedProducts()) - orderItem.getDiscountAmount();
-                        }
-                        if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
-                            saleAmount += (productPrice.getUnitSalePrice() * orderItem.getPreparedProducts());
+                        List<Object[]> deliveryManifestItems = deliveryManifestItemRepository.retrieveDeliveryManifestItemByOrderItemId(
+                                orderItem.getId(),
+                                user.getClientId()
+                        );
+                        for(Object[] dMItem :deliveryManifestItems){
+                            if(orderItem.getId().equals(dMItem[0])){
+                                ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
+                                Integer units = (int) dMItem[1];
+                                if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
+                                    saleAmount += (productPrice.getUnitSalePrice() * units) - ((productPrice.getUnitSalePrice() * units) * (orderItem.getDiscountAmount() / 100));
+                                }
+                                if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
+                                    saleAmount += (productPrice.getUnitSalePrice() * units) - orderItem.getDiscountAmount();
+                                }
+                                if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
+                                    saleAmount += (productPrice.getUnitSalePrice() * units);
+                                }
+                            }
                         }
                     }
+                    System.out.println(order.getOrderNumber());
                     double totalDuePayment=0;
                     if(Objects.equals(order.getDiscount().getName(), "PORCENTAJE")){
                         totalDuePayment = (saleAmount-((saleAmount)*(order.getDiscountAmount()/100))+order.getDeliveryAmount())-order.getAdvancedPayment();

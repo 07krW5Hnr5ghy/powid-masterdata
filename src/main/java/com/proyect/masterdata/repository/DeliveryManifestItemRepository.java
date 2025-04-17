@@ -38,7 +38,8 @@ public interface    DeliveryManifestItemRepository extends JpaRepository<Deliver
                dmi.collected_quantity as collectedQuantity,
                oi.delivered_products as deliveredProducts,
                cu.dni as dni,
-               cu.address as address
+               cu.address as address,
+               ord.registration_date as ordRegistrationDate
         FROM logistics.delivery_manifest_item dmi
         JOIN logistics.delivery_manifest dm ON dmi.delivery_manifest_id = dm.delivery_manifest_id
         JOIN ordering.order_item oi ON dmi.order_item_id = oi.order_item_id
@@ -127,4 +128,16 @@ public interface    DeliveryManifestItemRepository extends JpaRepository<Deliver
             @Param("clientId") UUID clientId
     );
     boolean existsByOrderItemIdAndProductId(UUID orderItemId,UUID productId);
+    @Query("""
+        SELECT dmi.orderItemId,dmi.quantity
+        FROM DeliveryManifestItem dmi
+        JOIN dmi.deliveryManifest dm
+        JOIN dmi.orderItem oi
+        WHERE dmi.orderItemId = :orderItemId
+          AND dmi.clientId = :clientId
+    """)
+    List<Object[]> retrieveDeliveryManifestItemByOrderItemId(
+            @Param("orderItemId") UUID orderItemId,
+            @Param("clientId") UUID clientId
+    );
 }
