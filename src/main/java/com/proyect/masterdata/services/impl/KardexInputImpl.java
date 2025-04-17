@@ -145,6 +145,7 @@ public class KardexInputImpl implements IKardexInput {
                             .color(kardexInput.getProduct().getColor().getName())
                             .size(kardexInput.getProduct().getSize().getName())
                             .registrationDate(kardexInput.getRegistrationDate())
+                            .lotNumber(kardexInput.getLotNumber())
                             .build())
                     .toList();
 

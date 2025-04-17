@@ -12,10 +12,9 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class KardexInputDTO {
+public class KardexOutputDTO {
     private UUID id;
     private String user;
-    private Long lotNumber;
     private String product;
     private String productSku;
     private String categoryProduct;
