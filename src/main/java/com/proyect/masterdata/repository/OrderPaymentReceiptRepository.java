@@ -10,4 +10,5 @@ import java.util.UUID;
 @Repository
 public interface OrderPaymentReceiptRepository extends JpaRepository<OrderPaymentReceipt,Long> {
     List<OrderPaymentReceipt> findAllByOrderId(UUID orderId);
+    List<OrderPaymentReceipt> findAllByOrderIdIn(List<UUID> orderIds);
 }

@@ -9,12 +9,14 @@ import org.springframework.stereotype.Repository;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
 public interface ProductPriceRepository extends JpaRepository<ProductPrice, UUID> {
     ProductPrice findByProductId(UUID id);
     ProductPrice findByProductIdAndStatusTrue(UUID id);
+    List<ProductPrice> findAllByProductIdInAndStatusTrue (Set<UUID> productIds);
     @Query(value = """
     SELECT * FROM marketing.product_price as pp 
     WHERE pp.product_id = :productId 
