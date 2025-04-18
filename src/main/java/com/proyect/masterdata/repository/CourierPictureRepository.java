@@ -10,4 +10,6 @@ import java.util.UUID;
 @Repository
 public interface CourierPictureRepository extends JpaRepository<CourierPicture, UUID> {
     List<CourierPicture> findAllByOrderId(UUID orderId);
+
+    List<CourierPicture> findAllByOrderIdIn(List<UUID> orderIds);
 }

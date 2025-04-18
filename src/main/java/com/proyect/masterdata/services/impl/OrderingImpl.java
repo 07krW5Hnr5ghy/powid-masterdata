@@ -10,6 +10,7 @@ import com.proyect.masterdata.dto.request.RequestStockTransactionItem;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
+import com.proyect.masterdata.helpers.*;
 import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.*;
 import com.proyect.masterdata.utils.Constants;
@@ -35,6 +36,8 @@ import java.time.OffsetDateTime;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @RequiredArgsConstructor
@@ -80,6 +83,17 @@ public class OrderingImpl implements IOrdering {
     private final IOrderContacted iOrderContact;
     private final DeliveryZoneDistrictRepository deliveryZoneDistrictRepository;
     private final DeliveryZoneRepository deliveryZoneRepository;
+    private final DepartmentIdResolver departmentIdResolver;
+    private final ProvinceIdResolver provinceIdResolver;
+    private final DistrictIdResolver districtIdResolver;
+    private final SaleChannelIdResolver saleChannelIdResolver;
+    private final DeliveryPointIdResolver deliveryPointIdResolver;
+    private final OrderStateIdResolver orderStateIdResolver;
+    private final PaymentStateIdResolver paymentStateIdResolver;
+    private final PaymentMethodIdResolver paymentMethodIdResolver;
+    private final ManagementTypeIdResolver managementTypeIdResolver;
+    private final StoreIdResolver storeIdResolver;
+    private final CourierIdResolver courierIdResolver;
 
     @Value("${storage.path.server}")
     private String urlPathServer ;
@@ -487,88 +501,21 @@ public class OrderingImpl implements IOrdering {
             UUID managementTypeId;
             UUID storeId;
 
-            if(departments != null && !departments.isEmpty()){
-                departmentIds = departmentRepository.findByNameIn(
-                        departments.stream().map(String::toUpperCase).toList()
-                ).stream().map(Department::getId).toList();
-            }else{
-                departmentIds = new ArrayList<>();
-            }
-
-            if(provinces != null && !provinces.isEmpty()){
-                provinceIds = provinceRepository.findByNameIn(
-                        provinces.stream().map(String::toUpperCase).toList()
-                ).stream().map(Province::getId).toList();
-            }else{
-                provinceIds = new ArrayList<>();
-            }
-
-            if(districts != null && !districts.isEmpty()){
-                districtIds = districtRepository.findByNameIn(
-                        districts.stream().map(String::toUpperCase).toList()
-                ).stream().map(District::getId).toList();
-            }else{
-                districtIds = new ArrayList<>();
-            }
-
-            if(saleChannels != null && !saleChannels.isEmpty()){
-                saleChannelIds = saleChannelRepository.findByNameIn(
-                        saleChannels.stream().map(String::toUpperCase).toList()
-                ).stream().map(SaleChannel::getId).toList();
-            }else{
-                saleChannelIds = new ArrayList<>();
-            }
-
-            if(deliveryPoints != null && !deliveryPoints.isEmpty()){
-                deliveryPointIds = deliveryPointRepository.findByNameIn(
-                        deliveryPoints.stream().map(String::toUpperCase).toList()
-                ).stream().map(DeliveryPoint::getId).toList();
-            }else{
-                deliveryPointIds = new ArrayList<>();
-            }
-
-            if(orderStates != null && !orderStates.isEmpty()){
-                orderStateIds = orderStateRepository.findByNameIn(
-                        orderStates.stream().map(String::toUpperCase).toList()
-                ).stream().map(OrderState::getId).toList();
-            }else{
-                orderStateIds = new ArrayList<>();
-            }
-
-            if(paymentState != null){
-                paymentStateId = orderPaymentStateRepository.findByName(paymentState.toUpperCase()).getId();
-            }else {
-                paymentStateId = null;
-            }
-
-            if(paymentMethod != null){
-                paymentMethodId = orderPaymentMethodRepository.findByName(paymentMethod.toUpperCase()).getId();
-            }else {
-                paymentMethodId = null;
-            }
-
-            if(managementType != null){
-                managementTypeId = managementTypeRepository.findByName(managementType.toUpperCase()).getId();
-            }else{
-                managementTypeId = null;
-            }
-
-            if(storeName != null){
-                storeId = storeRepository.findByNameAndStatusTrue(storeName.toUpperCase()).getId();
-            }else {
-                storeId = null;
-            }
+            departmentIds = departmentIdResolver.resolveDepartmentIds(departments);
+            provinceIds = provinceIdResolver.resolveProvinceIds(provinces);
+            districtIds = districtIdResolver.resolveDistrictIds(districts);
+            saleChannelIds = saleChannelIdResolver.resolveSaleChannelIds(saleChannels);
+            deliveryPointIds = deliveryPointIdResolver.resolveDeliveryPointIds(deliveryPoints);
+            orderStateIds = orderStateIdResolver.resolveOrderStateIds(orderStates);
+            paymentStateId = paymentStateIdResolver.resolve(paymentState);
+            paymentMethodId = paymentMethodIdResolver.resolve(paymentMethod);
+            managementTypeId = managementTypeIdResolver.resolve(managementType);
+            storeId = storeIdResolver.resolve(storeName);
 
             try{
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
-                if(couriers != null && !couriers.isEmpty()){
-                    courierIds = courierRepository.findByClientIdAndNameIn(
-                            clientId,
-                            couriers.stream().map(String::toUpperCase).toList()
-                    ).stream().map(Courier::getId).toList();
-                }else{
-                    courierIds = new ArrayList<>();
-                }
+                courierIds = courierIdResolver.resolveCourierIds(clientId, couriers);
+
                 pageOrdering = orderingRepositoryCustom.searchForOrdering(
                         orderId,
                         clientId,
@@ -601,26 +548,48 @@ public class OrderingImpl implements IOrdering {
                 return new PageImpl<>(Collections.emptyList());
             }
 
+            List<UUID> orderIds = pageOrdering.getContent().stream()
+                    .map(Ordering::getId)
+                    .collect(Collectors.toList());
+
+            Map<UUID, List<String>> paymentReceiptsMap = orderPaymentReceiptRepository.findAllByOrderIdIn(orderIds).stream()
+                    .collect(Collectors.groupingBy(
+                            OrderPaymentReceipt::getOrderId,
+                            Collectors.mapping(OrderPaymentReceipt::getPaymentReceiptUrl, Collectors.toList())
+                    ));
+
+            Map<UUID, List<String>> courierPicturesMap = courierPictureRepository.findAllByOrderIdIn(orderIds).stream()
+                    .collect(Collectors.groupingBy(
+                            CourierPicture::getOrderId,
+                            Collectors.mapping(CourierPicture::getPictureUrl, Collectors.toList())
+                    ));
+
+            Map<UUID, List<OrderItem>> orderItemsMap = orderItemRepository.findAllByOrderIdInAndStatusTrue(orderIds).stream()
+                    .collect(Collectors.groupingBy(OrderItem::getOrderId));
+
+            Set<UUID> productIds = orderItemsMap.values().stream()
+                    .flatMap(List::stream)
+                    .map(OrderItem::getProductId)
+                    .collect(Collectors.toSet());
+
+            Map<UUID, ProductPrice> productPriceMap = productPriceRepository.findAllByProductIdInAndStatusTrue(productIds).stream()
+                    .collect(Collectors.toMap(ProductPrice::getProductId, Function.identity()));
+
+            Map<UUID, List<ProductPicture>> productPictureMap = productPictureRepository.findAllByClientIdAndProductIdIn(clientId, productIds).stream()
+                    .collect(Collectors.groupingBy(ProductPicture::getProductId));
+
             List<OrderDTO> orderDTOS = pageOrdering.getContent().stream().map(order -> {
-                List<String> paymentReceipts = orderPaymentReceiptRepository.findAllByOrderId(order.getId()).stream().map(OrderPaymentReceipt::getPaymentReceiptUrl).toList();
-                List<String> courierPictures = courierPictureRepository.findAllByOrderId(order.getId()).stream().map(CourierPicture::getPictureUrl).toList();
-                List<OrderItem> orderItems = orderItemRepository.findAllByOrderIdAndStatusTrue(order.getId());
+                UUID orderElementId = order.getId();
+                List<String> paymentReceipts = paymentReceiptsMap.getOrDefault(orderElementId,Collections.emptyList());
+                List<String> courierPictures = courierPicturesMap.getOrDefault(orderElementId,Collections.emptyList());
+                List<OrderItem> orderItems = orderItemsMap.getOrDefault(orderElementId,Collections.emptyList());
 
                 double saleAmount = 0.0;
                 double saleAmountPrepaid = 0.0;
                 for(OrderItem orderItem : orderItems){
-                    ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
+                    ProductPrice productPrice = productPriceMap.get(orderItem.getProductId());
                     saleAmount += PricingUtil.calculateTotalPrice(orderItem, productPrice);
                     saleAmountPrepaid += PricingUtil.calculateTotalPriceUsingPreparedProducts(orderItem, productPrice);
-//                    if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")) {
-//                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - ((productPrice.getUnitSalePrice() * orderItem.getQuantity()) * (orderItem.getDiscountAmount() / 100));
-//                    }
-//                    if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-//                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity()) - orderItem.getDiscountAmount();
-//                    }
-//                    if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
-//                        saleAmount += (productPrice.getUnitSalePrice() * orderItem.getQuantity());
-//                    }
                 }
                 double totalDuePayment=0;
                 if(Objects.equals(order.getDiscount().getName(), "PORCENTAJE")){
@@ -674,22 +643,10 @@ public class OrderingImpl implements IOrdering {
                         .deliveryFlag(order.getDeliveryFlag())
                         .orderStateColor(order.getOrderState().getHexColor())
                         .orderItemDTOS(orderItems.stream().map(orderItem -> {
-
-                            ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(orderItem.getProductId());
-                            List<ProductPicture> productPictures = productPictureRepository.findAlByClientIdAndProductId(clientId,orderItem.getProductId());
+                            ProductPrice productPrice = productPriceMap.get(orderItem.getProductId());
+                            List<ProductPicture> productPictures = productPictureMap.getOrDefault(orderItem.getProductId(), Collections.emptyList());
                             Double totalPrice = PricingUtil.calculateTotalPrice(orderItem, productPrice);
                             Double totalPricePrepared = PricingUtil.calculateTotalPriceUsingPreparedProducts(orderItem,productPrice);
-//                            if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
-//                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
-//                            }
-//
-//                            if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-//                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
-//                            }
-//
-//                            if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
-//                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
-//                            }
                             String finalSku = iUtil.buildProductSku(orderItem.getProduct());
                             return OrderItemDTO.builder()
                                     .id(orderItem.getId())
@@ -817,17 +774,6 @@ public class OrderingImpl implements IOrdering {
                             List<ProductPicture> productPictures = productPictureRepository.findAlByClientIdAndProductId(clientId,orderItem.getProductId());
                             Double totalPrice = PricingUtil.calculateTotalPrice(orderItem, productPrice);
                             Double totalPricePrepared = PricingUtil.calculateTotalPriceUsingPreparedProducts(orderItem,productPrice);
-//                            if(Objects.equals(orderItem.getDiscount().getName(), "PORCENTAJE")){
-//                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-((productPrice.getUnitSalePrice() * orderItem.getQuantity())*(orderItem.getDiscountAmount()/100));
-//                            }
-//
-//                            if(Objects.equals(orderItem.getDiscount().getName(), "MONTO")){
-//                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity())-(orderItem.getDiscountAmount());
-//                            }
-//
-//                            if(Objects.equals(orderItem.getDiscount().getName(), "NO APLICA")){
-//                                totalPrice = (productPrice.getUnitSalePrice() * orderItem.getQuantity());
-//                            }
                             String finalSku = iUtil.buildProductSku(orderItem.getProduct());
                             return OrderItemDTO.builder()
                                     .id(orderItem.getId())
