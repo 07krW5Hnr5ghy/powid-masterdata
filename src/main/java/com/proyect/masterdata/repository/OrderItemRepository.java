@@ -28,6 +28,7 @@ public interface OrderItemRepository extends JpaRepository<OrderItem, UUID> {
     List<OrderItem> findAllByClientIdAndStatusTrueAndSelectOrderStatusTrue(UUID clientId);
     List<OrderItem> findAllByClientIdAndOrderIdAndStatusTrue(UUID clientId,UUID orderId);
     List<OrderItem> findAllByClientIdAndOrderIdAndStatusFalse(UUID clientId,UUID orderId);
+    List<OrderItem> findAllByOrderIdInAndStatusTrue(List<UUID> orderIds);
 
     @Query("SELECT o FROM OrderItem o " +
             "WHERE o.orderId = :orderId " +
