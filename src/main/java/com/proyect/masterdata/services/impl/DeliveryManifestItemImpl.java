@@ -149,7 +149,10 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                                 quantity
                         );
                     }else{
-                        throw new BadRequestExceptions(Constants.ErrorDeliveryManifestItemDeliveredQuantity);
+                        return ResponseSuccess.builder()
+                                .code(400)
+                                .message(Constants.ErrorDeliveryManifestItemDeliveredQuantity)
+                                .build();
                     }
                     iAudit.save(
                             "UPDATE_DELIVERY_MANIFEST_ITEM",
