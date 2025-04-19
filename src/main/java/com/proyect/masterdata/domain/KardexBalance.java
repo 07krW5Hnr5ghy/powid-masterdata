@@ -23,15 +23,19 @@ public class KardexBalance {
     @Column(name = "kardex_balance_id")
     private UUID id;
 
-    @Column(name = "quantity")
-    private Integer quantity;
+    @Column(name = "remaining_quantity")
+    private Integer remainingQuantity;
+
+    @Column(name = "unit_price")
+    private Double unitPrice;
 
     @Column(name = "registration_date")
     @CreationTimestamp
     private OffsetDateTime registrationDate;
 
-    @Column(name = "kardex_input_id")
-    private UUID kardexInputId;
+    @Column(name = "update_date")
+    @CreationTimestamp
+    private OffsetDateTime updateDate;
 
     @Column(name = "lot_number")
     private Long lotNumber;
@@ -42,6 +46,12 @@ public class KardexBalance {
     @Column(name = "user_id")
     private UUID userId;
 
+    @Column(name = "product_id")
+    private UUID productId;
+
+    @Column(name = "warehouse_id")
+    private UUID warehouseId;
+
     @ManyToOne()
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
@@ -51,7 +61,10 @@ public class KardexBalance {
     private User user;
 
     @ManyToOne()
-    @JoinColumn(name="kardex_input_id",columnDefinition = "kardexInputId",insertable = false,updatable = false)
-    private KardexInput kardexInput;
+    @JoinColumn(name="product_id",columnDefinition = "productId",insertable = false,updatable = false)
+    private Product product;
 
+    @ManyToOne()
+    @JoinColumn(name="warehouse_id",columnDefinition = "warehouseId",insertable = false,updatable = false)
+    private Warehouse warehouse;
 }
