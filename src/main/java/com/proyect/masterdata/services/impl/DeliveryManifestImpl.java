@@ -958,15 +958,15 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                             );
                             Double totalPrice = null;
                             if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "PORCENTAJE")){
-                                totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts())-((productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts())*(deliveryManifestItem.getOrderItem().getDiscountAmount()/100));
+                                totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getQuantity())-((productPrice.getUnitSalePrice() * deliveryManifestItem.getQuantity())*(deliveryManifestItem.getOrderItem().getDiscountAmount()/100));
                             }
 
                             if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "MONTO")){
-                                totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts())-(deliveryManifestItem.getOrderItem().getDiscountAmount());
+                                totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getQuantity())-(deliveryManifestItem.getOrderItem().getDiscountAmount());
                             }
 
                             if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "NO APLICA")){
-                                totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts());
+                                totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getQuantity());
                             }
                             productAmountPerManifest[0] += (productPrice.getUnitSalePrice() * deliveryManifestItem.getQuantity());
                             deliveryManifestProductQuantity[0]+=deliveryManifestItem.getQuantity();
