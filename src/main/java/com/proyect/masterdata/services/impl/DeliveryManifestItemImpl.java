@@ -4,6 +4,7 @@ import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.*;
 import com.proyect.masterdata.dto.projections.DeliveryManifestItemDTOP;
 import com.proyect.masterdata.dto.projections.DeliveryManifestItemProjection;
+import com.proyect.masterdata.dto.request.RequestKardexOutput;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
@@ -38,6 +39,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
     private final CourierRepository courierRepository;
     private final DeliveryManifestRepository deliveryManifestRepository;
     private final OrderingRepository orderingRepository;
+    private final IkardexOutput ikardexOutput;
     @Override
     public CompletableFuture<DeliveryManifestItem> save(
             OrderItem orderItem,
@@ -105,6 +107,12 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                         newDeliveryManifestItem.getQuantity(),
                         user.getUsername()
                 );
+                RequestKardexOutput requestKardexOutput = RequestKardexOutput.builder()
+                        .product(newDeliveryManifestItem.getProduct())
+                        .quantity(newDeliveryManifestItem.getQuantity())
+                        .user(newDeliveryManifestItem.getUser().getUsername())
+                        .build();
+                ikardexOutput.save(requestKardexOutput);
                 iAudit.save(
                         "ADD_DELIVERY_MANIFEST_ITEM",
                         "ITEM DE GUIA "+
@@ -212,7 +220,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                             "UPDATE_DELIVERY_MANIFEST_ITEM",
                             "ITEM DE GUIA "+
                                     deliveryManifestItemId+
-                                    "PARA PEDIDO " +
+                                    " PARA PEDIDO " +
                                     result[0]+
                                     " ACTUALIZADO.",
                             deliveryManifestItemId.toString(),user.getUsername());
