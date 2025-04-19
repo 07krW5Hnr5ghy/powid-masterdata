@@ -952,7 +952,10 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 uniqueOrderNumbers.add(deliveryManifestItem.getOrderItem().getOrdering().getOrderNumber());
                                 orders.add(deliveryManifestItem.getOrderItem().getOrdering());
                             }
-                            ProductPrice productPrice = productPriceRepository.findByProductIdAndStatusTrue(deliveryManifestItem.getOrderItem().getProductId());
+                            ProductPrice productPrice = productPriceRepository.findClosestByProductIdAndDate(
+                                    deliveryManifestItem.getOrderItem().getProductId(),
+                                    deliveryManifestItem.getOrderItem().getOrdering().getRegistrationDate().toInstant()
+                            );
                             Double totalPrice = null;
                             if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "PORCENTAJE")){
                                 totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts())-((productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts())*(deliveryManifestItem.getOrderItem().getDiscountAmount()/100));
@@ -965,7 +968,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                             if(Objects.equals(deliveryManifestItem.getOrderItem().getDiscount().getName(), "NO APLICA")){
                                 totalPrice = (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts());
                             }
-                            productAmountPerManifest[0] += (productPrice.getUnitSalePrice() * deliveryManifestItem.getOrderItem().getPreparedProducts());
+                            productAmountPerManifest[0] += (productPrice.getUnitSalePrice() * deliveryManifestItem.getQuantity());
                             deliveryManifestProductQuantity[0]+=deliveryManifestItem.getQuantity();
                             deliveryManifestDeliveredQuantity[0]+=deliveryManifestItem.getDeliveredQuantity();
                             deliveryManifestCollectedQuantity[0]+=deliveryManifestItem.getCollectedQuantity();
