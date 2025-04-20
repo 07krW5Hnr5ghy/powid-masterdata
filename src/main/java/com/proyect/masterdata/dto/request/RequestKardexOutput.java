@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.UUID;
+
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,4 +20,5 @@ public class RequestKardexOutput {
     private Product product;
     private Warehouse warehouse;
     private Long orderNumber;
+    private UUID deliveryManifestItemId;
 }

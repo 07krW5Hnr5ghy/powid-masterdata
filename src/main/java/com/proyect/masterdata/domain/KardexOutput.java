@@ -54,6 +54,9 @@ public class KardexOutput {
     @Column(name = "warehouse_id")
     private UUID warehouseId;
 
+    @Column(name = "delivery_manifest_item_id")
+    private UUID deliveryManifestItemId;
+
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
@@ -73,4 +76,8 @@ public class KardexOutput {
     @ManyToOne()
     @JoinColumn(name="warehouse_id",columnDefinition = "warehouseId",insertable = false,updatable = false)
     private Warehouse warehouse;
+
+    @ManyToOne()
+    @JoinColumn(name="delivery_manifest_item_id",columnDefinition = "deliveryManifestItemId",insertable = false,updatable = false)
+    private DeliveryManifestItem deliveryManifestItem;
 }

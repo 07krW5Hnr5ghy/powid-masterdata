@@ -71,6 +71,7 @@ public class KardexOutputImpl implements IkardexOutput {
                         .productId(requestKardexOutput.getProduct().getId())
                         .kardexOperationType(kardexOperationType)
                         .kardexOperationTypeId(kardexOperationType.getId())
+                        .deliveryManifestItemId(requestKardexOutput.getDeliveryManifestItemId())
                         .build();
                 if (remainingToDeduct <= 0) break;
                 int available = kardexBalance.getRemainingQuantity();
