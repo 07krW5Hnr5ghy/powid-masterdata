@@ -501,18 +501,17 @@ public class OrderingImpl implements IOrdering {
             UUID managementTypeId;
             UUID storeId;
 
-            departmentIds = departmentIdResolver.resolveDepartmentIds(departments);
-            provinceIds = provinceIdResolver.resolveProvinceIds(provinces);
-            districtIds = districtIdResolver.resolveDistrictIds(districts);
-            saleChannelIds = saleChannelIdResolver.resolveSaleChannelIds(saleChannels);
-            deliveryPointIds = deliveryPointIdResolver.resolveDeliveryPointIds(deliveryPoints);
-            orderStateIds = orderStateIdResolver.resolveOrderStateIds(orderStates);
-            paymentStateId = paymentStateIdResolver.resolve(paymentState);
-            paymentMethodId = paymentMethodIdResolver.resolve(paymentMethod);
-            managementTypeId = managementTypeIdResolver.resolve(managementType);
-            storeId = storeIdResolver.resolve(storeName);
-
             try{
+                departmentIds = departmentIdResolver.resolveDepartmentIds(departments);
+                provinceIds = provinceIdResolver.resolveProvinceIds(provinces);
+                districtIds = districtIdResolver.resolveDistrictIds(districts);
+                saleChannelIds = saleChannelIdResolver.resolveSaleChannelIds(saleChannels);
+                deliveryPointIds = deliveryPointIdResolver.resolveDeliveryPointIds(deliveryPoints);
+                orderStateIds = orderStateIdResolver.resolveOrderStateIds(orderStates);
+                paymentStateId = paymentStateIdResolver.resolve(paymentState);
+                paymentMethodId = paymentMethodIdResolver.resolve(paymentMethod);
+                managementTypeId = managementTypeIdResolver.resolve(managementType);
+                storeId = storeIdResolver.resolve(storeName);
                 clientId = userRepository.findByUsernameAndStatusTrue(user.toUpperCase()).getClient().getId();
                 courierIds = courierIdResolver.resolveCourierIds(clientId, couriers);
 
@@ -548,141 +547,144 @@ public class OrderingImpl implements IOrdering {
                 return new PageImpl<>(Collections.emptyList());
             }
 
-            List<UUID> orderIds = pageOrdering.getContent().stream()
-                    .map(Ordering::getId)
-                    .collect(Collectors.toList());
+            try {
+                List<UUID> orderIds = pageOrdering.getContent().stream()
+                        .map(Ordering::getId)
+                        .collect(Collectors.toList());
 
-            Map<UUID, List<String>> paymentReceiptsMap = orderPaymentReceiptRepository.findAllByOrderIdIn(orderIds).stream()
-                    .collect(Collectors.groupingBy(
-                            OrderPaymentReceipt::getOrderId,
-                            Collectors.mapping(OrderPaymentReceipt::getPaymentReceiptUrl, Collectors.toList())
-                    ));
+                Map<UUID, List<String>> paymentReceiptsMap = orderPaymentReceiptRepository.findAllByOrderIdIn(orderIds).stream()
+                        .collect(Collectors.groupingBy(
+                                OrderPaymentReceipt::getOrderId,
+                                Collectors.mapping(OrderPaymentReceipt::getPaymentReceiptUrl, Collectors.toList())
+                        ));
 
-            Map<UUID, List<String>> courierPicturesMap = courierPictureRepository.findAllByOrderIdIn(orderIds).stream()
-                    .collect(Collectors.groupingBy(
-                            CourierPicture::getOrderId,
-                            Collectors.mapping(CourierPicture::getPictureUrl, Collectors.toList())
-                    ));
+                Map<UUID, List<String>> courierPicturesMap = courierPictureRepository.findAllByOrderIdIn(orderIds).stream()
+                        .collect(Collectors.groupingBy(
+                                CourierPicture::getOrderId,
+                                Collectors.mapping(CourierPicture::getPictureUrl, Collectors.toList())
+                        ));
 
-            Map<UUID, List<OrderItem>> orderItemsMap = orderItemRepository.findAllByOrderIdInAndStatusTrue(orderIds).stream()
-                    .collect(Collectors.groupingBy(OrderItem::getOrderId));
+                Map<UUID, List<OrderItem>> orderItemsMap = orderItemRepository.findAllByOrderIdInAndStatusTrue(orderIds).stream()
+                        .collect(Collectors.groupingBy(OrderItem::getOrderId));
 
-            Set<UUID> productIds = orderItemsMap.values().stream()
-                    .flatMap(List::stream)
-                    .map(OrderItem::getProductId)
-                    .collect(Collectors.toSet());
+                Set<UUID> productIds = orderItemsMap.values().stream()
+                        .flatMap(List::stream)
+                        .map(OrderItem::getProductId)
+                        .collect(Collectors.toSet());
 
-            Map<UUID, ProductPrice> productPriceMap = productPriceRepository.findAllByProductIdInAndStatusTrue(productIds).stream()
-                    .collect(Collectors.toMap(ProductPrice::getProductId, Function.identity()));
+                Map<UUID, ProductPrice> productPriceMap = productPriceRepository.findAllByProductIdInAndStatusTrue(productIds).stream()
+                        .collect(Collectors.toMap(ProductPrice::getProductId, Function.identity()));
 
-            Map<UUID, List<ProductPicture>> productPictureMap = productPictureRepository.findAllByClientIdAndProductIdIn(clientId, productIds).stream()
-                    .collect(Collectors.groupingBy(ProductPicture::getProductId));
+                Map<UUID, List<ProductPicture>> productPictureMap = productPictureRepository.findAllByClientIdAndProductIdIn(clientId, productIds).stream()
+                        .collect(Collectors.groupingBy(ProductPicture::getProductId));
 
-            List<OrderDTO> orderDTOS = pageOrdering.getContent().stream().map(order -> {
-                UUID orderElementId = order.getId();
-                List<String> paymentReceipts = paymentReceiptsMap.getOrDefault(orderElementId,Collections.emptyList());
-                List<String> courierPictures = courierPicturesMap.getOrDefault(orderElementId,Collections.emptyList());
-                List<OrderItem> orderItems = orderItemsMap.getOrDefault(orderElementId,Collections.emptyList());
+                List<OrderDTO> orderDTOS = pageOrdering.getContent().stream().map(order -> {
+                    UUID orderElementId = order.getId();
+                    List<String> paymentReceipts = paymentReceiptsMap.getOrDefault(orderElementId,Collections.emptyList());
+                    List<String> courierPictures = courierPicturesMap.getOrDefault(orderElementId,Collections.emptyList());
+                    List<OrderItem> orderItems = orderItemsMap.getOrDefault(orderElementId,Collections.emptyList());
 
-                double saleAmount = 0.0;
-                double saleAmountPrepaid = 0.0;
-                for(OrderItem orderItem : orderItems){
-                    ProductPrice productPrice = productPriceMap.get(orderItem.getProductId());
-                    saleAmount += PricingUtil.calculateTotalPrice(orderItem, productPrice);
-                    saleAmountPrepaid += PricingUtil.calculateTotalPriceUsingPreparedProducts(orderItem, productPrice);
-                }
-                double totalDuePayment=0;
-                if(Objects.equals(order.getDiscount().getName(), "PORCENTAJE")){
-                    totalDuePayment = (saleAmount-((saleAmount)*(order.getDiscountAmount()/100))+order.getDeliveryAmount())-order.getAdvancedPayment();
-                }
-                if(Objects.equals(order.getDiscount().getName(), "MONTO")){
-                    totalDuePayment = (saleAmount-order.getDiscountAmount()+order.getDeliveryAmount())-order.getAdvancedPayment();
-                }
-                if(Objects.equals(order.getDiscount().getName(), "NO APLICA")){
-                    totalDuePayment = (saleAmount+order.getDeliveryAmount())-order.getAdvancedPayment();
-                }
+                    double saleAmount = 0.0;
+                    double saleAmountPrepaid = 0.0;
+                    for(OrderItem orderItem : orderItems){
+                        ProductPrice productPrice = productPriceMap.get(orderItem.getProductId());
+                        saleAmount += PricingUtil.calculateTotalPrice(orderItem, productPrice);
+                        saleAmountPrepaid += PricingUtil.calculateTotalPriceUsingPreparedProducts(orderItem, productPrice);
+                    }
+                    double totalDuePayment=0;
+                    if(Objects.equals(order.getDiscount().getName(), "PORCENTAJE")){
+                        totalDuePayment = (saleAmount-((saleAmount)*(order.getDiscountAmount()/100))+order.getDeliveryAmount())-order.getAdvancedPayment();
+                    }
+                    if(Objects.equals(order.getDiscount().getName(), "MONTO")){
+                        totalDuePayment = (saleAmount-order.getDiscountAmount()+order.getDeliveryAmount())-order.getAdvancedPayment();
+                    }
+                    if(Objects.equals(order.getDiscount().getName(), "NO APLICA")){
+                        totalDuePayment = (saleAmount+order.getDeliveryAmount())-order.getAdvancedPayment();
+                    }
 
-                return OrderDTO.builder()
-                        .id(order.getId())
-                        .orderNumber(order.getOrderNumber())
-                        .customerName(order.getCustomer().getName())
-                        .customerPhone(order.getCustomer().getPhone())
-                        .customerAddress(order.getCustomer().getAddress())
-                        .customerType(order.getCustomer().getCustomerType().getName())
-                        .closingChannel(order.getClosingChannel().getName())
-                        .orderStatus(order.getOrderState().getName())
-                        .department(order.getCustomer().getDistrict().getProvince().getDepartment().getName())
-                        .province(order.getCustomer().getDistrict().getProvince().getName())
-                        .district(order.getCustomer().getDistrict().getName())
-                        .address(order.getCustomer().getAddress())
-                        .instagram(order.getCustomer().getInstagram())
-                        .managementType(order.getManagementType().getName())
-                        .reference(order.getCustomer().getReference())
-                        .saleChannel(order.getSaleChannel().getName())
-                        .sellerName(order.getSeller())
-                        .registrationDate(order.getRegistrationDate())
-                        .updateDate(order.getUpdateDate())
-                        .paymentMethod(order.getOrderPaymentMethod().getName())
-                        .paymentState(order.getOrderPaymentState().getName())
-                        .deliveryAddress(order.getDeliveryAddress())
-                        .courier(order.getCourier().getName())
-                        .paymentReceipts(paymentReceipts)
-                        .courierPictures(courierPictures)
-                        .observations(order.getObservations())
-                        .saleAmount(BigDecimal.valueOf(saleAmount).setScale(2, RoundingMode.HALF_EVEN))
-                        .saleAmountPrepaid(BigDecimal.valueOf(saleAmountPrepaid).setScale(2, RoundingMode.HALF_EVEN))
-                        .advancedPayment(BigDecimal.valueOf(order.getAdvancedPayment()).setScale(2, RoundingMode.HALF_EVEN))
-                        .duePayment(BigDecimal.valueOf(totalDuePayment).setScale(2,RoundingMode.HALF_EVEN))
-                        .deliveryAmount(BigDecimal.valueOf(order.getDeliveryAmount()).setScale(2,RoundingMode.HALF_EVEN))
-                        .deliveryPoint(order.getDeliveryPoint().getName())
-                        .discount(order.getDiscount().getName())
-                        .discountAmount(BigDecimal.valueOf(order.getDiscountAmount()))
-                        .dni(order.getCustomer().getDni())
-                        .store(order.getStore().getName())
-                        .receiptFlag(order.getReceiptFlag())
-                        .deliveryFlag(order.getDeliveryFlag())
-                        .orderStateColor(order.getOrderState().getHexColor())
-                        .orderItemDTOS(orderItems.stream().map(orderItem -> {
-                            ProductPrice productPrice = productPriceMap.get(orderItem.getProductId());
-                            List<ProductPicture> productPictures = productPictureMap.getOrDefault(orderItem.getProductId(), Collections.emptyList());
-                            Double totalPrice = PricingUtil.calculateTotalPrice(orderItem, productPrice);
-                            Double totalPricePrepared = PricingUtil.calculateTotalPriceUsingPreparedProducts(orderItem,productPrice);
-                            String finalSku = iUtil.buildProductSku(orderItem.getProduct());
-                            return OrderItemDTO.builder()
-                                    .id(orderItem.getId())
-                                    .productId(orderItem.getProductId())
-                                    .orderId(order.getId())
-                                    .user(orderItem.getUser().getUsername())
-                                    .status(orderItem.getStatus())
-                                    .selectOrderStatus(orderItem.getSelectOrderStatus())
-                                    .model(orderItem.getProduct().getModel().getName())
-                                    .discountAmount(orderItem.getDiscountAmount())
-                                    .sku(finalSku)
-                                    .nameProduct(orderItem.getProduct().getName())
-                                    .preparedProducts(orderItem.getPreparedProducts())
-                                    .deliveredProducts(orderItem.getDeliveredProducts())
-                                    .unit(orderItem.getProduct().getUnit().getName())
-                                    .totalPricePrepared(totalPricePrepared)
-                                    .observations(orderItem.getObservations())
-                                    .quantity(orderItem.getQuantity())
-                                    .size(orderItem.getProduct().getSize().getName())
-                                    .discount(orderItem.getDiscount().getName())
-                                    .pictures(productPictures.stream().map(ProductPicture::getProductPictureUrl).toList())
-                                    .unitPrice(productPrice.getUnitSalePrice())
-                                    .totalPrice(totalPrice)
-                                    .color(orderItem.getProduct().getColor().getName())
-                                    .category(orderItem.getProduct().getSubCategoryProduct().getCategoryProduct().getName())
-                                    .subCategory(orderItem.getProduct().getSubCategoryProduct().getName())
-                                    .registrationDate(orderItem.getRegistrationDate())
-                                    .updateDate(orderItem.getUpdateDate())
-                                    .build();
-                        }).toList())
-                        .orderLogs(iOrderLog.listLogByOrder(order.getId()))
-                        .user(order.getUser().getUsername())
-                        .build();
-            }).toList();
-
-            return new PageImpl<>(orderDTOS,pageOrdering.getPageable(),pageOrdering.getTotalElements());
+                    return OrderDTO.builder()
+                            .id(order.getId())
+                            .orderNumber(order.getOrderNumber())
+                            .customerName(order.getCustomer().getName())
+                            .customerPhone(order.getCustomer().getPhone())
+                            .customerAddress(order.getCustomer().getAddress())
+                            .customerType(order.getCustomer().getCustomerType().getName())
+                            .closingChannel(order.getClosingChannel().getName())
+                            .orderStatus(order.getOrderState().getName())
+                            .department(order.getCustomer().getDistrict().getProvince().getDepartment().getName())
+                            .province(order.getCustomer().getDistrict().getProvince().getName())
+                            .district(order.getCustomer().getDistrict().getName())
+                            .address(order.getCustomer().getAddress())
+                            .instagram(order.getCustomer().getInstagram())
+                            .managementType(order.getManagementType().getName())
+                            .reference(order.getCustomer().getReference())
+                            .saleChannel(order.getSaleChannel().getName())
+                            .sellerName(order.getSeller())
+                            .registrationDate(order.getRegistrationDate())
+                            .updateDate(order.getUpdateDate())
+                            .paymentMethod(order.getOrderPaymentMethod().getName())
+                            .paymentState(order.getOrderPaymentState().getName())
+                            .deliveryAddress(order.getDeliveryAddress())
+                            .courier(order.getCourier().getName())
+                            .paymentReceipts(paymentReceipts)
+                            .courierPictures(courierPictures)
+                            .observations(order.getObservations())
+                            .saleAmount(BigDecimal.valueOf(saleAmount).setScale(2, RoundingMode.HALF_EVEN))
+                            .saleAmountPrepaid(BigDecimal.valueOf(saleAmountPrepaid).setScale(2, RoundingMode.HALF_EVEN))
+                            .advancedPayment(BigDecimal.valueOf(order.getAdvancedPayment()).setScale(2, RoundingMode.HALF_EVEN))
+                            .duePayment(BigDecimal.valueOf(totalDuePayment).setScale(2,RoundingMode.HALF_EVEN))
+                            .deliveryAmount(BigDecimal.valueOf(order.getDeliveryAmount()).setScale(2,RoundingMode.HALF_EVEN))
+                            .deliveryPoint(order.getDeliveryPoint().getName())
+                            .discount(order.getDiscount().getName())
+                            .discountAmount(BigDecimal.valueOf(order.getDiscountAmount()))
+                            .dni(order.getCustomer().getDni())
+                            .store(order.getStore().getName())
+                            .receiptFlag(order.getReceiptFlag())
+                            .deliveryFlag(order.getDeliveryFlag())
+                            .orderStateColor(order.getOrderState().getHexColor())
+                            .orderItemDTOS(orderItems.stream().map(orderItem -> {
+                                ProductPrice productPrice = productPriceMap.get(orderItem.getProductId());
+                                List<ProductPicture> productPictures = productPictureMap.getOrDefault(orderItem.getProductId(), Collections.emptyList());
+                                Double totalPrice = PricingUtil.calculateTotalPrice(orderItem, productPrice);
+                                Double totalPricePrepared = PricingUtil.calculateTotalPriceUsingPreparedProducts(orderItem,productPrice);
+                                String finalSku = iUtil.buildProductSku(orderItem.getProduct());
+                                return OrderItemDTO.builder()
+                                        .id(orderItem.getId())
+                                        .productId(orderItem.getProductId())
+                                        .orderId(order.getId())
+                                        .user(orderItem.getUser().getUsername())
+                                        .status(orderItem.getStatus())
+                                        .selectOrderStatus(orderItem.getSelectOrderStatus())
+                                        .model(orderItem.getProduct().getModel().getName())
+                                        .discountAmount(orderItem.getDiscountAmount())
+                                        .sku(finalSku)
+                                        .nameProduct(orderItem.getProduct().getName())
+                                        .preparedProducts(orderItem.getPreparedProducts())
+                                        .deliveredProducts(orderItem.getDeliveredProducts())
+                                        .unit(orderItem.getProduct().getUnit().getName())
+                                        .totalPricePrepared(totalPricePrepared)
+                                        .observations(orderItem.getObservations())
+                                        .quantity(orderItem.getQuantity())
+                                        .size(orderItem.getProduct().getSize().getName())
+                                        .discount(orderItem.getDiscount().getName())
+                                        .pictures(productPictures.stream().map(ProductPicture::getProductPictureUrl).toList())
+                                        .unitPrice(productPrice.getUnitSalePrice())
+                                        .totalPrice(totalPrice)
+                                        .color(orderItem.getProduct().getColor().getName())
+                                        .category(orderItem.getProduct().getSubCategoryProduct().getCategoryProduct().getName())
+                                        .subCategory(orderItem.getProduct().getSubCategoryProduct().getName())
+                                        .registrationDate(orderItem.getRegistrationDate())
+                                        .updateDate(orderItem.getUpdateDate())
+                                        .build();
+                            }).toList())
+                            .orderLogs(iOrderLog.listLogByOrder(order.getId()))
+                            .user(order.getUser().getUsername())
+                            .build();
+                }).toList();
+                return new PageImpl<>(orderDTOS,pageOrdering.getPageable(),pageOrdering.getTotalElements());
+            } catch (RuntimeException e) {
+                throw new RuntimeException(e);
+            }
         });
     }
 
