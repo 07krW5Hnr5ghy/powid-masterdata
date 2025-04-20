@@ -13,7 +13,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 public interface IkardexOutput {
-    KardexOutput save(RequestKardexOutput requestKardexOutput) throws BadRequestExceptions, InternalErrorExceptions;
+    void save(RequestKardexOutput requestKardexOutput) throws BadRequestExceptions, InternalErrorExceptions;
     CompletableFuture<Page<KardexOutputDTO>> list(
             String user,
             Integer quantity,

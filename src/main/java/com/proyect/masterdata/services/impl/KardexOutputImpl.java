@@ -1,9 +1,6 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.KardexInput;
-import com.proyect.masterdata.domain.KardexOperationType;
-import com.proyect.masterdata.domain.KardexOutput;
-import com.proyect.masterdata.domain.User;
+import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.KardexInputDTO;
 import com.proyect.masterdata.dto.KardexOutputDTO;
 import com.proyect.masterdata.dto.request.RequestKardexBalance;
@@ -39,7 +36,7 @@ public class KardexOutputImpl implements IkardexOutput {
     private final IUtil iUtil;
     private final IKardexBalance iKardexBalance;
     @Override
-    public KardexOutput save(RequestKardexOutput requestKardexOutput) throws BadRequestExceptions, InternalErrorExceptions {
+    public void save(RequestKardexOutput requestKardexOutput) throws BadRequestExceptions, InternalErrorExceptions {
         User user;
         KardexOperationType kardexOperationType;
         try{
@@ -54,24 +51,41 @@ public class KardexOutputImpl implements IkardexOutput {
             kardexOperationType = kardexOperationTypeRepository.findByNameAndClientId("COMPRA",user.getClientId());
         }
         try {
-            KardexOutput kardexOutput =  kardexOutputRepository.save(KardexOutput.builder()
-                    .quantity(requestKardexOutput.getQuantity())
-                    .client(user.getClient())
-                    .clientId(user.getClientId())
-                    .user(user)
-                    .userId(user.getId())
-                    .registrationDate(OffsetDateTime.now())
-                    .kardexOperationType(kardexOperationType)
-                    .kardexOperationTypeId(kardexOperationType.getId())
-                    .build());
-            RequestKardexBalance requestKardexBalance = RequestKardexBalance.builder()
-                    .product(requestKardexOutput.getProduct())
-                    .quantity(requestKardexOutput.getQuantity())
-                    .user(user)
-                    .add(false)
-                    .build();
-            iKardexBalance.save(requestKardexBalance);
-            return kardexOutput;
+            List<KardexBalance> kardexBalanceList = kardexBalanceRepository.findAllByClientIdAndProductIdAndWarehouseIdWithStock(
+                    user.getClientId(),
+                    requestKardexOutput.getProduct().getId(),
+                    requestKardexOutput.getWarehouse().getId()
+            );
+            int remainingToDeduct = requestKardexOutput.getQuantity();
+            for (KardexBalance kardexBalance : kardexBalanceList){
+                KardexOutput kardexOutput =  KardexOutput.builder()
+                        .client(user.getClient())
+                        .clientId(user.getClientId())
+                        .user(user)
+                        .userId(user.getId())
+                        .orderNumber(requestKardexOutput.getOrderNumber())
+                        .lotNumber(kardexBalance.getLotNumber())
+                        .unitPrice(kardexBalance.getUnitPrice())
+                        .registrationDate(OffsetDateTime.now())
+                        .product(requestKardexOutput.getProduct())
+                        .productId(requestKardexOutput.getProduct().getId())
+                        .kardexOperationType(kardexOperationType)
+                        .kardexOperationTypeId(kardexOperationType.getId())
+                        .build();
+                if (remainingToDeduct <= 0) break;
+                int available = kardexBalance.getRemainingQuantity();
+                if (available >= remainingToDeduct) {
+                    kardexBalance.setRemainingQuantity(available - remainingToDeduct);
+                    kardexOutput.setQuantity(available-remainingToDeduct);
+                    remainingToDeduct = 0;
+                } else {
+                    kardexBalance.setRemainingQuantity(0);
+                    kardexOutput.setQuantity(available);
+                    remainingToDeduct -= available;
+                }
+                kardexOutputRepository.save(kardexOutput);
+                kardexBalanceRepository.save(kardexBalance);
+            }
         }catch (RuntimeException e){
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

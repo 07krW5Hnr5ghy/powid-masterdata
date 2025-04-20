@@ -26,6 +26,15 @@ public class KardexOutput {
     @Column(name = "quantity")
     private Integer quantity;
 
+    @Column(name = "unit_price")
+    private Double unitPrice;
+
+    @Column(name = "order_number")
+    private Long orderNumber;
+
+    @Column(name = "lotNumber")
+    private Long lotNumber;
+
     @Column(name = "registration_date")
     @CreationTimestamp
     private OffsetDateTime registrationDate;
@@ -42,6 +51,9 @@ public class KardexOutput {
     @Column(name = "product_id")
     private UUID productId;
 
+    @Column(name = "warehouse_id")
+    private UUID warehouseId;
+
     @ManyToOne
     @JoinColumn(name = "client_id", columnDefinition = "clientId", insertable = false, updatable = false)
     private Client client;
@@ -57,4 +69,8 @@ public class KardexOutput {
     @ManyToOne()
     @JoinColumn(name="product_id",columnDefinition = "productId",insertable = false,updatable = false)
     private Product product;
+
+    @ManyToOne()
+    @JoinColumn(name="warehouse_id",columnDefinition = "warehouseId",insertable = false,updatable = false)
+    private Warehouse warehouse;
 }
