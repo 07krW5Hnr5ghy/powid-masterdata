@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 import com.proyect.masterdata.domain.*;
+import com.proyect.masterdata.dto.request.RequestKardexInput;
 import com.proyect.masterdata.dto.request.RequestSupplyOrderItem;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.dto.response.ResponseSuccess;
@@ -39,6 +40,7 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
     private final ProductRepository productRepository;
     private final ProductPriceRepository productPriceRepository;
     private final PurchaseIGVRepository purchaseIGVRepository;
+    private final IKardexInput iKardexInput;
     @Override
     public SupplyOrderItem save(SupplyOrder supplyOrder, String warehouse, RequestSupplyOrderItem requestSupplyOrderItem,
                                 String tokenUser) throws InternalErrorExceptions, BadRequestExceptions {
@@ -91,8 +93,8 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
                             .quantity(requestSupplyOrderItem.getQuantity())
                             .user(user)
                             .userId(user.getId())
-                            .discountsAmount(requestSupplyOrderItem.getDiscountsAmount() > 0 ? requestSupplyOrderItem.getDiscountsAmount() : 0)
-                            .chargesAmount(requestSupplyOrderItem.getChargesAmount() > 0 ? requestSupplyOrderItem.getChargesAmount() : 0)
+                            .discountsAmount(requestSupplyOrderItem.getDiscountsAmount() > 0.00 ? requestSupplyOrderItem.getDiscountsAmount() : 0)
+                            .chargesAmount(requestSupplyOrderItem.getChargesAmount() > 0.00 ? requestSupplyOrderItem.getChargesAmount() : 0)
                             .purchaseIGV(purchaseIGV)
                             .purchaseIGVId(purchaseIGV.getId())
                             .unitSalePrice(productPriceRepository.findByProductIdAndStatusTrue(product.getId()).getUnitSalePrice())
@@ -101,6 +103,17 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
             String finalSku = iUtil.buildProductSku(product);
             iWarehouseStock.in(supplyOrder.getWarehouse(),product, requestSupplyOrderItem.getQuantity(), user);
             iGeneralStock.in(product, requestSupplyOrderItem.getQuantity(), user.getUsername());
+            Double unitChargeAmount = requestSupplyOrderItem.getChargesAmount() > 0.00 ? requestSupplyOrderItem.getChargesAmount()/ requestSupplyOrderItem.getQuantity() : 0.00;
+            double unitDiscountAmount = requestSupplyOrderItem.getDiscountsAmount() > 0.00 ? requestSupplyOrderItem.getDiscountsAmount()/ requestSupplyOrderItem.getQuantity() : 0.00;
+            RequestKardexInput requestKardexInput = RequestKardexInput.builder()
+                    .warehouse(supplyOrder.getWarehouse())
+                    .kardexOperationType("COMPRA")
+                    .product(product)
+                    .quantity(requestSupplyOrderItem.getQuantity())
+                    .user(user)
+                    .unitPrice(requestSupplyOrderItem.getUnitValue()+unitChargeAmount-unitDiscountAmount)
+                    .build();
+            iKardexInput.save(requestKardexInput);
             iAudit.save(
                     "ADD_PURCHASE_ITEM",
                     "PRODUCTO DE INVENTARIO "+

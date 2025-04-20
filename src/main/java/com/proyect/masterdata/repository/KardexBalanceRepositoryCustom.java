@@ -1,19 +1,21 @@
 package com.proyect.masterdata.repository;
 
+import com.proyect.masterdata.domain.KardexBalance;
 import org.springframework.data.domain.Page;
 
-import com.proyect.masterdata.domain.GeneralStock;
-import org.springframework.stereotype.Repository;
-
 import java.time.OffsetDateTime;
-import java.util.Date;
-import java.util.List;
 import java.util.UUID;
-@Repository
-public interface GeneralStockRepositoryCustom {
-    Page<GeneralStock> searchForGeneralStock(
+
+public interface KardexBalanceRepositoryCustom {
+    Page<KardexBalance> searchForKardexBalance(
             UUID clientId,
-            String model,
+            Integer quantity,
+            Long lotNumber,
+            String product,
+            UUID productId,
+            String username,
+            String warehouse,
+            Double unitPrice,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -21,5 +23,6 @@ public interface GeneralStockRepositoryCustom {
             String sort,
             String sortColumn,
             Integer pageNumber,
-            Integer pageSize);
+            Integer pageSize
+    );
 }
