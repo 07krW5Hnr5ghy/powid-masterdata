@@ -53,6 +53,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
     private final DeliveryManifestOrderRepository deliveryManifestOrderRepository;
     private final PaymentMetodClientRepository paymentMetodClientRepository;
     private final ClientRepository clientRepository;
+    private final IKardexInput iKardexInput;
 
     @Override
     public CompletableFuture<ResponseSuccess> save(RequestDeliveryManifest requestDeliveryManifest) throws InternalErrorExceptions, BadRequestExceptions {
@@ -445,7 +446,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                 List<RequestStockTransactionItem> stockTransactionList = new ArrayList<>();
                 boolean returnFlag = false;
                 for(DeliveryManifestItemProjection deliveryManifestItem:deliveryManifestItemList){
-                    if(deliveryManifestItem.getDeliveredQuantity()<1){
+                    if(deliveryManifestItem.getDeliveredQuantity()<deliveryManifestItem.getQuantity()){
                         returnFlag = true;
                         int quantityReturn = deliveryManifestItem.getQuantity() - deliveryManifestItem.getDeliveredQuantity();
                         stockTransactionList.add(RequestStockTransactionItem.builder()
@@ -461,6 +462,11 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                         iWarehouseStock.in(
                                 deliveryManifest.getWarehouse(),
                                 product,
+                                quantityReturn,
+                                user
+                        );
+                        iKardexInput.returnFromDeliveryManifestItem(
+                                deliveryManifestItem.getDeliveryManifestItemId(),
                                 quantityReturn,
                                 user
                         );

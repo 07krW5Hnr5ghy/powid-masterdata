@@ -83,7 +83,7 @@ public class KardexInputImpl implements IKardexInput {
     public void returnFromDeliveryManifestItem(UUID deliveryManifestItemId,Integer units, User user) throws BadRequestExceptions, InternalErrorExceptions {
         List<KardexOutput> kardexOutputList;
         try {
-            kardexOutputList = kardexOutputRepository.findAllByDeliverManifestItemIdAndClientId(
+            kardexOutputList = kardexOutputRepository.findAllByDeliveryManifestItemIdAndClientId(
                     deliveryManifestItemId,
                     user.getClientId()
             );

@@ -9,5 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface KardexOutputRepository extends JpaRepository<KardexOutput, UUID> {
-    List<KardexOutput> findAllByDeliverManifestItemIdAndClientId(UUID deliveryManifestItemId,UUID clientId);
+    List<KardexOutput> findAllByDeliveryManifestItemIdAndClientId(UUID deliveryManifestItemId,UUID clientId);
 }
