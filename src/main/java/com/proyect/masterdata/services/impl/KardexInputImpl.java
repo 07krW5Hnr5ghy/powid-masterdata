@@ -178,6 +178,7 @@ public class KardexInputImpl implements IKardexInput {
                             .size(kardexInput.getProduct().getSize().getName())
                             .registrationDate(kardexInput.getRegistrationDate())
                             .lotNumber(kardexInput.getLotNumber())
+                            .value(kardexInput.getUnitPrice()*kardexInput.getQuantity())
                             .build())
                     .toList();
 

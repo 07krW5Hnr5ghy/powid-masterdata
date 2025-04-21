@@ -25,4 +25,5 @@ public class KardexOutputDTO {
     private Integer quantity;
     private Double unitPrice;
     private OffsetDateTime registrationDate;
+    private Double value;
 }
