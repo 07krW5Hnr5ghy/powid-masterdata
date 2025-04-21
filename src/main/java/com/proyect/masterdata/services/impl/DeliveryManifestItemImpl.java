@@ -73,11 +73,10 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
             if(deliveryManifestItemExists || orderItem.getDeliveredProducts() >= orderItem.getQuantity()){
                 throw new BadRequestExceptions(Constants.ErrorDeliveryManifestItemDelivered);
             }
-            // codigo comentado mientras se implementa kardex en el inventario
-//            if(warehouseStock.getQuantity()<orderItem.getQuantity()){
-//                throw new BadRequestExceptions(Constants.ErrorWarehouseStockLess);
-//
-//            }
+            if(warehouseStock.getQuantity()<orderItem.getQuantity()){
+                throw new BadRequestExceptions(Constants.ErrorWarehouseStockLess);
+
+            }
             try{
                 DeliveryManifestItem newDeliveryManifestItem = deliveryManifestItemRepository.save(DeliveryManifestItem.builder()
                         .deliveryManifest(deliveryManifest)
