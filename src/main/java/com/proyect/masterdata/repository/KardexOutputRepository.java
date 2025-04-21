@@ -4,9 +4,10 @@ import com.proyect.masterdata.domain.KardexOutput;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.UUID;
 
 @Repository
 public interface KardexOutputRepository extends JpaRepository<KardexOutput, UUID> {
-
+    List<KardexOutput> findAllByDeliverManifestItemIdAndClientId(UUID deliveryManifestItemId,UUID clientId);
 }

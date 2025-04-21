@@ -28,4 +28,20 @@ public interface KardexBalanceRepository extends JpaRepository<KardexBalance, UU
             @Param("warehouseId") UUID warehouseId
     );
     Long countByClientIdAndProductId(UUID clientId,UUID productId);
+    @Query("""
+            SELECT kb 
+            FROM KardexBalance kb 
+            WHERE kb.clientId = :clientId AND
+            kb.productId = :productId AND
+            kb.warehouseId = :warehouseId AND
+            kb.lotNumber = :lotNumber AND
+            kb.remainingQuantity > 0
+            ORDER BY kb.registrationDate ASC
+            """)
+    KardexBalance findByClientIdAndProductIdAndLotNumberAndLotNumberWithStock(
+            @Param("clientId") UUID clientId,
+            @Param("productId") UUID productId,
+            @Param("warehouseId") UUID warehouseId,
+            @Param("lotNumber") Long lotNumber
+    );
 }

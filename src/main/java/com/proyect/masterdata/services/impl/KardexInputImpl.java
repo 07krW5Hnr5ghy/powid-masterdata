@@ -1,16 +1,12 @@
 package com.proyect.masterdata.services.impl;
 
-import com.proyect.masterdata.domain.KardexInput;
-import com.proyect.masterdata.domain.KardexOperationType;
+import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.KardexInputDTO;
 import com.proyect.masterdata.dto.request.RequestKardexBalance;
 import com.proyect.masterdata.dto.request.RequestKardexInput;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
-import com.proyect.masterdata.repository.KardexInputRepository;
-import com.proyect.masterdata.repository.KardexInputRepositoryCustom;
-import com.proyect.masterdata.repository.KardexOperationTypeRepository;
-import com.proyect.masterdata.repository.UserRepository;
+import com.proyect.masterdata.repository.*;
 import com.proyect.masterdata.services.IKardexBalance;
 import com.proyect.masterdata.services.IKardexInput;
 import com.proyect.masterdata.services.IUtil;
@@ -37,6 +33,8 @@ public class KardexInputImpl implements IKardexInput {
     private final IKardexBalance iKardexBalance;
     private final KardexInputRepositoryCustom kardexInputRepositoryCustom;
     private final IUtil iUtil;
+    private final KardexOutputRepository kardexOutputRepository;
+    private final KardexBalanceRepository kardexBalanceRepository;
     @Override
     public KardexInput save(RequestKardexInput requestKardexInput) throws BadRequestExceptions, InternalErrorExceptions {
         KardexOperationType kardexOperationType;
@@ -76,6 +74,40 @@ public class KardexInputImpl implements IKardexInput {
             iKardexBalance.save(requestKardexBalance);
             return kardexInput;
         }catch (RuntimeException e){
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+    }
+
+    @Override
+    public void returnFromDeliveryManifestItem(UUID deliveryManifestItemId,Integer units, User user) throws BadRequestExceptions, InternalErrorExceptions {
+        List<KardexOutput> kardexOutputList;
+        try {
+            kardexOutputList = kardexOutputRepository.findAllByDeliverManifestItemIdAndClientId(
+                    deliveryManifestItemId,
+                    user.getClientId()
+            );
+        }catch (RuntimeException e){
+            e.printStackTrace();
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        try {
+            for(KardexOutput kardexOutput:kardexOutputList){
+                KardexBalance kardexBalance = kardexBalanceRepository.findByClientIdAndProductIdAndLotNumberAndLotNumberWithStock(
+                        user.getClientId(),
+                        kardexOutput.getProductId(),
+                        kardexOutput.getWarehouseId(),
+                        kardexOutput.getLotNumber()
+                );
+                if(kardexBalance!=null){
+                    kardexBalance.setRemainingQuantity(kardexBalance.getRemainingQuantity()+units);
+                    kardexBalance.setUpdateDate(OffsetDateTime.now());
+                    kardexBalanceRepository.save(kardexBalance);
+                }
+            }
+        }catch (RuntimeException e){
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
