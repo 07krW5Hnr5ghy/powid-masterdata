@@ -27,4 +27,5 @@ public class KardexBalanceDTO {
     private Double unitPrice;
     private OffsetDateTime registrationDate;
     private Double value;
+    private OffsetDateTime updateDate;
 }
