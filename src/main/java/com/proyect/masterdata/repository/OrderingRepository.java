@@ -95,4 +95,17 @@ public interface OrderingRepository extends JpaRepository<Ordering, UUID> {
 
     @Query("SELECT o FROM Ordering o where o.courierId = :courierId")
     List<Ordering> findByCourierId(UUID courierId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Ordering o SET " +
+            "o.updateDate = :updateDate, " +
+            "o.orderStateId = :orderStateId " +
+            "WHERE o.clientId = :clientId AND o.id = :orderId")
+    void setOrderStateInOrder (
+            @Param("orderId") UUID orderId,
+            @Param("clientId") UUID clientId,
+            @Param("updateDate") OffsetDateTime updateDate,
+            @Param("orderStateId") UUID orderStateId
+    );
 }
