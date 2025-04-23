@@ -476,12 +476,14 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                             OffsetDateTime.now(),
                             deliveryManifestItem.getDeliveredProducts() + deliveryManifestItem.getDeliveredQuantity()
                     );
-                    orderingRepository.setOrderStateInOrder(
-                            deliveryManifestItem.getOrderId(),
-                            user.getClientId(),
-                            OffsetDateTime.now(),
-                            orderState.getId()
-                    );
+                    if(deliveryManifestItem.getDeliveredQuantity()>0){
+                        orderingRepository.setOrderStateInOrder(
+                                deliveryManifestItem.getOrderId(),
+                                user.getClientId(),
+                                OffsetDateTime.now(),
+                                orderState.getId()
+                        );
+                    }
                 }
                 if(returnFlag){
                     iStockTransaction.save(
