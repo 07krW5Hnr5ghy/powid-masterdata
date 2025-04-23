@@ -131,6 +131,7 @@ public class KardexBalanceImpl implements IKardexBalance {
                             .lotNumber(kardexBalance.getLotNumber())
                             .value(kardexBalance.getUnitPrice()*kardexBalance.getUnitPrice())
                             .updateDate(kardexBalance.getUpdateDate())
+                            .warehouse(kardexBalance.getWarehouse().getName())
                             .build())
                     .toList();
 
