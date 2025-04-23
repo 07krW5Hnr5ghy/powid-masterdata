@@ -3,6 +3,8 @@ package com.proyect.masterdata.repository;
 import java.util.List;
 import java.util.UUID;
 
+import com.proyect.masterdata.dto.ProductDTO;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -23,4 +25,6 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     List<Product> findByModelSkuAndClientIdAndStatusTrue(String modelSku,UUID clientId);
     List<Product> findByModelNameAndClientIdAndStatusTrue(String modelName,UUID clientId);
     Product findByNameAndClientId(String name,UUID clientId);
+
+    //Page<ProductDTO> searchProductsByNameAndClientId();
 }

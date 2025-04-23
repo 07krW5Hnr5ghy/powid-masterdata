@@ -134,7 +134,6 @@ public class OrderContactedImpl implements IOrderContacted {
             try{
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 orderContacted = orderContactedRepository.findByOrderId(orderId);
-
             }catch (RuntimeException e){
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);

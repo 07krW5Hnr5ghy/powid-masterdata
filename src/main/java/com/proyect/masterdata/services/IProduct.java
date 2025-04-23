@@ -15,6 +15,7 @@ import com.proyect.masterdata.dto.response.ResponseSuccess;
 import com.proyect.masterdata.dto.response.ResponseDelete;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.exceptions.InternalErrorExceptions;
+import org.springframework.data.domain.Pageable;
 import org.springframework.web.multipart.MultipartFile;
 
 public interface IProduct {
@@ -53,4 +54,6 @@ public interface IProduct {
         CompletableFuture<List<ProductDTO>> listByModelAndSizeAndColor(String model,String size,String color,String user) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<ProductDTO>> listByModelAndColor(String model,String color,String user) throws BadRequestExceptions,InternalErrorExceptions;
         CompletableFuture<List<ProductDTO>> listByModel(String modelSku,String user) throws BadRequestExceptions,InternalErrorExceptions;
+        public Page<ProductDTO> searchProducts(String userName, String nameQuery, Pageable pageable) throws BadRequestExceptions,InternalErrorExceptions;
+
 }
