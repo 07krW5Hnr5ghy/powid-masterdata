@@ -54,7 +54,7 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
     private final PaymentMetodClientRepository paymentMetodClientRepository;
     private final ClientRepository clientRepository;
     private final IKardexInput iKardexInput;
-
+    private final OrderStateRepository orderStateRepository;
     @Override
     public CompletableFuture<ResponseSuccess> save(RequestDeliveryManifest requestDeliveryManifest) throws InternalErrorExceptions, BadRequestExceptions {
         return CompletableFuture.supplyAsync(()->{
@@ -418,11 +418,13 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
             DeliveryManifest deliveryManifest;
             List<DeliveryManifestItem> deliveryManifestItems;
             List<OrderItem> orderItems = new ArrayList<>();
+            OrderState orderState;
 
             try{
                 System.out.println("id deliveru ->" + deliveryManifestId);
                 user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
                 deliveryManifest = deliveryManifestRepository.findById(deliveryManifestId).orElse(null);
+                orderState = orderStateRepository.findByNameAndStatusTrue("ENTREGA PARCIAL");
             }catch (RuntimeException e){
                 e.printStackTrace();
                 log.error(e.getMessage());
@@ -433,6 +435,9 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
             }
             if(deliveryManifest==null){
                 throw new BadRequestExceptions(Constants.ErrorDeliveryManifest);
+            }
+            if(orderState==null){
+                throw new BadRequestExceptions(Constants.ErrorOrderState);
             }
 
             try{
@@ -477,6 +482,14 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                             OffsetDateTime.now(),
                             deliveryManifestItem.getDeliveredProducts() + deliveryManifestItem.getDeliveredQuantity()
                     );
+                    if(deliveryManifestItem.getDeliveredQuantity()>0){
+                        orderingRepository.setOrderStateInOrder(
+                                deliveryManifestItem.getOrderId(),
+                                user.getClientId(),
+                                OffsetDateTime.now(),
+                                orderState.getId()
+                        );
+                    }
                 }
                 if(returnFlag){
                     iStockTransaction.save(
