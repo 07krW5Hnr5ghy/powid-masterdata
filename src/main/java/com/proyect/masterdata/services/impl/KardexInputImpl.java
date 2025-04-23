@@ -40,8 +40,8 @@ public class KardexInputImpl implements IKardexInput {
         KardexOperationType kardexOperationType;
         try{
             kardexOperationType = kardexOperationTypeRepository.findByNameAndClientId("COMPRA",requestKardexInput.getUser().getClientId());
-
         }catch (RuntimeException e){
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
@@ -69,11 +69,13 @@ public class KardexInputImpl implements IKardexInput {
                     .user(requestKardexInput.getUser())
                     .unitPrice(requestKardexInput.getUnitPrice())
                     .lotNumber(kardexInput.getLotNumber())
+                    .warehouse(kardexInput.getWarehouse())
                     .add(true)
                     .build();
             iKardexBalance.save(requestKardexBalance);
             return kardexInput;
         }catch (RuntimeException e){
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }

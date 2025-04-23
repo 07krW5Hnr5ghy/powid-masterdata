@@ -55,6 +55,7 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
             product = productRepository.findByIdAndStatusTrue(requestSupplyOrderItem.getProductId());
             purchaseIGV = purchaseIGVRepository.findByNameAndStatusTrue(requestSupplyOrderItem.getIgv());
         } catch (RuntimeException e) {
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
@@ -123,6 +124,7 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
                     user.getUsername());
             return newSupplyOrderItem;
         } catch (RuntimeException e) {
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }

@@ -48,6 +48,8 @@ public class KardexBalanceImpl implements IKardexBalance {
                                 .warehouse(requestKardexBalance.getWarehouse())
                                 .warehouseId(requestKardexBalance.getWarehouse().getId())
                                 .registrationDate(OffsetDateTime.now())
+                                .product(requestKardexBalance.getProduct())
+                                .productId(requestKardexBalance.getProduct().getId())
                                 .updateDate(OffsetDateTime.now())
                         .build());
             }else{
@@ -75,6 +77,7 @@ public class KardexBalanceImpl implements IKardexBalance {
             }
             return kardexBalanceResult;
         }catch (RuntimeException e){
+            e.printStackTrace();
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
@@ -129,9 +132,10 @@ public class KardexBalanceImpl implements IKardexBalance {
                             .size(kardexBalance.getProduct().getSize().getName())
                             .registrationDate(kardexBalance.getRegistrationDate())
                             .lotNumber(kardexBalance.getLotNumber())
-                            .value(kardexBalance.getUnitPrice()*kardexBalance.getUnitPrice())
+                            .value(kardexBalance.getUnitPrice()*kardexBalance.getRemainingQuantity())
                             .updateDate(kardexBalance.getUpdateDate())
                             .warehouse(kardexBalance.getWarehouse().getName())
+                            .unitPrice(kardexBalance.getUnitPrice())
                             .build())
                     .toList();
 
