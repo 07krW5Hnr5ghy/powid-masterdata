@@ -2,6 +2,7 @@ package com.proyect.masterdata.services.impl;
 
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.KardexInputDTO;
+import com.proyect.masterdata.dto.projections.KardexOutputProjection;
 import com.proyect.masterdata.dto.request.RequestKardexBalance;
 import com.proyect.masterdata.dto.request.RequestKardexInput;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -83,7 +84,7 @@ public class KardexInputImpl implements IKardexInput {
 
     @Override
     public void returnFromDeliveryManifestItem(UUID deliveryManifestItemId,Integer units, User user) throws BadRequestExceptions, InternalErrorExceptions {
-        List<KardexOutput> kardexOutputList;
+        List<KardexOutputProjection> kardexOutputList;
         try {
             kardexOutputList = kardexOutputRepository.findAllByDeliveryManifestItemIdAndClientId(
                     deliveryManifestItemId,
@@ -95,8 +96,8 @@ public class KardexInputImpl implements IKardexInput {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
         try {
-            for(KardexOutput kardexOutput:kardexOutputList){
-                KardexBalance kardexBalance = kardexBalanceRepository.findByClientIdAndProductIdAndLotNumberAndLotNumberWithStock(
+            for(KardexOutputProjection kardexOutput:kardexOutputList){
+                KardexBalance kardexBalance = kardexBalanceRepository.findAllByClientIdAndProductIdAndWarehouseIdWithoutSockCheck(
                         user.getClientId(),
                         kardexOutput.getProductId(),
                         kardexOutput.getWarehouseId(),
