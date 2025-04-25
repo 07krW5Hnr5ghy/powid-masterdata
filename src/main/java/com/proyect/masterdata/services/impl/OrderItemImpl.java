@@ -333,7 +333,7 @@ public class OrderItemImpl implements IOrderItem {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 ordering = orderingRepository.findById(orderId).orElse(null);
                 product = productRepository.findByIdAndStatusTrue(requestOrderItem.getProductId());
-                orderItem = orderItemRepository.findByProductId(product.getId());
+                orderItem = orderItemRepository.findByProductIdAndOrderId(product.getId(),orderId);
                 discount = discountRepository.findByName(requestOrderItem.getDiscount().toUpperCase());
             }catch (RuntimeException e){
                 log.error(e.getMessage());
