@@ -26,4 +26,7 @@ public class KardexOutputDTO {
     private Double unitPrice;
     private OffsetDateTime registrationDate;
     private Double value;
+    private String warehouse;
+    private Long lotNumber;
+    private Long orderNumber;
 }

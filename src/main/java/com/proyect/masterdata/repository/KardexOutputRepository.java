@@ -12,12 +12,14 @@ import java.util.UUID;
 
 @Repository
 public interface KardexOutputRepository extends JpaRepository<KardexOutput, UUID> {
-    @Query("""
-            SELECT ko.productId,ko.warehouseId,ko.lotNumber 
-            FROM KardexOutput ko 
-            WHERE ko.clientId = :clientId AND
-            ko.deliveryManifestItemId = :deliveryManifestItemId
-            """)
+    @Query(value = """
+        SELECT product_id AS productId,
+               warehouse_id AS warehouseId,
+               lot_number AS lotNumber
+        FROM stock.kardex_output
+        WHERE client_id = :clientId
+          AND delivery_manifest_item_id = :deliveryManifestItemId
+        """, nativeQuery = true)
     List<KardexOutputProjection> findAllByDeliveryManifestItemIdAndClientId(
             @Param("clientId") UUID clientId,
             @Param("deliveryManifestItemId") UUID deliveryManifestItemId

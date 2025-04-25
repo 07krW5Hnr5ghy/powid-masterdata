@@ -27,4 +27,5 @@ public class KardexInputDTO {
     private Double unitPrice;
     private OffsetDateTime registrationDate;
     private Double value;
+    private String warehouse;
 }

@@ -92,6 +92,7 @@ public class KardexInputImpl implements IKardexInput {
                     deliveryManifestItemId,
                     user.getClientId()
             );
+            System.out.println(kardexOutputList);
         }catch (RuntimeException e){
             e.printStackTrace();
             log.error(e.getMessage());
@@ -187,6 +188,7 @@ public class KardexInputImpl implements IKardexInput {
                             .registrationDate(kardexInput.getRegistrationDate())
                             .lotNumber(kardexInput.getLotNumber())
                             .value(kardexInput.getUnitPrice()*kardexInput.getQuantity())
+                            .warehouse(kardexInput.getWarehouse().getName())
                             .build())
                     .toList();
 
