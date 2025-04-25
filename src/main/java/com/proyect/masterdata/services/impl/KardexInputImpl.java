@@ -86,6 +86,8 @@ public class KardexInputImpl implements IKardexInput {
     public void returnFromDeliveryManifestItem(UUID deliveryManifestItemId,Integer units, User user) throws BadRequestExceptions, InternalErrorExceptions {
         List<KardexOutputProjection> kardexOutputList;
         try {
+            System.out.println(deliveryManifestItemId);
+            System.out.println(user.getClientId());
             kardexOutputList = kardexOutputRepository.findAllByDeliveryManifestItemIdAndClientId(
                     deliveryManifestItemId,
                     user.getClientId()
@@ -96,13 +98,16 @@ public class KardexInputImpl implements IKardexInput {
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
         }
         try {
+            System.out.println(kardexOutputList);
             for(KardexOutputProjection kardexOutput:kardexOutputList){
+                System.out.println(kardexOutput);
                 KardexBalance kardexBalance = kardexBalanceRepository.findAllByClientIdAndProductIdAndWarehouseIdWithoutSockCheck(
                         user.getClientId(),
                         kardexOutput.getProductId(),
                         kardexOutput.getWarehouseId(),
                         kardexOutput.getLotNumber()
                 );
+                System.out.println(kardexBalance);
                 if(kardexBalance!=null){
                     kardexBalance.setRemainingQuantity(kardexBalance.getRemainingQuantity()+units);
                     kardexBalance.setUpdateDate(OffsetDateTime.now());

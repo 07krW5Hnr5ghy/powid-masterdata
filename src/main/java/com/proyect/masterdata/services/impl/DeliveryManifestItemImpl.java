@@ -112,6 +112,7 @@ public class DeliveryManifestItemImpl implements IDeliveryManifestItem{
                         .user(newDeliveryManifestItem.getUser().getUsername())
                         .warehouse(newDeliveryManifestItem.getDeliveryManifest().getWarehouse())
                         .deliveryManifestItemId(newDeliveryManifestItem.getId())
+                        .orderNumber(newDeliveryManifestItem.getOrderItem().getOrdering().getOrderNumber())
                         .build();
                 ikardexOutput.save(requestKardexOutput);
                 iAudit.save(

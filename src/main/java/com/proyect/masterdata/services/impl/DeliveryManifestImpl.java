@@ -470,6 +470,8 @@ public class DeliveryManifestImpl implements IDeliveryManifest {
                                 quantityReturn,
                                 user
                         );
+                        System.out.println(deliveryManifestItem.getDeliveryManifestItemId());
+                        System.out.println(quantityReturn);
                         iKardexInput.returnFromDeliveryManifestItem(
                                 deliveryManifestItem.getDeliveryManifestItemId(),
                                 quantityReturn,

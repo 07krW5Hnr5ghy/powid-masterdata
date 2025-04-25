@@ -13,7 +13,7 @@ import java.util.UUID;
 @Repository
 public interface KardexOutputRepository extends JpaRepository<KardexOutput, UUID> {
     @Query("""
-            SELECT ko 
+            SELECT ko.productId,ko.warehouseId,ko.lotNumber 
             FROM KardexOutput ko 
             WHERE ko.clientId = :clientId AND
             ko.deliveryManifestItemId = :deliveryManifestItemId
