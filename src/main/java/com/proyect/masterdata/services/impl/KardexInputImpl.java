@@ -113,9 +113,8 @@ public class KardexInputImpl implements IKardexInput {
                         (Long) kardexOutput[2]
                 );
                 System.out.println(kardexBalance);
-                int quantityForReturn = units;
                 if(kardexBalance!=null){
-                    kardexBalance.setRemainingQuantity(kardexBalance.getRemainingQuantity()+units);
+                    kardexBalance.setRemainingQuantity(kardexBalance.getRemainingQuantity()+(Integer) kardexOutput[3]);
                     kardexBalance.setUpdateDate(OffsetDateTime.now());
                     kardexBalanceRepository.save(kardexBalance);
                 }

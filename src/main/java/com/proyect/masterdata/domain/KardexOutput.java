@@ -79,8 +79,4 @@ public class KardexOutput {
     @ManyToOne()
     @JoinColumn(name="warehouse_id",columnDefinition = "warehouseId",insertable = false,updatable = false)
     private Warehouse warehouse;
-
-    @ManyToOne()
-    @JoinColumn(name="delivery_manifest_item_id",columnDefinition = "deliveryManifestItemId",insertable = false,updatable = false)
-    private DeliveryManifestItem deliveryManifestItem;
 }

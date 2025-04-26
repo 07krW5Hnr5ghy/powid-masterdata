@@ -81,15 +81,18 @@ public class KardexOutputImpl implements IkardexOutput {
                         .build();
                 if (remainingToDeduct <= 0) break;
                 int available = kardexBalance.getRemainingQuantity();
+                System.out.println(available);
+                System.out.println(remainingToDeduct);
                 if (available >= remainingToDeduct) {
                     kardexBalance.setRemainingQuantity(available - remainingToDeduct);
+                    kardexOutput.setQuantity(remainingToDeduct);
                     remainingToDeduct = 0;
-                    kardexOutput.setQuantity(available);
                 } else {
                     kardexBalance.setRemainingQuantity(0);
                     remainingToDeduct -= available;
-                    kardexOutput.setQuantity(remainingToDeduct-available);
+                    kardexOutput.setQuantity(available);
                 }
+                System.out.println(kardexOutput);
                 kardexOutputRepository.save(kardexOutput);
                 kardexBalanceRepository.save(kardexBalance);
             }
