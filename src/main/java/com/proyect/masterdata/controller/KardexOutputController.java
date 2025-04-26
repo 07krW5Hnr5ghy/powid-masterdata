@@ -1,6 +1,7 @@
 package com.proyect.masterdata.controller;
 
 import com.proyect.masterdata.dto.KardexOutputDTO;
+import com.proyect.masterdata.dto.projections.KardexOutputProjection;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
 import com.proyect.masterdata.services.IUtil;
 import com.proyect.masterdata.services.IkardexOutput;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -58,5 +60,13 @@ public class KardexOutputController {
                 pageNumber,
                 pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
+    }
+
+    @GetMapping("test")
+    public List<KardexOutputDTO> selectAll(
+            @RequestParam("user") String username,
+            @RequestParam("deliveryManifestItemId") UUID deliveryManifestItemId
+    ){
+        return ikardexOutput.test(username,deliveryManifestItemId);
     }
 }

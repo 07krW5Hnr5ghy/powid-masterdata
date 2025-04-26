@@ -3,6 +3,7 @@ package com.proyect.masterdata.services.impl;
 import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.dto.KardexInputDTO;
 import com.proyect.masterdata.dto.KardexOutputDTO;
+import com.proyect.masterdata.dto.projections.KardexOutputProjection;
 import com.proyect.masterdata.dto.request.RequestKardexBalance;
 import com.proyect.masterdata.dto.request.RequestKardexOutput;
 import com.proyect.masterdata.exceptions.BadRequestExceptions;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.stereotype.Service;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -165,5 +167,43 @@ public class KardexOutputImpl implements IkardexOutput {
             return new PageImpl<>(kardexOutputDTOs, kardexOutputPage.getPageable(),
                     kardexOutputPage.getTotalElements());
         });
+    }
+
+    @Override
+    public List<KardexOutputDTO> test(String username,UUID deliveryManifestItemId) {
+        List<Object[]> kardexOutputList;
+        User user;
+        try {
+            user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
+            System.out.println(deliveryManifestItemId);
+            System.out.println(user.getClientId());
+            kardexOutputList = kardexOutputRepository.selectAllByDeliveryManifestItemIdAndClientId(
+                    user.getClientId(),
+                    deliveryManifestItemId
+            );
+            System.out.println(kardexOutputList);
+            System.out.println(kardexOutputList.size());
+        }catch (RuntimeException e){
+            e.printStackTrace();
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
+        try {
+            System.out.println(kardexOutputList);
+            List<KardexOutputDTO> kardexOutputDTOS = new ArrayList<>();
+            for(Object[] kardexOutput:kardexOutputList){
+                System.out.println(kardexOutput[0]);
+                System.out.println(kardexOutput[1]);
+                System.out.println(kardexOutput[2]);
+                kardexOutputDTOS.add(KardexOutputDTO.builder()
+                                .lotNumber((Long) kardexOutput[2])
+                        .build());
+            }
+            return kardexOutputDTOS;
+        }catch (RuntimeException e){
+            e.printStackTrace();
+            log.error(e.getMessage());
+            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
+        }
     }
 }

@@ -89,8 +89,8 @@ public class KardexInputImpl implements IKardexInput {
             System.out.println(deliveryManifestItemId);
             System.out.println(user.getClientId());
             kardexOutputList = kardexOutputRepository.selectAllByDeliveryManifestItemIdAndClientId(
-                    deliveryManifestItemId,
-                    user.getClientId()
+                    user.getClientId(),
+                    deliveryManifestItemId
             );
             System.out.println(kardexOutputList);
         }catch (RuntimeException e){
