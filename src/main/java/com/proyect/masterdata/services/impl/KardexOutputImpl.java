@@ -158,7 +158,7 @@ public class KardexOutputImpl implements IkardexOutput {
                             .color(kardexOutput.getProduct().getColor().getName())
                             .size(kardexOutput.getProduct().getSize().getName())
                             .registrationDate(kardexOutput.getRegistrationDate())
-                            .value(kardexOutput.getUnitPrice()*kardexOutput.getQuantity())
+                            .total(kardexOutput.getUnitPrice()*kardexOutput.getQuantity())
                             .warehouse(kardexOutput.getWarehouse().getName())
                             .orderNumber(kardexOutput.getOrderNumber())
                             .lotNumber(kardexOutput.getLotNumber())
