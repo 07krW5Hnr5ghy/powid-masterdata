@@ -16,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name = Constants.tableKardexOuput, schema = Constants.schemaStock)
+@Table(name = Constants.tableKardexOutput, schema = Constants.schemaStock)
 public class KardexOutput {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

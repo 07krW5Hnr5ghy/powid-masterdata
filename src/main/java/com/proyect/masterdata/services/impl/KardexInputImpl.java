@@ -84,11 +84,11 @@ public class KardexInputImpl implements IKardexInput {
 
     @Override
     public void returnFromDeliveryManifestItem(UUID deliveryManifestItemId,Integer units, User user) throws BadRequestExceptions, InternalErrorExceptions {
-        List<KardexOutputProjection> kardexOutputList;
+        List<Object[]> kardexOutputList;
         try {
             System.out.println(deliveryManifestItemId);
             System.out.println(user.getClientId());
-            kardexOutputList = kardexOutputRepository.findAllByDeliveryManifestItemIdAndClientId(
+            kardexOutputList = kardexOutputRepository.selectAllByDeliveryManifestItemIdAndClientId(
                     deliveryManifestItemId,
                     user.getClientId()
             );
@@ -100,13 +100,15 @@ public class KardexInputImpl implements IKardexInput {
         }
         try {
             System.out.println(kardexOutputList);
-            for(KardexOutputProjection kardexOutput:kardexOutputList){
-                System.out.println(kardexOutput);
+            for(Object[] kardexOutput:kardexOutputList){
+                System.out.println(kardexOutput[0]);
+                System.out.println(kardexOutput[1]);
+                System.out.println(kardexOutput[2]);
                 KardexBalance kardexBalance = kardexBalanceRepository.findAllByClientIdAndProductIdAndWarehouseIdWithoutSockCheck(
                         user.getClientId(),
-                        kardexOutput.getProductId(),
-                        kardexOutput.getWarehouseId(),
-                        kardexOutput.getLotNumber()
+                        (UUID) kardexOutput[0],
+                        (UUID) kardexOutput[1],
+                        (Long) kardexOutput[2]
                 );
                 System.out.println(kardexBalance);
                 if(kardexBalance!=null){

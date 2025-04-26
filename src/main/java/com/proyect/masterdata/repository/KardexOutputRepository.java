@@ -20,7 +20,7 @@ public interface KardexOutputRepository extends JpaRepository<KardexOutput, UUID
         WHERE client_id = :clientId
           AND delivery_manifest_item_id = :deliveryManifestItemId
         """, nativeQuery = true)
-    List<KardexOutputProjection> findAllByDeliveryManifestItemIdAndClientId(
+    List<Object[]> selectAllByDeliveryManifestItemIdAndClientId(
             @Param("clientId") UUID clientId,
             @Param("deliveryManifestItemId") UUID deliveryManifestItemId
     );
