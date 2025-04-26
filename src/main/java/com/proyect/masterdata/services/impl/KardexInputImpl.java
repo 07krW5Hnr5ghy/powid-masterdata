@@ -194,6 +194,7 @@ public class KardexInputImpl implements IKardexInput {
                             .total(kardexInput.getUnitPrice()*kardexInput.getQuantity())
                             .warehouse(kardexInput.getWarehouse().getName())
                             .unitValue(kardexInput.getUnitValue())
+                            .unitPrice(kardexInput.getUnitPrice())
                             .build())
                     .toList();
 
