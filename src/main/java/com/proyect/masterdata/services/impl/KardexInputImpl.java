@@ -70,6 +70,7 @@ public class KardexInputImpl implements IKardexInput {
                     .quantity(requestKardexInput.getQuantity())
                     .user(requestKardexInput.getUser())
                     .unitPrice(requestKardexInput.getUnitPrice())
+                    .unitValue(requestKardexInput.getUnitValue())
                     .lotNumber(kardexInput.getLotNumber())
                     .warehouse(kardexInput.getWarehouse())
                     .add(true)
