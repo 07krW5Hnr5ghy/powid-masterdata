@@ -29,4 +29,5 @@ public class KardexOutputDTO {
     private String warehouse;
     private Long lotNumber;
     private Long orderNumber;
+    private Double unitValue;
 }

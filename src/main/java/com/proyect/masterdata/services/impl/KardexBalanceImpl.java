@@ -51,6 +51,7 @@ public class KardexBalanceImpl implements IKardexBalance {
                                 .product(requestKardexBalance.getProduct())
                                 .productId(requestKardexBalance.getProduct().getId())
                                 .updateDate(OffsetDateTime.now())
+                                .unitValue(requestKardexBalance.getUnitValue())
                         .build());
             }else{
                 int remainingToDeduct = requestKardexBalance.getQuantity();
@@ -136,6 +137,7 @@ public class KardexBalanceImpl implements IKardexBalance {
                             .updateDate(kardexBalance.getUpdateDate())
                             .warehouse(kardexBalance.getWarehouse().getName())
                             .unitPrice(kardexBalance.getUnitPrice())
+                            .unitValue(kardexBalance.getUnitValue())
                             .build())
                     .toList();
 

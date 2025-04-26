@@ -15,7 +15,8 @@ public interface KardexOutputRepository extends JpaRepository<KardexOutput, UUID
     @Query(value = """
         SELECT product_id AS productId,
                warehouse_id AS warehouseId,
-               lot_number AS lotNumber
+               lot_number AS lotNumber,
+               quantity as quantity
         FROM stock.kardex_output as sko
         WHERE sko.client_id = :clientId
           AND sko.delivery_manifest_item_id = :deliveryManifestItemId

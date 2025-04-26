@@ -29,6 +29,9 @@ public class KardexOutput {
     @Column(name = "unit_price")
     private Double unitPrice;
 
+    @Column(name = "unit_value")
+    private Double unitValue;
+
     @Column(name = "order_number")
     private Long orderNumber;
 

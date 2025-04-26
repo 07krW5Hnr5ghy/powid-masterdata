@@ -76,18 +76,19 @@ public class KardexOutputImpl implements IkardexOutput {
                         .deliveryManifestItemId(requestKardexOutput.getDeliveryManifestItemId())
                         .warehouse(requestKardexOutput.getWarehouse())
                         .warehouseId(requestKardexOutput.getWarehouse().getId())
+                        .unitValue(kardexBalance.getUnitValue())
+                        .unitPrice(kardexBalance.getUnitPrice())
                         .build();
                 if (remainingToDeduct <= 0) break;
                 int available = kardexBalance.getRemainingQuantity();
                 if (available >= remainingToDeduct) {
                     kardexBalance.setRemainingQuantity(available - remainingToDeduct);
-                    kardexOutput.setQuantity(available-remainingToDeduct);
                     remainingToDeduct = 0;
                 } else {
                     kardexBalance.setRemainingQuantity(0);
-                    kardexOutput.setQuantity(available);
                     remainingToDeduct -= available;
                 }
+                kardexOutput.setQuantity(remainingToDeduct);
                 kardexOutputRepository.save(kardexOutput);
                 kardexBalanceRepository.save(kardexBalance);
             }
@@ -161,49 +162,13 @@ public class KardexOutputImpl implements IkardexOutput {
                             .warehouse(kardexOutput.getWarehouse().getName())
                             .orderNumber(kardexOutput.getOrderNumber())
                             .lotNumber(kardexOutput.getLotNumber())
+                            .unitPrice(kardexOutput.getUnitPrice())
+                            .unitValue(kardexOutput.getUnitValue())
                             .build())
                     .toList();
 
             return new PageImpl<>(kardexOutputDTOs, kardexOutputPage.getPageable(),
                     kardexOutputPage.getTotalElements());
         });
-    }
-
-    @Override
-    public List<KardexOutputDTO> test(String username,UUID deliveryManifestItemId) {
-        List<Object[]> kardexOutputList;
-        User user;
-        try {
-            user = userRepository.findByUsernameAndStatusTrue(username.toUpperCase());
-            System.out.println(deliveryManifestItemId);
-            System.out.println(user.getClientId());
-            kardexOutputList = kardexOutputRepository.selectAllByDeliveryManifestItemIdAndClientId(
-                    user.getClientId(),
-                    deliveryManifestItemId
-            );
-            System.out.println(kardexOutputList);
-            System.out.println(kardexOutputList.size());
-        }catch (RuntimeException e){
-            e.printStackTrace();
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
-        try {
-            System.out.println(kardexOutputList);
-            List<KardexOutputDTO> kardexOutputDTOS = new ArrayList<>();
-            for(Object[] kardexOutput:kardexOutputList){
-                System.out.println(kardexOutput[0]);
-                System.out.println(kardexOutput[1]);
-                System.out.println(kardexOutput[2]);
-                kardexOutputDTOS.add(KardexOutputDTO.builder()
-                                .lotNumber((Long) kardexOutput[2])
-                        .build());
-            }
-            return kardexOutputDTOS;
-        }catch (RuntimeException e){
-            e.printStackTrace();
-            log.error(e.getMessage());
-            throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
-        }
     }
 }

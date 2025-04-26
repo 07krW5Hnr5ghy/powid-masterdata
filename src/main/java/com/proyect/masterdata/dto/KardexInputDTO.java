@@ -24,6 +24,7 @@ public class KardexInputDTO {
     private String color;
     private String size;
     private Integer quantity;
+    private Double unitValue;
     private Double unitPrice;
     private OffsetDateTime registrationDate;
     private Double value;

@@ -63,6 +63,7 @@ public class KardexInputImpl implements IKardexInput {
                             .warehouseId(requestKardexInput.getWarehouse().getId())
                             .quantity(requestKardexInput.getQuantity())
                             .unitPrice(requestKardexInput.getUnitPrice())
+                            .unitValue(requestKardexInput.getUnitValue())
                     .build());
             RequestKardexBalance requestKardexBalance = RequestKardexBalance.builder()
                     .product(requestKardexInput.getProduct())
@@ -111,6 +112,7 @@ public class KardexInputImpl implements IKardexInput {
                         (Long) kardexOutput[2]
                 );
                 System.out.println(kardexBalance);
+                int quantityForReturn = units;
                 if(kardexBalance!=null){
                     kardexBalance.setRemainingQuantity(kardexBalance.getRemainingQuantity()+units);
                     kardexBalance.setUpdateDate(OffsetDateTime.now());
@@ -191,6 +193,7 @@ public class KardexInputImpl implements IKardexInput {
                             .lotNumber(kardexInput.getLotNumber())
                             .value(kardexInput.getUnitPrice()*kardexInput.getQuantity())
                             .warehouse(kardexInput.getWarehouse().getName())
+                            .unitValue(kardexInput.getUnitValue())
                             .build())
                     .toList();
 

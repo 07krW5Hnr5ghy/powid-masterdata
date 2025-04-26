@@ -31,5 +31,4 @@ public interface IkardexOutput {
             String sortColumn,
             Integer pageNumber,
             Integer pageSize) throws InternalErrorExceptions;
-    List<KardexOutputDTO> test(String user,UUID deliveryManifestItemId);
 }

@@ -61,12 +61,4 @@ public class KardexOutputController {
                 pageSize);
         return new ResponseEntity<>(result.get(), HttpStatus.OK);
     }
-
-    @GetMapping("test")
-    public List<KardexOutputDTO> selectAll(
-            @RequestParam("user") String username,
-            @RequestParam("deliveryManifestItemId") UUID deliveryManifestItemId
-    ){
-        return ikardexOutput.test(username,deliveryManifestItemId);
-    }
 }

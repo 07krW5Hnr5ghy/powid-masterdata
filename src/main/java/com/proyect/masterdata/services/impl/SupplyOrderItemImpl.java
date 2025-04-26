@@ -106,13 +106,16 @@ public class SupplyOrderItemImpl implements ISupplyOrderItem {
             iGeneralStock.in(product, requestSupplyOrderItem.getQuantity(), user.getUsername());
             Double unitChargeAmount = requestSupplyOrderItem.getChargesAmount() > 0.00 ? requestSupplyOrderItem.getChargesAmount()/ requestSupplyOrderItem.getQuantity() : 0.00;
             double unitDiscountAmount = requestSupplyOrderItem.getDiscountsAmount() > 0.00 ? requestSupplyOrderItem.getDiscountsAmount()/ requestSupplyOrderItem.getQuantity() : 0.00;
+            double unitValue = requestSupplyOrderItem.getUnitValue()+unitChargeAmount-unitDiscountAmount;
+            double unitPrice = unitValue+((unitValue*purchaseIGV.getValue())/100);
             RequestKardexInput requestKardexInput = RequestKardexInput.builder()
                     .warehouse(supplyOrder.getWarehouse())
                     .kardexOperationType("COMPRA")
                     .product(product)
                     .quantity(requestSupplyOrderItem.getQuantity())
                     .user(user)
-                    .unitPrice(requestSupplyOrderItem.getUnitValue()+unitChargeAmount-unitDiscountAmount)
+                    .unitValue(unitValue)
+                    .unitPrice(unitPrice)
                     .build();
             iKardexInput.save(requestKardexInput);
             iAudit.save(

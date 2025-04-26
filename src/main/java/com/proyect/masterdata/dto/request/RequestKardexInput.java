@@ -20,4 +20,5 @@ public class RequestKardexInput {
     private Warehouse warehouse;
     private Integer quantity;
     private Double unitPrice;
+    private Double unitValue;
 }
