@@ -74,7 +74,7 @@ public class ProductImpl implements IProduct {
         try {
             user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
             // almacen para cargar el inventario negativo
-            warehouse = warehouseRepository.findByNameAndStatusTrue("ALMACEN ARANNI");
+            //warehouse = warehouseRepository.findByNameAndStatusTrue("ALMACEN ARANNI");
         } catch (RuntimeException e) {
             log.error(e.getMessage());
             throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -152,8 +152,8 @@ public class ProductImpl implements IProduct {
             }
             iAudit.save("ADD_PRODUCT","PRODUCTO DE MARKETING "+productData.getId()+" CREADO.",productData.getId().toString(),user.getUsername());
             // setear el inventario en cero mientras se implementa el kardex
-            iGeneralStock.in(productData,0,user.getUsername());
-            iWarehouseStock.in(warehouse,productData,0,user);
+            //iGeneralStock.in(productData,0,user.getUsername());
+            //iWarehouseStock.in(warehouse,productData,0,user);
             return ResponseSuccess.builder()
                     .code(200)
                     .message(Constants.register)
@@ -182,7 +182,7 @@ public class ProductImpl implements IProduct {
                 user = userRepository.findByUsernameAndStatusTrue(tokenUser.toUpperCase());
                 System.out.println(unitRepository.findAll());
                 // almacen para cargar el inventario negativo
-                warehouse = warehouseRepository.findByNameAndStatusTrue("ALMACEN ARANNI");
+                //warehouse = warehouseRepository.findByNameAndStatusTrue("ALMACEN ARANNI");
             } catch (RuntimeException e) {
                 log.error(e.getMessage());
                 throw new InternalErrorExceptions(Constants.InternalErrorExceptions);
@@ -282,8 +282,8 @@ public class ProductImpl implements IProduct {
                 }
                 iAudit.save("ADD_PRODUCT","PRODUCTO DE MARKETING "+productData.getId()+" CREADO.",productData.getId().toString(),user.getUsername());
                 // setear el inventario en cero mientras se implementa el kardex
-                iGeneralStock.in(productData,0,user.getUsername());
-                iWarehouseStock.in(warehouse,productData,0,user);
+                //iGeneralStock.in(productData,0,user.getUsername());
+                //iWarehouseStock.in(warehouse,productData,0,user);
                 return ResponseSuccess.builder()
                         .code(200)
                         .message(Constants.register)
