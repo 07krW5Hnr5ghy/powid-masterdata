@@ -31,6 +31,10 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
             String username,
             String warehouse,
             String model,
+            String subCategoryProduct,
+            String category,
+            String size,
+            String color,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -46,6 +50,10 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
         Join<KardexOutput, Warehouse> kardexOutputWarehouseJoin = itemRoot.join("warehouse");
         Join<KardexOutput, User> kardexOutputUserJoin = itemRoot.join("user");
         Join<Product,Model> productModelJoin = kardexOutputProductJoin.join("model");
+        Join<Product, Size> productSizeJoin = kardexOutputProductJoin.join("size");
+        Join<Product, Color> productColorJoin = kardexOutputProductJoin.join("color");
+        Join<Product, SubCategoryProduct> productSubCategoryProductJoin = kardexOutputProductJoin.join("subCategoryProduct");
+        Join<SubCategoryProduct,CategoryProduct> subCategoryProductCategoryProductJoin = productSubCategoryProductJoin.join("categoryProduct");
         criteriaQuery.select(itemRoot);
 
         List<Predicate> conditions = predicate(
@@ -56,6 +64,10 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
                 username,
                 warehouse,
                 model,
+                subCategoryProduct,
+                category,
+                size,
+                color,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -65,7 +77,11 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
                 kardexOutputProductJoin,
                 kardexOutputUserJoin,
                 kardexOutputWarehouseJoin,
-                productModelJoin);
+                productModelJoin,
+                productSizeJoin,
+                productColorJoin,
+                productSubCategoryProductJoin,
+                subCategoryProductCategoryProductJoin);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -97,6 +113,10 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
                 username,
                 warehouse,
                 model,
+                subCategoryProduct,
+                category,
+                size,
+                color,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -113,6 +133,10 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
             String username,
             String warehouse,
             String model,
+            String subCategoryProduct,
+            String category,
+            String size,
+            String color,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -122,7 +146,11 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
             Join<KardexOutput,Product> kardexOutputProductJoin,
             Join<KardexOutput,User> kardexOutputUserJoin,
             Join<KardexOutput,Warehouse> kardexOutputWarehouseJoin,
-            Join<Product,Model> productModelJoin) {
+            Join<Product,Model> productModelJoin,
+            Join<Product, Size> productSizeJoin,
+            Join<Product, Color> productColorJoin,
+            Join<Product, SubCategoryProduct> productSubCategoryProductJoin,
+            Join<SubCategoryProduct,CategoryProduct> subCategoryProductCategoryProductJoin) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -156,6 +184,22 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
 
         if(model!=null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(productModelJoin.get("name")),"%"+model.toUpperCase()+"%"));
+        }
+
+        if(subCategoryProduct!=null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(productSubCategoryProductJoin.get("name")),"%"+subCategoryProduct.toUpperCase()+"%"));
+        }
+
+        if(category!=null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(subCategoryProductCategoryProductJoin.get("name")),"%"+category.toUpperCase()+"%"));
+        }
+
+        if(size!=null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(productSizeJoin.get("name")),"%"+size.toUpperCase()+"%"));
+        }
+
+        if(color!=null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(productColorJoin.get("name")),"%"+color.toUpperCase()+"%"));
         }
 
         if(registrationStartDate!=null){
@@ -265,6 +309,10 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
             String username,
             String warehouse,
             String model,
+            String subCategoryProduct,
+            String category,
+            String size,
+            String color,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -277,6 +325,10 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
         Join<KardexOutput,Warehouse> kardexOutputWarehouseJoin = itemRoot.join("warehouse");
         Join<KardexOutput,User> kardexOutputUserJoin = itemRoot.join("user");
         Join<Product,Model> productModelJoin = kardexOutputProductJoin.join("model");
+        Join<Product, Size> productSizeJoin = kardexOutputProductJoin.join("size");
+        Join<Product, Color> productColorJoin = kardexOutputProductJoin.join("color");
+        Join<Product, SubCategoryProduct> productSubCategoryProductJoin = kardexOutputProductJoin.join("subCategoryProduct");
+        Join<SubCategoryProduct,CategoryProduct> subCategoryProductCategoryProductJoin = productSubCategoryProductJoin.join("categoryProduct");
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
                 clientId,
@@ -286,6 +338,10 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
                 username,
                 warehouse,
                 model,
+                subCategoryProduct,
+                category,
+                size,
+                color,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -295,7 +351,11 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
                 kardexOutputProductJoin,
                 kardexOutputUserJoin,
                 kardexOutputWarehouseJoin,
-                productModelJoin);
+                productModelJoin,
+                productSizeJoin,
+                productColorJoin,
+                productSubCategoryProductJoin,
+                subCategoryProductCategoryProductJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
