@@ -19,6 +19,8 @@ public interface IkardexOutput {
     CompletableFuture<Page<KardexOutputDTO>> list(
             String user,
             Integer quantity,
+            Long lotNumber,
+            Long orderNumber,
             String product,
             UUID productId,
             String username,

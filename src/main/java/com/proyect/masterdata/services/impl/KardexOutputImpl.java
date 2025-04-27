@@ -106,6 +106,8 @@ public class KardexOutputImpl implements IkardexOutput {
     public CompletableFuture<Page<KardexOutputDTO>> list(
             String user,
             Integer quantity,
+            Long lotNumber,
+            Long orderNumber,
             String product,
             UUID productId,
             String username,
@@ -132,6 +134,8 @@ public class KardexOutputImpl implements IkardexOutput {
                 kardexOutputPage = kardexOutputRepositoryCustom.searchForKardexOutput(
                         clientId,
                         quantity,
+                        lotNumber,
+                        orderNumber,
                         product,
                         productId,
                         username,

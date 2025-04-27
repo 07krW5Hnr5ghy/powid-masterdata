@@ -28,6 +28,8 @@ public class KardexOutputController {
     public ResponseEntity<Page<KardexOutputDTO>> list(
             @RequestParam(value = "user", required = true) String user,
             @RequestParam(value = "quantity",required = false) Integer quantity,
+            @RequestParam(value = "lotNumber",required = false) Long lotNumber,
+            @RequestParam(value = "orderNumber",required = false) Long orderNumber,
             @RequestParam(value = "product",required = false) String product,
             @RequestParam(value = "productId",required = false) UUID productId,
             @RequestParam(value = "username",required = false) String username,
@@ -52,6 +54,8 @@ public class KardexOutputController {
         CompletableFuture<Page<KardexOutputDTO>> result = ikardexOutput.list(
                 user,
                 quantity,
+                lotNumber,
+                orderNumber,
                 product,
                 productId,
                 username,

@@ -26,6 +26,8 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
     public Page<KardexOutput> searchForKardexOutput(
             UUID clientId,
             Integer quantity,
+            Long lotNumber,
+            Long orderNumber,
             String product,
             UUID productId,
             String username,
@@ -59,6 +61,8 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
         List<Predicate> conditions = predicate(
                 clientId,
                 quantity,
+                lotNumber,
+                orderNumber,
                 product,
                 productId,
                 username,
@@ -108,6 +112,8 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
         Long count = getOrderCount(
                 clientId,
                 quantity,
+                lotNumber,
+                orderNumber,
                 product,
                 productId,
                 username,
@@ -128,6 +134,8 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
     private List<Predicate> predicate(
             UUID clientId,
             Integer quantity,
+            Long lotNumber,
+            Long orderNumber,
             String product,
             UUID productId,
             String username,
@@ -200,6 +208,14 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
 
         if(color!=null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(productColorJoin.get("name")),"%"+color.toUpperCase()+"%"));
+        }
+
+        if (lotNumber != null) {
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("lotNumber"), lotNumber)));
+        }
+
+        if (orderNumber != null) {
+            conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("orderNumber"), lotNumber)));
         }
 
         if(registrationStartDate!=null){
@@ -304,6 +320,8 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
     private Long getOrderCount(
             UUID clientId,
             Integer quantity,
+            Long lotNumber,
+            Long orderNumber,
             String product,
             UUID productId,
             String username,
@@ -333,6 +351,8 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
         List<Predicate> conditions = predicate(
                 clientId,
                 quantity,
+                lotNumber,
+                orderNumber,
                 product,
                 productId,
                 username,

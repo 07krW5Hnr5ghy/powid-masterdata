@@ -12,6 +12,8 @@ public interface KardexOutputRepositoryCustom {
     Page<KardexOutput> searchForKardexOutput(
             UUID clientId,
             Integer quantity,
+            Long lotNumber,
+            Long orderNumber,
             String product,
             UUID productId,
             String username,
