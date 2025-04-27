@@ -1,9 +1,6 @@
 package com.proyect.masterdata.repository.impl;
 
-import com.proyect.masterdata.domain.KardexInput;
-import com.proyect.masterdata.domain.Product;
-import com.proyect.masterdata.domain.User;
-import com.proyect.masterdata.domain.Warehouse;
+import com.proyect.masterdata.domain.*;
 import com.proyect.masterdata.repository.KardexInputRepositoryCustom;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -35,6 +32,7 @@ public class KardexInputRepositoryCustomImpl implements KardexInputRepositoryCus
             String username,
             String warehouse,
             Double unitPrice,
+            String model,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -49,6 +47,7 @@ public class KardexInputRepositoryCustomImpl implements KardexInputRepositoryCus
         Join<KardexInput, Product> kardexInputProductJoin = itemRoot.join("product");
         Join<KardexInput,Warehouse> kardexInputWarehouseJoin = itemRoot.join("warehouse");
         Join<KardexInput,User> kardexInputUserJoin = itemRoot.join("user");
+        Join<Product, Model> productModelJoin = kardexInputProductJoin.join("model");
         criteriaQuery.select(itemRoot);
 
         List<Predicate> conditions = predicate(
@@ -60,6 +59,7 @@ public class KardexInputRepositoryCustomImpl implements KardexInputRepositoryCus
                 username,
                 warehouse,
                 unitPrice,
+                model,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -68,7 +68,8 @@ public class KardexInputRepositoryCustomImpl implements KardexInputRepositoryCus
                 itemRoot,
                 kardexInputProductJoin,
                 kardexInputUserJoin,
-                kardexInputWarehouseJoin);
+                kardexInputWarehouseJoin,
+                productModelJoin);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -101,6 +102,7 @@ public class KardexInputRepositoryCustomImpl implements KardexInputRepositoryCus
                 username,
                 warehouse,
                 unitPrice,
+                model,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -118,6 +120,7 @@ public class KardexInputRepositoryCustomImpl implements KardexInputRepositoryCus
             String username,
             String warehouse,
             Double unitPrice,
+            String model,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -126,7 +129,9 @@ public class KardexInputRepositoryCustomImpl implements KardexInputRepositoryCus
             Root<KardexInput> itemRoot,
             Join<KardexInput,Product> kardexInputProductJoin,
             Join<KardexInput,User> kardexInputUserJoin,
-            Join<KardexInput,Warehouse> kardexInputWarehouseJoin) {
+            Join<KardexInput,Warehouse> kardexInputWarehouseJoin,
+            Join<Product,Model> productModelJoin
+    ) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -164,6 +169,10 @@ public class KardexInputRepositoryCustomImpl implements KardexInputRepositoryCus
 
         if (unitPrice != null) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("unitPrice"), unitPrice)));
+        }
+
+        if(model!=null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(productModelJoin.get("name")),"%"+model.toUpperCase()+"%"));
         }
         
         if(registrationStartDate!=null){
@@ -274,6 +283,7 @@ public class KardexInputRepositoryCustomImpl implements KardexInputRepositoryCus
             String username,
             String warehouse,
             Double unitPrice,
+            String model,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -285,6 +295,7 @@ public class KardexInputRepositoryCustomImpl implements KardexInputRepositoryCus
         Join<KardexInput,Product> kardexInputProductJoin = itemRoot.join("product");
         Join<KardexInput,Warehouse> kardexInputWarehouseJoin = itemRoot.join("warehouse");
         Join<KardexInput,User> kardexInputUserJoin = itemRoot.join("user");
+        Join<Product, Model> productModelJoin = kardexInputProductJoin.join("model");
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
                 clientId,
@@ -295,6 +306,7 @@ public class KardexInputRepositoryCustomImpl implements KardexInputRepositoryCus
                 username,
                 warehouse,
                 unitPrice,
+                model,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -303,7 +315,8 @@ public class KardexInputRepositoryCustomImpl implements KardexInputRepositoryCus
                 itemRoot,
                 kardexInputProductJoin,
                 kardexInputUserJoin,
-                kardexInputWarehouseJoin);
+                kardexInputWarehouseJoin,
+                productModelJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

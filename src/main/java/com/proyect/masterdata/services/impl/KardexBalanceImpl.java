@@ -85,7 +85,24 @@ public class KardexBalanceImpl implements IKardexBalance {
     }
 
     @Override
-    public CompletableFuture<Page<KardexBalanceDTO>> list(String user, Integer quantity, Long lotNumber, String product, UUID productId, String username, String warehouse, Double unitPrice, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) throws InternalErrorExceptions {
+    public CompletableFuture<Page<KardexBalanceDTO>> list(
+            String user,
+            Integer quantity,
+            Long lotNumber,
+            String product,
+            UUID productId,
+            String username,
+            String warehouse,
+            Double unitPrice,
+            String model,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) throws InternalErrorExceptions {
         return CompletableFuture.supplyAsync(()->{
             Page<KardexBalance> kardexBalancePage;
             UUID clientId;
@@ -101,6 +118,7 @@ public class KardexBalanceImpl implements IKardexBalance {
                         username,
                         warehouse,
                         unitPrice,
+                        model,
                         registrationStartDate,
                         registrationEndDate,
                         updateStartDate,

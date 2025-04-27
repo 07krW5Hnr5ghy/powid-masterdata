@@ -23,13 +23,29 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<KardexOutput> searchForKardexOutput(UUID clientId, Integer quantity, String product, UUID productId, String username, String warehouse, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
+    public Page<KardexOutput> searchForKardexOutput(
+            UUID clientId,
+            Integer quantity,
+            String product,
+            UUID productId,
+            String username,
+            String warehouse,
+            String model,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<KardexOutput> criteriaQuery = criteriaBuilder.createQuery(KardexOutput.class);
         Root<KardexOutput> itemRoot = criteriaQuery.from(KardexOutput.class);
         Join<KardexOutput, Product> kardexOutputProductJoin = itemRoot.join("product");
         Join<KardexOutput, Warehouse> kardexOutputWarehouseJoin = itemRoot.join("warehouse");
         Join<KardexOutput, User> kardexOutputUserJoin = itemRoot.join("user");
+        Join<Product,Model> productModelJoin = kardexOutputProductJoin.join("model");
         criteriaQuery.select(itemRoot);
 
         List<Predicate> conditions = predicate(
@@ -39,6 +55,7 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
                 productId,
                 username,
                 warehouse,
+                model,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -47,7 +64,8 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
                 itemRoot,
                 kardexOutputProductJoin,
                 kardexOutputUserJoin,
-                kardexOutputWarehouseJoin);
+                kardexOutputWarehouseJoin,
+                productModelJoin);
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -78,6 +96,7 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
                 productId,
                 username,
                 warehouse,
+                model,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -93,6 +112,7 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
             UUID productId,
             String username,
             String warehouse,
+            String model,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -101,7 +121,8 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
             Root<KardexOutput> itemRoot,
             Join<KardexOutput,Product> kardexOutputProductJoin,
             Join<KardexOutput,User> kardexOutputUserJoin,
-            Join<KardexOutput,Warehouse> kardexOutputWarehouseJoin) {
+            Join<KardexOutput,Warehouse> kardexOutputWarehouseJoin,
+            Join<Product,Model> productModelJoin) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -131,6 +152,10 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
 
         if(username!=null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(kardexOutputUserJoin.get("name")),"%"+username.toUpperCase()+"%"));
+        }
+
+        if(model!=null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(productModelJoin.get("name")),"%"+model.toUpperCase()+"%"));
         }
 
         if(registrationStartDate!=null){
@@ -239,6 +264,7 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
             UUID productId,
             String username,
             String warehouse,
+            String model,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -250,6 +276,7 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
         Join<KardexOutput,Product> kardexOutputProductJoin = itemRoot.join("product");
         Join<KardexOutput,Warehouse> kardexOutputWarehouseJoin = itemRoot.join("warehouse");
         Join<KardexOutput,User> kardexOutputUserJoin = itemRoot.join("user");
+        Join<Product,Model> productModelJoin = kardexOutputProductJoin.join("model");
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
                 clientId,
@@ -258,6 +285,7 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
                 productId,
                 username,
                 warehouse,
+                model,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -266,7 +294,8 @@ public class KardexOutputRepositoryCustomImpl implements KardexOutputRepositoryC
                 itemRoot,
                 kardexOutputProductJoin,
                 kardexOutputUserJoin,
-                kardexOutputWarehouseJoin);
+                kardexOutputWarehouseJoin,
+                productModelJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

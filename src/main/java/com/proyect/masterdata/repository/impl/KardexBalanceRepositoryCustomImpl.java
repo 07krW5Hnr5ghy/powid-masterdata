@@ -23,13 +23,31 @@ public class KardexBalanceRepositoryCustomImpl implements KardexBalanceRepositor
     @PersistenceContext(name = "entityManager")
     private EntityManager entityManager;
     @Override
-    public Page<KardexBalance> searchForKardexBalance(UUID clientId, Integer quantity, Long lotNumber, String product, UUID productId, String username, String warehouse, Double unitPrice, OffsetDateTime registrationStartDate, OffsetDateTime registrationEndDate, OffsetDateTime updateStartDate, OffsetDateTime updateEndDate, String sort, String sortColumn, Integer pageNumber, Integer pageSize) {
+    public Page<KardexBalance> searchForKardexBalance(
+            UUID clientId,
+            Integer quantity,
+            Long lotNumber,
+            String product,
+            UUID productId,
+            String username,
+            String warehouse,
+            Double unitPrice,
+            String model,
+            OffsetDateTime registrationStartDate,
+            OffsetDateTime registrationEndDate,
+            OffsetDateTime updateStartDate,
+            OffsetDateTime updateEndDate,
+            String sort,
+            String sortColumn,
+            Integer pageNumber,
+            Integer pageSize) {
         CriteriaBuilder criteriaBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<KardexBalance> criteriaQuery = criteriaBuilder.createQuery(KardexBalance.class);
         Root<KardexBalance> itemRoot = criteriaQuery.from(KardexBalance.class);
         Join<KardexBalance, Product> kardexBalanceProductJoin = itemRoot.join("product");
         Join<KardexBalance, Warehouse> kardexBalanceWarehouseJoin = itemRoot.join("warehouse");
         Join<KardexBalance, User> kardexBalanceUserJoin = itemRoot.join("user");
+        Join<Product, Model> productModelJoin = kardexBalanceProductJoin.join("model");
         criteriaQuery.select(itemRoot);
 
         List<Predicate> conditions = predicate(
@@ -41,6 +59,7 @@ public class KardexBalanceRepositoryCustomImpl implements KardexBalanceRepositor
                 username,
                 warehouse,
                 unitPrice,
+                model,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -49,7 +68,9 @@ public class KardexBalanceRepositoryCustomImpl implements KardexBalanceRepositor
                 itemRoot,
                 kardexBalanceProductJoin,
                 kardexBalanceUserJoin,
-                kardexBalanceWarehouseJoin);
+                kardexBalanceWarehouseJoin,
+                productModelJoin
+        );
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
 
@@ -82,6 +103,7 @@ public class KardexBalanceRepositoryCustomImpl implements KardexBalanceRepositor
                 username,
                 warehouse,
                 unitPrice,
+                model,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -99,6 +121,7 @@ public class KardexBalanceRepositoryCustomImpl implements KardexBalanceRepositor
             String username,
             String warehouse,
             Double unitPrice,
+            String model,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -107,7 +130,8 @@ public class KardexBalanceRepositoryCustomImpl implements KardexBalanceRepositor
             Root<KardexBalance> itemRoot,
             Join<KardexBalance,Product> kardexBalanceProductJoin,
             Join<KardexBalance,User> kardexBalanceUserJoin,
-            Join<KardexBalance,Warehouse> kardexBalanceWarehouseJoin) {
+            Join<KardexBalance,Warehouse> kardexBalanceWarehouseJoin,
+            Join<Product,Model> productModelJoin) {
 
         List<Predicate> conditions = new ArrayList<>();
 
@@ -145,6 +169,10 @@ public class KardexBalanceRepositoryCustomImpl implements KardexBalanceRepositor
 
         if (unitPrice != null) {
             conditions.add(criteriaBuilder.and(criteriaBuilder.equal(itemRoot.get("unitPrice"), unitPrice)));
+        }
+
+        if(model!=null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(productModelJoin.get("name")),"%"+model.toUpperCase()+"%"));
         }
 
         if(registrationStartDate!=null){
@@ -255,6 +283,7 @@ public class KardexBalanceRepositoryCustomImpl implements KardexBalanceRepositor
             String username,
             String warehouse,
             Double unitPrice,
+            String model,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -266,6 +295,7 @@ public class KardexBalanceRepositoryCustomImpl implements KardexBalanceRepositor
         Join<KardexBalance,Product> kardexBalanceProductJoin = itemRoot.join("product");
         Join<KardexBalance,Warehouse> kardexBalanceWarehouseJoin = itemRoot.join("warehouse");
         Join<KardexBalance,User> kardexBalanceUserJoin = itemRoot.join("user");
+        Join<Product,Model> productModelJoin = kardexBalanceProductJoin.join("model");
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
                 clientId,
@@ -276,6 +306,7 @@ public class KardexBalanceRepositoryCustomImpl implements KardexBalanceRepositor
                 username,
                 warehouse,
                 unitPrice,
+                model,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -284,7 +315,8 @@ public class KardexBalanceRepositoryCustomImpl implements KardexBalanceRepositor
                 itemRoot,
                 kardexBalanceProductJoin,
                 kardexBalanceUserJoin,
-                kardexBalanceWarehouseJoin);
+                kardexBalanceWarehouseJoin,
+                productModelJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }

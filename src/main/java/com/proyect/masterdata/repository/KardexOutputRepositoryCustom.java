@@ -16,6 +16,7 @@ public interface KardexOutputRepositoryCustom {
             UUID productId,
             String username,
             String warehouse,
+            String model,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,

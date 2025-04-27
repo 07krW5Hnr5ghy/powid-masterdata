@@ -24,6 +24,7 @@ public interface IKardexInput {
             String username,
             String warehouse,
             Double unitPrice,
+            String model,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
