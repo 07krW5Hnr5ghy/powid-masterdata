@@ -7,6 +7,7 @@ import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.velocity.tools.generic.ClassTool;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -33,6 +34,10 @@ public class KardexBalanceRepositoryCustomImpl implements KardexBalanceRepositor
             String warehouse,
             Double unitPrice,
             String model,
+            String subCategoryProduct,
+            String category,
+            String size,
+            String color,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -48,6 +53,10 @@ public class KardexBalanceRepositoryCustomImpl implements KardexBalanceRepositor
         Join<KardexBalance, Warehouse> kardexBalanceWarehouseJoin = itemRoot.join("warehouse");
         Join<KardexBalance, User> kardexBalanceUserJoin = itemRoot.join("user");
         Join<Product, Model> productModelJoin = kardexBalanceProductJoin.join("model");
+        Join<Product, Size> productSizeJoin = kardexBalanceProductJoin.join("size");
+        Join<Product, Color> productColorJoin = kardexBalanceProductJoin.join("color");
+        Join<Product, SubCategoryProduct> productSubCategoryProductJoin = kardexBalanceProductJoin.join("subCategoryProduct");
+        Join<SubCategoryProduct,CategoryProduct> subCategoryProductCategoryProductJoin = productSubCategoryProductJoin.join("categoryProduct");
         criteriaQuery.select(itemRoot);
 
         List<Predicate> conditions = predicate(
@@ -60,6 +69,10 @@ public class KardexBalanceRepositoryCustomImpl implements KardexBalanceRepositor
                 warehouse,
                 unitPrice,
                 model,
+                subCategoryProduct,
+                category,
+                size,
+                color,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -69,7 +82,11 @@ public class KardexBalanceRepositoryCustomImpl implements KardexBalanceRepositor
                 kardexBalanceProductJoin,
                 kardexBalanceUserJoin,
                 kardexBalanceWarehouseJoin,
-                productModelJoin
+                productModelJoin,
+                productSizeJoin,
+                productColorJoin,
+                productSubCategoryProductJoin,
+                subCategoryProductCategoryProductJoin
         );
 
         if (!StringUtils.isBlank(sort) && !StringUtils.isBlank(sortColumn)) {
@@ -104,6 +121,10 @@ public class KardexBalanceRepositoryCustomImpl implements KardexBalanceRepositor
                 warehouse,
                 unitPrice,
                 model,
+                subCategoryProduct,
+                category,
+                size,
+                color,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -122,6 +143,10 @@ public class KardexBalanceRepositoryCustomImpl implements KardexBalanceRepositor
             String warehouse,
             Double unitPrice,
             String model,
+            String subCategoryProduct,
+            String category,
+            String size,
+            String color,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -131,8 +156,11 @@ public class KardexBalanceRepositoryCustomImpl implements KardexBalanceRepositor
             Join<KardexBalance,Product> kardexBalanceProductJoin,
             Join<KardexBalance,User> kardexBalanceUserJoin,
             Join<KardexBalance,Warehouse> kardexBalanceWarehouseJoin,
-            Join<Product,Model> productModelJoin) {
-
+            Join<Product,Model> productModelJoin,
+            Join<Product, Size> productSizeJoin,
+            Join<Product, Color> productColorJoin,
+            Join<Product, SubCategoryProduct> productSubCategoryProductJoin,
+            Join<SubCategoryProduct,CategoryProduct> subCategoryProductCategoryProductJoin){
         List<Predicate> conditions = new ArrayList<>();
 
         if (clientId != null) {
@@ -173,6 +201,22 @@ public class KardexBalanceRepositoryCustomImpl implements KardexBalanceRepositor
 
         if(model!=null){
             conditions.add(criteriaBuilder.like(criteriaBuilder.upper(productModelJoin.get("name")),"%"+model.toUpperCase()+"%"));
+        }
+
+        if(subCategoryProduct!=null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(productSubCategoryProductJoin.get("name")),"%"+subCategoryProduct.toUpperCase()+"%"));
+        }
+
+        if(category!=null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(subCategoryProductCategoryProductJoin.get("name")),"%"+category.toUpperCase()+"%"));
+        }
+
+        if(size!=null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(productSizeJoin.get("name")),"%"+size.toUpperCase()+"%"));
+        }
+
+        if(color!=null){
+            conditions.add(criteriaBuilder.like(criteriaBuilder.upper(productColorJoin.get("name")),"%"+color.toUpperCase()+"%"));
         }
 
         if(registrationStartDate!=null){
@@ -284,6 +328,10 @@ public class KardexBalanceRepositoryCustomImpl implements KardexBalanceRepositor
             String warehouse,
             Double unitPrice,
             String model,
+            String subCategoryProduct,
+            String category,
+            String size,
+            String color,
             OffsetDateTime registrationStartDate,
             OffsetDateTime registrationEndDate,
             OffsetDateTime updateStartDate,
@@ -296,6 +344,10 @@ public class KardexBalanceRepositoryCustomImpl implements KardexBalanceRepositor
         Join<KardexBalance,Warehouse> kardexBalanceWarehouseJoin = itemRoot.join("warehouse");
         Join<KardexBalance,User> kardexBalanceUserJoin = itemRoot.join("user");
         Join<Product,Model> productModelJoin = kardexBalanceProductJoin.join("model");
+        Join<Product, Size> productSizeJoin = kardexBalanceProductJoin.join("size");
+        Join<Product, Color> productColorJoin = kardexBalanceProductJoin.join("color");
+        Join<Product, SubCategoryProduct> productSubCategoryProductJoin = kardexBalanceProductJoin.join("subCategoryProduct");
+        Join<SubCategoryProduct,CategoryProduct> subCategoryProductCategoryProductJoin = productSubCategoryProductJoin.join("categoryProduct");
         criteriaQuery.select(criteriaBuilder.count(itemRoot));
         List<Predicate> conditions = predicate(
                 clientId,
@@ -307,6 +359,10 @@ public class KardexBalanceRepositoryCustomImpl implements KardexBalanceRepositor
                 warehouse,
                 unitPrice,
                 model,
+                subCategoryProduct,
+                category,
+                size,
+                color,
                 registrationStartDate,
                 registrationEndDate,
                 updateStartDate,
@@ -316,7 +372,11 @@ public class KardexBalanceRepositoryCustomImpl implements KardexBalanceRepositor
                 kardexBalanceProductJoin,
                 kardexBalanceUserJoin,
                 kardexBalanceWarehouseJoin,
-                productModelJoin);
+                productModelJoin,
+                productSizeJoin,
+                productColorJoin,
+                productSubCategoryProductJoin,
+                subCategoryProductCategoryProductJoin);
         criteriaQuery.where(conditions.toArray(new Predicate[] {}));
         return entityManager.createQuery(criteriaQuery).getSingleResult();
     }
